@@ -12,13 +12,12 @@ can register their own strategies (e.g. ``composite_lipsync``, ``slideshow``,
 
 Built-in strategies (registered at import):
 
-- ``lipsync``         — character anchor + audio → talking video (omnihuman)
-- ``image_to_video``  — env / fresh storyboard still → animated clip
-- ``text_to_video``   — prompt-only short clip
-- ``still``           — image looped over audio (no video gen)
-
-The placeholder ``composite_lipsync`` is registered by Phase 2 (artful + the
-character-in-environment compose primitive).
+- ``lipsync``            — character anchor + audio → talking video (omnihuman)
+- ``image_to_video``     — env / fresh storyboard still → animated clip
+- ``text_to_video``      — prompt-only short clip
+- ``still``              — image looped over audio (no video gen)
+- ``composite_lipsync``  — character + environment + audio → composite-then-talk
+                           ("Thor in a bell tower playing piano, lipsynced")
 """
 
 from __future__ import annotations
@@ -91,3 +90,4 @@ from . import lipsync as _lipsync  # noqa: E402,F401
 from . import image_to_video as _image_to_video  # noqa: E402,F401
 from . import text_to_video as _text_to_video  # noqa: E402,F401
 from . import still as _still  # noqa: E402,F401
+from . import composite_lipsync as _composite_lipsync  # noqa: E402,F401
