@@ -229,6 +229,11 @@ def execute_render(
 ) -> Path:
     """Execute a Plan, materialize the result as ``shot_dir/output.mp4``.
 
+    Refuses to execute a plan-only Plan (one whose arguments still contain
+    ``<plan-only:...>`` placeholders) — those exist so the planner can show
+    cost without any uploads, and need to be replaced with real URLs (call
+    :func:`prepare_shot` with ``upload=True``) before execute.
+
     Args:
         prep: The :class:`ShotPreparation` the Plan was built for.
         plan: A :class:`falaw.Plan` (typically from :func:`plan_render_shot`).
@@ -239,9 +244,36 @@ def execute_render(
     Returns:
         Path to ``shot_dir/output.mp4`` (trimmed/padded to ``prep.duration_s``).
     """
+    _refuse_plan_only_plan(plan)
     artifacts: list[Artifact] = execute_plan(plan, on_event=on_event, use_cache=use_cache)
     strategy = get_strategy(prep.shot.render_strategy)
     return strategy.materialize(prep, plan, artifacts)
+
+
+def _refuse_plan_only_plan(plan: Plan) -> None:
+    """Raise if any CallPlan has a ``<plan-only:…>`` arg. The strategies use
+    such placeholders when ``prepare_shot(upload=False)`` was called — they're
+    fine for inspection, fatal for execution."""
+    for i, call in enumerate(plan.calls):
+        for k, v in _walk_strings(call.arguments):
+            if isinstance(v, str) and v.startswith("<plan-only:"):
+                raise RuntimeError(
+                    f"execute_render: call {i} ({call.tool}) has a plan-only "
+                    f"placeholder at {k!r}={v!r}. The Plan was built from a "
+                    "ShotPreparation without uploads. Re-run prepare_shot with "
+                    "upload=True (the default) before calling execute_render."
+                )
+
+
+def _walk_strings(obj, prefix=""):
+    if isinstance(obj, dict):
+        for k, v in obj.items():
+            yield from _walk_strings(v, prefix=f"{prefix}.{k}" if prefix else k)
+    elif isinstance(obj, (list, tuple)):
+        for i, v in enumerate(obj):
+            yield from _walk_strings(v, prefix=f"{prefix}[{i}]")
+    else:
+        yield prefix, obj
 
 
 # ---------------------------------------------------------------------------

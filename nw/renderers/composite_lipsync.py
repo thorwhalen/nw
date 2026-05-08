@@ -63,21 +63,26 @@ class CompositeLipsyncStrategy:
                 f"composite_lipsync: shot {prep.shot_id!r} has no character anchor. "
                 "Use Project.set_character_anchor() to pick one."
             )
-        if not prep.environment_anchor_url:
+        if prep.environment_anchor_path is None:
             raise RuntimeError(
                 f"composite_lipsync: shot {prep.shot_id!r} has no environment anchor. "
                 "Either set shot.environment to a project environment with an "
                 "establishing image, or use the plain 'lipsync' strategy "
                 "(which works without an environment)."
             )
-        if not prep.character_anchor_urls or not prep.audio_slice_url:
-            raise RuntimeError(
-                f"composite_lipsync: shot {prep.shot_id!r} prep has no upload URLs. "
-                "Did you call prepare_shot(upload=True)?"
-            )
 
         char_name = next(iter(prep.character_anchor_paths))
-        char_url = prep.character_anchor_urls[char_name]
+        # URL fields are only needed at execute time; in plan-only mode the
+        # placeholder strings just stand in for "the planner saw the local
+        # path; the real URL will be filled in at execute time." If the user
+        # built `prep` with upload=True, we use the actual URLs.
+        char_url = prep.character_anchor_urls.get(
+            char_name, f"<plan-only:{prep.character_anchor_paths[char_name]}>"
+        )
+        env_url = prep.environment_anchor_url or (
+            f"<plan-only:{prep.environment_anchor_path}>"
+        )
+        audio_url = prep.audio_slice_url or f"<plan-only:{prep.audio_slice_path}>"
 
         overrides = model_overrides or {}
         compose_quality = quality
@@ -102,7 +107,7 @@ class CompositeLipsyncStrategy:
 
         compose_call = plan_composite_character_in_environment(
             character_image_url=char_url,
-            environment_image_url=prep.environment_anchor_url,
+            environment_image_url=env_url,
             prompt=compose_prompt,
             quality=compose_quality,
             model_id=overrides.get("image_edit"),
@@ -123,7 +128,7 @@ class CompositeLipsyncStrategy:
 
         avatar_call = plan_animate_face(
             image_url="<from 0>",  # rewritten to compose_call's URL at execute time
-            audio_url=prep.audio_slice_url,
+            audio_url=audio_url,
             prompt=lipsync_prompt,
             quality=avatar_quality,
             model_id=overrides.get("avatar"),

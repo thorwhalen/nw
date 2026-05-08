@@ -44,11 +44,6 @@ class LipsyncStrategy:
                 f"lipsync: shot {prep.shot_id!r} has no character anchor "
                 f"image. Use Project.set_character_anchor() to pick one."
             )
-        if not prep.character_anchor_urls:
-            raise RuntimeError(
-                f"lipsync: shot {prep.shot_id!r} prep has no upload URLs. "
-                f"Did you call prepare_shot(upload=True)?"
-            )
         if len(prep.character_anchor_paths) > 1:
             warnings.warn(
                 f"lipsync: shot {prep.shot_id!r} has multiple characters "
@@ -56,8 +51,13 @@ class LipsyncStrategy:
             )
 
         char_name = next(iter(prep.character_anchor_paths))
-        image_url = prep.character_anchor_urls[char_name]
-        audio_url = prep.audio_slice_url
+        # URLs are only required at execute time; planning works with
+        # local-path placeholders (the executor downstream of this still
+        # needs URLs, but a plan-only inspection doesn't).
+        image_url = prep.character_anchor_urls.get(
+            char_name, f"<plan-only:{prep.character_anchor_paths[char_name]}>"
+        )
+        audio_url = prep.audio_slice_url or f"<plan-only:{prep.audio_slice_path}>"
 
         prompt = prep.shot.description or f"{char_name} singing"
         if prep.lyric_lines:
