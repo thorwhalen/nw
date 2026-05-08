@@ -19,6 +19,7 @@ dependencies = [
     "falaw>=0.0.7",
     "lacing>=0.0.13",
     "xdol>=0.1.10",
+    "artful>=0.0.2",
 ]
 
 [project.license]

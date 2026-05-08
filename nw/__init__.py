@@ -19,9 +19,19 @@ Phase 1b.3 will move muvid's renderers into ``nw.renderers``.
 """
 
 from . import inspect  # noqa: F401  — `nw.inspect.shot_report(...)`
+from . import storyboard as _storyboard_module  # noqa: F401
 from .experiment import apply_to_projects, clone_project, summarize_all
 from .inspect import ComposeReport, FrozenSegment, Gap, ShotReport, compose_report, shot_report
 from .project import CharacterImage, Project
+from .storyboard import (
+    execute_render_panel_images,
+    open_storyboard,
+    plan_render_panel_images,
+    project_asset_id,
+    save_storyboard,
+    storyboard_db_path,
+    storyboard_from_shots,
+)
 from .renderers import (
     Strategy,
     get_strategy,
@@ -67,13 +77,20 @@ __all__ = [
     "clone_project",
     "compose_report",
     "execute_render",
+    "execute_render_panel_images",
     "get_strategy",
     "inspect",
     "list_strategies",
+    "open_storyboard",
+    "plan_render_panel_images",
     "plan_render_shot",
     "prepare_shot",
+    "project_asset_id",
     "register_strategy",
+    "save_storyboard",
     "shot_report",
+    "storyboard_db_path",
+    "storyboard_from_shots",
     "strategies",
     "summarize_all",
 ]
