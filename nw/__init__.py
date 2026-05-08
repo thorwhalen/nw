@@ -18,7 +18,9 @@ Phase 1b.2 will add ``nw.workflow`` (Plan/Execute over rendering).
 Phase 1b.3 will move muvid's renderers into ``nw.renderers``.
 """
 
+from . import inspect  # noqa: F401  — `nw.inspect.shot_report(...)`
 from .experiment import apply_to_projects, clone_project, summarize_all
+from .inspect import ComposeReport, FrozenSegment, Gap, ShotReport, compose_report, shot_report
 from .project import CharacterImage, Project
 from .renderers import (
     Strategy,
@@ -48,23 +50,30 @@ __all__ = [
     "SCHEMA_VERSION",
     "CharacterImage",
     "CharacterRef",
+    "ComposeReport",
     "EnvironmentRef",
+    "FrozenSegment",
+    "Gap",
     "Project",
     "ProjectSpec",
     "ProjectSummary",
     "SectionSpec",
     "ShotPreparation",
+    "ShotReport",
     "ShotSpec",
     "SongInfo",
     "Strategy",
     "apply_to_projects",
     "clone_project",
+    "compose_report",
     "execute_render",
     "get_strategy",
+    "inspect",
     "list_strategies",
     "plan_render_shot",
     "prepare_shot",
     "register_strategy",
+    "shot_report",
     "strategies",
     "summarize_all",
 ]
