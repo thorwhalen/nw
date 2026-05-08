@@ -20,6 +20,13 @@ Phase 1b.3 will move muvid's renderers into ``nw.renderers``.
 
 from .experiment import apply_to_projects, clone_project, summarize_all
 from .project import CharacterImage, Project
+from .renderers import (
+    Strategy,
+    get_strategy,
+    list_strategies,
+    register_strategy,
+    strategies,
+)
 from .schema import (
     SCHEMA_VERSION,
     CharacterRef,
@@ -29,6 +36,12 @@ from .schema import (
     SectionSpec,
     ShotSpec,
     SongInfo,
+)
+from .workflow import (
+    ShotPreparation,
+    execute_render,
+    plan_render_shot,
+    prepare_shot,
 )
 
 __all__ = [
@@ -40,9 +53,18 @@ __all__ = [
     "ProjectSpec",
     "ProjectSummary",
     "SectionSpec",
+    "ShotPreparation",
     "ShotSpec",
     "SongInfo",
+    "Strategy",
     "apply_to_projects",
     "clone_project",
+    "execute_render",
+    "get_strategy",
+    "list_strategies",
+    "plan_render_shot",
+    "prepare_shot",
+    "register_strategy",
+    "strategies",
     "summarize_all",
 ]
