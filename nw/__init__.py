@@ -18,11 +18,23 @@ Phase 1b.2 will add ``nw.workflow`` (Plan/Execute over rendering).
 Phase 1b.3 will move muvid's renderers into ``nw.renderers``.
 """
 
+from . import bodies  # noqa: F401  — registers lacing body schemas at import
+from . import graph  # noqa: F401  — `nw.graph.descendants_of(...)`
 from . import inspect  # noqa: F401  — `nw.inspect.shot_report(...)`
+from . import migrate  # noqa: F401  — `nw.migrate.migrate_to_graph(...)`
 from . import storyboard as _storyboard_module  # noqa: F401
 from .experiment import apply_to_projects, clone_project, summarize_all
 from .inspect import ComposeReport, FrozenSegment, Gap, ShotReport, compose_report, shot_report
 from .project import CharacterImage, Project
+from .graph import (
+    ProjectGraph,
+    annotations_at_tier,
+    derived_from,
+    descendants_of,
+    iter_all_annotations,
+    stale_after,
+)
+from .migrate import migrate_to_graph, is_migrated
 from .storyboard import (
     execute_render_panel_images,
     open_storyboard,
@@ -65,6 +77,7 @@ __all__ = [
     "FrozenSegment",
     "Gap",
     "Project",
+    "ProjectGraph",
     "ProjectSpec",
     "ProjectSummary",
     "SectionSpec",
@@ -73,14 +86,20 @@ __all__ = [
     "ShotSpec",
     "SongInfo",
     "Strategy",
+    "annotations_at_tier",
     "apply_to_projects",
     "clone_project",
     "compose_report",
+    "derived_from",
+    "descendants_of",
     "execute_render",
     "execute_render_panel_images",
     "get_strategy",
     "inspect",
+    "is_migrated",
+    "iter_all_annotations",
     "list_strategies",
+    "migrate_to_graph",
     "open_storyboard",
     "plan_render_panel_images",
     "plan_render_shot",
@@ -89,6 +108,7 @@ __all__ = [
     "register_strategy",
     "save_storyboard",
     "shot_report",
+    "stale_after",
     "storyboard_db_path",
     "storyboard_from_shots",
     "strategies",

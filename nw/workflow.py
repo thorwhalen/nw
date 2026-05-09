@@ -226,6 +226,7 @@ def execute_render(
     *,
     on_event=None,
     use_cache: bool = True,
+    project: Optional[Project] = None,
 ) -> Path:
     """Execute a Plan, materialize the result as ``shot_dir/output.mp4``.
 
@@ -240,6 +241,11 @@ def execute_render(
         on_event: Optional event subscriber forwarded to the falaw call layer.
         use_cache: When True (default), routes via ``cached_call_fal`` so
             cache hits skip the network.
+        project: Optional :class:`Project`. When given, a render-decision
+            annotation is appended to the project graph after execution
+            with ``was_derived_from = (shot_annotation_id,)``, so reelee's
+            freshness queries (``descendants_of`` / ``stale_after``) walk
+            from the shot to its render output.
 
     Returns:
         Path to ``shot_dir/output.mp4`` (trimmed/padded to ``prep.duration_s``).
@@ -247,7 +253,66 @@ def execute_render(
     _refuse_plan_only_plan(plan)
     artifacts: list[Artifact] = execute_plan(plan, on_event=on_event, use_cache=use_cache)
     strategy = get_strategy(prep.shot.render_strategy)
-    return strategy.materialize(prep, plan, artifacts)
+    output = strategy.materialize(prep, plan, artifacts)
+
+    if project is not None:
+        _record_render_decision(project, prep, plan, artifacts, output)
+
+    return output
+
+
+def _record_render_decision(
+    project: "Project",
+    prep: "ShotPreparation",
+    plan: "Plan",
+    artifacts: list,
+    output: "Path",
+) -> None:
+    """Write a render-decision annotation derived from the shot annotation.
+
+    The decision's ``was_derived_from`` is the shot annotation's id, so a
+    reelee freshness traversal from the shot will find the render output.
+    Cost, model ids, and call ids are persisted in the decision payload so
+    a later inspector view can show "what fired and what it cost."
+    """
+    # Find the shot's annotation id in the graph.
+    shot_anns = project.graph.shots()
+    matching = next((s for s in shot_anns if s.body.shot_id == prep.shot_id), None)
+    if matching is None:
+        return  # shouldn't happen for a real Project; bail quietly
+
+    payload = {
+        "shot_id": prep.shot_id,
+        "strategy": prep.shot.render_strategy,
+        "duration_s": prep.duration_s,
+        "output_path": str(output.relative_to(project.root))
+            if output.is_relative_to(project.root) else str(output),
+        "calls": [
+            {
+                "tool": c.tool,
+                "application": c.application,
+                "estimated_cost_usd": c.estimated_cost_usd,
+                "cache_status": c.cache_status,
+            }
+            for c in plan.calls
+        ],
+        "artifacts": [
+            {
+                "asset_id": a.asset_id,
+                "kind": a.kind,
+                "url": a.url,
+                "duration_s": a.duration_s,
+                "cost_usd": a.cost_usd,
+            }
+            for a in artifacts
+        ],
+        "total_estimated_cost_usd": plan.total_cost_usd,
+    }
+    from .bodies import DecisionBodyV1
+    project.graph.append_decision(
+        DecisionBodyV1(kind="render_shot", payload=payload),
+        was_derived_from=(matching.annotation_id,),
+    )
 
 
 def _refuse_plan_only_plan(plan: Plan) -> None:

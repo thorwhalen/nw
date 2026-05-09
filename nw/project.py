@@ -23,9 +23,46 @@ from __future__ import annotations
 
 import json
 import shutil
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable, Optional
 
+
+def _now_iso() -> str:
+    return datetime.now(timezone.utc).isoformat()
+
+
+def _iv(start_s: float, end_s: float) -> TimeInterval:
+    """Build a TimeInterval from seconds, robust to floats that don't quantize.
+
+    Floats like 8.021333 may not be exactly representable at the default 24000
+    rate; routing through a string forces the lossless path via Fraction. If
+    that still rounds (sub-microsecond noise), we round to microseconds first.
+    """
+    return TimeInterval(
+        start=_seconds_to_rt(start_s),
+        end=_seconds_to_rt(end_s),
+    )
+
+
+def _seconds_to_rt(seconds: float):
+    from fractions import Fraction
+    from lacing import RationalTime, DEFAULT_RATE
+    # Round to nearest sample at DEFAULT_RATE.
+    samples = round(float(seconds) * DEFAULT_RATE)
+    return RationalTime.from_fraction(Fraction(samples, DEFAULT_RATE), rate=DEFAULT_RATE)
+
+from lacing import TimeInterval
+
+from .bodies import (
+    CharacterRefBodyV1,
+    DecisionBodyV1,
+    EnvironmentRefBodyV1,
+    SectionBodyV1,
+    ShotBodyV1,
+)
+from .graph import ProjectGraph
+from .migrate import is_migrated, migrate_to_graph
 from .schema import (
     SCHEMA_VERSION,
     CharacterRef,
@@ -97,7 +134,7 @@ class Project:
     :meth:`Project.init` to bootstrap a new project on disk.
     """
 
-    def __init__(self, root: str | Path) -> None:
+    def __init__(self, root: str | Path, *, auto_migrate: bool = True) -> None:
         self.root = Path(root).resolve()
         if not self.root.exists():
             raise FileNotFoundError(f"Project root does not exist: {self.root}")
@@ -106,6 +143,11 @@ class Project:
                 f"No {_PROJECT_FILE_NAME} at {self.root} — "
                 "use Project.init() to bootstrap a new project."
             )
+        # Auto-migrate pre-graph projects to the graph-backed format.
+        # Idempotent — runs once per project, no-op afterward.
+        if auto_migrate and not is_migrated(self.root):
+            migrate_to_graph(self.root)
+        self.graph = ProjectGraph(self.root)
 
     # -- bootstrap ---------------------------------------------------------
 
@@ -155,6 +197,19 @@ class Project:
         )
         _write_spec(root, spec)
 
+        # New projects are graph-native from the start; mark migrated so the
+        # auto-migrator skips them. The graph store is created lazily on first
+        # write.
+        sentinel = root / ".nw" / "migrated_to_graph"
+        sentinel.parent.mkdir(parents=True, exist_ok=True)
+        if not sentinel.exists():
+            sentinel.write_text(
+                json.dumps(
+                    {"migrated_at": _now_iso(), "counts": {"native": 1}},
+                    indent=2,
+                )
+            )
+
         proj = cls(root)
         if song is not None:
             proj.set_song(song)
@@ -169,10 +224,160 @@ class Project:
     # -- spec read / write -------------------------------------------------
 
     def read_spec(self) -> ProjectSpec:
-        return ProjectSpec.model_validate_json(self.project_file.read_text())
+        """Read the project spec, synthesizing from the graph for graph-native fields.
+
+        Project-level metadata (title, song, global_style, notes,
+        schema_version) lives in ``project.json``. Sections, shots,
+        characters, and environments live in the lacing graph and are
+        synthesized into the returned :class:`ProjectSpec` for back-compat
+        with code that still reads via ``read_spec()``.
+        """
+        meta = json.loads(self.project_file.read_text())
+
+        # Pull graph-backed entities.
+        sections = tuple(
+            SectionSpec(
+                id=s.body.section_id,
+                start_s=s.interval.start.to_seconds(),
+                end_s=s.interval.end.to_seconds(),
+                label=s.body.label,
+                energy=s.body.energy,
+                mood=s.body.mood,
+            )
+            for s in self.graph.sections()
+        )
+        shots = tuple(
+            ShotSpec(
+                id=s.body.shot_id,
+                start_s=s.interval.start.to_seconds(),
+                end_s=s.interval.end.to_seconds(),
+                section_id=s.body.section_id,
+                render_strategy=s.body.render_strategy,
+                environment=s.body.environment,
+                characters=tuple(s.body.characters),
+                description=s.body.description,
+                camera=s.body.camera,
+                framing=s.body.framing,
+                notes=s.body.notes,
+            )
+            for s in self.graph.shots()
+        )
+        characters = tuple(
+            CharacterRef(name=c.body.name, description=c.body.description)
+            for c in self.graph.character_refs()
+        )
+        environments = tuple(
+            EnvironmentRef(name=e.body.name, description=e.body.description)
+            for e in self.graph.environment_refs()
+        )
+
+        song = meta.get("song")
+        return ProjectSpec(
+            schema_version=meta.get("schema_version", SCHEMA_VERSION),
+            title=meta.get("title", ""),
+            song=SongInfo.model_validate(song) if isinstance(song, dict) else None,
+            characters=characters,
+            environments=environments,
+            sections=sections,
+            shots=shots,
+            global_style=meta.get("global_style", ""),
+            notes=meta.get("notes", ""),
+        )
 
     def write_spec(self, spec: ProjectSpec) -> None:
-        _write_spec(self.root, spec)
+        """Write the spec.
+
+        For back-compat with existing code that builds a ``ProjectSpec`` and
+        calls ``write_spec``, this routes graph-backed fields (sections,
+        shots, characters, environments) through the graph and persists the
+        rest as project.json metadata.
+        """
+        # Project-level metadata (no graph entities).
+        meta = {
+            "schema_version": spec.schema_version,
+            "title": spec.title,
+            "song": spec.song.model_dump() if spec.song is not None else None,
+            "global_style": spec.global_style,
+            "notes": spec.notes,
+            "_graph_db": "project.annot.sqlite",
+        }
+        self.project_file.write_text(json.dumps(meta, indent=2))
+
+        # Graph entities — sync each tier to the spec by removing entries
+        # not in spec and upserting the ones that are.
+        self._sync_character_refs(spec.characters)
+        self._sync_environment_refs(spec.environments)
+        self._sync_sections(spec.sections)
+        self._sync_shots(spec.shots)
+
+    def _sync_character_refs(self, refs: tuple[CharacterRef, ...]) -> None:
+        names = {r.name for r in refs}
+        with self.graph._open() as store:
+            from .migrate import _TIER_CHARACTER_REF
+            for ann in list(store.all()):
+                if ann.tier == _TIER_CHARACTER_REF:
+                    if isinstance(ann.body, dict) and ann.body.get("name") not in names:
+                        store.remove(ann.id)
+        for ch in refs:
+            self.graph.upsert_character_ref(
+                CharacterRefBodyV1(name=ch.name, description=ch.description)
+            )
+
+    def _sync_environment_refs(self, refs: tuple[EnvironmentRef, ...]) -> None:
+        names = {r.name for r in refs}
+        with self.graph._open() as store:
+            from .migrate import _TIER_ENVIRONMENT_REF
+            for ann in list(store.all()):
+                if ann.tier == _TIER_ENVIRONMENT_REF:
+                    if isinstance(ann.body, dict) and ann.body.get("name") not in names:
+                        store.remove(ann.id)
+        for env in refs:
+            self.graph.upsert_environment_ref(
+                EnvironmentRefBodyV1(name=env.name, description=env.description)
+            )
+
+    def _sync_sections(self, sections: tuple[SectionSpec, ...]) -> None:
+        ids = {s.id for s in sections}
+        with self.graph._open() as store:
+            from .migrate import _TIER_SECTION
+            for ann in list(store.all()):
+                if ann.tier == _TIER_SECTION:
+                    if isinstance(ann.body, dict) and ann.body.get("section_id") not in ids:
+                        store.remove(ann.id)
+        for sec in sections:
+            self.graph.upsert_section(
+                SectionBodyV1(
+                    section_id=sec.id,
+                    label=sec.label,
+                    energy=sec.energy,
+                    mood=sec.mood,
+                ),
+                interval=_iv(sec.start_s, sec.end_s),
+            )
+
+    def _sync_shots(self, shots: tuple[ShotSpec, ...]) -> None:
+        ids = {s.id for s in shots}
+        with self.graph._open() as store:
+            from .migrate import _TIER_SHOT
+            for ann in list(store.all()):
+                if ann.tier == _TIER_SHOT:
+                    if isinstance(ann.body, dict) and ann.body.get("shot_id") not in ids:
+                        store.remove(ann.id)
+        for shot in shots:
+            self.graph.upsert_shot(
+                ShotBodyV1(
+                    shot_id=shot.id,
+                    section_id=shot.section_id,
+                    render_strategy=shot.render_strategy,
+                    environment=shot.environment,
+                    characters=tuple(shot.characters),
+                    description=shot.description,
+                    camera=shot.camera,
+                    framing=shot.framing,
+                    notes=shot.notes,
+                ),
+                interval=_iv(shot.start_s, shot.end_s),
+            )
 
     def update_spec(self, **changes: Any) -> ProjectSpec:
         """Apply field-level changes to the spec; return the new spec."""
@@ -406,19 +611,32 @@ class Project:
     # -- decisions log -----------------------------------------------------
 
     def log_decision(self, kind: str, **payload: Any) -> None:
-        """Append a one-line JSON record to ``.nw/decisions.jsonl``.
+        """Record a typed decision in the project graph + the JSONL audit log.
 
         Decisions are project-local provenance: which character anchor was
         picked, which model overrode the default, why a shot was retried.
-        Future Phase-3 work will mirror these into lacing annotations with
-        body schema ``annot://schema/decision/v1``.
+        Both surfaces stay in sync:
+        - The lacing graph (``decision`` tier, body schema
+          ``annot://schema/decision/v1``) is the SSOT — reelee will surface
+          these in inspector / network views.
+        - ``.nw/decisions.jsonl`` continues as a tail-grep-able audit trail.
         """
+        # Graph (canonical).
+        try:
+            self.graph.append_decision(
+                DecisionBodyV1(kind=kind, payload=dict(payload))
+            )
+        except Exception:
+            # Don't fail user operations on graph write errors; the JSONL
+            # below preserves the record as a fallback audit.
+            pass
+
+        # JSONL audit log (back-compat surface).
         nw_dir = self.root / ".nw"
         nw_dir.mkdir(exist_ok=True)
         path = nw_dir / "decisions.jsonl"
-        from datetime import datetime, timezone
         record = {
-            "ts": datetime.now(timezone.utc).isoformat(),
+            "ts": _now_iso(),
             "kind": kind,
             **payload,
         }
