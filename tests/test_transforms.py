@@ -1,0 +1,373 @@
+"""Tests for nw.transforms — the Transform abstraction + render-strategy adapter.
+
+The Transform contract is verified against the 5 existing render strategies:
+each is wrapped as a ``shot_to_render_result.fal.*`` Transform, and its
+``plan`` phase is exercised offline (``upload=False``, no fal contact) — the
+same "planning only" approach ``test_workflow.py`` uses for end-to-end checks.
+A full ``execute`` round-trip is covered for the one strategy that needs no
+network: ``still`` with an anchor produces a zero-call Plan.
+"""
+
+from __future__ import annotations
+
+import struct
+import uuid
+from shutil import which
+
+import pytest
+
+from nw import (
+    BaseTransform,
+    Project,
+    SectionSpec,
+    ShotSpec,
+    Transform,
+    TransformInputs,
+    annotations_at_tier,
+    get_transform,
+    list_transforms,
+    plan_render_shot,
+    prepare_shot,
+    register_transform,
+    transforms,
+)
+from nw.bodies import RENDER_RESULT_BODY_SCHEMA_URI, SHOT_BODY_SCHEMA_URI
+from nw.transforms import TransformResult
+from nw.transforms._adapters.render_strategy import RenderStrategyParams
+from nw.transforms._provenance import derive_provenance
+
+
+_STRATEGY_NAMES = ("lipsync", "image_to_video", "text_to_video", "still", "composite_lipsync")
+_TRANSFORM_NAMES = tuple(f"shot_to_render_result.fal.{n}" for n in _STRATEGY_NAMES)
+
+
+# ---------------------------------------------------------------------------
+# Fixtures / helpers
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture(autouse=True)
+def _isolated(tmp_path, monkeypatch):
+    """Isolate the falaw cache so nothing bleeds across tests."""
+    monkeypatch.setenv("FALAW_DATA_DIR", str(tmp_path / "_falaw"))
+    monkeypatch.setenv("FALAW_CACHE_DIR", str(tmp_path / "_falaw" / "cache"))
+
+
+def _minimal_wav_bytes() -> bytes:
+    sample_rate, n_frames = 8000, 8000 * 10
+    data_size = n_frames
+    header = (
+        b"RIFF" + struct.pack("<I", 36 + data_size) + b"WAVEfmt "
+        + struct.pack("<IHHIIHH", 16, 1, 1, sample_rate, sample_rate, 1, 8)
+        + b"data" + struct.pack("<I", data_size)
+    )
+    return header + (b"\x80" * data_size)
+
+
+def _minimal_png_bytes(w: int = 16, h: int = 16) -> bytes:
+    """A valid w×h grey PNG, stdlib-only. Even dimensions keep ffmpeg's
+    yuv420p happy in the materialize round-trip."""
+    import zlib
+
+    def _chunk(typ: bytes, data: bytes) -> bytes:
+        return (
+            struct.pack(">I", len(data))
+            + typ + data
+            + struct.pack(">I", zlib.crc32(typ + data) & 0xFFFFFFFF)
+        )
+
+    ihdr = struct.pack(">IIBBBBB", w, h, 8, 2, 0, 0, 0)  # 8-bit RGB
+    raw = b"".join(b"\x00" + b"\x40\x40\x40" * w for _ in range(h))
+    return (
+        b"\x89PNG\r\n\x1a\n"
+        + _chunk(b"IHDR", ihdr)
+        + _chunk(b"IDAT", zlib.compress(raw))
+        + _chunk(b"IEND", b"")
+    )
+
+
+def _seed_project(tmp_path, *, strategy: str, with_environment: bool = True) -> Project:
+    """A one-shot project. ``still`` + environment anchor → a zero-call Plan."""
+    proj = Project.init(tmp_path / "p")
+    song = proj.root / "song" / "song.wav"
+    song.write_bytes(_minimal_wav_bytes())
+    from nw.schema import SongInfo
+
+    proj.update_spec(
+        song=SongInfo(audio_path="song/song.wav", duration_s=10.0, sample_rate=8000, bitrate=64000)
+    )
+    if with_environment:
+        proj.add_environment("bell_tower", description="Gothic bell tower")
+        (proj.environment_dir("bell_tower") / "establishing.png").write_bytes(
+            _minimal_png_bytes()
+        )
+    proj.upsert_section(SectionSpec(id="verse", start_s=0.0, end_s=10.0))
+    proj.upsert_shot(
+        ShotSpec(
+            id="s01", start_s=0.0, end_s=8.0, section_id="verse",
+            render_strategy=strategy,
+            environment="bell_tower" if with_environment else "",
+            description="bell tower at moonlight", framing="medium",
+        )
+    )
+    return proj
+
+
+def _shot_inputs(project: Project) -> TransformInputs:
+    shots = annotations_at_tier(project.root, "shot")
+    assert len(shots) == 1, f"expected one shot annotation, got {len(shots)}"
+    return TransformInputs(primary=(shots[0],))
+
+
+# ---------------------------------------------------------------------------
+# Registry
+# ---------------------------------------------------------------------------
+
+
+def test_render_strategy_transforms_registered():
+    names = list_transforms()
+    for expected in _TRANSFORM_NAMES:
+        assert expected in names
+
+
+def test_wrapped_transforms_satisfy_protocol_and_declare_kinds():
+    for name in _TRANSFORM_NAMES:
+        t = get_transform(name)
+        assert isinstance(t, Transform)
+        assert t.input_kinds == (SHOT_BODY_SCHEMA_URI,)
+        assert t.output_kind == RENDER_RESULT_BODY_SCHEMA_URI
+        assert t.name == name
+
+
+def test_get_transform_unknown_raises():
+    with pytest.raises(KeyError, match="No Transform 'nope'"):
+        get_transform("nope")
+
+
+def test_register_transform_direct_form():
+    class _Direct(BaseTransform):
+        name = "x_to_y.test.direct"
+
+    impl = _Direct()
+    try:
+        returned = register_transform("x_to_y.test.direct", impl)
+        assert returned is impl
+        assert get_transform("x_to_y.test.direct") is impl
+    finally:
+        transforms.pop("x_to_y.test.direct", None)
+
+
+def test_register_transform_decorator_form():
+    @register_transform("x_to_y.test.deco")
+    class _Deco(BaseTransform):
+        name = "x_to_y.test.deco"
+
+    try:
+        # The class is returned unchanged; an *instance* is registered.
+        assert _Deco.__name__ == "_Deco"
+        assert isinstance(get_transform("x_to_y.test.deco"), _Deco)
+    finally:
+        transforms.pop("x_to_y.test.deco", None)
+
+
+# ---------------------------------------------------------------------------
+# BaseTransform
+# ---------------------------------------------------------------------------
+
+
+def test_base_transform_plan_is_not_implemented():
+    class _T(BaseTransform):
+        name = "x_to_y.test.noplan"
+
+    with pytest.raises(NotImplementedError, match="must implement plan"):
+        _T().plan(None, TransformInputs(primary=()))
+
+
+def test_base_transform_complete_annotation_media_sets_artifact_id():
+    from lacing import Annotation, Artifact, MediaRef, Provenance, RationalTime, TimeInterval
+
+    iv = TimeInterval(RationalTime(0), RationalTime(24000))
+    skel = Annotation(
+        id=uuid.uuid4(), tier="panels",
+        reference=MediaRef(asset_id="a" * 64, interval=iv),
+        body={"panel_id": "p0"}, body_schema_uri="annot://schema/shot/v1",
+        provenance=Provenance(
+            was_generated_by="transform:t@1", was_attributed_to="agent:test",
+            was_derived_from=[], generated_at_time=RationalTime.now(), activity="derive",
+        ),
+    )
+    art = Artifact(
+        asset_id="b" * 64, kind="image", bytes_size=10,
+        provenance=skel.provenance,
+    )
+    completed = BaseTransform()._complete_annotation(skel, art)
+    assert completed.body["artifact_id"] == "b" * 64
+    assert completed.body["panel_id"] == "p0"  # original fields preserved
+
+
+def _skeleton_and_prov(body: dict):
+    """Helper: a skeleton Annotation + its Provenance for _complete_annotation tests."""
+    from lacing import Annotation, MediaRef, Provenance, RationalTime, TimeInterval
+
+    iv = TimeInterval(RationalTime(0), RationalTime(24000))
+    prov = Provenance(
+        was_generated_by="transform:t@1", was_attributed_to="agent:test",
+        was_derived_from=[], generated_at_time=RationalTime.now(), activity="derive",
+    )
+    skel = Annotation(
+        id=uuid.uuid4(), tier="t", reference=MediaRef(asset_id="a" * 64, interval=iv),
+        body=body, body_schema_uri="annot://schema/shot/v1", provenance=prov,
+    )
+    return skel, prov
+
+
+def test_base_transform_complete_annotation_json_merges_materialized_payload(tmp_path):
+    """json artifacts: read the materialized file, shallow-merge into the body."""
+    from lacing import Artifact
+
+    skel, prov = _skeleton_and_prov({"caption": "<placeholder>", "framing": "medium"})
+    json_file = tmp_path / "llm-out.json"
+    json_file.write_text('{"caption": "a bell tower at dusk", "camera": "slow push-in"}')
+    art = Artifact(
+        asset_id="b" * 64, kind="json", path=json_file, bytes_size=json_file.stat().st_size,
+        provenance=prov,
+    )
+    completed = BaseTransform()._complete_annotation(skel, art)
+    assert completed.body["caption"] == "a bell tower at dusk"  # LLM value overwrote placeholder
+    assert completed.body["camera"] == "slow push-in"  # new key added
+    assert completed.body["framing"] == "medium"  # untouched skeleton field preserved
+
+
+def test_base_transform_complete_annotation_json_without_path_raises(tmp_path):
+    from lacing import Artifact
+
+    skel, prov = _skeleton_and_prov({})
+    art = Artifact(asset_id="b" * 64, kind="json", bytes_size=2, provenance=prov)
+    with pytest.raises(ValueError, match="no `path`"):
+        BaseTransform()._complete_annotation(skel, art)
+
+
+def test_base_transform_complete_annotation_text_still_requires_override(tmp_path):
+    from lacing import Artifact
+
+    skel, prov = _skeleton_and_prov({})
+    txt = tmp_path / "out.txt"
+    txt.write_text("a bare string")
+    art = Artifact(asset_id="b" * 64, kind="text", path=txt, bytes_size=13, provenance=prov)
+    with pytest.raises(NotImplementedError, match="override _complete_annotation"):
+        BaseTransform()._complete_annotation(skel, art)
+
+
+# ---------------------------------------------------------------------------
+# derive_provenance
+# ---------------------------------------------------------------------------
+
+
+def test_derive_provenance_unions_input_ids_and_stamps_transform():
+    from lacing import Annotation, MediaRef, Provenance, RationalTime, TimeInterval
+
+    iv = TimeInterval(RationalTime(0), RationalTime(24000))
+
+    def _ann() -> Annotation:
+        return Annotation(
+            id=uuid.uuid4(), tier="t", reference=MediaRef(asset_id="a" * 64, interval=iv),
+            body={}, body_schema_uri="annot://schema/shot/v1",
+            provenance=Provenance(
+                was_generated_by="x", was_attributed_to="y", was_derived_from=[],
+                generated_at_time=RationalTime.now(), activity="create",
+            ),
+        )
+
+    primary, ctx_a, ctx_b = _ann(), _ann(), _ann()
+    inputs = TransformInputs(primary=(primary,), context={"character-ref": (ctx_a, ctx_b)})
+    prov = derive_provenance("beat_to_panel.llm.default", 3, inputs)
+
+    assert prov.was_generated_by == "transform:beat_to_panel.llm.default@3"
+    assert prov.was_attributed_to == "agent:beat_to_panel.llm.default"
+    assert set(prov.was_derived_from) == {primary.id, ctx_a.id, ctx_b.id}
+    assert prov.activity == "derive"
+
+
+def test_derive_provenance_respects_explicit_attribution():
+    inputs = TransformInputs(primary=())
+    prov = derive_provenance("t", "1", inputs, attributed_to="agent:claude-sonnet-4-6@abc")
+    assert prov.was_attributed_to == "agent:claude-sonnet-4-6@abc"
+    assert prov.was_derived_from == []
+
+
+# ---------------------------------------------------------------------------
+# Render-strategy adapter — plan phase (offline, no fal)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("strategy", ["still", "text_to_video", "image_to_video"])
+def test_adapter_plan_matches_strategy_and_builds_render_result_skeleton(tmp_path, strategy):
+    proj = _seed_project(tmp_path, strategy=strategy, with_environment=True)
+    transform = get_transform(f"shot_to_render_result.fal.{strategy}")
+    inputs = _shot_inputs(proj)
+
+    plan, skeleton = transform.plan(
+        proj, inputs, params=RenderStrategyParams(upload=False)
+    )
+
+    # The Plan is exactly what the legacy workflow would produce for this shot.
+    prep = prepare_shot(proj, "s01", upload=False)
+    expected_plan = plan_render_shot(prep)
+    assert [c.tool for c in plan.calls] == [c.tool for c in expected_plan.calls]
+
+    # Exactly one skeleton render-result annotation, derived from the shot.
+    assert len(skeleton) == 1
+    skel = skeleton[0]
+    assert skel.body_schema_uri == RENDER_RESULT_BODY_SCHEMA_URI
+    assert skel.tier == "render-result"
+    assert skel.body["shot_id"] == "s01"
+    assert skel.body["strategy"] == strategy
+    assert skel.body["artifact_id"] is None  # filled by execute
+    assert skel.provenance.was_generated_by == (
+        f"transform:shot_to_render_result.fal.{strategy}@nw.renderers"
+    )
+    assert inputs.primary[0].id in skel.provenance.was_derived_from
+
+
+def test_adapter_still_with_anchor_plans_zero_calls(tmp_path):
+    """`still` + an environment anchor needs no fal call at all."""
+    proj = _seed_project(tmp_path, strategy="still", with_environment=True)
+    transform = get_transform("shot_to_render_result.fal.still")
+    plan, skeleton = transform.plan(
+        proj, _shot_inputs(proj), params=RenderStrategyParams(upload=False)
+    )
+    assert len(plan.calls) == 0
+    assert plan.total_cost_usd == 0.0
+    assert skeleton[0].body["total_estimated_cost_usd"] == 0.0
+
+
+# ---------------------------------------------------------------------------
+# Render-strategy adapter — full plan→execute round-trip, network-free
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.skipif(which("ffmpeg") is None, reason="ffmpeg not on PATH")
+def test_adapter_still_full_round_trip_offline(tmp_path):
+    """`still` + anchor: zero fal calls, so plan→execute runs entirely locally."""
+    proj = _seed_project(tmp_path, strategy="still", with_environment=True)
+    transform = get_transform("shot_to_render_result.fal.still")
+    inputs = _shot_inputs(proj)
+
+    plan, skeleton = transform.plan(proj, inputs, params=RenderStrategyParams(upload=False))
+    assert len(plan.calls) == 0  # precondition: no network
+
+    result = transform.execute(proj, plan, skeleton)
+    assert isinstance(result, TransformResult)
+    assert result.cost_usd_actual == 0.0
+    assert len(result.annotations) == 1
+
+    completed = result.annotations[0]
+    assert completed.body["output_path"].endswith("output.mp4")
+    assert (proj.root / completed.body["output_path"]).exists()
+
+    # The completed annotation was written to the project graph under its tier.
+    persisted = annotations_at_tier(proj.root, "render-result")
+    assert len(persisted) == 1
+    assert persisted[0].body["shot_id"] == "s01"
+    # Provenance edge shot → render-result is intact for freshness traversal.
+    assert inputs.primary[0].id in persisted[0].provenance.was_derived_from
