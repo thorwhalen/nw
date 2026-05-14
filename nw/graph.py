@@ -329,7 +329,17 @@ class ProjectGraph:
     # -- arbitrary annotations (for things that don't fit a typed bucket) ----
 
     def add_annotation(self, ann: Annotation) -> None:
+        """Write one annotation to the project graph.
+
+        Registers ``ann.tier`` if it isn't a known tier yet — ``SqliteStore``
+        enforces a foreign key on ``tier``, so writing under a fresh tier
+        (e.g. a Transform output kind) would otherwise fail. ``add_tier`` is
+        idempotent, so this is a no-op for the built-in project tiers.
+        """
+        from lacing import Tier, TierStereotype
+
         with self._open() as store:
+            store.add_tier(Tier(name=ann.tier, stereotype=TierStereotype.NONE))
             store.add(ann)
 
 

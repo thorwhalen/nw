@@ -51,6 +51,16 @@ from .renderers import (
     register_strategy,
     strategies,
 )
+from .transforms import (
+    BaseTransform,
+    Transform,
+    TransformInputs,
+    TransformResult,
+    get_transform,
+    list_transforms,
+    register_transform,
+    transforms,
+)
 from .schema import (
     SCHEMA_VERSION,
     CharacterRef,
@@ -70,6 +80,7 @@ from .workflow import (
 
 __all__ = [
     "SCHEMA_VERSION",
+    "BaseTransform",
     "CharacterImage",
     "CharacterRef",
     "ComposeReport",
@@ -86,6 +97,9 @@ __all__ = [
     "ShotSpec",
     "SongInfo",
     "Strategy",
+    "Transform",
+    "TransformInputs",
+    "TransformResult",
     "annotations_at_tier",
     "apply_to_projects",
     "clone_project",
@@ -95,10 +109,12 @@ __all__ = [
     "execute_render",
     "execute_render_panel_images",
     "get_strategy",
+    "get_transform",
     "inspect",
     "is_migrated",
     "iter_all_annotations",
     "list_strategies",
+    "list_transforms",
     "migrate_to_graph",
     "open_storyboard",
     "plan_render_panel_images",
@@ -106,6 +122,7 @@ __all__ = [
     "prepare_shot",
     "project_asset_id",
     "register_strategy",
+    "register_transform",
     "save_storyboard",
     "shot_report",
     "stale_after",
@@ -113,4 +130,5 @@ __all__ = [
     "storyboard_from_shots",
     "strategies",
     "summarize_all",
+    "transforms",
 ]
