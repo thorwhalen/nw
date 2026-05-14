@@ -109,6 +109,23 @@ class Transform(Protocol):
     output_kind: str
     """The body-schema URI this Transform produces."""
 
+    is_batch: bool
+    """How :meth:`plan` consumes ``inputs.primary``.
+
+    ``False`` (one-to-one): :meth:`plan` operates on a *single* primary
+    annotation (``inputs.primary[0]``) — e.g. ``beat_to_panel``, one beat in,
+    one panel out. A caller wanting to apply it across many annotations calls
+    :meth:`plan` once per annotation and composes the Plans.
+
+    ``True`` (batch): :meth:`plan` consumes *all* of ``inputs.primary`` at
+    once — e.g. ``extract_characters`` (every beat → an LLM call) or
+    ``clips_to_animatic`` (every clip → one animatic). A caller passes the
+    whole set in a single :meth:`plan` call.
+
+    This is the property an orchestrator needs to fan a Transform across a
+    project's annotations correctly — it can't be inferred from
+    ``input_kinds``."""
+
     def plan(
         self,
         project,  # nw.Project — annotated loosely to avoid an import cycle
@@ -162,6 +179,11 @@ class BaseTransform:
     params_model: type = type(None)
     """Pydantic model class for this Transform's per-call params. Exposed as
     JSON Schema to the MCP server and the CLI. ``type(None)`` means no params."""
+    is_batch: bool = False
+    """Whether :meth:`plan` consumes all of ``inputs.primary`` at once (batch)
+    or a single primary annotation (one-to-one — the default). See the
+    :class:`Transform` Protocol for the full contract. Batch Transforms
+    (``extract_*``, ``clips_to_animatic``) set this to ``True``."""
 
     def plan(
         self,

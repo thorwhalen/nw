@@ -139,6 +139,16 @@ def test_wrapped_transforms_satisfy_protocol_and_declare_kinds():
         assert t.name == name
 
 
+def test_render_strategy_transforms_are_one_to_one():
+    # a render strategy turns one shot into one clip — not a batch Transform
+    for name in _TRANSFORM_NAMES:
+        assert get_transform(name).is_batch is False
+
+
+def test_base_transform_defaults_to_one_to_one():
+    assert BaseTransform.is_batch is False
+
+
 def test_get_transform_unknown_raises():
     with pytest.raises(KeyError, match="No Transform 'nope'"):
         get_transform("nope")
