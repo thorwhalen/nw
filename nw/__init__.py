@@ -35,6 +35,11 @@ from .graph import (
     stale_after,
 )
 from .migrate import migrate_to_graph, is_migrated
+from .script_segmentation import (
+    PanelProposal,
+    build_prompt,
+    segment_script_into_panels,
+)
 from .storyboard import (
     execute_render_panel_images,
     open_storyboard,
