@@ -23,6 +23,16 @@ class EnvironmentRefBodyV1(BaseModel):
 
     name: str = Field(..., description="Folder name under environments/.")
     description: str = Field("", description="Short description.")
+    reference_image_urls: list[str] = Field(
+        default_factory=list,
+        description=(
+            "URLs of reference images for this environment — the lookbook "
+            "the FE curates and a future ``panel_to_image.composite.*`` "
+            "transform passes to the image-gen model as visual anchors "
+            "for style consistency. Backwards-compatible (defaults to "
+            "empty); v0.4-era dumps without this field load cleanly."
+        ),
+    )
 
 
 register_body_schema(ENVIRONMENT_REF_BODY_SCHEMA_URI, EnvironmentRefBodyV1)
