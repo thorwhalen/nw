@@ -32,6 +32,7 @@ from .graph import (
     derived_from,
     descendants_of,
     iter_all_annotations,
+    open_project_stores,
     stale_after,
 )
 from .migrate import migrate_to_graph, is_migrated
@@ -121,6 +122,7 @@ __all__ = [
     "list_strategies",
     "list_transforms",
     "migrate_to_graph",
+    "open_project_stores",
     "open_storyboard",
     "plan_render_panel_images",
     "plan_render_shot",

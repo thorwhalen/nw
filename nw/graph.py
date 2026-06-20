@@ -33,7 +33,6 @@ from lacing import (
     IntervalAnnotationStore,
     MediaRef,
     Provenance,
-    SqliteStore,
     TimeInterval,
 )
 from lacing.artifact import _now_rt
@@ -49,6 +48,12 @@ from .bodies import (
     EnvironmentRefBodyV1,
     SectionBodyV1,
     ShotBodyV1,
+)
+from .graph_backend import (
+    SCOPE_ALIGNMENT,
+    SCOPE_GRAPH,
+    SCOPE_STORYBOARD,
+    iter_scope_stores,
 )
 from .migrate import (
     _PROJECT_GRAPH_DB_NAME,
@@ -120,7 +125,7 @@ class ProjectGraph:
     # -- lifecycle -----------------------------------------------------------
 
     @contextmanager
-    def _open(self) -> Iterator[SqliteStore]:
+    def _open(self) -> Iterator[IntervalAnnotationStore]:
         store = open_project_graph(self.project_root)
         try:
             yield store
@@ -348,34 +353,56 @@ class ProjectGraph:
 # ---------------------------------------------------------------------------
 
 
-def all_project_stores(project_root: str | Path) -> list[Path]:
-    """Return all lacing-store paths under a project (graph + storyboard + alignment)."""
+def _scope_paths(project_root: str | Path) -> dict[str, Path]:
+    """The ``{scope_name: legacy_sqlite_path}`` map for a project's stores.
+
+    The legacy per-scope SQLite layout (graph + storyboard + alignment). The
+    backend seam (:mod:`nw.graph_backend`) uses the scope names to address the
+    same stores in Postgres mode.
+    """
     p = Path(project_root)
-    out: list[Path] = []
-    candidates = [
-        p / _PROJECT_GRAPH_DB_NAME,
-        p / "storyboard.annot.sqlite",
-        p / "lyrics" / "alignment.annot",
-    ]
-    for c in candidates:
-        if c.exists():
-            out.append(c)
-    return out
+    return {
+        SCOPE_GRAPH: p / _PROJECT_GRAPH_DB_NAME,
+        SCOPE_STORYBOARD: p / "storyboard.annot.sqlite",
+        SCOPE_ALIGNMENT: p / "lyrics" / "alignment.annot",
+    }
+
+
+def all_project_stores(project_root: str | Path) -> list[Path]:
+    """Return the **existing** lacing-store file paths under a project.
+
+    SQLite-mode only — these are filesystem paths. Code that walks or mutates
+    project stores should route through :func:`open_project_stores` (which
+    honours the backend seam) rather than opening these paths directly, so it
+    keeps working when the backend is Postgres.
+    """
+    return [p for p in _scope_paths(project_root).values() if p.exists()]
+
+
+@contextmanager
+def open_project_stores(
+    project_root: str | Path,
+) -> Iterator[Iterator[IntervalAnnotationStore]]:
+    """Yield an iterator of open stores, one per scope, honouring the backend.
+
+    The backend-aware replacement for ``for p in all_project_stores(...):
+    SqliteStore(p)``. Under SQLite it visits each existing per-scope file;
+    under Postgres it visits each scope's tenant in the shared DB. Use it for
+    both reads (walk ``.all()``) and writes (``.remove`` / ``.add``).
+
+    Each store is closed before the next opens, so consume each store's
+    annotations before advancing.
+    """
+    asset_id = project_asset_id(Path(project_root))
+    with iter_scope_stores(_scope_paths(project_root), asset_id=asset_id) as stores:
+        yield stores
 
 
 def iter_all_annotations(project_root: str | Path) -> Iterator[Annotation]:
-    """Walk every annotation in every store under a project."""
-    for db in all_project_stores(project_root):
-        store = SqliteStore(str(db))
-        try:
+    """Walk every annotation in every store under a project (any backend)."""
+    with open_project_stores(project_root) as stores:
+        for store in stores:
             yield from store.all()
-        finally:
-            close = getattr(store, "close", None)
-            if callable(close):
-                try:
-                    close()
-                except Exception:
-                    pass
 
 
 def descendants_of(

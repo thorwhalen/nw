@@ -2,9 +2,11 @@
 
 Pre-graph nw projects (and all the_bells_v* fixtures from the muvid era)
 keep sections, shots, characters, and environments in ``project.json`` as
-arrays. From Phase 3 forward, those live in a per-project lacing
-``SqliteStore`` so reelee can walk the graph for freshness analysis,
-provenance queries, and view rendering.
+arrays. From Phase 3 forward, those live in a per-project lacing annotation
+store so reelee can walk the graph for freshness analysis, provenance
+queries, and view rendering. The backend is chosen by :mod:`nw.graph_backend`
+— a per-project ``SqliteStore`` file by default, or a shared Postgres DB when
+``NW_GRAPH_BACKEND=postgres`` (Phase 4, reelee#177).
 
 This module's job is to bridge the two formats *without losing data and
 without requiring the user to do anything*. :func:`migrate_to_graph`:
@@ -32,12 +34,12 @@ from lacing import (
     Annotation,
     MediaRef,
     Provenance,
-    SqliteStore,
     Tier,
     TierStereotype,
     TimeInterval,
 )
 from lacing.artifact import _now_rt
+from lacing.store import IntervalAnnotationStore
 
 from .bodies import (
     CHARACTER_REF_BODY_SCHEMA_URI,
@@ -46,6 +48,7 @@ from .bodies import (
     SECTION_BODY_SCHEMA_URI,
     SHOT_BODY_SCHEMA_URI,
 )
+from .graph_backend import SCOPE_GRAPH, open_graph_store
 
 
 # ---------------------------------------------------------------------------
@@ -87,16 +90,23 @@ def is_migrated(project_root: Path) -> bool:
     return sentinel.exists()
 
 
-def open_project_graph(project_root: Path) -> SqliteStore:
-    """Open (and create on first call) the project's graph store, with tiers."""
+def open_project_graph(project_root: Path) -> IntervalAnnotationStore:
+    """Open (and create on first call) the project's graph store, with tiers.
+
+    The backend (SQLite file by default, or a shared Postgres DB when
+    ``NW_GRAPH_BACKEND=postgres``) is resolved by :mod:`nw.graph_backend` — the
+    single config-driven seam. Callers get an ``IntervalAnnotationStore`` and
+    never learn which backend answered.
+    """
     db = project_graph_db_path(project_root)
-    db.parent.mkdir(parents=True, exist_ok=True)
-    store = SqliteStore(str(db))
+    store = open_graph_store(
+        db, asset_id=project_asset_id(project_root), scope=SCOPE_GRAPH
+    )
     _ensure_tiers(store)
     return store
 
 
-def _ensure_tiers(store: SqliteStore) -> None:
+def _ensure_tiers(store: IntervalAnnotationStore) -> None:
     for name in _PROJECT_TIERS:
         store.add_tier(Tier(name=name, stereotype=TierStereotype.NONE))
 

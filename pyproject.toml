@@ -35,10 +35,16 @@ dev = [
     "pytest>=7.0",
     "pytest-cov>=4.0",
     "ruff>=0.1.0",
+    "psycopg[binary]>=3.1",
+    "psycopg_pool>=3.2",
+    "pytest-postgresql>=6.0",
 ]
 docs = [
     "sphinx>=6.0",
     "sphinx-rtd-theme>=1.0",
+]
+postgres = [
+    "lacing[postgres]",
 ]
 
 [tool.ruff]

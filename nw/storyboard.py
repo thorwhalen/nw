@@ -45,12 +45,12 @@ from falaw import Plan, plan_generate_image
 from lacing import (
     Artifact,
     MemoryStore,
-    SqliteStore,
     Tier,
     TierStereotype,
     TimeInterval,
 )
 
+from .graph_backend import SCOPE_STORYBOARD, open_graph_store, selected_backend
 from .project import Project
 
 
@@ -89,9 +89,13 @@ def open_storyboard(project: Project) -> Storyboard:
     """Load the project's storyboard. Returns an empty one if not present."""
     db = storyboard_db_path(project)
     asset_id = project_asset_id(project)
-    if not db.exists():
+    # In SQLite mode an absent file means "no storyboard yet". In Postgres mode
+    # the file never exists; presence is a DB question, so we always open and
+    # let load_storyboard return an empty Storyboard when the tenant has no
+    # panels.
+    if selected_backend() == "sqlite" and not db.exists():
         return Storyboard(asset_id=asset_id)
-    store = SqliteStore(str(db))
+    store = open_graph_store(db, asset_id=asset_id, scope=SCOPE_STORYBOARD)
     try:
         return load_storyboard(store, asset_id=asset_id)
     finally:
@@ -113,9 +117,10 @@ def save_storyboard(
     than accumulating duplicates.
     """
     db = storyboard_db_path(project)
-    store = SqliteStore(str(db))
+    asset_id = project_asset_id(project)
+    store = open_graph_store(db, asset_id=asset_id, scope=SCOPE_STORYBOARD)
     try:
-        # SqliteStore enforces a foreign key on tier; register it first so the
+        # The store enforces a foreign key on tier; register it first so the
         # save is not rejected. Idempotent — re-registering is a no-op in lacing.
         store.add_tier(
             Tier(name="storyboard", stereotype=TierStereotype.NONE)

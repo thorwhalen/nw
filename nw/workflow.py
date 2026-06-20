@@ -449,14 +449,21 @@ def _resolve_environment_anchor(project: Project, shot: ShotSpec) -> Optional[Pa
 def _lyric_lines_for_shot(project: Project, shot: ShotSpec) -> list[dict]:
     """Read the lacing alignment store and return lyric lines that fall in the shot."""
     align_path = project.root / "lyrics" / "alignment.annot"
-    if not align_path.exists():
-        return []
     try:
-        from lacing import SqliteStore
         from lacing.tracks.subtitle import SubtitleTrack
+
+        from .graph_backend import SCOPE_ALIGNMENT, open_graph_store, selected_backend
+        from .migrate import project_asset_id
     except Exception:
         return []
-    store = SqliteStore(str(align_path))
+    # In SQLite mode an absent file means "no alignment". In Postgres mode the
+    # file never exists; presence is a DB question, so always open and let the
+    # empty-store path return no lines.
+    if selected_backend() == "sqlite" and not align_path.exists():
+        return []
+    store = open_graph_store(
+        align_path, asset_id=project_asset_id(project.root), scope=SCOPE_ALIGNMENT
+    )
     try:
         track = SubtitleTrack(store, asset_id=None)
         return [
