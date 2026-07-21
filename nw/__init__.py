@@ -4,7 +4,7 @@ Application-orchestration framework for audiovisual projects. A project is
 a folder; an "app" (music video, explainer, podcast clip, slideshow) is a
 small specialization on top.
 
-Public surface (Phase 1b.1):
+Public surface:
 
 - :class:`Project` — folder facade: read/write spec, character anchors,
   shot upserts, decision log, typed summary.
@@ -13,9 +13,13 @@ Public surface (Phase 1b.1):
 - :func:`apply_to_projects` — replaces shell for-loops across roots.
 - Schema types: :class:`ProjectSpec`, :class:`SectionSpec`, :class:`ShotSpec`,
   :class:`CharacterRef`, :class:`EnvironmentRef`, :class:`SongInfo`.
+- ``nw.workflow`` — the ``prepare`` → ``plan`` → ``execute`` render split
+  (Plan/Execute over rendering; records render-result provenance).
+- ``nw.renderers`` — render strategies.
 
-Phase 1b.2 will add ``nw.workflow`` (Plan/Execute over rendering).
-Phase 1b.3 will move muvid's renderers into ``nw.renderers``.
+On rendering provenance and partial re-render (why choices, not just content,
+are recorded as linked artifacts), see
+``misc/docs/Rendering Provenance and Partial Re-render.md``.
 """
 
 from . import bodies  # noqa: F401  — registers lacing body schemas at import
