@@ -1,0 +1,875 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>nw.project &mdash; nw 0.0.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=282f96c0"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            nw
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw.html">nw</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies.html">nw.bodies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/character_ref.html">nw.bodies.character_ref</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/decision.html">nw.bodies.decision</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/environment_ref.html">nw.bodies.environment_ref</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/render_result.html">nw.bodies.render_result</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/section.html">nw.bodies.section</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/shot.html">nw.bodies.shot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/experiment.html">nw.experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/graph.html">nw.graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/graph_backend.html">nw.graph_backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/inspect.html">nw.inspect</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/migrate.html">nw.migrate</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/project.html">nw.project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers.html">nw.renderers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/_common.html">nw.renderers._common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/composite_lipsync.html">nw.renderers.composite_lipsync</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/image_to_video.html">nw.renderers.image_to_video</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/lipsync.html">nw.renderers.lipsync</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/still.html">nw.renderers.still</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/text_to_video.html">nw.renderers.text_to_video</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/schema.html">nw.schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/script_segmentation.html">nw.script_segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/storyboard.html">nw.storyboard</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/transforms.html">nw.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/transforms/_adapters.html">nw.transforms._adapters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/transforms/_adapters/render_strategy.html">nw.transforms._adapters.render_strategy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/transforms/_provenance.html">nw.transforms._provenance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/workflow.html">nw.workflow</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">nw</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">nw.project</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for nw.project</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Project facade: a folder on disk → typed reads, typed writes, typed summary.</span>
+
+<span class="sd">A nw project lives at a folder. ``project.json`` is the SSOT; every other</span>
+<span class="sd">file is a derived artifact (lyrics, alignment store, character cards, shot</span>
+<span class="sd">output videos, etc.).</span>
+
+<span class="sd">The facade is deliberately small. It exposes:</span>
+
+<span class="sd">- read/write/update of the :class:`ProjectSpec`,</span>
+<span class="sd">- folder helpers (:meth:`character_dir`, :meth:`environment_dir`,</span>
+<span class="sd">  :meth:`shot_dir`),</span>
+<span class="sd">- the setter operations the muvid_project agent had to express via</span>
+<span class="sd">  ``python -c`` glue (``set_title``, ``set_global_style``,</span>
+<span class="sd">  ``set_character_anchor``, ``list_character_images``),</span>
+<span class="sd">- a typed :meth:`read_summary` that returns the facts ``muvid status``</span>
+<span class="sd">  printed,</span>
+<span class="sd">- a :meth:`log_decision` append-only line writer.</span>
+
+<span class="sd">It does NOT do rendering — that&#39;s :mod:`nw.workflow` (Phase 1b.2).</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Optional</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_now_iso</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_iv</span><span class="p">(</span><span class="n">start_s</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">end_s</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TimeInterval</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build a TimeInterval from seconds, robust to floats that don&#39;t quantize.</span>
+
+<span class="sd">    Floats like 8.021333 may not be exactly representable at the default 24000</span>
+<span class="sd">    rate; routing through a string forces the lossless path via Fraction. If</span>
+<span class="sd">    that still rounds (sub-microsecond noise), we round to microseconds first.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">TimeInterval</span><span class="p">(</span>
+        <span class="n">start</span><span class="o">=</span><span class="n">_seconds_to_rt</span><span class="p">(</span><span class="n">start_s</span><span class="p">),</span>
+        <span class="n">end</span><span class="o">=</span><span class="n">_seconds_to_rt</span><span class="p">(</span><span class="n">end_s</span><span class="p">),</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_seconds_to_rt</span><span class="p">(</span><span class="n">seconds</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">fractions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Fraction</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">lacing</span><span class="w"> </span><span class="kn">import</span> <span class="n">RationalTime</span><span class="p">,</span> <span class="n">DEFAULT_RATE</span>
+    <span class="c1"># Round to nearest sample at DEFAULT_RATE.</span>
+    <span class="n">samples</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">seconds</span><span class="p">)</span> <span class="o">*</span> <span class="n">DEFAULT_RATE</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">RationalTime</span><span class="o">.</span><span class="n">from_fraction</span><span class="p">(</span><span class="n">Fraction</span><span class="p">(</span><span class="n">samples</span><span class="p">,</span> <span class="n">DEFAULT_RATE</span><span class="p">),</span> <span class="n">rate</span><span class="o">=</span><span class="n">DEFAULT_RATE</span><span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">lacing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeInterval</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.bodies</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">CharacterRefBodyV1</span><span class="p">,</span>
+    <span class="n">DecisionBodyV1</span><span class="p">,</span>
+    <span class="n">EnvironmentRefBodyV1</span><span class="p">,</span>
+    <span class="n">SectionBodyV1</span><span class="p">,</span>
+    <span class="n">ShotBodyV1</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.graph</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProjectGraph</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.migrate</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_migrated</span><span class="p">,</span> <span class="n">migrate_to_graph</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.schema</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">SCHEMA_VERSION</span><span class="p">,</span>
+    <span class="n">CharacterRef</span><span class="p">,</span>
+    <span class="n">EnvironmentRef</span><span class="p">,</span>
+    <span class="n">ProjectSpec</span><span class="p">,</span>
+    <span class="n">ProjectSummary</span><span class="p">,</span>
+    <span class="n">SectionSpec</span><span class="p">,</span>
+    <span class="n">ShotSpec</span><span class="p">,</span>
+    <span class="n">SongInfo</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># CharacterImage — typed view over the files under characters/&lt;name&gt;/</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="CharacterImage">
+<a class="viewcode-back" href="../../module_docs/nw/project.html#nw.CharacterImage">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CharacterImage</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;One image associated with a character.</span>
+
+<span class="sd">    Returned by :meth:`Project.list_character_images`. Distinguishes:</span>
+
+<span class="sd">    - ``from_ref``: file lives under ``characters/&lt;name&gt;/refs/`` — a candidate</span>
+<span class="sd">      from generation or upload.</span>
+<span class="sd">    - ``from_selected``: under ``characters/&lt;name&gt;/selected/`` — curator-picked.</span>
+<span class="sd">    - ``is_anchor``: this is the file the character card currently points at as</span>
+<span class="sd">      the &quot;use this image&quot; anchor (lipsync seed, etc.).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;path&quot;</span><span class="p">,</span> <span class="s2">&quot;image_id&quot;</span><span class="p">,</span> <span class="s2">&quot;from_ref&quot;</span><span class="p">,</span> <span class="s2">&quot;from_selected&quot;</span><span class="p">,</span> <span class="s2">&quot;is_anchor&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">from_ref</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">from_selected</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">is_anchor</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image_id</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">stem</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">from_ref</span> <span class="o">=</span> <span class="n">from_ref</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">from_selected</span> <span class="o">=</span> <span class="n">from_selected</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_anchor</span> <span class="o">=</span> <span class="n">is_anchor</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">flags</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">from_ref</span><span class="p">:</span>
+            <span class="n">flags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;ref&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">from_selected</span><span class="p">:</span>
+            <span class="n">flags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;selected&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_anchor</span><span class="p">:</span>
+            <span class="n">flags</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;anchor&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;CharacterImage </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> [</span><span class="si">{</span><span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">flags</span><span class="p">)</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s1">&#39;?&#39;</span><span class="si">}</span><span class="s2">]&gt;&quot;</span></div>
+
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Project</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+
+<span class="n">_PROJECT_FILE_NAME</span> <span class="o">=</span> <span class="s2">&quot;project.json&quot;</span>
+
+
+<div class="viewcode-block" id="Project">
+<a class="viewcode-back" href="../../module_docs/nw/project.html#nw.Project">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Project</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A folder-backed nw project.</span>
+
+<span class="sd">    Construct from a path (must exist + must contain ``project.json``); use</span>
+<span class="sd">    :meth:`Project.init` to bootstrap a new project on disk.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">auto_migrate</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">root</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Project root does not exist: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_file</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;No </span><span class="si">{</span><span class="n">_PROJECT_FILE_NAME</span><span class="si">}</span><span class="s2"> at </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="si">}</span><span class="s2"> — &quot;</span>
+                <span class="s2">&quot;use Project.init() to bootstrap a new project.&quot;</span>
+            <span class="p">)</span>
+        <span class="c1"># Auto-migrate pre-graph projects to the graph-backed format.</span>
+        <span class="c1"># Idempotent — runs once per project, no-op afterward.</span>
+        <span class="k">if</span> <span class="n">auto_migrate</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_migrated</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">):</span>
+            <span class="n">migrate_to_graph</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="o">=</span> <span class="n">ProjectGraph</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
+
+    <span class="c1"># -- bootstrap ---------------------------------------------------------</span>
+
+<div class="viewcode-block" id="Project.init">
+<a class="viewcode-back" href="../../module_docs/nw/project.html#nw.Project.init">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">init</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">song</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Project&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a new project on disk and return the :class:`Project` facade.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            root: Folder to create. Must not exist (or pass ``force=True`` to</span>
+<span class="sd">                overwrite an empty folder).</span>
+<span class="sd">            title: Optional human-readable title; defaults to the folder name.</span>
+<span class="sd">            song: Optional path to a master audio file. When given, the file</span>
+<span class="sd">                is *copied* into ``&lt;root&gt;/song/`` and registered in the spec.</span>
+<span class="sd">            force: When True, accept an existing folder if it&#39;s empty (no</span>
+<span class="sd">                ``project.json``); refuse if a project already exists there.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">root</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">root</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">root</span> <span class="o">/</span> <span class="n">_PROJECT_FILE_NAME</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">force</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;A project already exists at </span><span class="si">{</span><span class="n">root</span><span class="si">}</span><span class="s2">. Pass force=True to overwrite.&quot;</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">root</span><span class="o">.</span><span class="n">iterdir</span><span class="p">())</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">force</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">root</span><span class="si">}</span><span class="s2"> is not empty. Pass force=True to use it anyway.&quot;</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">root</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># Conventional subfolders. Empty is fine — they&#39;re created lazily</span>
+        <span class="c1"># by the setters too, but creating them up front makes the layout</span>
+        <span class="c1"># discoverable.</span>
+        <span class="k">for</span> <span class="n">sub</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;characters&quot;</span><span class="p">,</span> <span class="s2">&quot;environments&quot;</span><span class="p">,</span> <span class="s2">&quot;shots&quot;</span><span class="p">,</span> <span class="s2">&quot;output&quot;</span><span class="p">,</span> <span class="s2">&quot;lyrics&quot;</span><span class="p">,</span> <span class="s2">&quot;script&quot;</span><span class="p">,</span> <span class="s2">&quot;song&quot;</span><span class="p">,</span> <span class="s2">&quot;.nw&quot;</span><span class="p">):</span>
+            <span class="p">(</span><span class="n">root</span> <span class="o">/</span> <span class="n">sub</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">spec</span> <span class="o">=</span> <span class="n">ProjectSpec</span><span class="p">(</span>
+            <span class="n">schema_version</span><span class="o">=</span><span class="n">SCHEMA_VERSION</span><span class="p">,</span>
+            <span class="n">title</span><span class="o">=</span><span class="n">title</span> <span class="ow">or</span> <span class="n">root</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">_write_spec</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">spec</span><span class="p">)</span>
+
+        <span class="c1"># New projects are graph-native from the start; mark migrated so the</span>
+        <span class="c1"># auto-migrator skips them. The graph store is created lazily on first</span>
+        <span class="c1"># write.</span>
+        <span class="n">sentinel</span> <span class="o">=</span> <span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;.nw&quot;</span> <span class="o">/</span> <span class="s2">&quot;migrated_to_graph&quot;</span>
+        <span class="n">sentinel</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">sentinel</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="n">sentinel</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span>
+                <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span>
+                    <span class="p">{</span><span class="s2">&quot;migrated_at&quot;</span><span class="p">:</span> <span class="n">_now_iso</span><span class="p">(),</span> <span class="s2">&quot;counts&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;native&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}},</span>
+                    <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="n">proj</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">song</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">proj</span><span class="o">.</span><span class="n">set_song</span><span class="p">(</span><span class="n">song</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">proj</span></div>
+
+
+    <span class="c1"># -- properties --------------------------------------------------------</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">project_file</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="n">_PROJECT_FILE_NAME</span>
+
+    <span class="c1"># -- spec read / write -------------------------------------------------</span>
+
+<div class="viewcode-block" id="Project.read_spec">
+<a class="viewcode-back" href="../../module_docs/nw/project.html#nw.Project.read_spec">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_spec</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ProjectSpec</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Read the project spec, synthesizing from the graph for graph-native fields.</span>
+
+<span class="sd">        Project-level metadata (title, song, global_style, notes,</span>
+<span class="sd">        schema_version) lives in ``project.json``. Sections, shots,</span>
+<span class="sd">        characters, and environments live in the lacing graph and are</span>
+<span class="sd">        synthesized into the returned :class:`ProjectSpec` for back-compat</span>
+<span class="sd">        with code that still reads via ``read_spec()``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">meta</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_file</span><span class="o">.</span><span class="n">read_text</span><span class="p">())</span>
+
+        <span class="c1"># Pull graph-backed entities.</span>
+        <span class="n">sections</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+            <span class="n">SectionSpec</span><span class="p">(</span>
+                <span class="nb">id</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">section_id</span><span class="p">,</span>
+                <span class="n">start_s</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">interval</span><span class="o">.</span><span class="n">start</span><span class="o">.</span><span class="n">to_seconds</span><span class="p">(),</span>
+                <span class="n">end_s</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">interval</span><span class="o">.</span><span class="n">end</span><span class="o">.</span><span class="n">to_seconds</span><span class="p">(),</span>
+                <span class="n">label</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">label</span><span class="p">,</span>
+                <span class="n">energy</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">energy</span><span class="p">,</span>
+                <span class="n">mood</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">mood</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">sections</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="n">shots</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+            <span class="n">ShotSpec</span><span class="p">(</span>
+                <span class="nb">id</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">shot_id</span><span class="p">,</span>
+                <span class="n">start_s</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">interval</span><span class="o">.</span><span class="n">start</span><span class="o">.</span><span class="n">to_seconds</span><span class="p">(),</span>
+                <span class="n">end_s</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">interval</span><span class="o">.</span><span class="n">end</span><span class="o">.</span><span class="n">to_seconds</span><span class="p">(),</span>
+                <span class="n">section_id</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">section_id</span><span class="p">,</span>
+                <span class="n">render_strategy</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">render_strategy</span><span class="p">,</span>
+                <span class="n">environment</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">environment</span><span class="p">,</span>
+                <span class="n">characters</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">characters</span><span class="p">),</span>
+                <span class="n">description</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
+                <span class="n">camera</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">camera</span><span class="p">,</span>
+                <span class="n">framing</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">framing</span><span class="p">,</span>
+                <span class="n">notes</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">notes</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">shots</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="n">characters</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+            <span class="n">CharacterRef</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">description</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">character_refs</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="n">environments</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+            <span class="n">EnvironmentRef</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">e</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="n">e</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">description</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">environment_refs</span><span class="p">()</span>
+        <span class="p">)</span>
+
+        <span class="n">song</span> <span class="o">=</span> <span class="n">meta</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;song&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ProjectSpec</span><span class="p">(</span>
+            <span class="n">schema_version</span><span class="o">=</span><span class="n">meta</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;schema_version&quot;</span><span class="p">,</span> <span class="n">SCHEMA_VERSION</span><span class="p">),</span>
+            <span class="n">title</span><span class="o">=</span><span class="n">meta</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+            <span class="n">song</span><span class="o">=</span><span class="n">SongInfo</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">song</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">song</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">characters</span><span class="o">=</span><span class="n">characters</span><span class="p">,</span>
+            <span class="n">environments</span><span class="o">=</span><span class="n">environments</span><span class="p">,</span>
+            <span class="n">sections</span><span class="o">=</span><span class="n">sections</span><span class="p">,</span>
+            <span class="n">shots</span><span class="o">=</span><span class="n">shots</span><span class="p">,</span>
+            <span class="n">global_style</span><span class="o">=</span><span class="n">meta</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;global_style&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+            <span class="n">notes</span><span class="o">=</span><span class="n">meta</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;notes&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Project.write_spec">
+<a class="viewcode-back" href="../../module_docs/nw/project.html#nw.Project.write_spec">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write_spec</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spec</span><span class="p">:</span> <span class="n">ProjectSpec</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Write the spec.</span>
+
+<span class="sd">        For back-compat with existing code that builds a ``ProjectSpec`` and</span>
+<span class="sd">        calls ``write_spec``, this routes graph-backed fields (sections,</span>
+<span class="sd">        shots, characters, environments) through the graph and persists the</span>
+<span class="sd">        rest as project.json metadata.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Project-level metadata (no graph entities).</span>
+        <span class="n">meta</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;schema_version&quot;</span><span class="p">:</span> <span class="n">spec</span><span class="o">.</span><span class="n">schema_version</span><span class="p">,</span>
+            <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="n">spec</span><span class="o">.</span><span class="n">title</span><span class="p">,</span>
+            <span class="s2">&quot;song&quot;</span><span class="p">:</span> <span class="n">spec</span><span class="o">.</span><span class="n">song</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span> <span class="k">if</span> <span class="n">spec</span><span class="o">.</span><span class="n">song</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">&quot;global_style&quot;</span><span class="p">:</span> <span class="n">spec</span><span class="o">.</span><span class="n">global_style</span><span class="p">,</span>
+            <span class="s2">&quot;notes&quot;</span><span class="p">:</span> <span class="n">spec</span><span class="o">.</span><span class="n">notes</span><span class="p">,</span>
+            <span class="s2">&quot;_graph_db&quot;</span><span class="p">:</span> <span class="s2">&quot;project.annot.sqlite&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project_file</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">meta</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+
+        <span class="c1"># Graph entities — sync each tier to the spec by removing entries</span>
+        <span class="c1"># not in spec and upserting the ones that are.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sync_character_refs</span><span class="p">(</span><span class="n">spec</span><span class="o">.</span><span class="n">characters</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sync_environment_refs</span><span class="p">(</span><span class="n">spec</span><span class="o">.</span><span class="n">environments</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sync_sections</span><span class="p">(</span><span class="n">spec</span><span class="o">.</span><span class="n">sections</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sync_shots</span><span class="p">(</span><span class="n">spec</span><span class="o">.</span><span class="n">shots</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_sync_character_refs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">refs</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">CharacterRef</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="p">{</span><span class="n">r</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">refs</span><span class="p">}</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">_open</span><span class="p">()</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">.migrate</span><span class="w"> </span><span class="kn">import</span> <span class="n">_TIER_CHARACTER_REF</span>
+            <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">store</span><span class="o">.</span><span class="n">all</span><span class="p">()):</span>
+                <span class="k">if</span> <span class="n">ann</span><span class="o">.</span><span class="n">tier</span> <span class="o">==</span> <span class="n">_TIER_CHARACTER_REF</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">body</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="n">ann</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
+                        <span class="n">store</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">refs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">upsert_character_ref</span><span class="p">(</span>
+                <span class="n">CharacterRefBodyV1</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">ch</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="n">ch</span><span class="o">.</span><span class="n">description</span><span class="p">)</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_sync_environment_refs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">refs</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">EnvironmentRef</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="p">{</span><span class="n">r</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">refs</span><span class="p">}</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">_open</span><span class="p">()</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">.migrate</span><span class="w"> </span><span class="kn">import</span> <span class="n">_TIER_ENVIRONMENT_REF</span>
+            <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">store</span><span class="o">.</span><span class="n">all</span><span class="p">()):</span>
+                <span class="k">if</span> <span class="n">ann</span><span class="o">.</span><span class="n">tier</span> <span class="o">==</span> <span class="n">_TIER_ENVIRONMENT_REF</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">body</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="n">ann</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
+                        <span class="n">store</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">env</span> <span class="ow">in</span> <span class="n">refs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">upsert_environment_ref</span><span class="p">(</span>
+                <span class="n">EnvironmentRefBodyV1</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">env</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="n">env</span><span class="o">.</span><span class="n">description</span><span class="p">)</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_sync_sections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sections</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">SectionSpec</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ids</span> <span class="o">=</span> <span class="p">{</span><span class="n">s</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">sections</span><span class="p">}</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">_open</span><span class="p">()</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">.migrate</span><span class="w"> </span><span class="kn">import</span> <span class="n">_TIER_SECTION</span>
+            <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">store</span><span class="o">.</span><span class="n">all</span><span class="p">()):</span>
+                <span class="k">if</span> <span class="n">ann</span><span class="o">.</span><span class="n">tier</span> <span class="o">==</span> <span class="n">_TIER_SECTION</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">body</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="n">ann</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;section_id&quot;</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">:</span>
+                        <span class="n">store</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">sec</span> <span class="ow">in</span> <span class="n">sections</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">upsert_section</span><span class="p">(</span>
+                <span class="n">SectionBodyV1</span><span class="p">(</span>
+                    <span class="n">section_id</span><span class="o">=</span><span class="n">sec</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                    <span class="n">label</span><span class="o">=</span><span class="n">sec</span><span class="o">.</span><span class="n">label</span><span class="p">,</span>
+                    <span class="n">energy</span><span class="o">=</span><span class="n">sec</span><span class="o">.</span><span class="n">energy</span><span class="p">,</span>
+                    <span class="n">mood</span><span class="o">=</span><span class="n">sec</span><span class="o">.</span><span class="n">mood</span><span class="p">,</span>
+                <span class="p">),</span>
+                <span class="n">interval</span><span class="o">=</span><span class="n">_iv</span><span class="p">(</span><span class="n">sec</span><span class="o">.</span><span class="n">start_s</span><span class="p">,</span> <span class="n">sec</span><span class="o">.</span><span class="n">end_s</span><span class="p">),</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_sync_shots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shots</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">ShotSpec</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ids</span> <span class="o">=</span> <span class="p">{</span><span class="n">s</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">shots</span><span class="p">}</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">_open</span><span class="p">()</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">.migrate</span><span class="w"> </span><span class="kn">import</span> <span class="n">_TIER_SHOT</span>
+            <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">store</span><span class="o">.</span><span class="n">all</span><span class="p">()):</span>
+                <span class="k">if</span> <span class="n">ann</span><span class="o">.</span><span class="n">tier</span> <span class="o">==</span> <span class="n">_TIER_SHOT</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">body</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="n">ann</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;shot_id&quot;</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">:</span>
+                        <span class="n">store</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">shot</span> <span class="ow">in</span> <span class="n">shots</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">upsert_shot</span><span class="p">(</span>
+                <span class="n">ShotBodyV1</span><span class="p">(</span>
+                    <span class="n">shot_id</span><span class="o">=</span><span class="n">shot</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                    <span class="n">section_id</span><span class="o">=</span><span class="n">shot</span><span class="o">.</span><span class="n">section_id</span><span class="p">,</span>
+                    <span class="n">render_strategy</span><span class="o">=</span><span class="n">shot</span><span class="o">.</span><span class="n">render_strategy</span><span class="p">,</span>
+                    <span class="n">environment</span><span class="o">=</span><span class="n">shot</span><span class="o">.</span><span class="n">environment</span><span class="p">,</span>
+                    <span class="n">characters</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">shot</span><span class="o">.</span><span class="n">characters</span><span class="p">),</span>
+                    <span class="n">description</span><span class="o">=</span><span class="n">shot</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
+                    <span class="n">camera</span><span class="o">=</span><span class="n">shot</span><span class="o">.</span><span class="n">camera</span><span class="p">,</span>
+                    <span class="n">framing</span><span class="o">=</span><span class="n">shot</span><span class="o">.</span><span class="n">framing</span><span class="p">,</span>
+                    <span class="n">notes</span><span class="o">=</span><span class="n">shot</span><span class="o">.</span><span class="n">notes</span><span class="p">,</span>
+                <span class="p">),</span>
+                <span class="n">interval</span><span class="o">=</span><span class="n">_iv</span><span class="p">(</span><span class="n">shot</span><span class="o">.</span><span class="n">start_s</span><span class="p">,</span> <span class="n">shot</span><span class="o">.</span><span class="n">end_s</span><span class="p">),</span>
+            <span class="p">)</span>
+
+<div class="viewcode-block" id="Project.update_spec">
+<a class="viewcode-back" href="../../module_docs/nw/project.html#nw.Project.update_spec">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update_spec</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">changes</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ProjectSpec</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply field-level changes to the spec; return the new spec.&quot;&quot;&quot;</span>
+        <span class="n">spec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_spec</span><span class="p">()</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">model_copy</span><span class="p">(</span><span class="n">update</span><span class="o">=</span><span class="n">changes</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_spec</span><span class="p">(</span><span class="n">new</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new</span></div>
+
+
+    <span class="c1"># -- top-level setters (replacements for python -c glue) ---------------</span>
+
+<div class="viewcode-block" id="Project.set_title">
+<a class="viewcode-back" href="../../module_docs/nw/project.html#nw.Project.set_title">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_title</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ProjectSpec</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the project title.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_spec</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Project.set_global_style">
+<a class="viewcode-back" href="../../module_docs/nw/project.html#nw.Project.set_global_style">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_global_style</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">style</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ProjectSpec</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the project-level visual style hint.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_spec</span><span class="p">(</span><span class="n">global_style</span><span class="o">=</span><span class="n">style</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Project.set_song">
+<a class="viewcode-back" href="../../module_docs/nw/project.html#nw.Project.set_song">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_song</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">copy</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SongInfo</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Register an audio file as the project&#39;s master song.</span>
+
+<span class="sd">        Probes duration / sample-rate / bitrate via ``mixing.audio.Audio`` if</span>
+<span class="sd">        available, else leaves them at 0 (the spec accepts the SSOT-only</span>
+<span class="sd">        path with placeholder metadata).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">src</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">source</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">src</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Song file not found: </span><span class="si">{</span><span class="n">src</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">song_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;song&quot;</span>
+        <span class="n">song_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">copy</span><span class="p">:</span>
+            <span class="n">dst</span> <span class="o">=</span> <span class="n">song_dir</span> <span class="o">/</span> <span class="n">src</span><span class="o">.</span><span class="n">name</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">dst</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">or</span> <span class="n">src</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span> <span class="o">!=</span> <span class="n">dst</span><span class="o">.</span><span class="n">resolve</span><span class="p">():</span>
+                <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dst</span> <span class="o">=</span> <span class="n">src</span>
+
+        <span class="n">rel</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">dst</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">)</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">dst</span><span class="o">.</span><span class="n">is_relative_to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
+            <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">dst</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="n">info</span> <span class="o">=</span> <span class="n">_probe_audio</span><span class="p">(</span><span class="n">dst</span><span class="p">)</span>
+        <span class="n">song</span> <span class="o">=</span> <span class="n">SongInfo</span><span class="p">(</span>
+            <span class="n">audio_path</span><span class="o">=</span><span class="n">rel</span><span class="p">,</span>
+            <span class="n">duration_s</span><span class="o">=</span><span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;duration_s&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+            <span class="n">sample_rate</span><span class="o">=</span><span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sample_rate&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="n">bitrate</span><span class="o">=</span><span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;bitrate&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="n">bpm</span><span class="o">=</span><span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;bpm&quot;</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_spec</span><span class="p">(</span><span class="n">song</span><span class="o">=</span><span class="n">song</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">song</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">song_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]:</span>
+        <span class="n">spec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_spec</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">spec</span><span class="o">.</span><span class="n">song</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">spec</span><span class="o">.</span><span class="n">song</span><span class="o">.</span><span class="n">audio_path</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">p</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">is_absolute</span><span class="p">()</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="n">p</span>
+
+    <span class="c1"># -- characters --------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">character_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;characters&quot;</span> <span class="o">/</span> <span class="n">name</span>
+
+<div class="viewcode-block" id="Project.add_character">
+<a class="viewcode-back" href="../../module_docs/nw/project.html#nw.Project.add_character">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_character</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CharacterRef</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a character (idempotent: re-adds update the description).&quot;&quot;&quot;</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">character_dir</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="p">(</span><span class="n">d</span> <span class="o">/</span> <span class="s2">&quot;refs&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="p">(</span><span class="n">d</span> <span class="o">/</span> <span class="s2">&quot;selected&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">ref</span> <span class="o">=</span> <span class="n">CharacterRef</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">)</span>
+        <span class="n">spec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_spec</span><span class="p">()</span>
+        <span class="n">chars</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">spec</span><span class="o">.</span><span class="n">characters</span> <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="n">name</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">ref</span><span class="p">,)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_spec</span><span class="p">(</span><span class="n">characters</span><span class="o">=</span><span class="n">chars</span><span class="p">)</span>
+        <span class="c1"># Initialize a card.json so set_character_anchor / list_character_images</span>
+        <span class="c1"># always have something to read.</span>
+        <span class="n">card_path</span> <span class="o">=</span> <span class="n">d</span> <span class="o">/</span> <span class="s2">&quot;card.json&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">card_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="n">card_path</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span>
+                <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+                        <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="n">description</span><span class="p">,</span>
+                        <span class="s2">&quot;reference_image_path&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;voice&quot;</span><span class="p">:</span> <span class="p">{},</span>
+                    <span class="p">},</span>
+                    <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">ref</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_character_card</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">character_dir</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;card.json&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;No card.json for character </span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2">; add the character first.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">read_text</span><span class="p">())</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">write_character_card</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">card</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">character_dir</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;card.json&quot;</span>
+        <span class="n">path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">path</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">card</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+
+<div class="viewcode-block" id="Project.list_character_images">
+<a class="viewcode-back" href="../../module_docs/nw/project.html#nw.Project.list_character_images">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">list_character_images</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">CharacterImage</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return all images associated with a character, with provenance flags.</span>
+
+<span class="sd">        Walks ``characters/&lt;name&gt;/refs/`` and ``characters/&lt;name&gt;/selected/``.</span>
+<span class="sd">        Marks the file the card&#39;s ``reference_image_path`` points at as</span>
+<span class="sd">        ``is_anchor=True``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">character_dir</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">d</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">return</span> <span class="p">[]</span>
+
+        <span class="n">anchor_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">card</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_character_card</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">ref</span> <span class="o">=</span> <span class="n">card</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;reference_image_path&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
+            <span class="k">if</span> <span class="n">ref</span><span class="p">:</span>
+                <span class="n">p</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">ref</span><span class="p">)</span>
+                <span class="n">anchor_path</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">is_absolute</span><span class="p">()</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="n">out</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">CharacterImage</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">sub</span><span class="p">,</span> <span class="n">flag</span> <span class="ow">in</span> <span class="p">((</span><span class="s2">&quot;refs&quot;</span><span class="p">,</span> <span class="s2">&quot;from_ref&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;selected&quot;</span><span class="p">,</span> <span class="s2">&quot;from_selected&quot;</span><span class="p">)):</span>
+            <span class="n">sub_dir</span> <span class="o">=</span> <span class="n">d</span> <span class="o">/</span> <span class="n">sub</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">sub_dir</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+                <span class="k">continue</span>
+            <span class="k">for</span> <span class="n">image_path</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">sub_dir</span><span class="o">.</span><span class="n">iterdir</span><span class="p">()):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">image_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+                    <span class="k">continue</span>
+                <span class="k">if</span> <span class="n">image_path</span><span class="o">.</span><span class="n">suffix</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;.png&quot;</span><span class="p">,</span> <span class="s2">&quot;.jpg&quot;</span><span class="p">,</span> <span class="s2">&quot;.jpeg&quot;</span><span class="p">,</span> <span class="s2">&quot;.webp&quot;</span><span class="p">,</span> <span class="s2">&quot;.gif&quot;</span><span class="p">}:</span>
+                    <span class="k">continue</span>
+                <span class="n">is_anchor</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">anchor_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                    <span class="ow">and</span> <span class="n">image_path</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span> <span class="o">==</span> <span class="n">anchor_path</span>
+                <span class="p">)</span>
+                <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">CharacterImage</span><span class="p">(</span>
+                        <span class="n">image_path</span><span class="p">,</span>
+                        <span class="n">from_ref</span><span class="o">=</span><span class="p">(</span><span class="n">flag</span> <span class="o">==</span> <span class="s2">&quot;from_ref&quot;</span><span class="p">),</span>
+                        <span class="n">from_selected</span><span class="o">=</span><span class="p">(</span><span class="n">flag</span> <span class="o">==</span> <span class="s2">&quot;from_selected&quot;</span><span class="p">),</span>
+                        <span class="n">is_anchor</span><span class="o">=</span><span class="n">is_anchor</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span></div>
+
+
+<div class="viewcode-block" id="Project.set_character_anchor">
+<a class="viewcode-back" href="../../module_docs/nw/project.html#nw.Project.set_character_anchor">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_character_anchor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">image_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Pick an existing image as the character&#39;s anchor (lipsync seed, etc.).</span>
+
+<span class="sd">        Returns the updated card. Raises if the image isn&#39;t under the</span>
+<span class="sd">        character&#39;s folder, since cross-character anchoring is almost always</span>
+<span class="sd">        a mistake.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">char_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">character_dir</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">image_path</span><span class="p">)</span>
+        <span class="n">abs_p</span> <span class="o">=</span> <span class="p">(</span><span class="n">p</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">is_absolute</span><span class="p">()</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="n">p</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">abs_p</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Image not found: </span><span class="si">{</span><span class="n">abs_p</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">abs_p</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">char_dir</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Image </span><span class="si">{</span><span class="n">abs_p</span><span class="si">}</span><span class="s2"> is not under </span><span class="si">{</span><span class="n">char_dir</span><span class="si">}</span><span class="s2">. Refusing to anchor &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;to an out-of-character file (likely a mistake).&quot;</span>
+            <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+
+        <span class="n">card</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_character_card</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="c1"># Store a project-relative path so the anchor moves with the project.</span>
+        <span class="n">rel</span> <span class="o">=</span> <span class="n">abs_p</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">)</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()</span>
+        <span class="n">card</span><span class="p">[</span><span class="s2">&quot;reference_image_path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_character_card</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">card</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_decision</span><span class="p">(</span>
+            <span class="s2">&quot;set_character_anchor&quot;</span><span class="p">,</span> <span class="n">character</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">anchor_path</span><span class="o">=</span><span class="n">rel</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">card</span></div>
+
+
+    <span class="c1"># -- environments ------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">environment_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;environments&quot;</span> <span class="o">/</span> <span class="n">name</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_environment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EnvironmentRef</span><span class="p">:</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">environment_dir</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">ref</span> <span class="o">=</span> <span class="n">EnvironmentRef</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">)</span>
+        <span class="n">spec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_spec</span><span class="p">()</span>
+        <span class="n">envs</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">spec</span><span class="o">.</span><span class="n">environments</span> <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="n">name</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">ref</span><span class="p">,)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_spec</span><span class="p">(</span><span class="n">environments</span><span class="o">=</span><span class="n">envs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ref</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_environment_card</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">environment_dir</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;card.json&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">}</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">read_text</span><span class="p">())</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">write_environment_card</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">card</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">environment_dir</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;card.json&quot;</span>
+        <span class="n">path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">path</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">card</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+
+    <span class="c1"># -- shots / sections --------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">shot_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shot_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;shots&quot;</span> <span class="o">/</span> <span class="n">shot_id</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">upsert_shot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shot</span><span class="p">:</span> <span class="n">ShotSpec</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ShotSpec</span><span class="p">:</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shot_dir</span><span class="p">(</span><span class="n">shot</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="p">(</span><span class="n">d</span> <span class="o">/</span> <span class="s2">&quot;shot.json&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">shot</span><span class="o">.</span><span class="n">model_dump_json</span><span class="p">(</span><span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+        <span class="n">spec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_spec</span><span class="p">()</span>
+        <span class="n">shots</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">spec</span><span class="o">.</span><span class="n">shots</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">id</span> <span class="o">!=</span> <span class="n">shot</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">shot</span><span class="p">,)</span>
+        <span class="c1"># Preserve start_s ordering.</span>
+        <span class="n">shots</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">shots</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">start_s</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_spec</span><span class="p">(</span><span class="n">shots</span><span class="o">=</span><span class="n">shots</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">shot</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">upsert_section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section</span><span class="p">:</span> <span class="n">SectionSpec</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SectionSpec</span><span class="p">:</span>
+        <span class="n">spec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_spec</span><span class="p">()</span>
+        <span class="n">sections</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">spec</span><span class="o">.</span><span class="n">sections</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">id</span> <span class="o">!=</span> <span class="n">section</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">section</span><span class="p">,)</span>
+        <span class="n">sections</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">sections</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">start_s</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_spec</span><span class="p">(</span><span class="n">sections</span><span class="o">=</span><span class="n">sections</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">section</span>
+
+    <span class="c1"># -- decisions log -----------------------------------------------------</span>
+
+<div class="viewcode-block" id="Project.log_decision">
+<a class="viewcode-back" href="../../module_docs/nw/project.html#nw.Project.log_decision">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">log_decision</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">payload</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Record a typed decision in the project graph + the JSONL audit log.</span>
+
+<span class="sd">        Decisions are project-local provenance: which character anchor was</span>
+<span class="sd">        picked, which model overrode the default, why a shot was retried.</span>
+<span class="sd">        Both surfaces stay in sync:</span>
+<span class="sd">        - The lacing graph (``decision`` tier, body schema</span>
+<span class="sd">          ``annot://schema/decision/v1``) is the SSOT — reelee will surface</span>
+<span class="sd">          these in inspector / network views.</span>
+<span class="sd">        - ``.nw/decisions.jsonl`` continues as a tail-grep-able audit trail.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Graph (canonical).</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">append_decision</span><span class="p">(</span>
+                <span class="n">DecisionBodyV1</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span> <span class="n">payload</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">payload</span><span class="p">))</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="c1"># Don&#39;t fail user operations on graph write errors; the JSONL</span>
+            <span class="c1"># below preserves the record as a fallback audit.</span>
+            <span class="k">pass</span>
+
+        <span class="c1"># JSONL audit log (back-compat surface).</span>
+        <span class="n">nw_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;.nw&quot;</span>
+        <span class="n">nw_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">nw_dir</span> <span class="o">/</span> <span class="s2">&quot;decisions.jsonl&quot;</span>
+        <span class="n">record</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;ts&quot;</span><span class="p">:</span> <span class="n">_now_iso</span><span class="p">(),</span>
+            <span class="s2">&quot;kind&quot;</span><span class="p">:</span> <span class="n">kind</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">payload</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">record</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+    <span class="c1"># -- summary -----------------------------------------------------------</span>
+
+<div class="viewcode-block" id="Project.read_summary">
+<a class="viewcode-back" href="../../module_docs/nw/project.html#nw.Project.read_summary">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ProjectSummary</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a typed read view of the project — all the facts at once.&quot;&quot;&quot;</span>
+        <span class="n">spec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_spec</span><span class="p">()</span>
+        <span class="n">rendered</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
+            <span class="mi">1</span>
+            <span class="k">for</span> <span class="n">shot</span> <span class="ow">in</span> <span class="n">spec</span><span class="o">.</span><span class="n">shots</span>
+            <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shot_dir</span><span class="p">(</span><span class="n">shot</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;output.mp4&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">ProjectSummary</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="n">spec</span><span class="o">.</span><span class="n">title</span><span class="p">,</span>
+            <span class="n">root</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">),</span>
+            <span class="n">schema_version</span><span class="o">=</span><span class="n">spec</span><span class="o">.</span><span class="n">schema_version</span><span class="p">,</span>
+            <span class="n">song_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">song_path</span><span class="p">())</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">song_path</span><span class="p">()</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">song_duration_s</span><span class="o">=</span><span class="n">spec</span><span class="o">.</span><span class="n">song</span><span class="o">.</span><span class="n">duration_s</span> <span class="k">if</span> <span class="n">spec</span><span class="o">.</span><span class="n">song</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">character_count</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">spec</span><span class="o">.</span><span class="n">characters</span><span class="p">),</span>
+            <span class="n">environment_count</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">spec</span><span class="o">.</span><span class="n">environments</span><span class="p">),</span>
+            <span class="n">section_count</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">spec</span><span class="o">.</span><span class="n">sections</span><span class="p">),</span>
+            <span class="n">shot_count</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">spec</span><span class="o">.</span><span class="n">shots</span><span class="p">),</span>
+            <span class="n">rendered_shot_count</span><span class="o">=</span><span class="n">rendered</span><span class="p">,</span>
+            <span class="n">has_lyrics</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;lyrics&quot;</span> <span class="o">/</span> <span class="s2">&quot;lyrics.md&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
+            <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;lyrics&quot;</span> <span class="o">/</span> <span class="s2">&quot;transcript.json&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">(),</span>
+            <span class="n">has_alignment</span><span class="o">=</span><span class="nb">any</span><span class="p">(</span>
+                <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;lyrics&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;alignment.*&quot;</span><span class="p">)</span>
+            <span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;lyrics&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="k">else</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">has_script</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;script&quot;</span> <span class="o">/</span> <span class="s2">&quot;script.md&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">(),</span>
+            <span class="n">has_final_compose</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;output&quot;</span> <span class="o">/</span> <span class="s2">&quot;final.mp4&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">(),</span>
+        <span class="p">)</span></div>
+</div>
+
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Helpers</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_write_spec</span><span class="p">(</span><span class="n">root</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">spec</span><span class="p">:</span> <span class="n">ProjectSpec</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">root</span> <span class="o">/</span> <span class="n">_PROJECT_FILE_NAME</span>
+    <span class="n">path</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">spec</span><span class="o">.</span><span class="n">model_dump_json</span><span class="p">(</span><span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_probe_audio</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Best-effort audio metadata probe via ``mixing.audio``; quiet on failure.&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">mixing.audio</span><span class="w"> </span><span class="kn">import</span> <span class="n">Audio</span>  <span class="c1"># type: ignore[import-not-found]</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">Audio</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;duration_s&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">duration</span><span class="p">),</span>
+            <span class="s2">&quot;sample_rate&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">sample_rate</span><span class="p">),</span>
+            <span class="s2">&quot;bitrate&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="s2">&quot;bitrate&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">or</span> <span class="mi">0</span><span class="p">),</span>
+        <span class="p">}</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{}</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

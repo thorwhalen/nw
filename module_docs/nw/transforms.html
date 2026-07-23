@@ -1,0 +1,368 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>nw.transforms &mdash; nw 0.0.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=282f96c0"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="nw.transforms._adapters" href="transforms/_adapters.html" />
+    <link rel="prev" title="nw.storyboard" href="storyboard.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            nw
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../nw.html">nw</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies.html">nw.bodies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/character_ref.html">nw.bodies.character_ref</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/decision.html">nw.bodies.decision</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/environment_ref.html">nw.bodies.environment_ref</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/render_result.html">nw.bodies.render_result</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/section.html">nw.bodies.section</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/shot.html">nw.bodies.shot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experiment.html">nw.experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graph.html">nw.graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graph_backend.html">nw.graph_backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="inspect.html">nw.inspect</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrate.html">nw.migrate</a></li>
+<li class="toctree-l1"><a class="reference internal" href="project.html">nw.project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers.html">nw.renderers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/_common.html">nw.renderers._common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/composite_lipsync.html">nw.renderers.composite_lipsync</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/image_to_video.html">nw.renderers.image_to_video</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/lipsync.html">nw.renderers.lipsync</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/still.html">nw.renderers.still</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/text_to_video.html">nw.renderers.text_to_video</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema.html">nw.schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="script_segmentation.html">nw.script_segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="storyboard.html">nw.storyboard</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">nw.transforms</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#nw.transforms.BaseTransform"><code class="docutils literal notranslate"><span class="pre">BaseTransform</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#nw.transforms.BaseTransform.is_batch"><code class="docutils literal notranslate"><span class="pre">BaseTransform.is_batch</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.transforms.BaseTransform.params_model"><code class="docutils literal notranslate"><span class="pre">BaseTransform.params_model</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.transforms.Transform"><code class="docutils literal notranslate"><span class="pre">Transform</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#nw.transforms.Transform.execute"><code class="docutils literal notranslate"><span class="pre">Transform.execute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.transforms.Transform.input_kinds"><code class="docutils literal notranslate"><span class="pre">Transform.input_kinds</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.transforms.Transform.is_batch"><code class="docutils literal notranslate"><span class="pre">Transform.is_batch</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.transforms.Transform.name"><code class="docutils literal notranslate"><span class="pre">Transform.name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.transforms.Transform.output_kind"><code class="docutils literal notranslate"><span class="pre">Transform.output_kind</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.transforms.Transform.plan"><code class="docutils literal notranslate"><span class="pre">Transform.plan()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.transforms.TransformInputs"><code class="docutils literal notranslate"><span class="pre">TransformInputs</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.transforms.TransformResult"><code class="docutils literal notranslate"><span class="pre">TransformResult</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#nw.transforms.TransformResult.annotations"><code class="docutils literal notranslate"><span class="pre">TransformResult.annotations</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.transforms.TransformResult.artifacts"><code class="docutils literal notranslate"><span class="pre">TransformResult.artifacts</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.transforms.TransformResult.cache_hit_savings_usd"><code class="docutils literal notranslate"><span class="pre">TransformResult.cache_hit_savings_usd</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.transforms.TransformResult.cost_usd_actual"><code class="docutils literal notranslate"><span class="pre">TransformResult.cost_usd_actual</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.transforms.get_transform"><code class="docutils literal notranslate"><span class="pre">get_transform()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.transforms.list_transforms"><code class="docutils literal notranslate"><span class="pre">list_transforms()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.transforms.register_transform"><code class="docutils literal notranslate"><span class="pre">register_transform()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.transforms.transforms"><code class="docutils literal notranslate"><span class="pre">transforms</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="transforms/_adapters.html">nw.transforms._adapters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms/_adapters/render_strategy.html">nw.transforms._adapters.render_strategy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms/_provenance.html">nw.transforms._provenance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow.html">nw.workflow</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">nw</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">nw.transforms</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/module_docs/nw/transforms.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-nw.transforms">
+<span id="nw-transforms"></span><h1>nw.transforms<a class="headerlink" href="#module-nw.transforms" title="Link to this heading"></a></h1>
+<p>Transforms — the unified, swappable “A-annotation → B-annotation” step.</p>
+<p>A <a class="reference internal" href="#nw.transforms.Transform" title="nw.transforms.Transform"><code class="xref py py-class docutils literal notranslate"><span class="pre">Transform</span></code></a> generalizes <a class="reference internal" href="renderers.html#nw.renderers.Strategy" title="nw.renderers.Strategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">nw.renderers.Strategy</span></code></a>: where a
+Strategy turns a prepared <em>shot</em> into a rendered clip, a Transform turns any
+input annotation(s) into any output annotation(s). Every “A → B” arrow in an
+audiovisual workflow — screenplay → treatment, beat → storyboard panel, panel
+→ image, clips → animatic, shot → rendered clip — is a Transform.</p>
+<p>Two-phase, mirroring <code class="docutils literal notranslate"><span class="pre">nw.workflow</span></code> (prepare → plan → execute):</p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="#nw.transforms.Transform.plan" title="nw.transforms.Transform.plan"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Transform.plan()</span></code></a> — <em>pure data</em>. Returns a <code class="xref py py-class docutils literal notranslate"><span class="pre">falaw.Plan</span></code> plus
+<em>skeleton</em> output annotations. The skeletons already carry provenance
+(<code class="docutils literal notranslate"><span class="pre">was_derived_from</span></code> points at the inputs), so even a dry-run plan
+inspection shows what will be produced and from what. No billable calls.</p></li>
+<li><p><a class="reference internal" href="#nw.transforms.Transform.execute" title="nw.transforms.Transform.execute"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Transform.execute()</span></code></a> — runs the Plan via <code class="docutils literal notranslate"><span class="pre">falaw.execute_plan</span></code>,
+completes the skeleton annotations with real artifact references, writes
+them to the project graph, and returns a <a class="reference internal" href="#nw.transforms.TransformResult" title="nw.transforms.TransformResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">TransformResult</span></code></a> with
+<em>actual</em> cost and cache savings.</p></li>
+</ol>
+<p>Transforms are registered with an <code class="xref py py-class docutils literal notranslate"><span class="pre">xdol.Registry</span></code> keyed by name, so
+apps (<code class="docutils literal notranslate"><span class="pre">reelee</span></code>, <code class="docutils literal notranslate"><span class="pre">muvid</span></code>, …) add their own without modifying <code class="docutils literal notranslate"><span class="pre">nw</span></code>.</p>
+<p>Naming convention for <code class="docutils literal notranslate"><span class="pre">Transform.name</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">from_kind</span><span class="o">&gt;</span><span class="n">_to_</span><span class="o">&lt;</span><span class="n">to_kind</span><span class="o">&gt;</span><span class="p">[</span><span class="o">.&lt;</span><span class="n">flavor</span><span class="o">&gt;</span><span class="p">[</span><span class="o">.&lt;</span><span class="n">variant</span><span class="o">&gt;</span><span class="p">]]</span>
+<span class="n">e</span><span class="o">.</span><span class="n">g</span><span class="o">.</span> <span class="s2">&quot;beat_to_panel.llm.default&quot;</span><span class="p">,</span> <span class="s2">&quot;panel_to_image.fal.flux_kontext&quot;</span><span class="p">,</span>
+     <span class="s2">&quot;shot_to_render_result.fal.lipsync&quot;</span>
+</pre></div>
+</div>
+<p>Most Transforms subclass <a class="reference internal" href="#nw.transforms.BaseTransform" title="nw.transforms.BaseTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseTransform</span></code></a> (which supplies a default
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">execute()</span></code>) and override only <code class="xref py py-meth docutils literal notranslate"><span class="pre">plan()</span></code>
+plus the class-level <code class="docutils literal notranslate"><span class="pre">name</span></code> / <code class="docutils literal notranslate"><span class="pre">input_kinds</span></code> / <code class="docutils literal notranslate"><span class="pre">output_kind</span></code> /
+<code class="docutils literal notranslate"><span class="pre">params_model</span></code> attributes.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.transforms.BaseTransform">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.transforms.</span></span><span class="sig-name descname"><span class="pre">BaseTransform</span></span><a class="reference internal" href="../../_modules/nw/transforms.html#BaseTransform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.transforms.BaseTransform" title="Link to this definition"></a></dt>
+<dd><p>Default <a class="reference internal" href="#nw.transforms.Transform" title="nw.transforms.Transform"><code class="xref py py-class docutils literal notranslate"><span class="pre">Transform</span></code></a> implementation.</p>
+<p>Subclasses set the class attributes (<code class="docutils literal notranslate"><span class="pre">name</span></code>, <code class="docutils literal notranslate"><span class="pre">input_kinds</span></code>,
+<code class="docutils literal notranslate"><span class="pre">output_kind</span></code>, optionally <code class="docutils literal notranslate"><span class="pre">params_model</span></code>) and implement <code class="xref py py-meth docutils literal notranslate"><span class="pre">plan()</span></code>.
+The default <code class="xref py py-meth docutils literal notranslate"><span class="pre">execute()</span></code> runs the Plan, maps artifacts onto skeletons
+1:1 via <code class="xref py py-meth docutils literal notranslate"><span class="pre">_complete_annotation()</span></code>, writes to the project graph, and
+reports cost. Transforms whose artifact→annotation mapping is not 1:1
+(e.g. <code class="docutils literal notranslate"><span class="pre">clips_to_animatic</span></code>: N inputs → 1 output) override <code class="xref py py-meth docutils literal notranslate"><span class="pre">execute()</span></code>.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.transforms.BaseTransform.is_batch">
+<span class="sig-name descname"><span class="pre">is_batch</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#nw.transforms.BaseTransform.is_batch" title="Link to this definition"></a></dt>
+<dd><p>Whether <code class="xref py py-meth docutils literal notranslate"><span class="pre">plan()</span></code> consumes all of <code class="docutils literal notranslate"><span class="pre">inputs.primary</span></code> at once (batch)
+or a single primary annotation (one-to-one — the default). See the
+<a class="reference internal" href="#nw.transforms.Transform" title="nw.transforms.Transform"><code class="xref py py-class docutils literal notranslate"><span class="pre">Transform</span></code></a> Protocol for the full contract. Batch Transforms
+(<code class="docutils literal notranslate"><span class="pre">extract_*</span></code>, <code class="docutils literal notranslate"><span class="pre">clips_to_animatic</span></code>) set this to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.transforms.BaseTransform.params_model">
+<span class="sig-name descname"><span class="pre">params_model</span></span><a class="headerlink" href="#nw.transforms.BaseTransform.params_model" title="Link to this definition"></a></dt>
+<dd><p>Pydantic model class for this Transform’s per-call params. Exposed as
+JSON Schema to the MCP server and the CLI. <code class="docutils literal notranslate"><span class="pre">type(None)</span></code> means no params.</p>
+<p>alias of <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.transforms.Transform">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.transforms.</span></span><span class="sig-name descname"><span class="pre">Transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nw/transforms.html#Transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.transforms.Transform" title="Link to this definition"></a></dt>
+<dd><p>A swappable, costed function from A-annotations to B-annotations.</p>
+<p>Implementations usually subclass <a class="reference internal" href="#nw.transforms.BaseTransform" title="nw.transforms.BaseTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseTransform</span></code></a> rather than
+satisfying this Protocol directly, but the Protocol is the contract the
+registry and orchestrator depend on.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.transforms.Transform.execute">
+<span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plan</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Plan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skeleton</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Annotation</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nw.transforms.TransformResult" title="nw.transforms.TransformResult"><span class="pre">TransformResult</span></a></span></span><a class="reference internal" href="../../_modules/nw/transforms.html#Transform.execute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.transforms.Transform.execute" title="Link to this definition"></a></dt>
+<dd><p>Run <code class="docutils literal notranslate"><span class="pre">plan</span></code>, complete <code class="docutils literal notranslate"><span class="pre">skeleton</span></code>, write to the graph, return result.</p>
+<p><code class="docutils literal notranslate"><span class="pre">force=True</span></code> bypasses the cache (the “regenerate this” affordance).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.transforms.Transform.input_kinds">
+<span class="sig-name descname"><span class="pre">input_kinds</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#nw.transforms.Transform.input_kinds" title="Link to this definition"></a></dt>
+<dd><p>Body-schema URIs this Transform reads. The first is the <em>primary</em>
+kind; the rest are context kinds.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.transforms.Transform.is_batch">
+<span class="sig-name descname"><span class="pre">is_batch</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></span><a class="headerlink" href="#nw.transforms.Transform.is_batch" title="Link to this definition"></a></dt>
+<dd><p>How <a class="reference internal" href="#nw.transforms.Transform.plan" title="nw.transforms.Transform.plan"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plan()</span></code></a> consumes <code class="docutils literal notranslate"><span class="pre">inputs.primary</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">False</span></code> (one-to-one): <a class="reference internal" href="#nw.transforms.Transform.plan" title="nw.transforms.Transform.plan"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plan()</span></code></a> operates on a <em>single</em> primary
+annotation (<code class="docutils literal notranslate"><span class="pre">inputs.primary[0]</span></code>) — e.g. <code class="docutils literal notranslate"><span class="pre">beat_to_panel</span></code>, one beat in,
+one panel out. A caller wanting to apply it across many annotations calls
+<a class="reference internal" href="#nw.transforms.Transform.plan" title="nw.transforms.Transform.plan"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plan()</span></code></a> once per annotation and composes the Plans.</p>
+<p><code class="docutils literal notranslate"><span class="pre">True</span></code> (batch): <a class="reference internal" href="#nw.transforms.Transform.plan" title="nw.transforms.Transform.plan"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plan()</span></code></a> consumes <em>all</em> of <code class="docutils literal notranslate"><span class="pre">inputs.primary</span></code> at
+once — e.g. <code class="docutils literal notranslate"><span class="pre">extract_characters</span></code> (every beat → an LLM call) or
+<code class="docutils literal notranslate"><span class="pre">clips_to_animatic</span></code> (every clip → one animatic). A caller passes the
+whole set in a single <a class="reference internal" href="#nw.transforms.Transform.plan" title="nw.transforms.Transform.plan"><code class="xref py py-meth docutils literal notranslate"><span class="pre">plan()</span></code></a> call.</p>
+<p>This is the property an orchestrator needs to fan a Transform across a
+project’s annotations correctly — it can’t be inferred from
+<code class="docutils literal notranslate"><span class="pre">input_kinds</span></code>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.transforms.Transform.name">
+<span class="sig-name descname"><span class="pre">name</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#nw.transforms.Transform.name" title="Link to this definition"></a></dt>
+<dd><p>Globally-unique identifier in <a class="reference internal" href="#nw.transforms.transforms" title="nw.transforms.transforms"><code class="xref py py-data docutils literal notranslate"><span class="pre">transforms</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.transforms.Transform.output_kind">
+<span class="sig-name descname"><span class="pre">output_kind</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#nw.transforms.Transform.output_kind" title="Link to this definition"></a></dt>
+<dd><p>The body-schema URI this Transform produces.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.transforms.Transform.plan">
+<span class="sig-name descname"><span class="pre">plan</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nw.transforms.TransformInputs" title="nw.transforms.TransformInputs"><span class="pre">TransformInputs</span></a></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">BaseModel</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Plan</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Annotation</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nw/transforms.html#Transform.plan"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.transforms.Transform.plan" title="Link to this definition"></a></dt>
+<dd><p>Build a <code class="xref py py-class docutils literal notranslate"><span class="pre">falaw.Plan</span></code> + skeleton output annotations.</p>
+<p>Pure data. No billable calls. The skeleton annotations have provenance
+filled in; their bodies’ artifact references are placeholders that
+<a class="reference internal" href="#nw.transforms.Transform.execute" title="nw.transforms.Transform.execute"><code class="xref py py-meth docutils literal notranslate"><span class="pre">execute()</span></code></a> replaces.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.transforms.TransformInputs">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.transforms.</span></span><span class="sig-name descname"><span class="pre">TransformInputs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">primary:</span> <span class="pre">tuple[~lacing.model.Annotation,</span> <span class="pre">...],</span> <span class="pre">context:</span> <span class="pre">dict[str,</span> <span class="pre">tuple[~lacing.model.Annotation,</span> <span class="pre">...]]</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nw/transforms.html#TransformInputs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.transforms.TransformInputs" title="Link to this definition"></a></dt>
+<dd><p>The annotations a Transform consumes.</p>
+<p><code class="docutils literal notranslate"><span class="pre">primary</span></code> is the subject of the operation — a single-element tuple for
+one-to-one Transforms, many for batch Transforms (e.g. <code class="docutils literal notranslate"><span class="pre">clips_to_animatic</span></code>
+consumes every clip). <code class="docutils literal notranslate"><span class="pre">context</span></code> is side material keyed by kind name, so
+a Transform that declares <code class="docutils literal notranslate"><span class="pre">input_kinds=(beat,</span> <span class="pre">character-ref)</span></code> receives
+the Beat in <code class="docutils literal notranslate"><span class="pre">primary</span></code> and the CharacterRefs in <code class="docutils literal notranslate"><span class="pre">context[&quot;character-ref&quot;]</span></code>.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.transforms.TransformResult">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.transforms.</span></span><span class="sig-name descname"><span class="pre">TransformResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">annotations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Annotation</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artifacts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Artifact</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cost_usd_actual</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_hit_savings_usd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nw/transforms.html#TransformResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.transforms.TransformResult" title="Link to this definition"></a></dt>
+<dd><p>The outputs of a Transform’s <a class="reference internal" href="#nw.transforms.Transform.execute" title="nw.transforms.Transform.execute"><code class="xref py py-meth docutils literal notranslate"><span class="pre">execute()</span></code></a>.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.transforms.TransformResult.annotations">
+<span class="sig-name descname"><span class="pre">annotations</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Annotation</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#nw.transforms.TransformResult.annotations" title="Link to this definition"></a></dt>
+<dd><p>The completed output annotation(s), written to the project graph.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.transforms.TransformResult.artifacts">
+<span class="sig-name descname"><span class="pre">artifacts</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Artifact</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#nw.transforms.TransformResult.artifacts" title="Link to this definition"></a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">lacing.Artifact</span></code>s produced (images, videos, audio, json …).
+Annotations reference these by <code class="docutils literal notranslate"><span class="pre">artifact_id</span></code> in their bodies.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.transforms.TransformResult.cache_hit_savings_usd">
+<span class="sig-name descname"><span class="pre">cache_hit_savings_usd</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></span><a class="headerlink" href="#nw.transforms.TransformResult.cache_hit_savings_usd" title="Link to this definition"></a></dt>
+<dd><p>USD that would have been spent had nothing been cached.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.transforms.TransformResult.cost_usd_actual">
+<span class="sig-name descname"><span class="pre">cost_usd_actual</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></span><a class="headerlink" href="#nw.transforms.TransformResult.cost_usd_actual" title="Link to this definition"></a></dt>
+<dd><p>Actual USD billed during execution (cache hits cost nothing).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.transforms.get_transform">
+<span class="sig-prename descclassname"><span class="pre">nw.transforms.</span></span><span class="sig-name descname"><span class="pre">get_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nw.transforms.Transform" title="nw.transforms.Transform"><span class="pre">Transform</span></a></span></span><a class="reference internal" href="../../_modules/nw/transforms.html#get_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.transforms.get_transform" title="Link to this definition"></a></dt>
+<dd><p>Look up a Transform instance by name; raises with the known names.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.transforms.list_transforms">
+<span class="sig-prename descclassname"><span class="pre">nw.transforms.</span></span><span class="sig-name descname"><span class="pre">list_transforms</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nw/transforms.html#list_transforms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.transforms.list_transforms" title="Link to this definition"></a></dt>
+<dd><p>Return all registered Transform names (sorted).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.transforms.register_transform">
+<span class="sig-prename descclassname"><span class="pre">nw.transforms.</span></span><span class="sig-name descname"><span class="pre">register_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">impl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nw.transforms.Transform" title="nw.transforms.Transform"><span class="pre">Transform</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nw.transforms.Transform" title="nw.transforms.Transform"><span class="pre">Transform</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">type</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">type</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nw/transforms.html#register_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.transforms.register_transform" title="Link to this definition"></a></dt>
+<dd><p>Register a Transform under <code class="docutils literal notranslate"><span class="pre">name</span></code>. Two forms:</p>
+<p>Direct — pass an instance:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">register_transform</span><span class="p">(</span><span class="s2">&quot;clips_to_animatic.ffmpeg&quot;</span><span class="p">,</span> <span class="n">ClipsToAnimatic</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>Decorator — decorate a class; it is instantiated and the <em>instance</em> is
+registered (so <a class="reference internal" href="#nw.transforms.get_transform" title="nw.transforms.get_transform"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_transform()</span></code></a> always returns something callable),
+and the class is returned unchanged:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@register_transform</span><span class="p">(</span><span class="s2">&quot;beat_to_panel.llm.default&quot;</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">BeatToPanelLLM</span><span class="p">(</span><span class="n">BaseTransform</span><span class="p">):</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="nw.transforms.transforms">
+<span class="sig-prename descclassname"><span class="pre">nw.transforms.</span></span><span class="sig-name descname"><span class="pre">transforms</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Registry</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Registry</span> <span class="pre">nw.transforms&gt;</span></span><a class="headerlink" href="#nw.transforms.transforms" title="Link to this definition"></a></dt>
+<dd><p>Public registry of Transform instances. <code class="docutils literal notranslate"><span class="pre">on_conflict=&quot;error&quot;</span></code> so a
+misconfigured plugin fails loudly instead of silently shadowing a built-in.</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="storyboard.html" class="btn btn-neutral float-left" title="nw.storyboard" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="transforms/_adapters.html" class="btn btn-neutral float-right" title="nw.transforms._adapters" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

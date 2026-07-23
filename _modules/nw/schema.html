@@ -1,0 +1,375 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>nw.schema &mdash; nw 0.0.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=282f96c0"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            nw
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw.html">nw</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies.html">nw.bodies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/character_ref.html">nw.bodies.character_ref</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/decision.html">nw.bodies.decision</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/environment_ref.html">nw.bodies.environment_ref</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/render_result.html">nw.bodies.render_result</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/section.html">nw.bodies.section</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/shot.html">nw.bodies.shot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/experiment.html">nw.experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/graph.html">nw.graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/graph_backend.html">nw.graph_backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/inspect.html">nw.inspect</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/migrate.html">nw.migrate</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/project.html">nw.project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers.html">nw.renderers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/_common.html">nw.renderers._common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/composite_lipsync.html">nw.renderers.composite_lipsync</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/image_to_video.html">nw.renderers.image_to_video</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/lipsync.html">nw.renderers.lipsync</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/still.html">nw.renderers.still</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/text_to_video.html">nw.renderers.text_to_video</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/schema.html">nw.schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/script_segmentation.html">nw.script_segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/storyboard.html">nw.storyboard</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/transforms.html">nw.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/transforms/_adapters.html">nw.transforms._adapters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/transforms/_adapters/render_strategy.html">nw.transforms._adapters.render_strategy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/transforms/_provenance.html">nw.transforms._provenance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/workflow.html">nw.workflow</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">nw</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">nw.schema</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for nw.schema</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Schema for an nw project — narrative-workflow SSOT data shapes.</span>
+
+<span class="sd">A project is a folder with a ``project.json`` at its root. The shape is</span>
+<span class="sd">deliberately compatible with the layout muvid established for music-video</span>
+<span class="sd">projects, so the_bells_v* fixtures load directly into nw without</span>
+<span class="sd">migration. nw generalizes muvid&#39;s IR by:</span>
+
+<span class="sd">- making :class:`RenderStrategy` open (a string), so apps can register</span>
+<span class="sd">  their own strategies (composite_lipsync, slideshow, panel, …) without</span>
+<span class="sd">  touching nw,</span>
+<span class="sd">- adding :class:`ProjectSummary` as a typed read view returned by</span>
+<span class="sd">  :meth:`Project.read_summary`,</span>
+<span class="sd">- promoting setters that muvid expressed via ``python -c`` glue</span>
+<span class="sd">  (``set_title``, ``set_global_style``, ``set_character_anchor``).</span>
+
+<span class="sd">Pydantic is used (instead of frozen dataclasses) for two reasons:</span>
+
+<span class="sd">1. lacing already uses Pydantic — sharing the conventions keeps the</span>
+<span class="sd">   ecosystem coherent.</span>
+<span class="sd">2. nw will eventually round-trip schemas through HTTP/MCP; Pydantic gives</span>
+<span class="sd">   JSON-Schema export and validation for free.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">Field</span>
+
+
+<span class="n">SCHEMA_VERSION</span> <span class="o">=</span> <span class="mi">1</span>
+
+
+<div class="viewcode-block" id="SongInfo">
+<a class="viewcode-back" href="../../module_docs/nw/schema.html#nw.SongInfo">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SongInfo</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Metadata for the master audio file.</span>
+
+<span class="sd">    Compatible with muvid&#39;s SongInfo by field name and type.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;extra&quot;</span><span class="p">:</span> <span class="s2">&quot;ignore&quot;</span><span class="p">}</span>
+
+    <span class="n">audio_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Path relative to project root.&quot;</span><span class="p">)</span>
+    <span class="n">duration_s</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">sample_rate</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">bitrate</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">bpm</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="SectionSpec">
+<a class="viewcode-back" href="../../module_docs/nw/schema.html#nw.SectionSpec">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SectionSpec</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A non-overlapping span of the project&#39;s master timeline.</span>
+
+<span class="sd">    ``label`` is free-form (&quot;intro&quot;, &quot;verse&quot;, &quot;chorus&quot;, &quot;scene-1&quot;, &quot;act-2&quot;,</span>
+<span class="sd">    …) so different apps (music-video, explainer, podcast-clip) can use</span>
+<span class="sd">    their own taxonomy.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;extra&quot;</span><span class="p">:</span> <span class="s2">&quot;ignore&quot;</span><span class="p">}</span>
+
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">start_s</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">end_s</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">energy</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">mood</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">duration_s</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_s</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_s</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="ShotSpec">
+<a class="viewcode-back" href="../../module_docs/nw/schema.html#nw.ShotSpec">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ShotSpec</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A timeline-locked visual unit.</span>
+
+<span class="sd">    ``[start_s, end_s)`` is half-open. ``render_strategy`` is an open string</span>
+<span class="sd">    rather than a closed Literal, so apps can register their own strategies</span>
+<span class="sd">    via :func:`nw.renderers.register_strategy` (Phase 1b.3) without modifying</span>
+<span class="sd">    the schema.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;extra&quot;</span><span class="p">:</span> <span class="s2">&quot;ignore&quot;</span><span class="p">}</span>
+
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">start_s</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">end_s</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">section_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">render_strategy</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;image_to_video&quot;</span>
+    <span class="n">environment</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">characters</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
+    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">camera</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">framing</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;medium&quot;</span>
+    <span class="n">notes</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">duration_s</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_s</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_s</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="CharacterRef">
+<a class="viewcode-back" href="../../module_docs/nw/schema.html#nw.CharacterRef">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CharacterRef</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pointer to a character folder under ``characters/&lt;name&gt;/``.&quot;&quot;&quot;</span>
+
+    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;extra&quot;</span><span class="p">:</span> <span class="s2">&quot;ignore&quot;</span><span class="p">}</span>
+
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="EnvironmentRef">
+<a class="viewcode-back" href="../../module_docs/nw/schema.html#nw.EnvironmentRef">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">EnvironmentRef</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pointer to an environment folder under ``environments/&lt;name&gt;/``.&quot;&quot;&quot;</span>
+
+    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;extra&quot;</span><span class="p">:</span> <span class="s2">&quot;ignore&quot;</span><span class="p">}</span>
+
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="ProjectSpec">
+<a class="viewcode-back" href="../../module_docs/nw/schema.html#nw.ProjectSpec">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ProjectSpec</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The top-level project SSOT, persisted as ``project.json``.</span>
+
+<span class="sd">    Field names and order are chosen to round-trip identically with muvid&#39;s</span>
+<span class="sd">    ProjectSpec for ``schema_version=1``, so the_bells_v* fixtures (and any</span>
+<span class="sd">    other muvid-shaped project) load and re-save without churn.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;extra&quot;</span><span class="p">:</span> <span class="s2">&quot;ignore&quot;</span><span class="p">}</span>
+
+    <span class="n">schema_version</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">SCHEMA_VERSION</span>
+    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">song</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SongInfo</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">characters</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">CharacterRef</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
+    <span class="n">environments</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">EnvironmentRef</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
+    <span class="n">sections</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">SectionSpec</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
+    <span class="n">shots</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">ShotSpec</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
+    <span class="n">global_style</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">notes</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="c1"># -- queries -----------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SectionSpec</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sections</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">section_id</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">s</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">shot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shot_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ShotSpec</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">shots</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">shot_id</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">s</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">character</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">CharacterRef</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">characters</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">c</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">environment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">EnvironmentRef</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">environments</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">e</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="ProjectSummary">
+<a class="viewcode-back" href="../../module_docs/nw/schema.html#nw.ProjectSummary">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ProjectSummary</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Typed read view of a project — what ``muvid status`` printed, but typed.</span>
+
+<span class="sd">    Returned by :meth:`Project.read_summary`. Holds the small facts the user</span>
+<span class="sd">    most often wants: title, root, song path, counts of characters / shots /</span>
+<span class="sd">    sections / output, plus a coarse &quot;stages_done&quot; list naming the lifecycle</span>
+<span class="sd">    stages that have been reached.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;extra&quot;</span><span class="p">:</span> <span class="s2">&quot;ignore&quot;</span><span class="p">}</span>
+
+    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">root</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">schema_version</span><span class="p">:</span> <span class="nb">int</span>
+
+    <span class="c1"># Song</span>
+    <span class="n">song_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="n">song_duration_s</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span>
+
+    <span class="c1"># Counts</span>
+    <span class="n">character_count</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">environment_count</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">section_count</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">shot_count</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">rendered_shot_count</span><span class="p">:</span> <span class="nb">int</span>  <span class="c1"># shots that have an output.mp4</span>
+
+    <span class="c1"># Lifecycle markers — coarse-grained, present-or-not flags from disk.</span>
+    <span class="n">has_lyrics</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="n">has_alignment</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="n">has_script</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="n">has_final_compose</span><span class="p">:</span> <span class="nb">bool</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">stages_done</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Coarse stage list — what&#39;s been reached, in lifecycle order.&quot;&quot;&quot;</span>
+        <span class="n">out</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">song_path</span><span class="p">:</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;song&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_lyrics</span><span class="p">:</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;lyrics&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_alignment</span><span class="p">:</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;alignment&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">character_count</span><span class="p">:</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;characters&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">environment_count</span><span class="p">:</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;environments&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_count</span><span class="p">:</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;sections&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">shot_count</span><span class="p">:</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;shots&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_script</span><span class="p">:</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;script&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rendered_shot_count</span><span class="p">:</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;rendered:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rendered_shot_count</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">shot_count</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_final_compose</span><span class="p">:</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;compose&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">out</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

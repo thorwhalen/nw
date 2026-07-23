@@ -1,0 +1,243 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>nw.renderers.lipsync &mdash; nw 0.0.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=282f96c0"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../../_static/toggleprompt.js?v=d7ede5d2"></script>
+      <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            nw
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw.html">nw</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/bodies.html">nw.bodies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/bodies/character_ref.html">nw.bodies.character_ref</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/bodies/decision.html">nw.bodies.decision</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/bodies/environment_ref.html">nw.bodies.environment_ref</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/bodies/render_result.html">nw.bodies.render_result</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/bodies/section.html">nw.bodies.section</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/bodies/shot.html">nw.bodies.shot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/experiment.html">nw.experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/graph.html">nw.graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/graph_backend.html">nw.graph_backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/inspect.html">nw.inspect</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/migrate.html">nw.migrate</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/project.html">nw.project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/renderers.html">nw.renderers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/renderers/_common.html">nw.renderers._common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/renderers/composite_lipsync.html">nw.renderers.composite_lipsync</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/renderers/image_to_video.html">nw.renderers.image_to_video</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/renderers/lipsync.html">nw.renderers.lipsync</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/renderers/still.html">nw.renderers.still</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/renderers/text_to_video.html">nw.renderers.text_to_video</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/schema.html">nw.schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/script_segmentation.html">nw.script_segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/storyboard.html">nw.storyboard</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/transforms.html">nw.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/transforms/_adapters.html">nw.transforms._adapters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/transforms/_adapters/render_strategy.html">nw.transforms._adapters.render_strategy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/transforms/_provenance.html">nw.transforms._provenance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/workflow.html">nw.workflow</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">nw</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../renderers.html">nw.renderers</a></li>
+      <li class="breadcrumb-item active">nw.renderers.lipsync</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for nw.renderers.lipsync</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Strategy: lipsync — character anchor + audio → talking video.</span>
+
+<span class="sd">Calls ``falaw.animate_face`` (image+audio → talking video). Defaults to</span>
+<span class="sd">``omnihuman/v1.5`` at ``quality=&quot;high&quot;`` because the default ``ai-avatar``</span>
+<span class="sd">hangs reliably (see muvid_project bugs_encountered.md, 2026-05-07).</span>
+
+<span class="sd">If multiple characters are present, the first one is picked and a warning is</span>
+<span class="sd">emitted — multi-character lipsync is composite_lipsync&#39;s territory (Phase 2).</span>
+
+<span class="sd">model_overrides keys understood:</span>
+<span class="sd">  - ``avatar`` — override the ``avatar_model_id`` (e.g. omnihuman, ai-avatar).</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">falaw</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plan</span><span class="p">,</span> <span class="n">plan_animate_face</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">lacing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Artifact</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">._common</span><span class="w"> </span><span class="kn">import</span> <span class="n">download_to</span><span class="p">,</span> <span class="n">trim_or_pad_video</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_strategy</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">..workflow</span><span class="w"> </span><span class="kn">import</span> <span class="n">ShotPreparation</span>
+
+
+<div class="viewcode-block" id="LipsyncStrategy">
+<a class="viewcode-back" href="../../../module_docs/nw/renderers/lipsync.html#nw.renderers.lipsync.LipsyncStrategy">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">LipsyncStrategy</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;``render_strategy=&quot;lipsync&quot;``.&quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;lipsync&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">plan</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">prep</span><span class="p">:</span> <span class="s2">&quot;ShotPreparation&quot;</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">quality</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;balanced&quot;</span><span class="p">,</span>
+        <span class="n">model_overrides</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Plan</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">prep</span><span class="o">.</span><span class="n">character_anchor_paths</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;lipsync: shot </span><span class="si">{</span><span class="n">prep</span><span class="o">.</span><span class="n">shot_id</span><span class="si">!r}</span><span class="s2"> has no character anchor &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;image. Use Project.set_character_anchor() to pick one.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">prep</span><span class="o">.</span><span class="n">character_anchor_paths</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;lipsync: shot </span><span class="si">{</span><span class="n">prep</span><span class="o">.</span><span class="n">shot_id</span><span class="si">!r}</span><span class="s2"> has multiple characters &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">prep</span><span class="o">.</span><span class="n">character_anchor_paths</span><span class="p">)</span><span class="si">}</span><span class="s2">); v0 only lipsyncs the first.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">char_name</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">prep</span><span class="o">.</span><span class="n">character_anchor_paths</span><span class="p">))</span>
+        <span class="c1"># URLs are only required at execute time; planning works with</span>
+        <span class="c1"># local-path placeholders (the executor downstream of this still</span>
+        <span class="c1"># needs URLs, but a plan-only inspection doesn&#39;t).</span>
+        <span class="n">image_url</span> <span class="o">=</span> <span class="n">prep</span><span class="o">.</span><span class="n">character_anchor_urls</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">char_name</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;&lt;plan-only:</span><span class="si">{</span><span class="n">prep</span><span class="o">.</span><span class="n">character_anchor_paths</span><span class="p">[</span><span class="n">char_name</span><span class="p">]</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+        <span class="p">)</span>
+        <span class="n">audio_url</span> <span class="o">=</span> <span class="n">prep</span><span class="o">.</span><span class="n">audio_slice_url</span> <span class="ow">or</span> <span class="sa">f</span><span class="s2">&quot;&lt;plan-only:</span><span class="si">{</span><span class="n">prep</span><span class="o">.</span><span class="n">audio_slice_path</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+
+        <span class="n">prompt</span> <span class="o">=</span> <span class="n">prep</span><span class="o">.</span><span class="n">shot</span><span class="o">.</span><span class="n">description</span> <span class="ow">or</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">char_name</span><span class="si">}</span><span class="s2"> singing&quot;</span>
+        <span class="k">if</span> <span class="n">prep</span><span class="o">.</span><span class="n">lyric_lines</span><span class="p">:</span>
+            <span class="n">prompt</span> <span class="o">+=</span> <span class="s2">&quot; — lyrics: &quot;</span> <span class="o">+</span> <span class="s2">&quot; / &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">L</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">L</span> <span class="ow">in</span> <span class="n">prep</span><span class="o">.</span><span class="n">lyric_lines</span> <span class="k">if</span> <span class="n">L</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="n">avatar_model</span> <span class="o">=</span> <span class="p">(</span><span class="n">model_overrides</span> <span class="ow">or</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;avatar&quot;</span><span class="p">)</span>
+        <span class="c1"># Use quality=&quot;high&quot; by default for lipsync — that picks omnihuman,</span>
+        <span class="c1"># avoiding the default ai-avatar that&#39;s known to hang.</span>
+        <span class="n">effective_quality</span> <span class="o">=</span> <span class="s2">&quot;high&quot;</span> <span class="k">if</span> <span class="n">quality</span> <span class="o">==</span> <span class="s2">&quot;balanced&quot;</span> <span class="k">else</span> <span class="n">quality</span>
+
+        <span class="n">call</span> <span class="o">=</span> <span class="n">plan_animate_face</span><span class="p">(</span>
+            <span class="n">image_url</span><span class="o">=</span><span class="n">image_url</span><span class="p">,</span>
+            <span class="n">audio_url</span><span class="o">=</span><span class="n">audio_url</span><span class="p">,</span>
+            <span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span>
+            <span class="n">quality</span><span class="o">=</span><span class="n">effective_quality</span><span class="p">,</span>
+            <span class="n">model_id</span><span class="o">=</span><span class="n">avatar_model</span><span class="p">,</span>
+            <span class="n">duration_s</span><span class="o">=</span><span class="n">prep</span><span class="o">.</span><span class="n">duration_s</span><span class="p">,</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;shot_id&quot;</span><span class="p">:</span> <span class="n">prep</span><span class="o">.</span><span class="n">shot_id</span><span class="p">,</span>
+                <span class="s2">&quot;strategy&quot;</span><span class="p">:</span> <span class="s2">&quot;lipsync&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;character&quot;</span><span class="p">:</span> <span class="n">char_name</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">Plan</span><span class="p">(</span><span class="n">calls</span><span class="o">=</span><span class="p">(</span><span class="n">call</span><span class="p">,))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">materialize</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">prep</span><span class="p">:</span> <span class="s2">&quot;ShotPreparation&quot;</span><span class="p">,</span>
+        <span class="n">plan</span><span class="p">:</span> <span class="n">Plan</span><span class="p">,</span>
+        <span class="n">artifacts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Artifact</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+        <span class="n">artifact</span> <span class="o">=</span> <span class="n">artifacts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">artifact</span><span class="o">.</span><span class="n">url</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;lipsync: avatar call for shot </span><span class="si">{</span><span class="n">prep</span><span class="o">.</span><span class="n">shot_id</span><span class="si">!r}</span><span class="s2"> returned no URL&quot;</span>
+            <span class="p">)</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">prep</span><span class="o">.</span><span class="n">shot_dir</span> <span class="o">/</span> <span class="s2">&quot;raw.mp4&quot;</span>
+        <span class="n">download_to</span><span class="p">(</span><span class="n">artifact</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">raw</span><span class="p">)</span>
+        <span class="n">final</span> <span class="o">=</span> <span class="n">prep</span><span class="o">.</span><span class="n">shot_dir</span> <span class="o">/</span> <span class="s2">&quot;output.mp4&quot;</span>
+        <span class="k">return</span> <span class="n">trim_or_pad_video</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">prep</span><span class="o">.</span><span class="n">duration_s</span><span class="p">,</span> <span class="n">final</span><span class="p">)</span></div>
+
+
+
+<span class="n">register_strategy</span><span class="p">(</span><span class="s2">&quot;lipsync&quot;</span><span class="p">,</span> <span class="n">LipsyncStrategy</span><span class="p">())</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

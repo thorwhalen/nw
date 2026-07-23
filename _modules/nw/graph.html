@@ -1,0 +1,730 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>nw.graph &mdash; nw 0.0.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=282f96c0"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            nw
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw.html">nw</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies.html">nw.bodies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/character_ref.html">nw.bodies.character_ref</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/decision.html">nw.bodies.decision</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/environment_ref.html">nw.bodies.environment_ref</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/render_result.html">nw.bodies.render_result</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/section.html">nw.bodies.section</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/shot.html">nw.bodies.shot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/experiment.html">nw.experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/graph.html">nw.graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/graph_backend.html">nw.graph_backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/inspect.html">nw.inspect</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/migrate.html">nw.migrate</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/project.html">nw.project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers.html">nw.renderers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/_common.html">nw.renderers._common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/composite_lipsync.html">nw.renderers.composite_lipsync</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/image_to_video.html">nw.renderers.image_to_video</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/lipsync.html">nw.renderers.lipsync</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/still.html">nw.renderers.still</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/text_to_video.html">nw.renderers.text_to_video</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/schema.html">nw.schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/script_segmentation.html">nw.script_segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/storyboard.html">nw.storyboard</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/transforms.html">nw.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/transforms/_adapters.html">nw.transforms._adapters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/transforms/_adapters/render_strategy.html">nw.transforms._adapters.render_strategy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/transforms/_provenance.html">nw.transforms._provenance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/workflow.html">nw.workflow</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">nw</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">nw.graph</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for nw.graph</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;The project annotation graph — read/write helpers + reelee-style traversals.</span>
+
+<span class="sd">A nw project&#39;s SSOT for sections, shots, character/environment refs, and</span>
+<span class="sd">decisions is a per-project lacing :class:`SqliteStore` at</span>
+<span class="sd">``project.annot.sqlite``. This module wraps that store with typed helpers</span>
+<span class="sd">so the rest of nw doesn&#39;t need to know about tier names, MediaRef</span>
+<span class="sd">construction, or annotation envelopes.</span>
+
+<span class="sd">Usage from inside the package:</span>
+
+<span class="sd">    &gt;&gt;&gt; from nw.graph import ProjectGraph</span>
+<span class="sd">    &gt;&gt;&gt; g = ProjectGraph(project_root)</span>
+<span class="sd">    &gt;&gt;&gt; g.upsert_shot_body(shot_body, interval=TimeInterval.from_seconds(0, 8))</span>
+<span class="sd">    &gt;&gt;&gt; for shot in g.shots():</span>
+<span class="sd">    ...     ...</span>
+
+<span class="sd">For reelee&#39;s freshness analysis (planned in §7 of the system overview),</span>
+<span class="sd">:func:`derived_from`, :func:`descendants_of`, and :func:`stale_after`</span>
+<span class="sd">walk the ``provenance.was_derived_from`` edges across **all** stores in</span>
+<span class="sd">a project (project graph + storyboard + alignment).</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">contextmanager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">uuid</span><span class="w"> </span><span class="kn">import</span> <span class="n">UUID</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">lacing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Annotation</span><span class="p">,</span>
+    <span class="n">IntervalAnnotationStore</span><span class="p">,</span>
+    <span class="n">MediaRef</span><span class="p">,</span>
+    <span class="n">Provenance</span><span class="p">,</span>
+    <span class="n">TimeInterval</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">lacing.artifact</span><span class="w"> </span><span class="kn">import</span> <span class="n">_now_rt</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.bodies</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">CHARACTER_REF_BODY_SCHEMA_URI</span><span class="p">,</span>
+    <span class="n">DECISION_BODY_SCHEMA_URI</span><span class="p">,</span>
+    <span class="n">ENVIRONMENT_REF_BODY_SCHEMA_URI</span><span class="p">,</span>
+    <span class="n">SECTION_BODY_SCHEMA_URI</span><span class="p">,</span>
+    <span class="n">SHOT_BODY_SCHEMA_URI</span><span class="p">,</span>
+    <span class="n">CharacterRefBodyV1</span><span class="p">,</span>
+    <span class="n">DecisionBodyV1</span><span class="p">,</span>
+    <span class="n">EnvironmentRefBodyV1</span><span class="p">,</span>
+    <span class="n">SectionBodyV1</span><span class="p">,</span>
+    <span class="n">ShotBodyV1</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.graph_backend</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">SCOPE_ALIGNMENT</span><span class="p">,</span>
+    <span class="n">SCOPE_GRAPH</span><span class="p">,</span>
+    <span class="n">SCOPE_STORYBOARD</span><span class="p">,</span>
+    <span class="n">iter_scope_stores</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.migrate</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_PROJECT_GRAPH_DB_NAME</span><span class="p">,</span>
+    <span class="n">_TIER_CHARACTER_REF</span><span class="p">,</span>
+    <span class="n">_TIER_DECISION</span><span class="p">,</span>
+    <span class="n">_TIER_ENVIRONMENT_REF</span><span class="p">,</span>
+    <span class="n">_TIER_SECTION</span><span class="p">,</span>
+    <span class="n">_TIER_SHOT</span><span class="p">,</span>
+    <span class="n">open_project_graph</span><span class="p">,</span>
+    <span class="n">project_asset_id</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Typed views over annotations</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="StoredSection">
+<a class="viewcode-back" href="../../module_docs/nw/graph.html#nw.StoredSection">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">StoredSection</span><span class="p">:</span>
+    <span class="n">annotation_id</span><span class="p">:</span> <span class="n">UUID</span>
+    <span class="n">interval</span><span class="p">:</span> <span class="n">TimeInterval</span>
+    <span class="n">body</span><span class="p">:</span> <span class="n">SectionBodyV1</span></div>
+
+
+
+<div class="viewcode-block" id="StoredShot">
+<a class="viewcode-back" href="../../module_docs/nw/graph.html#nw.StoredShot">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">StoredShot</span><span class="p">:</span>
+    <span class="n">annotation_id</span><span class="p">:</span> <span class="n">UUID</span>
+    <span class="n">interval</span><span class="p">:</span> <span class="n">TimeInterval</span>
+    <span class="n">body</span><span class="p">:</span> <span class="n">ShotBodyV1</span></div>
+
+
+
+<div class="viewcode-block" id="StoredCharacterRef">
+<a class="viewcode-back" href="../../module_docs/nw/graph.html#nw.StoredCharacterRef">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">StoredCharacterRef</span><span class="p">:</span>
+    <span class="n">annotation_id</span><span class="p">:</span> <span class="n">UUID</span>
+    <span class="n">body</span><span class="p">:</span> <span class="n">CharacterRefBodyV1</span></div>
+
+
+
+<div class="viewcode-block" id="StoredEnvironmentRef">
+<a class="viewcode-back" href="../../module_docs/nw/graph.html#nw.StoredEnvironmentRef">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">StoredEnvironmentRef</span><span class="p">:</span>
+    <span class="n">annotation_id</span><span class="p">:</span> <span class="n">UUID</span>
+    <span class="n">body</span><span class="p">:</span> <span class="n">EnvironmentRefBodyV1</span></div>
+
+
+
+<div class="viewcode-block" id="StoredDecision">
+<a class="viewcode-back" href="../../module_docs/nw/graph.html#nw.StoredDecision">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">StoredDecision</span><span class="p">:</span>
+    <span class="n">annotation_id</span><span class="p">:</span> <span class="n">UUID</span>
+    <span class="n">body</span><span class="p">:</span> <span class="n">DecisionBodyV1</span></div>
+
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># ProjectGraph</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="ProjectGraph">
+<a class="viewcode-back" href="../../module_docs/nw/graph.html#nw.ProjectGraph">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ProjectGraph</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Typed read/write facade over the project&#39;s lacing graph store.</span>
+
+<span class="sd">    Use :meth:`Project.graph` to get one rather than constructing directly.</span>
+<span class="sd">    Each method opens-and-closes the underlying store so concurrent</span>
+<span class="sd">    reads/writes from different processes are safe (SqliteStore is</span>
+<span class="sd">    file-locked).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project_root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">project_root</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">asset_id</span> <span class="o">=</span> <span class="n">project_asset_id</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_root</span><span class="p">)</span>
+
+    <span class="c1"># -- lifecycle -----------------------------------------------------------</span>
+
+    <span class="nd">@contextmanager</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_open</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">IntervalAnnotationStore</span><span class="p">]:</span>
+        <span class="n">store</span> <span class="o">=</span> <span class="n">open_project_graph</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_root</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">store</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">close</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">store</span><span class="p">,</span> <span class="s2">&quot;close&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">close</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">close</span><span class="p">()</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                    <span class="k">pass</span>
+
+    <span class="c1"># -- sections ------------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">sections</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">StoredSection</span><span class="p">]:</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open</span><span class="p">()</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_collect_typed</span><span class="p">(</span>
+                <span class="n">store</span><span class="p">,</span>
+                <span class="n">tier</span><span class="o">=</span><span class="n">_TIER_SECTION</span><span class="p">,</span>
+                <span class="n">schema_uri</span><span class="o">=</span><span class="n">SECTION_BODY_SCHEMA_URI</span><span class="p">,</span>
+                <span class="n">model</span><span class="o">=</span><span class="n">SectionBodyV1</span><span class="p">,</span>
+                <span class="n">wrap</span><span class="o">=</span><span class="k">lambda</span> <span class="n">ann</span><span class="p">,</span> <span class="n">body</span><span class="p">:</span> <span class="n">StoredSection</span><span class="p">(</span>
+                    <span class="n">annotation_id</span><span class="o">=</span><span class="n">ann</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="n">ann</span><span class="o">.</span><span class="n">reference</span><span class="o">.</span><span class="n">interval</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="n">body</span>
+                <span class="p">),</span>
+                <span class="n">sort_key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">interval</span><span class="o">.</span><span class="n">start</span><span class="o">.</span><span class="n">to_seconds</span><span class="p">(),</span>
+            <span class="p">)</span>
+
+<div class="viewcode-block" id="ProjectGraph.upsert_section">
+<a class="viewcode-back" href="../../module_docs/nw/graph.html#nw.ProjectGraph.upsert_section">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">upsert_section</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">body</span><span class="p">:</span> <span class="n">SectionBodyV1</span><span class="p">,</span>
+        <span class="n">interval</span><span class="p">:</span> <span class="n">TimeInterval</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">was_attributed_to</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;user:nw&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UUID</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Replace any existing section with the same ``section_id``; return new uuid.&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open</span><span class="p">()</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">store</span><span class="o">.</span><span class="n">all</span><span class="p">()):</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="n">ann</span><span class="o">.</span><span class="n">tier</span> <span class="o">==</span> <span class="n">_TIER_SECTION</span>
+                    <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">body</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
+                    <span class="ow">and</span> <span class="n">ann</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;section_id&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">body</span><span class="o">.</span><span class="n">section_id</span>
+                <span class="p">):</span>
+                    <span class="n">store</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="n">new_id</span> <span class="o">=</span> <span class="n">_put</span><span class="p">(</span>
+                <span class="n">store</span><span class="p">,</span>
+                <span class="n">tier</span><span class="o">=</span><span class="n">_TIER_SECTION</span><span class="p">,</span>
+                <span class="n">schema_uri</span><span class="o">=</span><span class="n">SECTION_BODY_SCHEMA_URI</span><span class="p">,</span>
+                <span class="n">body</span><span class="o">=</span><span class="n">body</span><span class="p">,</span>
+                <span class="n">interval</span><span class="o">=</span><span class="n">interval</span><span class="p">,</span>
+                <span class="n">asset_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asset_id</span><span class="p">,</span>
+                <span class="n">was_attributed_to</span><span class="o">=</span><span class="n">was_attributed_to</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">new_id</span></div>
+
+
+    <span class="c1"># -- shots ---------------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">shots</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">StoredShot</span><span class="p">]:</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open</span><span class="p">()</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_collect_typed</span><span class="p">(</span>
+                <span class="n">store</span><span class="p">,</span>
+                <span class="n">tier</span><span class="o">=</span><span class="n">_TIER_SHOT</span><span class="p">,</span>
+                <span class="n">schema_uri</span><span class="o">=</span><span class="n">SHOT_BODY_SCHEMA_URI</span><span class="p">,</span>
+                <span class="n">model</span><span class="o">=</span><span class="n">ShotBodyV1</span><span class="p">,</span>
+                <span class="n">wrap</span><span class="o">=</span><span class="k">lambda</span> <span class="n">ann</span><span class="p">,</span> <span class="n">body</span><span class="p">:</span> <span class="n">StoredShot</span><span class="p">(</span>
+                    <span class="n">annotation_id</span><span class="o">=</span><span class="n">ann</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="n">ann</span><span class="o">.</span><span class="n">reference</span><span class="o">.</span><span class="n">interval</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="n">body</span>
+                <span class="p">),</span>
+                <span class="n">sort_key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">interval</span><span class="o">.</span><span class="n">start</span><span class="o">.</span><span class="n">to_seconds</span><span class="p">(),</span>
+            <span class="p">)</span>
+
+<div class="viewcode-block" id="ProjectGraph.upsert_shot">
+<a class="viewcode-back" href="../../module_docs/nw/graph.html#nw.ProjectGraph.upsert_shot">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">upsert_shot</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">body</span><span class="p">:</span> <span class="n">ShotBodyV1</span><span class="p">,</span>
+        <span class="n">interval</span><span class="p">:</span> <span class="n">TimeInterval</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">was_attributed_to</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;user:nw&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UUID</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Replace any existing shot with the same ``shot_id``; return new uuid.&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open</span><span class="p">()</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">store</span><span class="o">.</span><span class="n">all</span><span class="p">()):</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="n">ann</span><span class="o">.</span><span class="n">tier</span> <span class="o">==</span> <span class="n">_TIER_SHOT</span>
+                    <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">body</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
+                    <span class="ow">and</span> <span class="n">ann</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;shot_id&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">body</span><span class="o">.</span><span class="n">shot_id</span>
+                <span class="p">):</span>
+                    <span class="n">store</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">_put</span><span class="p">(</span>
+                <span class="n">store</span><span class="p">,</span>
+                <span class="n">tier</span><span class="o">=</span><span class="n">_TIER_SHOT</span><span class="p">,</span>
+                <span class="n">schema_uri</span><span class="o">=</span><span class="n">SHOT_BODY_SCHEMA_URI</span><span class="p">,</span>
+                <span class="n">body</span><span class="o">=</span><span class="n">body</span><span class="p">,</span>
+                <span class="n">interval</span><span class="o">=</span><span class="n">interval</span><span class="p">,</span>
+                <span class="n">asset_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asset_id</span><span class="p">,</span>
+                <span class="n">was_attributed_to</span><span class="o">=</span><span class="n">was_attributed_to</span><span class="p">,</span>
+            <span class="p">)</span></div>
+
+
+    <span class="c1"># -- character / environment refs ---------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">character_refs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">StoredCharacterRef</span><span class="p">]:</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open</span><span class="p">()</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_collect_typed</span><span class="p">(</span>
+                <span class="n">store</span><span class="p">,</span>
+                <span class="n">tier</span><span class="o">=</span><span class="n">_TIER_CHARACTER_REF</span><span class="p">,</span>
+                <span class="n">schema_uri</span><span class="o">=</span><span class="n">CHARACTER_REF_BODY_SCHEMA_URI</span><span class="p">,</span>
+                <span class="n">model</span><span class="o">=</span><span class="n">CharacterRefBodyV1</span><span class="p">,</span>
+                <span class="n">wrap</span><span class="o">=</span><span class="k">lambda</span> <span class="n">ann</span><span class="p">,</span> <span class="n">body</span><span class="p">:</span> <span class="n">StoredCharacterRef</span><span class="p">(</span>
+                    <span class="n">annotation_id</span><span class="o">=</span><span class="n">ann</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="n">body</span>
+                <span class="p">),</span>
+                <span class="n">sort_key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">upsert_character_ref</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">body</span><span class="p">:</span> <span class="n">CharacterRefBodyV1</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">was_attributed_to</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;user:nw&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UUID</span><span class="p">:</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open</span><span class="p">()</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">store</span><span class="o">.</span><span class="n">all</span><span class="p">()):</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="n">ann</span><span class="o">.</span><span class="n">tier</span> <span class="o">==</span> <span class="n">_TIER_CHARACTER_REF</span>
+                    <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">body</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
+                    <span class="ow">and</span> <span class="n">ann</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">body</span><span class="o">.</span><span class="n">name</span>
+                <span class="p">):</span>
+                    <span class="n">store</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">_put</span><span class="p">(</span>
+                <span class="n">store</span><span class="p">,</span>
+                <span class="n">tier</span><span class="o">=</span><span class="n">_TIER_CHARACTER_REF</span><span class="p">,</span>
+                <span class="n">schema_uri</span><span class="o">=</span><span class="n">CHARACTER_REF_BODY_SCHEMA_URI</span><span class="p">,</span>
+                <span class="n">body</span><span class="o">=</span><span class="n">body</span><span class="p">,</span>
+                <span class="n">interval</span><span class="o">=</span><span class="n">TimeInterval</span><span class="o">.</span><span class="n">from_seconds</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                <span class="n">asset_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asset_id</span><span class="p">,</span>
+                <span class="n">was_attributed_to</span><span class="o">=</span><span class="n">was_attributed_to</span><span class="p">,</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">environment_refs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">StoredEnvironmentRef</span><span class="p">]:</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open</span><span class="p">()</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_collect_typed</span><span class="p">(</span>
+                <span class="n">store</span><span class="p">,</span>
+                <span class="n">tier</span><span class="o">=</span><span class="n">_TIER_ENVIRONMENT_REF</span><span class="p">,</span>
+                <span class="n">schema_uri</span><span class="o">=</span><span class="n">ENVIRONMENT_REF_BODY_SCHEMA_URI</span><span class="p">,</span>
+                <span class="n">model</span><span class="o">=</span><span class="n">EnvironmentRefBodyV1</span><span class="p">,</span>
+                <span class="n">wrap</span><span class="o">=</span><span class="k">lambda</span> <span class="n">ann</span><span class="p">,</span> <span class="n">body</span><span class="p">:</span> <span class="n">StoredEnvironmentRef</span><span class="p">(</span>
+                    <span class="n">annotation_id</span><span class="o">=</span><span class="n">ann</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="n">body</span>
+                <span class="p">),</span>
+                <span class="n">sort_key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">s</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">upsert_environment_ref</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">body</span><span class="p">:</span> <span class="n">EnvironmentRefBodyV1</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">was_attributed_to</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;user:nw&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UUID</span><span class="p">:</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open</span><span class="p">()</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">store</span><span class="o">.</span><span class="n">all</span><span class="p">()):</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="n">ann</span><span class="o">.</span><span class="n">tier</span> <span class="o">==</span> <span class="n">_TIER_ENVIRONMENT_REF</span>
+                    <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">body</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
+                    <span class="ow">and</span> <span class="n">ann</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">body</span><span class="o">.</span><span class="n">name</span>
+                <span class="p">):</span>
+                    <span class="n">store</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">_put</span><span class="p">(</span>
+                <span class="n">store</span><span class="p">,</span>
+                <span class="n">tier</span><span class="o">=</span><span class="n">_TIER_ENVIRONMENT_REF</span><span class="p">,</span>
+                <span class="n">schema_uri</span><span class="o">=</span><span class="n">ENVIRONMENT_REF_BODY_SCHEMA_URI</span><span class="p">,</span>
+                <span class="n">body</span><span class="o">=</span><span class="n">body</span><span class="p">,</span>
+                <span class="n">interval</span><span class="o">=</span><span class="n">TimeInterval</span><span class="o">.</span><span class="n">from_seconds</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                <span class="n">asset_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asset_id</span><span class="p">,</span>
+                <span class="n">was_attributed_to</span><span class="o">=</span><span class="n">was_attributed_to</span><span class="p">,</span>
+            <span class="p">)</span>
+
+    <span class="c1"># -- decisions -----------------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">decisions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">StoredDecision</span><span class="p">]:</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open</span><span class="p">()</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_collect_typed</span><span class="p">(</span>
+                <span class="n">store</span><span class="p">,</span>
+                <span class="n">tier</span><span class="o">=</span><span class="n">_TIER_DECISION</span><span class="p">,</span>
+                <span class="n">schema_uri</span><span class="o">=</span><span class="n">DECISION_BODY_SCHEMA_URI</span><span class="p">,</span>
+                <span class="n">model</span><span class="o">=</span><span class="n">DecisionBodyV1</span><span class="p">,</span>
+                <span class="n">wrap</span><span class="o">=</span><span class="k">lambda</span> <span class="n">ann</span><span class="p">,</span> <span class="n">body</span><span class="p">:</span> <span class="n">StoredDecision</span><span class="p">(</span>
+                    <span class="n">annotation_id</span><span class="o">=</span><span class="n">ann</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="n">body</span>
+                <span class="p">),</span>
+                <span class="n">sort_key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>  <span class="c1"># decisions arrive in insertion order</span>
+            <span class="p">)</span>
+
+<div class="viewcode-block" id="ProjectGraph.append_decision">
+<a class="viewcode-back" href="../../module_docs/nw/graph.html#nw.ProjectGraph.append_decision">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">append_decision</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">body</span><span class="p">:</span> <span class="n">DecisionBodyV1</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">was_attributed_to</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;user:nw&quot;</span><span class="p">,</span>
+        <span class="n">was_derived_from</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">UUID</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UUID</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Append a decision; never replaces an existing one (the log is append-only).&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open</span><span class="p">()</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">_put</span><span class="p">(</span>
+                <span class="n">store</span><span class="p">,</span>
+                <span class="n">tier</span><span class="o">=</span><span class="n">_TIER_DECISION</span><span class="p">,</span>
+                <span class="n">schema_uri</span><span class="o">=</span><span class="n">DECISION_BODY_SCHEMA_URI</span><span class="p">,</span>
+                <span class="n">body</span><span class="o">=</span><span class="n">body</span><span class="p">,</span>
+                <span class="n">interval</span><span class="o">=</span><span class="n">TimeInterval</span><span class="o">.</span><span class="n">from_seconds</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                <span class="n">asset_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asset_id</span><span class="p">,</span>
+                <span class="n">was_attributed_to</span><span class="o">=</span><span class="n">was_attributed_to</span><span class="p">,</span>
+                <span class="n">was_derived_from</span><span class="o">=</span><span class="n">was_derived_from</span><span class="p">,</span>
+            <span class="p">)</span></div>
+
+
+    <span class="c1"># -- arbitrary annotations (for things that don&#39;t fit a typed bucket) ----</span>
+
+<div class="viewcode-block" id="ProjectGraph.add_annotation">
+<a class="viewcode-back" href="../../module_docs/nw/graph.html#nw.ProjectGraph.add_annotation">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_annotation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ann</span><span class="p">:</span> <span class="n">Annotation</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Write one annotation to the project graph.</span>
+
+<span class="sd">        Registers ``ann.tier`` if it isn&#39;t a known tier yet — ``SqliteStore``</span>
+<span class="sd">        enforces a foreign key on ``tier``, so writing under a fresh tier</span>
+<span class="sd">        (e.g. a Transform output kind) would otherwise fail. ``add_tier`` is</span>
+<span class="sd">        idempotent, so this is a no-op for the built-in project tiers.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">lacing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tier</span><span class="p">,</span> <span class="n">TierStereotype</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open</span><span class="p">()</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
+            <span class="n">store</span><span class="o">.</span><span class="n">add_tier</span><span class="p">(</span><span class="n">Tier</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">ann</span><span class="o">.</span><span class="n">tier</span><span class="p">,</span> <span class="n">stereotype</span><span class="o">=</span><span class="n">TierStereotype</span><span class="o">.</span><span class="n">NONE</span><span class="p">))</span>
+            <span class="n">store</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ann</span><span class="p">)</span></div>
+</div>
+
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Reelee-style traversals</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_scope_paths</span><span class="p">(</span><span class="n">project_root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The ``{scope_name: legacy_sqlite_path}`` map for a project&#39;s stores.</span>
+
+<span class="sd">    The legacy per-scope SQLite layout (graph + storyboard + alignment). The</span>
+<span class="sd">    backend seam (:mod:`nw.graph_backend`) uses the scope names to address the</span>
+<span class="sd">    same stores in Postgres mode.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">project_root</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="n">SCOPE_GRAPH</span><span class="p">:</span> <span class="n">p</span> <span class="o">/</span> <span class="n">_PROJECT_GRAPH_DB_NAME</span><span class="p">,</span>
+        <span class="n">SCOPE_STORYBOARD</span><span class="p">:</span> <span class="n">p</span> <span class="o">/</span> <span class="s2">&quot;storyboard.annot.sqlite&quot;</span><span class="p">,</span>
+        <span class="n">SCOPE_ALIGNMENT</span><span class="p">:</span> <span class="n">p</span> <span class="o">/</span> <span class="s2">&quot;lyrics&quot;</span> <span class="o">/</span> <span class="s2">&quot;alignment.annot&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+
+<div class="viewcode-block" id="all_project_stores">
+<a class="viewcode-back" href="../../module_docs/nw/graph.html#nw.all_project_stores">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">all_project_stores</span><span class="p">(</span><span class="n">project_root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Path</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the **existing** lacing-store file paths under a project.</span>
+
+<span class="sd">    SQLite-mode only — these are filesystem paths. Code that walks or mutates</span>
+<span class="sd">    project stores should route through :func:`open_project_stores` (which</span>
+<span class="sd">    honours the backend seam) rather than opening these paths directly, so it</span>
+<span class="sd">    keeps working when the backend is Postgres.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">_scope_paths</span><span class="p">(</span><span class="n">project_root</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">exists</span><span class="p">()]</span></div>
+
+
+
+<div class="viewcode-block" id="open_project_stores">
+<a class="viewcode-back" href="../../module_docs/nw/graph.html#nw.open_project_stores">[docs]</a>
+<span class="nd">@contextmanager</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">open_project_stores</span><span class="p">(</span>
+    <span class="n">project_root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Iterator</span><span class="p">[</span><span class="n">IntervalAnnotationStore</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Yield an iterator of open stores, one per scope, honouring the backend.</span>
+
+<span class="sd">    The backend-aware replacement for ``for p in all_project_stores(...):</span>
+<span class="sd">    SqliteStore(p)``. Under SQLite it visits each existing per-scope file;</span>
+<span class="sd">    under Postgres it visits each scope&#39;s tenant in the shared DB. Use it for</span>
+<span class="sd">    both reads (walk ``.all()``) and writes (``.remove`` / ``.add``).</span>
+
+<span class="sd">    Each store is closed before the next opens, so consume each store&#39;s</span>
+<span class="sd">    annotations before advancing.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">asset_id</span> <span class="o">=</span> <span class="n">project_asset_id</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">project_root</span><span class="p">))</span>
+    <span class="k">with</span> <span class="n">iter_scope_stores</span><span class="p">(</span><span class="n">_scope_paths</span><span class="p">(</span><span class="n">project_root</span><span class="p">),</span> <span class="n">asset_id</span><span class="o">=</span><span class="n">asset_id</span><span class="p">)</span> <span class="k">as</span> <span class="n">stores</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="n">stores</span></div>
+
+
+
+<div class="viewcode-block" id="iter_all_annotations">
+<a class="viewcode-back" href="../../module_docs/nw/graph.html#nw.iter_all_annotations">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">iter_all_annotations</span><span class="p">(</span><span class="n">project_root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Walk every annotation in every store under a project (any backend).&quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="n">open_project_stores</span><span class="p">(</span><span class="n">project_root</span><span class="p">)</span> <span class="k">as</span> <span class="n">stores</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">store</span> <span class="ow">in</span> <span class="n">stores</span><span class="p">:</span>
+            <span class="k">yield from</span> <span class="n">store</span><span class="o">.</span><span class="n">all</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="descendants_of">
+<a class="viewcode-back" href="../../module_docs/nw/graph.html#nw.descendants_of">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">descendants_of</span><span class="p">(</span>
+    <span class="n">project_root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span> <span class="n">ancestor_id</span><span class="p">:</span> <span class="n">UUID</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return every annotation whose provenance chain leads back to ``ancestor_id``.</span>
+
+<span class="sd">    Walks ``provenance.was_derived_from`` *transitively* across all of the</span>
+<span class="sd">    project&#39;s lacing stores. This is the operation reelee&#39;s freshness</span>
+<span class="sd">    analysis is built on (system overview §7): when a node changes, every</span>
+<span class="sd">    annotation in the closure of this set is &quot;downstream of the change.&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Collect once so we can do multi-hop closure without re-opening stores.</span>
+    <span class="n">all_anns</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">iter_all_annotations</span><span class="p">(</span><span class="n">project_root</span><span class="p">))</span>
+    <span class="n">by_id</span> <span class="o">=</span> <span class="p">{</span><span class="n">ann</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">ann</span> <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">all_anns</span><span class="p">}</span>
+
+    <span class="c1"># Children index: parent_id -&gt; [child_id, ...]</span>
+    <span class="n">children</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">UUID</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">UUID</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">all_anns</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">parent</span> <span class="ow">in</span> <span class="n">ann</span><span class="o">.</span><span class="n">provenance</span><span class="o">.</span><span class="n">was_derived_from</span><span class="p">:</span>
+            <span class="n">children</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+    <span class="c1"># BFS from ancestor_id.</span>
+    <span class="n">seen</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="n">UUID</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="n">frontier</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">children</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ancestor_id</span><span class="p">,</span> <span class="p">()))</span>
+    <span class="k">while</span> <span class="n">frontier</span><span class="p">:</span>
+        <span class="n">cur</span> <span class="o">=</span> <span class="n">frontier</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">cur</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">seen</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">cur</span><span class="p">)</span>
+        <span class="n">frontier</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">children</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">cur</span><span class="p">,</span> <span class="p">()))</span>
+
+    <span class="k">return</span> <span class="p">[</span><span class="n">by_id</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">seen</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">by_id</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="derived_from">
+<a class="viewcode-back" href="../../module_docs/nw/graph.html#nw.derived_from">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">derived_from</span><span class="p">(</span>
+    <span class="n">project_root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span> <span class="n">annotation_id</span><span class="p">:</span> <span class="n">UUID</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the annotations this one was directly derived from.</span>
+
+<span class="sd">    Walks ``provenance.was_derived_from`` *one hop only* across all of the</span>
+<span class="sd">    project&#39;s stores.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">all_anns</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">iter_all_annotations</span><span class="p">(</span><span class="n">project_root</span><span class="p">))</span>
+    <span class="n">by_id</span> <span class="o">=</span> <span class="p">{</span><span class="n">ann</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">ann</span> <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">all_anns</span><span class="p">}</span>
+    <span class="n">target</span> <span class="o">=</span> <span class="n">by_id</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">annotation_id</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">target</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">by_id</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">target</span><span class="o">.</span><span class="n">provenance</span><span class="o">.</span><span class="n">was_derived_from</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">by_id</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="stale_after">
+<a class="viewcode-back" href="../../module_docs/nw/graph.html#nw.stale_after">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">stale_after</span><span class="p">(</span>
+    <span class="n">project_root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span> <span class="n">changed_id</span><span class="p">:</span> <span class="n">UUID</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return every annotation that is downstream of ``changed_id``.</span>
+
+<span class="sd">    Reelee&#39;s freshness operation (system overview §7): when a node changes</span>
+<span class="sd">    (a character description, a screenplay scene, a model parameter), the</span>
+<span class="sd">    set of annotations now potentially out of date is the transitive closure</span>
+<span class="sd">    of ``was_derived_from`` edges leading to ``changed_id``. This is just</span>
+<span class="sd">    :func:`descendants_of` under a more user-facing name; both names are</span>
+<span class="sd">    exposed because reelee&#39;s UI surfaces use both verbs.</span>
+
+<span class="sd">    The returned list does NOT include ``changed_id`` itself (it&#39;s the source</span>
+<span class="sd">    of the change, not a stale derivative).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">descendants_of</span><span class="p">(</span><span class="n">project_root</span><span class="p">,</span> <span class="n">changed_id</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="annotations_at_tier">
+<a class="viewcode-back" href="../../module_docs/nw/graph.html#nw.annotations_at_tier">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">annotations_at_tier</span><span class="p">(</span>
+    <span class="n">project_root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span> <span class="n">tier</span><span class="p">:</span> <span class="nb">str</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return every annotation at the given tier across all of the project&#39;s stores.</span>
+
+<span class="sd">    Useful for reelee views that lens on a single annotation kind:</span>
+<span class="sd">    ``annotations_at_tier(root, &quot;shot&quot;)`` returns every shot annotation</span>
+<span class="sd">    regardless of which store it lives in (project graph vs. storyboard</span>
+<span class="sd">    vs. alignment).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">ann</span> <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">iter_all_annotations</span><span class="p">(</span><span class="n">project_root</span><span class="p">)</span> <span class="k">if</span> <span class="n">ann</span><span class="o">.</span><span class="n">tier</span> <span class="o">==</span> <span class="n">tier</span><span class="p">]</span></div>
+
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Internals</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_put</span><span class="p">(</span>
+    <span class="n">store</span><span class="p">:</span> <span class="n">IntervalAnnotationStore</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">tier</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">schema_uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">body</span><span class="p">,</span>
+    <span class="n">interval</span><span class="p">:</span> <span class="n">TimeInterval</span><span class="p">,</span>
+    <span class="n">asset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">was_attributed_to</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">was_derived_from</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">UUID</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UUID</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Insert one annotation; return its UUID.&quot;&quot;&quot;</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">_uuid</span>
+    <span class="n">new_id</span> <span class="o">=</span> <span class="n">_uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span>
+    <span class="n">ann</span> <span class="o">=</span> <span class="n">Annotation</span><span class="p">(</span>
+        <span class="nb">id</span><span class="o">=</span><span class="n">new_id</span><span class="p">,</span>
+        <span class="n">tier</span><span class="o">=</span><span class="n">tier</span><span class="p">,</span>
+        <span class="n">reference</span><span class="o">=</span><span class="n">MediaRef</span><span class="p">(</span><span class="n">asset_id</span><span class="o">=</span><span class="n">asset_id</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="n">interval</span><span class="p">),</span>
+        <span class="n">body</span><span class="o">=</span><span class="n">body</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="s2">&quot;model_dump&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="nb">dict</span><span class="p">(</span><span class="n">body</span><span class="p">),</span>
+        <span class="n">body_schema_uri</span><span class="o">=</span><span class="n">schema_uri</span><span class="p">,</span>
+        <span class="n">provenance</span><span class="o">=</span><span class="n">Provenance</span><span class="p">(</span>
+            <span class="n">was_generated_by</span><span class="o">=</span><span class="s2">&quot;agent:nw.graph&quot;</span><span class="p">,</span>
+            <span class="n">was_attributed_to</span><span class="o">=</span><span class="n">was_attributed_to</span><span class="p">,</span>
+            <span class="n">was_derived_from</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">was_derived_from</span><span class="p">),</span>
+            <span class="n">generated_at_time</span><span class="o">=</span><span class="n">_now_rt</span><span class="p">(),</span>
+            <span class="n">activity</span><span class="o">=</span><span class="s2">&quot;create&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">store</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ann</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">new_id</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_collect_typed</span><span class="p">(</span>
+    <span class="n">store</span><span class="p">:</span> <span class="n">IntervalAnnotationStore</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">tier</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">schema_uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">model</span><span class="p">,</span>
+    <span class="n">wrap</span><span class="p">,</span>
+    <span class="n">sort_key</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">store</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">ann</span><span class="o">.</span><span class="n">tier</span> <span class="o">!=</span> <span class="n">tier</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">ann</span><span class="o">.</span><span class="n">body_schema_uri</span> <span class="o">!=</span> <span class="n">schema_uri</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">body</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">wrap</span><span class="p">(</span><span class="n">ann</span><span class="p">,</span> <span class="n">body</span><span class="p">))</span>
+    <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">sort_key</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

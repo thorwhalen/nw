@@ -1,0 +1,4 @@
+nw.bodies.render_result
+=======================
+.. automodule:: nw.bodies.render_result
+   :members:

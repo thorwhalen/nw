@@ -1,0 +1,318 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>nw.transforms._adapters.render_strategy &mdash; nw 0.0.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=282f96c0"></script>
+      <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../../../_static/toggleprompt.js?v=d7ede5d2"></script>
+      <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            nw
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../module_docs/nw.html">nw</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../module_docs/nw/bodies.html">nw.bodies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../module_docs/nw/bodies/character_ref.html">nw.bodies.character_ref</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../module_docs/nw/bodies/decision.html">nw.bodies.decision</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../module_docs/nw/bodies/environment_ref.html">nw.bodies.environment_ref</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../module_docs/nw/bodies/render_result.html">nw.bodies.render_result</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../module_docs/nw/bodies/section.html">nw.bodies.section</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../module_docs/nw/bodies/shot.html">nw.bodies.shot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../module_docs/nw/experiment.html">nw.experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../module_docs/nw/graph.html">nw.graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../module_docs/nw/graph_backend.html">nw.graph_backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../module_docs/nw/inspect.html">nw.inspect</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../module_docs/nw/migrate.html">nw.migrate</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../module_docs/nw/project.html">nw.project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../module_docs/nw/renderers.html">nw.renderers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../module_docs/nw/renderers/_common.html">nw.renderers._common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../module_docs/nw/renderers/composite_lipsync.html">nw.renderers.composite_lipsync</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../module_docs/nw/renderers/image_to_video.html">nw.renderers.image_to_video</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../module_docs/nw/renderers/lipsync.html">nw.renderers.lipsync</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../module_docs/nw/renderers/still.html">nw.renderers.still</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../module_docs/nw/renderers/text_to_video.html">nw.renderers.text_to_video</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../module_docs/nw/schema.html">nw.schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../module_docs/nw/script_segmentation.html">nw.script_segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../module_docs/nw/storyboard.html">nw.storyboard</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../module_docs/nw/transforms.html">nw.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../module_docs/nw/transforms/_adapters.html">nw.transforms._adapters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../module_docs/nw/transforms/_adapters/render_strategy.html">nw.transforms._adapters.render_strategy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../module_docs/nw/transforms/_provenance.html">nw.transforms._provenance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../module_docs/nw/workflow.html">nw.workflow</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">nw</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../../transforms.html">nw.transforms</a></li>
+      <li class="breadcrumb-item active">nw.transforms._adapters.render_strategy</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for nw.transforms._adapters.render_strategy</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Adapter: wrap a legacy ``nw.renderers.Strategy`` as a ``Transform``.</span>
+
+<span class="sd">The 5 built-in render strategies (``lipsync``, ``image_to_video``,</span>
+<span class="sd">``text_to_video``, ``still``, ``composite_lipsync``) predate the Transform</span>
+<span class="sd">abstraction. They operate on a :class:`nw.workflow.ShotPreparation` and have</span>
+<span class="sd">a ``plan`` + ``materialize`` shape. A Transform operates on annotations and</span>
+<span class="sd">has a ``plan`` + ``execute`` shape.</span>
+
+<span class="sd">This adapter bridges the two without touching the strategies:</span>
+
+<span class="sd">- ``plan`` resolves the shot annotation to a ``ShotPreparation`` (via</span>
+<span class="sd">  ``nw.workflow.prepare_shot``), delegates to ``strategy.plan``, and builds a</span>
+<span class="sd">  skeleton ``render-result`` annotation whose provenance points at the shot.</span>
+<span class="sd">- ``execute`` runs the Plan, re-derives the *local-only* ``ShotPreparation``</span>
+<span class="sd">  (``upload=False`` — ``materialize`` only needs local paths), delegates to</span>
+<span class="sd">  ``strategy.materialize`` for the final mp4, and completes the annotation.</span>
+
+<span class="sd">Registering these proves the Transform contract is expressive enough for the</span>
+<span class="sd">existing rendering code. ``nw.workflow.execute_render`` is untouched and keeps</span>
+<span class="sd">working; new code can drive renders through the Transform registry instead.</span>
+
+<span class="sd">Known wart surfaced by this adapter: a render strategy&#39;s ``materialize`` step</span>
+<span class="sd">needs local paths that aren&#39;t in the ``falaw.Plan``, so ``execute`` re-runs</span>
+<span class="sd">``prepare_shot``. ``falaw``-only Transforms don&#39;t have this issue (the Plan&#39;s</span>
+<span class="sd">``&lt;from N&gt;`` placeholders are self-contained). Left as-is for now — it&#39;s the</span>
+<span class="sd">honest shape of wrapping pre-Transform code.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">ConfigDict</span><span class="p">,</span> <span class="n">Field</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">falaw</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plan</span><span class="p">,</span> <span class="n">execute_plan</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">lacing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotation</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">..</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseTransform</span><span class="p">,</span> <span class="n">TransformInputs</span><span class="p">,</span> <span class="n">TransformResult</span><span class="p">,</span> <span class="n">register_transform</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._provenance</span><span class="w"> </span><span class="kn">import</span> <span class="n">derive_provenance</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">...bodies</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">RENDER_RESULT_BODY_SCHEMA_URI</span><span class="p">,</span>
+    <span class="n">RENDER_RESULT_TIER</span><span class="p">,</span>
+    <span class="n">RenderResultBodyV1</span><span class="p">,</span>
+    <span class="n">SHOT_BODY_SCHEMA_URI</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="RenderStrategyParams">
+<a class="viewcode-back" href="../../../../module_docs/nw/transforms/_adapters/render_strategy.html#nw.transforms._adapters.render_strategy.RenderStrategyParams">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">RenderStrategyParams</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Per-call parameters for a render-strategy Transform.&quot;&quot;&quot;</span>
+
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
+
+    <span class="n">quality</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="s2">&quot;balanced&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Quality tier passed to the strategy: &quot;draft&quot; | &quot;balanced&quot; | &quot;high&quot;.&#39;</span>
+    <span class="p">)</span>
+    <span class="n">upload</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">True</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Upload local files to fal-storage during plan so the Plan has &quot;</span>
+            <span class="s2">&quot;stable URLs. False for offline plan inspection (the resulting &quot;</span>
+            <span class="s2">&quot;Plan can&#39;t be executed).&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">model_overrides</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Per-step model id overrides, forwarded to the strategy.&quot;</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="RenderStrategyTransform">
+<a class="viewcode-back" href="../../../../module_docs/nw/transforms/_adapters/render_strategy.html#nw.transforms._adapters.render_strategy.RenderStrategyTransform">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">RenderStrategyTransform</span><span class="p">(</span><span class="n">BaseTransform</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Wraps one ``nw.renderers.Strategy`` instance as a Transform.</span>
+
+<span class="sd">    ``input_kinds`` is just ``(shot,)`` — the character / environment context</span>
+<span class="sd">    a strategy needs is resolved from the *project* by ``prepare_shot``, not</span>
+<span class="sd">    passed through ``TransformInputs``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">input_kinds</span> <span class="o">=</span> <span class="p">(</span><span class="n">SHOT_BODY_SCHEMA_URI</span><span class="p">,)</span>
+    <span class="n">output_kind</span> <span class="o">=</span> <span class="n">RENDER_RESULT_BODY_SCHEMA_URI</span>
+    <span class="n">params_model</span> <span class="o">=</span> <span class="n">RenderStrategyParams</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">strategy</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_strategy</span> <span class="o">=</span> <span class="n">strategy</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;shot_to_render_result.fal.</span><span class="si">{</span><span class="n">strategy</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">plan</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">project</span><span class="p">,</span>
+        <span class="n">inputs</span><span class="p">:</span> <span class="n">TransformInputs</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">params</span><span class="p">:</span> <span class="n">RenderStrategyParams</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Plan</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Annotation</span><span class="p">,</span> <span class="o">...</span><span class="p">]]:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">...workflow</span><span class="w"> </span><span class="kn">import</span> <span class="n">prepare_shot</span>
+
+        <span class="n">params</span> <span class="o">=</span> <span class="n">params</span> <span class="ow">or</span> <span class="n">RenderStrategyParams</span><span class="p">()</span>
+        <span class="n">shot_ann</span> <span class="o">=</span> <span class="n">inputs</span><span class="o">.</span><span class="n">primary</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">shot_id</span> <span class="o">=</span> <span class="n">shot_ann</span><span class="o">.</span><span class="n">body</span><span class="p">[</span><span class="s2">&quot;shot_id&quot;</span><span class="p">]</span>
+
+        <span class="n">prep</span> <span class="o">=</span> <span class="n">prepare_shot</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">shot_id</span><span class="p">,</span> <span class="n">upload</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">upload</span><span class="p">)</span>
+        <span class="n">plan</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_strategy</span><span class="o">.</span><span class="n">plan</span><span class="p">(</span>
+            <span class="n">prep</span><span class="p">,</span>
+            <span class="n">quality</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">quality</span><span class="p">,</span>
+            <span class="n">model_overrides</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">model_overrides</span> <span class="ow">or</span> <span class="p">{},</span>
+        <span class="p">)</span>
+
+        <span class="n">skeleton</span> <span class="o">=</span> <span class="n">Annotation</span><span class="p">(</span>
+            <span class="nb">id</span><span class="o">=</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">(),</span>
+            <span class="n">tier</span><span class="o">=</span><span class="n">RENDER_RESULT_TIER</span><span class="p">,</span>
+            <span class="n">reference</span><span class="o">=</span><span class="n">shot_ann</span><span class="o">.</span><span class="n">reference</span><span class="p">,</span>  <span class="c1"># inherit the shot&#39;s interval + asset</span>
+            <span class="n">body</span><span class="o">=</span><span class="n">RenderResultBodyV1</span><span class="p">(</span>
+                <span class="n">shot_id</span><span class="o">=</span><span class="n">shot_id</span><span class="p">,</span>
+                <span class="n">strategy</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_strategy</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="n">output_path</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+                <span class="n">artifact_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">duration_s</span><span class="o">=</span><span class="n">prep</span><span class="o">.</span><span class="n">duration_s</span><span class="p">,</span>
+                <span class="n">total_estimated_cost_usd</span><span class="o">=</span><span class="n">plan</span><span class="o">.</span><span class="n">total_cost_usd</span><span class="p">,</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(),</span>
+            <span class="n">body_schema_uri</span><span class="o">=</span><span class="n">RENDER_RESULT_BODY_SCHEMA_URI</span><span class="p">,</span>
+            <span class="n">provenance</span><span class="o">=</span><span class="n">derive_provenance</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="s2">&quot;nw.renderers&quot;</span><span class="p">,</span>
+                <span class="n">inputs</span><span class="p">,</span>
+                <span class="n">attributed_to</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;agent:nw.renderers.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_strategy</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">plan</span><span class="p">,</span> <span class="p">(</span><span class="n">skeleton</span><span class="p">,)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">project</span><span class="p">,</span>
+        <span class="n">plan</span><span class="p">:</span> <span class="n">Plan</span><span class="p">,</span>
+        <span class="n">skeleton</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Annotation</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">use_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TransformResult</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">...workflow</span><span class="w"> </span><span class="kn">import</span> <span class="n">prepare_shot</span>
+
+        <span class="n">shot_id</span> <span class="o">=</span> <span class="n">skeleton</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">body</span><span class="p">[</span><span class="s2">&quot;shot_id&quot;</span><span class="p">]</span>
+        <span class="c1"># materialize() needs only local paths — no upload required.</span>
+        <span class="n">prep</span> <span class="o">=</span> <span class="n">prepare_shot</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">shot_id</span><span class="p">,</span> <span class="n">upload</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">artifacts</span> <span class="o">=</span> <span class="n">execute_plan</span><span class="p">(</span><span class="n">plan</span><span class="p">,</span> <span class="n">use_cache</span><span class="o">=</span><span class="n">use_cache</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">force</span><span class="p">)</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_strategy</span><span class="o">.</span><span class="n">materialize</span><span class="p">(</span><span class="n">prep</span><span class="p">,</span> <span class="n">plan</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">artifacts</span><span class="p">))</span>
+
+        <span class="n">video_artifact</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">a</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">artifacts</span> <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;video&quot;</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">rel_output</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">root</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">output</span><span class="o">.</span><span class="n">is_relative_to</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
+            <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">completed</span> <span class="o">=</span> <span class="n">skeleton</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">model_copy</span><span class="p">(</span>
+            <span class="n">update</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;body&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="o">**</span><span class="n">skeleton</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">body</span><span class="p">,</span>
+                    <span class="s2">&quot;output_path&quot;</span><span class="p">:</span> <span class="n">rel_output</span><span class="p">,</span>
+                    <span class="s2">&quot;artifact_id&quot;</span><span class="p">:</span> <span class="n">video_artifact</span><span class="o">.</span><span class="n">asset_id</span> <span class="k">if</span> <span class="n">video_artifact</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">project</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add_annotation</span><span class="p">(</span><span class="n">completed</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">TransformResult</span><span class="p">(</span>
+            <span class="n">annotations</span><span class="o">=</span><span class="p">(</span><span class="n">completed</span><span class="p">,),</span>
+            <span class="n">artifacts</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">artifacts</span><span class="p">),</span>
+            <span class="n">cost_usd_actual</span><span class="o">=</span><span class="nb">sum</span><span class="p">((</span><span class="n">a</span><span class="o">.</span><span class="n">cost_usd</span> <span class="ow">or</span> <span class="mf">0.0</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">artifacts</span><span class="p">),</span>
+            <span class="n">cache_hit_savings_usd</span><span class="o">=</span><span class="n">plan</span><span class="o">.</span><span class="n">cache_hit_savings_usd</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+
+<span class="c1"># --- wrap every registered render strategy at import time ------------------</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">nw.renderers</span><span class="w"> </span><span class="kn">import</span> <span class="n">strategies</span> <span class="k">as</span> <span class="n">_strategies</span>  <span class="c1"># noqa: E402</span>
+
+<span class="k">for</span> <span class="n">_name</span><span class="p">,</span> <span class="n">_strategy</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">_strategies</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+    <span class="n">register_transform</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;shot_to_render_result.fal.</span><span class="si">{</span><span class="n">_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">RenderStrategyTransform</span><span class="p">(</span><span class="n">_strategy</span><span class="p">),</span>
+    <span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

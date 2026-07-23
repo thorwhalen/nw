@@ -1,0 +1,221 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>nw.experiment &mdash; nw 0.0.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=282f96c0"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="nw.graph" href="graph.html" />
+    <link rel="prev" title="nw.bodies.shot" href="bodies/shot.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            nw
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../nw.html">nw</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies.html">nw.bodies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/character_ref.html">nw.bodies.character_ref</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/decision.html">nw.bodies.decision</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/environment_ref.html">nw.bodies.environment_ref</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/render_result.html">nw.bodies.render_result</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/section.html">nw.bodies.section</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/shot.html">nw.bodies.shot</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">nw.experiment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#nw.experiment.apply_to_projects"><code class="docutils literal notranslate"><span class="pre">apply_to_projects()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.experiment.clone_project"><code class="docutils literal notranslate"><span class="pre">clone_project()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.experiment.summarize_all"><code class="docutils literal notranslate"><span class="pre">summarize_all()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="graph.html">nw.graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graph_backend.html">nw.graph_backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="inspect.html">nw.inspect</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrate.html">nw.migrate</a></li>
+<li class="toctree-l1"><a class="reference internal" href="project.html">nw.project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers.html">nw.renderers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/_common.html">nw.renderers._common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/composite_lipsync.html">nw.renderers.composite_lipsync</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/image_to_video.html">nw.renderers.image_to_video</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/lipsync.html">nw.renderers.lipsync</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/still.html">nw.renderers.still</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/text_to_video.html">nw.renderers.text_to_video</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema.html">nw.schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="script_segmentation.html">nw.script_segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="storyboard.html">nw.storyboard</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms.html">nw.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms/_adapters.html">nw.transforms._adapters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms/_adapters/render_strategy.html">nw.transforms._adapters.render_strategy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms/_provenance.html">nw.transforms._provenance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow.html">nw.workflow</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">nw</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">nw.experiment</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/module_docs/nw/experiment.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-nw.experiment">
+<span id="nw-experiment"></span><h1>nw.experiment<a class="headerlink" href="#module-nw.experiment" title="Link to this heading"></a></h1>
+<p>Experiment helpers — clone projects, apply operations across siblings.</p>
+<p>Replaces the bash glue from the muvid_project run:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">cp</span> <span class="pre">-r</span> <span class="pre">the_bells</span> <span class="pre">the_bells_v1_lipsync;</span> <span class="pre">cp</span> <span class="pre">-r</span> <span class="pre">the_bells</span> <span class="pre">the_bells_v2_…</span></code>
+becomes <a class="reference internal" href="#nw.experiment.clone_project" title="nw.experiment.clone_project"><code class="xref py py-func docutils literal notranslate"><span class="pre">clone_project()</span></code></a> calls in a Python loop, with typed
+control over what’s preserved vs. reset.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">for</span> <span class="pre">v</span> <span class="pre">in</span> <span class="pre">v1</span> <span class="pre">v2</span> <span class="pre">v3</span> <span class="pre">v4;</span> <span class="pre">do</span> <span class="pre">muvid</span> <span class="pre">script-apply</span> <span class="pre">…;</span> <span class="pre">done</span></code> becomes
+<a class="reference internal" href="#nw.experiment.apply_to_projects" title="nw.experiment.apply_to_projects"><code class="xref py py-func docutils literal notranslate"><span class="pre">apply_to_projects()</span></code></a>.</p></li>
+</ul>
+<p>The “compare four interpretations” workflow is now a first-class feature
+rather than a shell pipeline.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.experiment.apply_to_projects">
+<span class="sig-prename descclassname"><span class="pre">nw.experiment.</span></span><span class="sig-name descname"><span class="pre">apply_to_projects</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">roots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="project.html#nw.project.Project" title="nw.project.Project"><span class="pre">Project</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">parallel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nw/experiment.html#apply_to_projects"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.experiment.apply_to_projects" title="Link to this definition"></a></dt>
+<dd><p>Apply <code class="docutils literal notranslate"><span class="pre">fn</span></code> to each project at <code class="docutils literal notranslate"><span class="pre">roots</span></code> and collect the results.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>roots</strong> – Iterable of project roots. Each must point to an existing
+nw project.</p></li>
+<li><p><strong>fn</strong> – Callable taking a <code class="xref py py-class docutils literal notranslate"><span class="pre">Project</span></code> and returning anything. Use this
+for per-project operations: parsing a script, estimating cost,
+rendering, gathering reports.</p></li>
+<li><p><strong>parallel</strong> – When True, run <code class="docutils literal notranslate"><span class="pre">fn</span></code> in a thread pool. Useful when <code class="docutils literal notranslate"><span class="pre">fn</span></code>
+is I/O- or API-bound (e.g. a render). When False (default), runs
+sequentially in submission order — the safest semantics.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of <code class="docutils literal notranslate"><span class="pre">fn(project)</span></code> results in the same order as <code class="docutils literal notranslate"><span class="pre">roots</span></code>.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Estimate cost of all four sibling experiments without rendering:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># totals = apply_to_projects(roots, lambda p: estimate_render_cost(p))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Apply the same script to all of them after a refactor:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># apply_to_projects(roots, lambda p: parse_script(p))</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.experiment.clone_project">
+<span class="sig-prename descclassname"><span class="pre">nw.experiment.</span></span><span class="sig-name descname"><span class="pre">clone_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src_root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dst_root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">preserve</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">('song',</span> <span class="pre">'lyrics',</span> <span class="pre">'characters')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">('script',</span> <span class="pre">'shots',</span> <span class="pre">'output',</span> <span class="pre">'.nw')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="schema.html#nw.schema.ProjectSummary" title="nw.schema.ProjectSummary"><span class="pre">ProjectSummary</span></a></span></span><a class="reference internal" href="../../_modules/nw/experiment.html#clone_project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.experiment.clone_project" title="Link to this definition"></a></dt>
+<dd><p>Clone an nw project to a new root.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>src_root</strong> – Path to an existing nw project (must contain <code class="docutils literal notranslate"><span class="pre">project.json</span></code>).</p></li>
+<li><p><strong>dst_root</strong> – Destination path. Must not exist (or pass <code class="docutils literal notranslate"><span class="pre">force=True</span></code> to
+overwrite).</p></li>
+<li><p><strong>preserve</strong> – Subtrees of <code class="docutils literal notranslate"><span class="pre">src_root</span></code> to copy verbatim into <code class="docutils literal notranslate"><span class="pre">dst_root</span></code>.
+Default: <code class="docutils literal notranslate"><span class="pre">(&quot;song&quot;,</span> <span class="pre">&quot;lyrics&quot;,</span> <span class="pre">&quot;characters&quot;)</span></code>.</p></li>
+<li><p><strong>reset</strong> – Subtrees of <code class="docutils literal notranslate"><span class="pre">dst_root</span></code> to (re)create as empty after copying.
+Default: <code class="docutils literal notranslate"><span class="pre">(&quot;script&quot;,</span> <span class="pre">&quot;shots&quot;,</span> <span class="pre">&quot;output&quot;,</span> <span class="pre">&quot;.nw&quot;)</span></code>.</p></li>
+<li><p><strong>title</strong> – New title for the cloned project. Defaults to <code class="docutils literal notranslate"><span class="pre">dst_root</span></code>’s
+folder name.</p></li>
+<li><p><strong>force</strong> – When True, overwrite an existing <code class="docutils literal notranslate"><span class="pre">dst_root</span></code> (refuses by default
+to avoid clobbering work).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ProjectSummary</span></code> of the cloned project.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.experiment.summarize_all">
+<span class="sig-prename descclassname"><span class="pre">nw.experiment.</span></span><span class="sig-name descname"><span class="pre">summarize_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">roots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="schema.html#nw.schema.ProjectSummary" title="nw.schema.ProjectSummary"><span class="pre">ProjectSummary</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nw/experiment.html#summarize_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.experiment.summarize_all" title="Link to this definition"></a></dt>
+<dd><p>Convenience: return a <code class="xref py py-class docutils literal notranslate"><span class="pre">ProjectSummary</span></code> for each project.</p>
+<p>Equivalent to <code class="docutils literal notranslate"><span class="pre">apply_to_projects(roots,</span> <span class="pre">lambda</span> <span class="pre">p:</span> <span class="pre">p.read_summary())</span></code>.</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="bodies/shot.html" class="btn btn-neutral float-left" title="nw.bodies.shot" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="graph.html" class="btn btn-neutral float-right" title="nw.graph" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

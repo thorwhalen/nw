@@ -1,0 +1,313 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>nw.project &mdash; nw 0.0.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=282f96c0"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="nw.renderers" href="renderers.html" />
+    <link rel="prev" title="nw.migrate" href="migrate.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            nw
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../nw.html">nw</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies.html">nw.bodies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/character_ref.html">nw.bodies.character_ref</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/decision.html">nw.bodies.decision</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/environment_ref.html">nw.bodies.environment_ref</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/render_result.html">nw.bodies.render_result</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/section.html">nw.bodies.section</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/shot.html">nw.bodies.shot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experiment.html">nw.experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graph.html">nw.graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graph_backend.html">nw.graph_backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="inspect.html">nw.inspect</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrate.html">nw.migrate</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">nw.project</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#nw.project.CharacterImage"><code class="docutils literal notranslate"><span class="pre">CharacterImage</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.project.Project"><code class="docutils literal notranslate"><span class="pre">Project</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#nw.project.Project.add_character"><code class="docutils literal notranslate"><span class="pre">Project.add_character()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.project.Project.init"><code class="docutils literal notranslate"><span class="pre">Project.init()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.project.Project.list_character_images"><code class="docutils literal notranslate"><span class="pre">Project.list_character_images()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.project.Project.log_decision"><code class="docutils literal notranslate"><span class="pre">Project.log_decision()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.project.Project.read_spec"><code class="docutils literal notranslate"><span class="pre">Project.read_spec()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.project.Project.read_summary"><code class="docutils literal notranslate"><span class="pre">Project.read_summary()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.project.Project.set_character_anchor"><code class="docutils literal notranslate"><span class="pre">Project.set_character_anchor()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.project.Project.set_global_style"><code class="docutils literal notranslate"><span class="pre">Project.set_global_style()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.project.Project.set_song"><code class="docutils literal notranslate"><span class="pre">Project.set_song()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.project.Project.set_title"><code class="docutils literal notranslate"><span class="pre">Project.set_title()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.project.Project.update_spec"><code class="docutils literal notranslate"><span class="pre">Project.update_spec()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.project.Project.write_spec"><code class="docutils literal notranslate"><span class="pre">Project.write_spec()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="renderers.html">nw.renderers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/_common.html">nw.renderers._common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/composite_lipsync.html">nw.renderers.composite_lipsync</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/image_to_video.html">nw.renderers.image_to_video</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/lipsync.html">nw.renderers.lipsync</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/still.html">nw.renderers.still</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/text_to_video.html">nw.renderers.text_to_video</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema.html">nw.schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="script_segmentation.html">nw.script_segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="storyboard.html">nw.storyboard</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms.html">nw.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms/_adapters.html">nw.transforms._adapters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms/_adapters/render_strategy.html">nw.transforms._adapters.render_strategy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms/_provenance.html">nw.transforms._provenance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow.html">nw.workflow</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">nw</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">nw.project</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/module_docs/nw/project.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-nw.project">
+<span id="nw-project"></span><h1>nw.project<a class="headerlink" href="#module-nw.project" title="Link to this heading"></a></h1>
+<p>Project facade: a folder on disk → typed reads, typed writes, typed summary.</p>
+<p>A nw project lives at a folder. <code class="docutils literal notranslate"><span class="pre">project.json</span></code> is the SSOT; every other
+file is a derived artifact (lyrics, alignment store, character cards, shot
+output videos, etc.).</p>
+<p>The facade is deliberately small. It exposes:</p>
+<ul class="simple">
+<li><p>read/write/update of the <code class="xref py py-class docutils literal notranslate"><span class="pre">ProjectSpec</span></code>,</p></li>
+<li><p>folder helpers (<code class="xref py py-meth docutils literal notranslate"><span class="pre">character_dir()</span></code>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">environment_dir()</span></code>,
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">shot_dir()</span></code>),</p></li>
+<li><p>the setter operations the muvid_project agent had to express via
+<code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-c</span></code> glue (<code class="docutils literal notranslate"><span class="pre">set_title</span></code>, <code class="docutils literal notranslate"><span class="pre">set_global_style</span></code>,
+<code class="docutils literal notranslate"><span class="pre">set_character_anchor</span></code>, <code class="docutils literal notranslate"><span class="pre">list_character_images</span></code>),</p></li>
+<li><p>a typed <code class="xref py py-meth docutils literal notranslate"><span class="pre">read_summary()</span></code> that returns the facts <code class="docutils literal notranslate"><span class="pre">muvid</span> <span class="pre">status</span></code>
+printed,</p></li>
+<li><p>a <code class="xref py py-meth docutils literal notranslate"><span class="pre">log_decision()</span></code> append-only line writer.</p></li>
+</ul>
+<p>It does NOT do rendering — that’s <a class="reference internal" href="workflow.html#module-nw.workflow" title="nw.workflow"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nw.workflow</span></code></a> (Phase 1b.2).</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.project.CharacterImage">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.project.</span></span><span class="sig-name descname"><span class="pre">CharacterImage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_selected</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_anchor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nw/project.html#CharacterImage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.project.CharacterImage" title="Link to this definition"></a></dt>
+<dd><p>One image associated with a character.</p>
+<p>Returned by <a class="reference internal" href="#nw.project.Project.list_character_images" title="nw.project.Project.list_character_images"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Project.list_character_images()</span></code></a>. Distinguishes:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">from_ref</span></code>: file lives under <code class="docutils literal notranslate"><span class="pre">characters/&lt;name&gt;/refs/</span></code> — a candidate
+from generation or upload.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">from_selected</span></code>: under <code class="docutils literal notranslate"><span class="pre">characters/&lt;name&gt;/selected/</span></code> — curator-picked.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">is_anchor</span></code>: this is the file the character card currently points at as
+the “use this image” anchor (lipsync seed, etc.).</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.project.Project">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.project.</span></span><span class="sig-name descname"><span class="pre">Project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_migrate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nw/project.html#Project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.project.Project" title="Link to this definition"></a></dt>
+<dd><p>A folder-backed nw project.</p>
+<p>Construct from a path (must exist + must contain <code class="docutils literal notranslate"><span class="pre">project.json</span></code>); use
+<a class="reference internal" href="#nw.project.Project.init" title="nw.project.Project.init"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Project.init()</span></code></a> to bootstrap a new project on disk.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.project.Project.add_character">
+<span class="sig-name descname"><span class="pre">add_character</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="schema.html#nw.schema.CharacterRef" title="nw.schema.CharacterRef"><span class="pre">CharacterRef</span></a></span></span><a class="reference internal" href="../../_modules/nw/project.html#Project.add_character"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.project.Project.add_character" title="Link to this definition"></a></dt>
+<dd><p>Add a character (idempotent: re-adds update the description).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.project.Project.init">
+<span class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">song</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nw.project.Project" title="nw.project.Project"><span class="pre">Project</span></a></span></span><a class="reference internal" href="../../_modules/nw/project.html#Project.init"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.project.Project.init" title="Link to this definition"></a></dt>
+<dd><p>Create a new project on disk and return the <a class="reference internal" href="#nw.project.Project" title="nw.project.Project"><code class="xref py py-class docutils literal notranslate"><span class="pre">Project</span></code></a> facade.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> – Folder to create. Must not exist (or pass <code class="docutils literal notranslate"><span class="pre">force=True</span></code> to
+overwrite an empty folder).</p></li>
+<li><p><strong>title</strong> – Optional human-readable title; defaults to the folder name.</p></li>
+<li><p><strong>song</strong> – Optional path to a master audio file. When given, the file
+is <em>copied</em> into <code class="docutils literal notranslate"><span class="pre">&lt;root&gt;/song/</span></code> and registered in the spec.</p></li>
+<li><p><strong>force</strong> – When True, accept an existing folder if it’s empty (no
+<code class="docutils literal notranslate"><span class="pre">project.json</span></code>); refuse if a project already exists there.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.project.Project.list_character_images">
+<span class="sig-name descname"><span class="pre">list_character_images</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#nw.project.CharacterImage" title="nw.project.CharacterImage"><span class="pre">CharacterImage</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nw/project.html#Project.list_character_images"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.project.Project.list_character_images" title="Link to this definition"></a></dt>
+<dd><p>Return all images associated with a character, with provenance flags.</p>
+<p>Walks <code class="docutils literal notranslate"><span class="pre">characters/&lt;name&gt;/refs/</span></code> and <code class="docutils literal notranslate"><span class="pre">characters/&lt;name&gt;/selected/</span></code>.
+Marks the file the card’s <code class="docutils literal notranslate"><span class="pre">reference_image_path</span></code> points at as
+<code class="docutils literal notranslate"><span class="pre">is_anchor=True</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.project.Project.log_decision">
+<span class="sig-name descname"><span class="pre">log_decision</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">payload</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/nw/project.html#Project.log_decision"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.project.Project.log_decision" title="Link to this definition"></a></dt>
+<dd><p>Record a typed decision in the project graph + the JSONL audit log.</p>
+<p>Decisions are project-local provenance: which character anchor was
+picked, which model overrode the default, why a shot was retried.
+Both surfaces stay in sync:
+- The lacing graph (<code class="docutils literal notranslate"><span class="pre">decision</span></code> tier, body schema</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">annot://schema/decision/v1</span></code>) is the SSOT — reelee will surface
+these in inspector / network views.</p>
+</div></blockquote>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">.nw/decisions.jsonl</span></code> continues as a tail-grep-able audit trail.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.project.Project.read_spec">
+<span class="sig-name descname"><span class="pre">read_spec</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="schema.html#nw.schema.ProjectSpec" title="nw.schema.ProjectSpec"><span class="pre">ProjectSpec</span></a></span></span><a class="reference internal" href="../../_modules/nw/project.html#Project.read_spec"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.project.Project.read_spec" title="Link to this definition"></a></dt>
+<dd><p>Read the project spec, synthesizing from the graph for graph-native fields.</p>
+<p>Project-level metadata (title, song, global_style, notes,
+schema_version) lives in <code class="docutils literal notranslate"><span class="pre">project.json</span></code>. Sections, shots,
+characters, and environments live in the lacing graph and are
+synthesized into the returned <code class="xref py py-class docutils literal notranslate"><span class="pre">ProjectSpec</span></code> for back-compat
+with code that still reads via <code class="docutils literal notranslate"><span class="pre">read_spec()</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.project.Project.read_summary">
+<span class="sig-name descname"><span class="pre">read_summary</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="schema.html#nw.schema.ProjectSummary" title="nw.schema.ProjectSummary"><span class="pre">ProjectSummary</span></a></span></span><a class="reference internal" href="../../_modules/nw/project.html#Project.read_summary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.project.Project.read_summary" title="Link to this definition"></a></dt>
+<dd><p>Return a typed read view of the project — all the facts at once.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.project.Project.set_character_anchor">
+<span class="sig-name descname"><span class="pre">set_character_anchor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nw/project.html#Project.set_character_anchor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.project.Project.set_character_anchor" title="Link to this definition"></a></dt>
+<dd><p>Pick an existing image as the character’s anchor (lipsync seed, etc.).</p>
+<p>Returns the updated card. Raises if the image isn’t under the
+character’s folder, since cross-character anchoring is almost always
+a mistake.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.project.Project.set_global_style">
+<span class="sig-name descname"><span class="pre">set_global_style</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">style</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="schema.html#nw.schema.ProjectSpec" title="nw.schema.ProjectSpec"><span class="pre">ProjectSpec</span></a></span></span><a class="reference internal" href="../../_modules/nw/project.html#Project.set_global_style"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.project.Project.set_global_style" title="Link to this definition"></a></dt>
+<dd><p>Set the project-level visual style hint.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.project.Project.set_song">
+<span class="sig-name descname"><span class="pre">set_song</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="schema.html#nw.schema.SongInfo" title="nw.schema.SongInfo"><span class="pre">SongInfo</span></a></span></span><a class="reference internal" href="../../_modules/nw/project.html#Project.set_song"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.project.Project.set_song" title="Link to this definition"></a></dt>
+<dd><p>Register an audio file as the project’s master song.</p>
+<p>Probes duration / sample-rate / bitrate via <code class="docutils literal notranslate"><span class="pre">mixing.audio.Audio</span></code> if
+available, else leaves them at 0 (the spec accepts the SSOT-only
+path with placeholder metadata).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.project.Project.set_title">
+<span class="sig-name descname"><span class="pre">set_title</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="schema.html#nw.schema.ProjectSpec" title="nw.schema.ProjectSpec"><span class="pre">ProjectSpec</span></a></span></span><a class="reference internal" href="../../_modules/nw/project.html#Project.set_title"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.project.Project.set_title" title="Link to this definition"></a></dt>
+<dd><p>Set the project title.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.project.Project.update_spec">
+<span class="sig-name descname"><span class="pre">update_spec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">changes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="schema.html#nw.schema.ProjectSpec" title="nw.schema.ProjectSpec"><span class="pre">ProjectSpec</span></a></span></span><a class="reference internal" href="../../_modules/nw/project.html#Project.update_spec"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.project.Project.update_spec" title="Link to this definition"></a></dt>
+<dd><p>Apply field-level changes to the spec; return the new spec.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.project.Project.write_spec">
+<span class="sig-name descname"><span class="pre">write_spec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="schema.html#nw.schema.ProjectSpec" title="nw.schema.ProjectSpec"><span class="pre">ProjectSpec</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/nw/project.html#Project.write_spec"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.project.Project.write_spec" title="Link to this definition"></a></dt>
+<dd><p>Write the spec.</p>
+<p>For back-compat with existing code that builds a <code class="docutils literal notranslate"><span class="pre">ProjectSpec</span></code> and
+calls <code class="docutils literal notranslate"><span class="pre">write_spec</span></code>, this routes graph-backed fields (sections,
+shots, characters, environments) through the graph and persists the
+rest as project.json metadata.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="migrate.html" class="btn btn-neutral float-left" title="nw.migrate" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="renderers.html" class="btn btn-neutral float-right" title="nw.renderers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

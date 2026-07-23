@@ -1,0 +1,330 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>nw.workflow &mdash; nw 0.0.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=282f96c0"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="prev" title="nw.transforms._provenance" href="transforms/_provenance.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            nw
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../nw.html">nw</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies.html">nw.bodies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/character_ref.html">nw.bodies.character_ref</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/decision.html">nw.bodies.decision</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/environment_ref.html">nw.bodies.environment_ref</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/render_result.html">nw.bodies.render_result</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/section.html">nw.bodies.section</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/shot.html">nw.bodies.shot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experiment.html">nw.experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graph.html">nw.graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graph_backend.html">nw.graph_backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="inspect.html">nw.inspect</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrate.html">nw.migrate</a></li>
+<li class="toctree-l1"><a class="reference internal" href="project.html">nw.project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers.html">nw.renderers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/_common.html">nw.renderers._common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/composite_lipsync.html">nw.renderers.composite_lipsync</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/image_to_video.html">nw.renderers.image_to_video</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/lipsync.html">nw.renderers.lipsync</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/still.html">nw.renderers.still</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/text_to_video.html">nw.renderers.text_to_video</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema.html">nw.schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="script_segmentation.html">nw.script_segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="storyboard.html">nw.storyboard</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms.html">nw.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms/_adapters.html">nw.transforms._adapters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms/_adapters/render_strategy.html">nw.transforms._adapters.render_strategy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms/_provenance.html">nw.transforms._provenance</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">nw.workflow</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#nw.workflow.ShotPreparation"><code class="docutils literal notranslate"><span class="pre">ShotPreparation</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#nw.workflow.ShotPreparation.audio_slice_path"><code class="docutils literal notranslate"><span class="pre">ShotPreparation.audio_slice_path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.workflow.ShotPreparation.audio_slice_url"><code class="docutils literal notranslate"><span class="pre">ShotPreparation.audio_slice_url</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.workflow.ShotPreparation.character_anchor_paths"><code class="docutils literal notranslate"><span class="pre">ShotPreparation.character_anchor_paths</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.workflow.ShotPreparation.character_anchor_urls"><code class="docutils literal notranslate"><span class="pre">ShotPreparation.character_anchor_urls</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.workflow.ShotPreparation.environment_anchor_path"><code class="docutils literal notranslate"><span class="pre">ShotPreparation.environment_anchor_path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.workflow.ShotPreparation.environment_anchor_url"><code class="docutils literal notranslate"><span class="pre">ShotPreparation.environment_anchor_url</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.workflow.ShotPreparation.lyric_lines"><code class="docutils literal notranslate"><span class="pre">ShotPreparation.lyric_lines</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.workflow.ShotPreparation.storyboard_prompt"><code class="docutils literal notranslate"><span class="pre">ShotPreparation.storyboard_prompt</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.workflow.execute_render"><code class="docutils literal notranslate"><span class="pre">execute_render()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.workflow.plan_render_shot"><code class="docutils literal notranslate"><span class="pre">plan_render_shot()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.workflow.prepare_shot"><code class="docutils literal notranslate"><span class="pre">prepare_shot()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">nw</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">nw.workflow</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/module_docs/nw/workflow.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-nw.workflow">
+<span id="nw-workflow"></span><h1>nw.workflow<a class="headerlink" href="#module-nw.workflow" title="Link to this heading"></a></h1>
+<p>Workflow: prepare → plan → execute, the architectural pivot.</p>
+<p>The render pipeline has three phases, each cleanly separable:</p>
+<ol class="arabic simple">
+<li><p><strong>Prepare</strong> (<a class="reference internal" href="#nw.workflow.prepare_shot" title="nw.workflow.prepare_shot"><code class="xref py py-func docutils literal notranslate"><span class="pre">prepare_shot()</span></code></a>) — <em>local</em> work: extract the audio slice
+for the shot, find character/environment anchor images, gather lyric lines,
+build the storyboard prompt. No fal calls. Output: <a class="reference internal" href="#nw.workflow.ShotPreparation" title="nw.workflow.ShotPreparation"><code class="xref py py-class docutils literal notranslate"><span class="pre">ShotPreparation</span></code></a>,
+a typed bundle of local file paths and prose.</p></li>
+<li><p><strong>Plan</strong> (<a class="reference internal" href="#nw.workflow.plan_render_shot" title="nw.workflow.plan_render_shot"><code class="xref py py-func docutils literal notranslate"><span class="pre">plan_render_shot()</span></code></a>) — <em>pure-data</em> work: given a
+<a class="reference internal" href="#nw.workflow.ShotPreparation" title="nw.workflow.ShotPreparation"><code class="xref py py-class docutils literal notranslate"><span class="pre">ShotPreparation</span></code></a>, build a <code class="xref py py-class docutils literal notranslate"><span class="pre">falaw.Plan</span></code> of the fal calls
+that will produce the shot. Returns the Plan + the list of artifacts
+that haven’t been generated yet (e.g. uploads needed first). Still no
+fal calls.</p></li>
+<li><p><strong>Execute</strong> (<a class="reference internal" href="#nw.workflow.execute_render" title="nw.workflow.execute_render"><code class="xref py py-func docutils literal notranslate"><span class="pre">execute_render()</span></code></a>) — the <em>only</em> phase with fal contact.
+Uploads local files, drives the Plan, downloads outputs, trims/pads to
+the shot’s exact duration. Returns the final mp4 path.</p></li>
+</ol>
+<p>This split is what enables:</p>
+<ul class="simple">
+<li><p>A budget gate that’s honest (cost is computed at plan time).</p></li>
+<li><p>Tests that exercise plan construction without a fal account.</p></li>
+<li><p>A UI that says “you’re about to spend $4.12, click confirm” before the
+network goes near a credit card.</p></li>
+<li><p>The “render then kill once audio.wav exists” hack from interface_design_plan
+(item #6) becomes one call: <code class="docutils literal notranslate"><span class="pre">prepare_shot(project,</span> <span class="pre">shot_id)</span></code>.</p></li>
+</ul>
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.workflow.ShotPreparation">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.workflow.</span></span><span class="sig-name descname"><span class="pre">ShotPreparation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shot</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="schema.html#nw.schema.ShotSpec" title="nw.schema.ShotSpec"><span class="pre">ShotSpec</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">shot_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">audio_slice_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">audio_slice_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">character_anchor_paths</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">~pathlib.Path]</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">character_anchor_urls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">str]</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">environment_anchor_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">environment_anchor_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lyric_lines</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">storyboard_prompt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">global_style</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nw/workflow.html#ShotPreparation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.workflow.ShotPreparation" title="Link to this definition"></a></dt>
+<dd><p>Local-only inputs for rendering a single shot.</p>
+<p>Building a ShotPreparation is a pure-filesystem operation: no fal calls
+that bill, no network beyond fal-storage uploads (which are free). The
+upload step happens here so the resulting URLs are stable and the cache
+key derived from them is honest.</p>
+<p>Multiple downstream consumers (the planner, an inspection report, a UI
+preview) can read this without re-doing the audio extraction.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.workflow.ShotPreparation.audio_slice_path">
+<span class="sig-name descname"><span class="pre">audio_slice_path</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Path</span></span><a class="headerlink" href="#nw.workflow.ShotPreparation.audio_slice_path" title="Link to this definition"></a></dt>
+<dd><p>Local path to the song’s audio over [shot.start_s, shot.end_s].</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.workflow.ShotPreparation.audio_slice_url">
+<span class="sig-name descname"><span class="pre">audio_slice_url</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#nw.workflow.ShotPreparation.audio_slice_url" title="Link to this definition"></a></dt>
+<dd><p>fal-storage URL of the audio slice (set by <a class="reference internal" href="#nw.workflow.prepare_shot" title="nw.workflow.prepare_shot"><code class="xref py py-func docutils literal notranslate"><span class="pre">prepare_shot()</span></code></a> when
+a fal API key is available; empty otherwise — strategies that need URLs
+will raise descriptively).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.workflow.ShotPreparation.character_anchor_paths">
+<span class="sig-name descname"><span class="pre">character_anchor_paths</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Path</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#nw.workflow.ShotPreparation.character_anchor_paths" title="Link to this definition"></a></dt>
+<dd><p>Per-character path to the curated anchor image.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.workflow.ShotPreparation.character_anchor_urls">
+<span class="sig-name descname"><span class="pre">character_anchor_urls</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#nw.workflow.ShotPreparation.character_anchor_urls" title="Link to this definition"></a></dt>
+<dd><p>Per-character fal-storage URL of the anchor image.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.workflow.ShotPreparation.environment_anchor_path">
+<span class="sig-name descname"><span class="pre">environment_anchor_path</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#nw.workflow.ShotPreparation.environment_anchor_path" title="Link to this definition"></a></dt>
+<dd><p>Path to the environment establishing image, or None.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.workflow.ShotPreparation.environment_anchor_url">
+<span class="sig-name descname"><span class="pre">environment_anchor_url</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#nw.workflow.ShotPreparation.environment_anchor_url" title="Link to this definition"></a></dt>
+<dd><p>fal-storage URL of the environment image; empty if no env image.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.workflow.ShotPreparation.lyric_lines">
+<span class="sig-name descname"><span class="pre">lyric_lines</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#nw.workflow.ShotPreparation.lyric_lines" title="Link to this definition"></a></dt>
+<dd><p>List of <code class="docutils literal notranslate"><span class="pre">{&quot;text&quot;,</span> <span class="pre">&quot;start_s&quot;,</span> <span class="pre">&quot;end_s&quot;,</span> <span class="pre">&quot;line_index&quot;,</span> <span class="pre">&quot;section&quot;}</span></code> dicts.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.workflow.ShotPreparation.storyboard_prompt">
+<span class="sig-name descname"><span class="pre">storyboard_prompt</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#nw.workflow.ShotPreparation.storyboard_prompt" title="Link to this definition"></a></dt>
+<dd><p>shot description + framing + camera + characters +
+environment + style + lyric lines (when present).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Full prose prompt</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.workflow.execute_render">
+<span class="sig-prename descclassname"><span class="pre">nw.workflow.</span></span><span class="sig-name descname"><span class="pre">execute_render</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prep</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nw.workflow.ShotPreparation" title="nw.workflow.ShotPreparation"><span class="pre">ShotPreparation</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">plan</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Plan</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_event</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="project.html#nw.project.Project" title="nw.project.Project"><span class="pre">Project</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Path</span></span></span><a class="reference internal" href="../../_modules/nw/workflow.html#execute_render"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.workflow.execute_render" title="Link to this definition"></a></dt>
+<dd><p>Execute a Plan, materialize the result as <code class="docutils literal notranslate"><span class="pre">shot_dir/output.mp4</span></code>.</p>
+<p>Refuses to execute a plan-only Plan (one whose arguments still contain
+<code class="docutils literal notranslate"><span class="pre">&lt;plan-only:...&gt;</span></code> placeholders) — those exist so the planner can show
+cost without any uploads, and need to be replaced with real URLs (call
+<a class="reference internal" href="#nw.workflow.prepare_shot" title="nw.workflow.prepare_shot"><code class="xref py py-func docutils literal notranslate"><span class="pre">prepare_shot()</span></code></a> with <code class="docutils literal notranslate"><span class="pre">upload=True</span></code>) before execute.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prep</strong> – The <a class="reference internal" href="#nw.workflow.ShotPreparation" title="nw.workflow.ShotPreparation"><code class="xref py py-class docutils literal notranslate"><span class="pre">ShotPreparation</span></code></a> the Plan was built for.</p></li>
+<li><p><strong>plan</strong> – A <code class="xref py py-class docutils literal notranslate"><span class="pre">falaw.Plan</span></code> (typically from <a class="reference internal" href="#nw.workflow.plan_render_shot" title="nw.workflow.plan_render_shot"><code class="xref py py-func docutils literal notranslate"><span class="pre">plan_render_shot()</span></code></a>).</p></li>
+<li><p><strong>on_event</strong> – Optional event subscriber forwarded to the falaw call layer.</p></li>
+<li><p><strong>use_cache</strong> – When True (default), routes via <code class="docutils literal notranslate"><span class="pre">cached_call_fal</span></code> so
+cache hits skip the network.</p></li>
+<li><p><strong>project</strong> – Optional <code class="xref py py-class docutils literal notranslate"><span class="pre">Project</span></code>. When given, a render-decision
+annotation is appended to the project graph after execution
+with <code class="docutils literal notranslate"><span class="pre">was_derived_from</span> <span class="pre">=</span> <span class="pre">(shot_annotation_id,)</span></code>, so reelee’s
+freshness queries (<code class="docutils literal notranslate"><span class="pre">descendants_of</span></code> / <code class="docutils literal notranslate"><span class="pre">stale_after</span></code>) walk
+from the shot to its render output.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Path to <code class="docutils literal notranslate"><span class="pre">shot_dir/output.mp4</span></code> (trimmed/padded to <code class="docutils literal notranslate"><span class="pre">prep.duration_s</span></code>).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.workflow.plan_render_shot">
+<span class="sig-prename descclassname"><span class="pre">nw.workflow.</span></span><span class="sig-name descname"><span class="pre">plan_render_shot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prep</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nw.workflow.ShotPreparation" title="nw.workflow.ShotPreparation"><span class="pre">ShotPreparation</span></a></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">quality</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'balanced'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_overrides</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Plan</span></span></span><a class="reference internal" href="../../_modules/nw/workflow.html#plan_render_shot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.workflow.plan_render_shot" title="Link to this definition"></a></dt>
+<dd><p>Build a <code class="xref py py-class docutils literal notranslate"><span class="pre">falaw.Plan</span></code> for rendering a prepared shot.</p>
+<p>Dispatches on <code class="docutils literal notranslate"><span class="pre">prep.shot.render_strategy</span></code> via <a class="reference internal" href="renderers.html#module-nw.renderers" title="nw.renderers"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nw.renderers</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prep</strong> – A <a class="reference internal" href="#nw.workflow.ShotPreparation" title="nw.workflow.ShotPreparation"><code class="xref py py-class docutils literal notranslate"><span class="pre">ShotPreparation</span></code></a> from <a class="reference internal" href="#nw.workflow.prepare_shot" title="nw.workflow.prepare_shot"><code class="xref py py-func docutils literal notranslate"><span class="pre">prepare_shot()</span></code></a>.</p></li>
+<li><p><strong>quality</strong> – Default quality tier passed to the strategy.</p></li>
+<li><p><strong>model_overrides</strong> – Optional mapping of strategy-step → model_id, e.g.
+<code class="docutils literal notranslate"><span class="pre">{&quot;avatar&quot;:</span> <span class="pre">&quot;fal-ai/bytedance/omnihuman/v1.5&quot;}</span></code> to bypass the
+default avatar model. The keys understood by each strategy are
+documented on the strategy itself.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">falaw.Plan</span></code>. Caller can inspect <code class="docutils literal notranslate"><span class="pre">plan.total_cost_usd</span></code> and
+decide whether to <code class="docutils literal notranslate"><span class="pre">execute_plan(plan)</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.workflow.prepare_shot">
+<span class="sig-prename descclassname"><span class="pre">nw.workflow.</span></span><span class="sig-name descname"><span class="pre">prepare_shot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="project.html#nw.project.Project" title="nw.project.Project"><span class="pre">Project</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">shot_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">upload</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nw.workflow.ShotPreparation" title="nw.workflow.ShotPreparation"><span class="pre">ShotPreparation</span></a></span></span><a class="reference internal" href="../../_modules/nw/workflow.html#prepare_shot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.workflow.prepare_shot" title="Link to this definition"></a></dt>
+<dd><p>Resolve all local inputs for rendering a shot.</p>
+<p>No billable fal calls. When <code class="docutils literal notranslate"><span class="pre">upload=True</span></code> (the default), local files
+are uploaded to fal-storage so the planner can build a Plan with stable
+URLs (uploads are free; the cache key derived from those URLs is honest).
+When <code class="docutils literal notranslate"><span class="pre">upload=False</span></code> (e.g. for tests or dry-run reporting), the URL
+fields are left empty.</p>
+<p>Idempotent in spirit but not byte-stable: fal-storage URLs include
+expiring signatures, so two <code class="docutils literal notranslate"><span class="pre">prepare_shot</span></code> calls on the same project
+produce different URLs. The local file paths are byte-stable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>project</strong> – An <a class="reference internal" href="../nw.html#nw.Project" title="nw.Project"><code class="xref py py-class docutils literal notranslate"><span class="pre">nw.Project</span></code></a> instance.</p></li>
+<li><p><strong>shot_id</strong> – The shot’s id, as in <code class="docutils literal notranslate"><span class="pre">project.read_spec().shots[*].id</span></code>.</p></li>
+<li><p><strong>upload</strong> – When True (default), upload local files to fal-storage and
+populate the <code class="docutils literal notranslate"><span class="pre">*_url</span></code> fields. When False, only the local paths
+are populated.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A <a class="reference internal" href="#nw.workflow.ShotPreparation" title="nw.workflow.ShotPreparation"><code class="xref py py-class docutils literal notranslate"><span class="pre">ShotPreparation</span></code></a> with local paths (and URLs if <code class="docutils literal notranslate"><span class="pre">upload</span></code>)
+ready to plan.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="transforms/_provenance.html" class="btn btn-neutral float-left" title="nw.transforms._provenance" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

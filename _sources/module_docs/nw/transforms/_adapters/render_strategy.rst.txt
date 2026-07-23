@@ -1,0 +1,4 @@
+nw.transforms._adapters.render_strategy
+=======================================
+.. automodule:: nw.transforms._adapters.render_strategy
+   :members:

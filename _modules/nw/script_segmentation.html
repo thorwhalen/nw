@@ -1,0 +1,341 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>nw.script_segmentation &mdash; nw 0.0.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=282f96c0"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            nw
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw.html">nw</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies.html">nw.bodies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/character_ref.html">nw.bodies.character_ref</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/decision.html">nw.bodies.decision</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/environment_ref.html">nw.bodies.environment_ref</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/render_result.html">nw.bodies.render_result</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/section.html">nw.bodies.section</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/shot.html">nw.bodies.shot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/experiment.html">nw.experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/graph.html">nw.graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/graph_backend.html">nw.graph_backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/inspect.html">nw.inspect</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/migrate.html">nw.migrate</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/project.html">nw.project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers.html">nw.renderers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/_common.html">nw.renderers._common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/composite_lipsync.html">nw.renderers.composite_lipsync</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/image_to_video.html">nw.renderers.image_to_video</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/lipsync.html">nw.renderers.lipsync</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/still.html">nw.renderers.still</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/text_to_video.html">nw.renderers.text_to_video</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/schema.html">nw.schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/script_segmentation.html">nw.script_segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/storyboard.html">nw.storyboard</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/transforms.html">nw.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/transforms/_adapters.html">nw.transforms._adapters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/transforms/_adapters/render_strategy.html">nw.transforms._adapters.render_strategy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/transforms/_provenance.html">nw.transforms._provenance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/workflow.html">nw.workflow</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">nw</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">nw.script_segmentation</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for nw.script_segmentation</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">``nw.script_segmentation`` — narrow LLM-backed helper that converts a</span>
+<span class="sd">free-form script into a list of storyboard-panel proposals.</span>
+
+<span class="sd">This module is intentionally **focused and narrow**: it&#39;s the smallest</span>
+<span class="sd">possible thing that turns &quot;user pasted some prose&quot; into &quot;n panels with</span>
+<span class="sd">descriptions and durations&quot; so a downstream UI can render them. It is</span>
+<span class="sd">*not* a full :class:`nw.transforms.Transform` — that abstraction will</span>
+<span class="sd">absorb this work once it lands. For now we keep the surface as a plain</span>
+<span class="sd">function with a dependency-injection seam (the ``llm`` arg), so:</span>
+
+<span class="sd">- Tests can pass a deterministic stub (or a cassette-wrapped function)</span>
+<span class="sd">  without needing API keys or network.</span>
+<span class="sd">- The real implementation can swap between OpenAI / Anthropic / local</span>
+<span class="sd">  models without callers caring.</span>
+<span class="sd">- The cost-honesty rule (every billable call should be inspectable) is</span>
+<span class="sd">  trivially upheld: the seam is the call.</span>
+
+<span class="sd">Persisting the proposals as annotations is the *caller&#39;s* job (this</span>
+<span class="sd">module is pure — no project I/O). See</span>
+<span class="sd">``reelee_backend.handlers.post_script_segment`` for the wiring.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Iterable</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">Field</span><span class="p">,</span> <span class="n">ValidationError</span><span class="p">,</span> <span class="n">field_validator</span>
+
+
+<div class="viewcode-block" id="PanelProposal">
+<a class="viewcode-back" href="../../module_docs/nw/script_segmentation.html#nw.script_segmentation.PanelProposal">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">PanelProposal</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;One storyboard panel proposed by the segmenter.</span>
+
+<span class="sd">    The shape is intentionally close to ``annot://schema/storyboard-panel/v1``</span>
+<span class="sd">    (the lacing body schema) so the caller can promote a proposal into a</span>
+<span class="sd">    real panel annotation with a minimal mapping step.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">min_length</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;What&#39;s on screen.&quot;</span><span class="p">)</span>
+    <span class="n">duration_s</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span> <span class="n">gt</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">le</span><span class="o">=</span><span class="mf">60.0</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Suggested duration in seconds.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">notes</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Optional director&#39;s notes / mood / camera.&quot;</span>
+    <span class="p">)</span>
+
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;description&quot;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_strip_description</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">v</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></div>
+
+
+
+<span class="n">LLM</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]</span>
+<span class="sd">&quot;&quot;&quot;The LLM seam — any function taking a string prompt and returning a</span>
+<span class="sd">string response. Tests pass a cassette-wrapped stub; production passes</span>
+<span class="sd">``oa.chat`` (or whatever&#39;s been wired).&quot;&quot;&quot;</span>
+
+
+<span class="n">PROMPT_TEMPLATE</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s2">You are a storyboard editor. Read the script below and segment it into </span><span class="se">\</span>
+<span class="s2">EXACTLY </span><span class="si">{n}</span><span class="s2"> storyboard panels. Each panel covers one continuous moment.</span>
+
+<span class="s2">Respond with a JSON array of objects with these fields:</span>
+<span class="s2">- description: one or two sentences describing what is on screen.</span>
+<span class="s2">- duration_s: a float between 0.5 and 60.0, the seconds the panel holds.</span>
+<span class="s2">- notes: optional, brief director notes (mood, camera, lighting).</span>
+
+<span class="s2">Total durations should roughly match the rhythm of the script — short </span><span class="se">\</span>
+<span class="s2">beats get short durations, sustained moments get longer ones.</span>
+
+<span class="s2">Return ONLY the JSON array, no surrounding prose. Do not wrap it in </span><span class="se">\</span>
+<span class="s2">markdown fences.</span>
+
+<span class="s2">Script:</span>
+<span class="si">{script}</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="build_prompt">
+<a class="viewcode-back" href="../../module_docs/nw/script_segmentation.html#nw.script_segmentation.build_prompt">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">build_prompt</span><span class="p">(</span><span class="n">script</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">target_panel_count</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The canonical prompt string sent to the LLM. Exposed so callers</span>
+<span class="sd">    + tests can inspect / version it. **The cassette hashes this string**,</span>
+<span class="sd">    so any change here invalidates recorded fixtures.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">PROMPT_TEMPLATE</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="n">target_panel_count</span><span class="p">,</span> <span class="n">script</span><span class="o">=</span><span class="n">script</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span></div>
+
+
+
+<div class="viewcode-block" id="segment_script_into_panels">
+<a class="viewcode-back" href="../../module_docs/nw/script_segmentation.html#nw.script_segmentation.segment_script_into_panels">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">segment_script_into_panels</span><span class="p">(</span>
+    <span class="n">script</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">target_panel_count</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">llm</span><span class="p">:</span> <span class="n">LLM</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">PanelProposal</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Segment ``script`` into ``target_panel_count`` panel proposals.</span>
+
+<span class="sd">    Pure function — no I/O beyond the ``llm`` callable. The caller is</span>
+<span class="sd">    responsible for choosing / wrapping the LLM (e.g. with a cassette</span>
+<span class="sd">    or with caching).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        script: Free-form prose. Whitespace is preserved verbatim in</span>
+<span class="sd">            the prompt, so trimming + canonicalisation is the caller&#39;s</span>
+<span class="sd">            decision.</span>
+<span class="sd">        target_panel_count: Soft target — the LLM is asked for exactly</span>
+<span class="sd">            this many. Real-world deviations of ±1 are tolerated.</span>
+<span class="sd">        llm: The text→text seam. Receives the formatted prompt, must</span>
+<span class="sd">            return a string. The expected response is a JSON array of</span>
+<span class="sd">            ``{description, duration_s, notes}`` objects.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A list of validated :class:`PanelProposal` instances.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: The LLM response could not be parsed as a JSON</span>
+<span class="sd">            array of panels, or no valid panels survived validation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">script</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">script</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;segment_script_into_panels: script is empty&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">target_panel_count</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;target_panel_count must be ≥ 1, got </span><span class="si">{</span><span class="n">target_panel_count</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">prompt</span> <span class="o">=</span> <span class="n">build_prompt</span><span class="p">(</span><span class="n">script</span><span class="p">,</span> <span class="n">target_panel_count</span><span class="o">=</span><span class="n">target_panel_count</span><span class="p">)</span>
+    <span class="n">raw</span> <span class="o">=</span> <span class="n">llm</span><span class="p">(</span><span class="n">prompt</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_parse_panel_response</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_parse_panel_response</span><span class="p">(</span><span class="n">raw</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">PanelProposal</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parse the LLM&#39;s JSON-array response into validated panels.</span>
+
+<span class="sd">    Tolerant of a few common LLM quirks:</span>
+
+<span class="sd">    - Surrounding ```json fences``` (despite the prompt asking against them).</span>
+<span class="sd">    - A wrapping object ``{&quot;panels&quot;: [...]}`` instead of a bare array.</span>
+<span class="sd">    - Whitespace / a leading prose line before the array.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="c1"># Strip markdown code fences if the LLM ignored the prompt.</span>
+    <span class="n">fence</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;^```(?:json)?\s*(.*?)```$&quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">fence</span><span class="p">:</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">fence</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="c1"># Try parsing as-is first; if that fails, attempt to locate the</span>
+    <span class="c1"># outermost array / object in the string.</span>
+    <span class="n">payload</span> <span class="o">=</span> <span class="n">_try_parse_json</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="ow">or</span> <span class="n">_try_parse_json</span><span class="p">(</span><span class="n">_first_json_value</span><span class="p">(</span><span class="n">text</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">payload</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;could not parse LLM response as JSON; got: </span><span class="si">{</span><span class="n">raw</span><span class="p">[:</span><span class="mi">200</span><span class="p">]</span><span class="si">!r}</span><span class="s2">…&quot;</span>
+        <span class="p">)</span>
+    <span class="n">items</span> <span class="o">=</span> <span class="n">_coerce_items</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
+    <span class="n">panels</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">PanelProposal</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">errors</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">items</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">panels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">PanelProposal</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">item</span><span class="p">))</span>
+        <span class="k">except</span> <span class="n">ValidationError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;panel </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="n">errors</span><span class="p">()[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;msg&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">panels</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;no valid panels in LLM response; errors: &quot;</span> <span class="o">+</span> <span class="s2">&quot;; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">errors</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">panels</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_try_parse_json</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">text</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONDecodeError</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_first_json_value</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the substring starting at the first ``[`` or ``{`` to its</span>
+<span class="sd">    matching close — best-effort extraction of a JSON value embedded in</span>
+<span class="sd">    surrounding prose.&quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">opener</span><span class="p">,</span> <span class="n">closer</span> <span class="ow">in</span> <span class="p">((</span><span class="s2">&quot;[&quot;</span><span class="p">,</span> <span class="s2">&quot;]&quot;</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;{&quot;</span><span class="p">,</span> <span class="s2">&quot;}&quot;</span><span class="p">)):</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">opener</span><span class="p">)</span>
+        <span class="n">j</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="n">closer</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">j</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">j</span> <span class="o">&gt;</span> <span class="n">i</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">text</span><span class="p">[</span><span class="n">i</span> <span class="p">:</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="k">return</span> <span class="kc">None</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_coerce_items</span><span class="p">(</span><span class="n">payload</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Accept either a top-level array or a ``{panels: [...]}`` object.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">payload</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;panels&quot;</span><span class="p">,</span> <span class="s2">&quot;items&quot;</span><span class="p">,</span> <span class="s2">&quot;result&quot;</span><span class="p">,</span> <span class="s2">&quot;results&quot;</span><span class="p">):</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">payload</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">v</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;expected a JSON array of panels or object containing one; got &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

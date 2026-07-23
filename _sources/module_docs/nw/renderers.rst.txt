@@ -1,0 +1,4 @@
+nw.renderers
+============
+.. automodule:: nw.renderers
+   :members:

@@ -1,0 +1,257 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>nw.storyboard &mdash; nw 0.0.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=282f96c0"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="nw.transforms" href="transforms.html" />
+    <link rel="prev" title="nw.script_segmentation" href="script_segmentation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            nw
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../nw.html">nw</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies.html">nw.bodies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/character_ref.html">nw.bodies.character_ref</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/decision.html">nw.bodies.decision</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/environment_ref.html">nw.bodies.environment_ref</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/render_result.html">nw.bodies.render_result</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/section.html">nw.bodies.section</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/shot.html">nw.bodies.shot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experiment.html">nw.experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graph.html">nw.graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graph_backend.html">nw.graph_backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="inspect.html">nw.inspect</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrate.html">nw.migrate</a></li>
+<li class="toctree-l1"><a class="reference internal" href="project.html">nw.project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers.html">nw.renderers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/_common.html">nw.renderers._common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/composite_lipsync.html">nw.renderers.composite_lipsync</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/image_to_video.html">nw.renderers.image_to_video</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/lipsync.html">nw.renderers.lipsync</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/still.html">nw.renderers.still</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/text_to_video.html">nw.renderers.text_to_video</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema.html">nw.schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="script_segmentation.html">nw.script_segmentation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">nw.storyboard</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#nw.storyboard.execute_render_panel_images"><code class="docutils literal notranslate"><span class="pre">execute_render_panel_images()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.storyboard.open_storyboard"><code class="docutils literal notranslate"><span class="pre">open_storyboard()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.storyboard.plan_render_panel_images"><code class="docutils literal notranslate"><span class="pre">plan_render_panel_images()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.storyboard.project_asset_id"><code class="docutils literal notranslate"><span class="pre">project_asset_id()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.storyboard.save_storyboard"><code class="docutils literal notranslate"><span class="pre">save_storyboard()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.storyboard.storyboard_db_path"><code class="docutils literal notranslate"><span class="pre">storyboard_db_path()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.storyboard.storyboard_from_shots"><code class="docutils literal notranslate"><span class="pre">storyboard_from_shots()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="transforms.html">nw.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms/_adapters.html">nw.transforms._adapters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms/_adapters/render_strategy.html">nw.transforms._adapters.render_strategy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms/_provenance.html">nw.transforms._provenance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow.html">nw.workflow</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">nw</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">nw.storyboard</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/module_docs/nw/storyboard.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-nw.storyboard">
+<span id="nw-storyboard"></span><h1>nw.storyboard<a class="headerlink" href="#module-nw.storyboard" title="Link to this heading"></a></h1>
+<p>Storyboard ↔ Project bridge.</p>
+<p>A storyboard lives at <code class="docutils literal notranslate"><span class="pre">&lt;project_root&gt;/storyboard.annot.sqlite</span></code> (a lacing
+<code class="docutils literal notranslate"><span class="pre">SqliteStore</span></code>). Each panel is an <code class="docutils literal notranslate"><span class="pre">annot://schema/storyboard-panel/v1</span></code>
+<code class="xref py py-class docutils literal notranslate"><span class="pre">lacing.Annotation</span></code>; the storyboard’s own asset_id is the project’s
+song hash, so panels share an interval space with the project’s shots and
+alignment.</p>
+<p>Public surface:</p>
+<ul class="simple">
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">open_storyboard(project)()</span></code> — load the project’s storyboard, or return
+an empty one if none exists yet.</p></li>
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">save_storyboard(project,</span> <span class="pre">sb,</span> <span class="pre">*,</span> <span class="pre">panel_intervals)()</span></code> — persist panels
+into the project’s lacing store.</p></li>
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">storyboard_from_shots(project)()</span></code> — convenience: build a Storyboard
+with one panel per shot, intervals matching the shots.</p></li>
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">plan_render_panel_images(sb,</span> <span class="pre">*,</span> <span class="pre">quality,</span> <span class="pre">model_overrides)()</span></code> — a
+Plan with one <code class="docutils literal notranslate"><span class="pre">generate_image</span></code> call per panel that doesn’t yet have a
+<code class="docutils literal notranslate"><span class="pre">role=&quot;seed&quot;</span></code> image. Pure data; cost-aware.</p></li>
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">execute_render_panel_images(project,</span> <span class="pre">sb,</span> <span class="pre">plan)()</span></code> — execute the Plan,
+download images into <code class="docutils literal notranslate"><span class="pre">storyboard/</span></code> under the project, return an updated
+Storyboard with the new <code class="docutils literal notranslate"><span class="pre">role=&quot;seed&quot;</span></code> PanelImages attached.</p></li>
+</ul>
+<p>The artful package is the storyboard <em>data layer</em>; nw.storyboard wires it
+into a folder-backed nw project.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.storyboard.execute_render_panel_images">
+<span class="sig-prename descclassname"><span class="pre">nw.storyboard.</span></span><span class="sig-name descname"><span class="pre">execute_render_panel_images</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="project.html#nw.project.Project" title="nw.project.Project"><span class="pre">Project</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">storyboard</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Storyboard</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plan</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Plan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">panel_ids</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_event</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Storyboard</span></span></span><a class="reference internal" href="../../_modules/nw/storyboard.html#execute_render_panel_images"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.storyboard.execute_render_panel_images" title="Link to this definition"></a></dt>
+<dd><p>Execute <code class="docutils literal notranslate"><span class="pre">plan</span></code>, download each artifact, attach a PanelImage.</p>
+<p>Returns a NEW <code class="xref py py-class docutils literal notranslate"><span class="pre">Storyboard</span></code> (input <code class="docutils literal notranslate"><span class="pre">storyboard</span></code> is unchanged) with
+the materialized seed images attached as <code class="docutils literal notranslate"><span class="pre">role=&quot;seed&quot;</span></code> PanelImages.</p>
+<p>Files land under <code class="docutils literal notranslate"><span class="pre">&lt;project_root&gt;/storyboard/&lt;panel_id&gt;.png</span></code>. The
+PanelImage record stores both the project-relative path and the
+artifact_id (content hash via lacing.Artifact), so downstream consumers
+can prefer one or the other.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.storyboard.open_storyboard">
+<span class="sig-prename descclassname"><span class="pre">nw.storyboard.</span></span><span class="sig-name descname"><span class="pre">open_storyboard</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="project.html#nw.project.Project" title="nw.project.Project"><span class="pre">Project</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Storyboard</span></span></span><a class="reference internal" href="../../_modules/nw/storyboard.html#open_storyboard"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.storyboard.open_storyboard" title="Link to this definition"></a></dt>
+<dd><p>Load the project’s storyboard. Returns an empty one if not present.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.storyboard.plan_render_panel_images">
+<span class="sig-prename descclassname"><span class="pre">nw.storyboard.</span></span><span class="sig-name descname"><span class="pre">plan_render_panel_images</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">storyboard</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Storyboard</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">quality</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'balanced'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'landscape_16_9'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_missing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Plan</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nw/storyboard.html#plan_render_panel_images"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.storyboard.plan_render_panel_images" title="Link to this definition"></a></dt>
+<dd><p>Build a Plan that generates a seed image for each panel that lacks one.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>storyboard</strong> – The <code class="xref py py-class docutils literal notranslate"><span class="pre">artful.Storyboard</span></code>.</p></li>
+<li><p><strong>quality</strong> – image-gen quality tier.</p></li>
+<li><p><strong>image_size</strong> – “landscape_16_9” by default; respects the storyboard’s
+aspect when it can be mapped to a falaw size, otherwise uses
+this default.</p></li>
+<li><p><strong>model_id</strong> – Override the image-gen model. Defaults to whatever
+<code class="docutils literal notranslate"><span class="pre">falaw.pick_model(category=&quot;image&quot;,</span> <span class="pre">quality_tier=quality)</span></code>
+picks (e.g. flux/dev at balanced).</p></li>
+<li><p><strong>only_missing</strong> – When True (default), skip panels that already have a
+<code class="docutils literal notranslate"><span class="pre">role=&quot;seed&quot;</span></code> image. When False, plan one call per panel
+regardless.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">(plan,</span> <span class="pre">panel_ids)</span></code> — the Plan, and the panel ids in the same
+order as the Plan’s calls (so <a class="reference internal" href="#nw.storyboard.execute_render_panel_images" title="nw.storyboard.execute_render_panel_images"><code class="xref py py-func docutils literal notranslate"><span class="pre">execute_render_panel_images()</span></code></a>
+knows which panel each artifact belongs to).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.storyboard.project_asset_id">
+<span class="sig-prename descclassname"><span class="pre">nw.storyboard.</span></span><span class="sig-name descname"><span class="pre">project_asset_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="project.html#nw.project.Project" title="nw.project.Project"><span class="pre">Project</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/nw/storyboard.html#project_asset_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.storyboard.project_asset_id" title="Link to this definition"></a></dt>
+<dd><p>The asset_id used for storyboard panel references.</p>
+<p>Uses the SHA-256 of the project’s song bytes when available, so the
+asset_id matches whatever a downstream consumer would compute via
+<code class="xref py py-func docutils literal notranslate"><span class="pre">lacing.hash_file()</span></code>. Falls back to a stable derived id when the
+song isn’t available yet.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.storyboard.save_storyboard">
+<span class="sig-prename descclassname"><span class="pre">nw.storyboard.</span></span><span class="sig-name descname"><span class="pre">save_storyboard</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="project.html#nw.project.Project" title="nw.project.Project"><span class="pre">Project</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">storyboard</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Storyboard</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">panel_intervals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">TimeInterval</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">was_attributed_to</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'user:nw'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">was_generated_by</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'agent:nw.storyboard'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/nw/storyboard.html#save_storyboard"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.storyboard.save_storyboard" title="Link to this definition"></a></dt>
+<dd><p>Persist a Storyboard into the project’s SqliteStore.</p>
+<p>Wipes the existing storyboard panels (under the default tier) so the
+save is idempotent — re-running with edited panels replaces them rather
+than accumulating duplicates.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.storyboard.storyboard_db_path">
+<span class="sig-prename descclassname"><span class="pre">nw.storyboard.</span></span><span class="sig-name descname"><span class="pre">storyboard_db_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="project.html#nw.project.Project" title="nw.project.Project"><span class="pre">Project</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Path</span></span></span><a class="reference internal" href="../../_modules/nw/storyboard.html#storyboard_db_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.storyboard.storyboard_db_path" title="Link to this definition"></a></dt>
+<dd><p>Return the path to the project’s storyboard SQLite store.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.storyboard.storyboard_from_shots">
+<span class="sig-prename descclassname"><span class="pre">nw.storyboard.</span></span><span class="sig-name descname"><span class="pre">storyboard_from_shots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="project.html#nw.project.Project" title="nw.project.Project"><span class="pre">Project</span></a></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">style</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Storyboard</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">TimeInterval</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nw/storyboard.html#storyboard_from_shots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.storyboard.storyboard_from_shots" title="Link to this definition"></a></dt>
+<dd><p>Build a one-panel-per-shot draft Storyboard from a project’s shots.</p>
+<p>Each panel’s caption defaults to the shot’s description, framing and
+camera carry over, and the panel’s <code class="docutils literal notranslate"><span class="pre">shot_id</span></code> points back at the shot.
+No images are attached yet — use <a class="reference internal" href="#nw.storyboard.plan_render_panel_images" title="nw.storyboard.plan_render_panel_images"><code class="xref py py-func docutils literal notranslate"><span class="pre">plan_render_panel_images()</span></code></a> to
+generate them.</p>
+<p>Returns <code class="docutils literal notranslate"><span class="pre">(storyboard,</span> <span class="pre">panel_intervals)</span></code> so the caller can feed both
+into <a class="reference internal" href="#nw.storyboard.save_storyboard" title="nw.storyboard.save_storyboard"><code class="xref py py-func docutils literal notranslate"><span class="pre">save_storyboard()</span></code></a>.</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="script_segmentation.html" class="btn btn-neutral float-left" title="nw.script_segmentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="transforms.html" class="btn btn-neutral float-right" title="nw.transforms" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

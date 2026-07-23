@@ -1,0 +1,202 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>nw.transforms._adapters.render_strategy &mdash; nw 0.0.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=282f96c0"></script>
+      <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../../../_static/toggleprompt.js?v=d7ede5d2"></script>
+      <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="nw.transforms._provenance" href="../_provenance.html" />
+    <link rel="prev" title="nw.transforms._adapters" href="../_adapters.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            nw
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../nw.html">nw</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bodies.html">nw.bodies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bodies/character_ref.html">nw.bodies.character_ref</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bodies/decision.html">nw.bodies.decision</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bodies/environment_ref.html">nw.bodies.environment_ref</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bodies/render_result.html">nw.bodies.render_result</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bodies/section.html">nw.bodies.section</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bodies/shot.html">nw.bodies.shot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../experiment.html">nw.experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../graph.html">nw.graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../graph_backend.html">nw.graph_backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../inspect.html">nw.inspect</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../migrate.html">nw.migrate</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../project.html">nw.project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../renderers.html">nw.renderers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../renderers/_common.html">nw.renderers._common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../renderers/composite_lipsync.html">nw.renderers.composite_lipsync</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../renderers/image_to_video.html">nw.renderers.image_to_video</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../renderers/lipsync.html">nw.renderers.lipsync</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../renderers/still.html">nw.renderers.still</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../renderers/text_to_video.html">nw.renderers.text_to_video</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../schema.html">nw.schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../script_segmentation.html">nw.script_segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../storyboard.html">nw.storyboard</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../transforms.html">nw.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_adapters.html">nw.transforms._adapters</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">nw.transforms._adapters.render_strategy</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#nw.transforms._adapters.render_strategy.RenderStrategyParams"><code class="docutils literal notranslate"><span class="pre">RenderStrategyParams</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#nw.transforms._adapters.render_strategy.RenderStrategyParams.model_config"><code class="docutils literal notranslate"><span class="pre">RenderStrategyParams.model_config</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.transforms._adapters.render_strategy.RenderStrategyTransform"><code class="docutils literal notranslate"><span class="pre">RenderStrategyTransform</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#nw.transforms._adapters.render_strategy.RenderStrategyTransform.params_model"><code class="docutils literal notranslate"><span class="pre">RenderStrategyTransform.params_model</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../_provenance.html">nw.transforms._provenance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../workflow.html">nw.workflow</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">nw</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">nw.transforms._adapters.render_strategy</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../../_sources/module_docs/nw/transforms/_adapters/render_strategy.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-nw.transforms._adapters.render_strategy">
+<span id="nw-transforms-adapters-render-strategy"></span><h1>nw.transforms._adapters.render_strategy<a class="headerlink" href="#module-nw.transforms._adapters.render_strategy" title="Link to this heading"></a></h1>
+<p>Adapter: wrap a legacy <code class="docutils literal notranslate"><span class="pre">nw.renderers.Strategy</span></code> as a <code class="docutils literal notranslate"><span class="pre">Transform</span></code>.</p>
+<p>The 5 built-in render strategies (<code class="docutils literal notranslate"><span class="pre">lipsync</span></code>, <code class="docutils literal notranslate"><span class="pre">image_to_video</span></code>,
+<code class="docutils literal notranslate"><span class="pre">text_to_video</span></code>, <code class="docutils literal notranslate"><span class="pre">still</span></code>, <code class="docutils literal notranslate"><span class="pre">composite_lipsync</span></code>) predate the Transform
+abstraction. They operate on a <a class="reference internal" href="../../workflow.html#nw.workflow.ShotPreparation" title="nw.workflow.ShotPreparation"><code class="xref py py-class docutils literal notranslate"><span class="pre">nw.workflow.ShotPreparation</span></code></a> and have
+a <code class="docutils literal notranslate"><span class="pre">plan</span></code> + <code class="docutils literal notranslate"><span class="pre">materialize</span></code> shape. A Transform operates on annotations and
+has a <code class="docutils literal notranslate"><span class="pre">plan</span></code> + <code class="docutils literal notranslate"><span class="pre">execute</span></code> shape.</p>
+<p>This adapter bridges the two without touching the strategies:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">plan</span></code> resolves the shot annotation to a <code class="docutils literal notranslate"><span class="pre">ShotPreparation</span></code> (via
+<code class="docutils literal notranslate"><span class="pre">nw.workflow.prepare_shot</span></code>), delegates to <code class="docutils literal notranslate"><span class="pre">strategy.plan</span></code>, and builds a
+skeleton <code class="docutils literal notranslate"><span class="pre">render-result</span></code> annotation whose provenance points at the shot.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">execute</span></code> runs the Plan, re-derives the <em>local-only</em> <code class="docutils literal notranslate"><span class="pre">ShotPreparation</span></code>
+(<code class="docutils literal notranslate"><span class="pre">upload=False</span></code> — <code class="docutils literal notranslate"><span class="pre">materialize</span></code> only needs local paths), delegates to
+<code class="docutils literal notranslate"><span class="pre">strategy.materialize</span></code> for the final mp4, and completes the annotation.</p></li>
+</ul>
+<p>Registering these proves the Transform contract is expressive enough for the
+existing rendering code. <code class="docutils literal notranslate"><span class="pre">nw.workflow.execute_render</span></code> is untouched and keeps
+working; new code can drive renders through the Transform registry instead.</p>
+<p>Known wart surfaced by this adapter: a render strategy’s <code class="docutils literal notranslate"><span class="pre">materialize</span></code> step
+needs local paths that aren’t in the <code class="docutils literal notranslate"><span class="pre">falaw.Plan</span></code>, so <code class="docutils literal notranslate"><span class="pre">execute</span></code> re-runs
+<code class="docutils literal notranslate"><span class="pre">prepare_shot</span></code>. <code class="docutils literal notranslate"><span class="pre">falaw</span></code>-only Transforms don’t have this issue (the Plan’s
+<code class="docutils literal notranslate"><span class="pre">&lt;from</span> <span class="pre">N&gt;</span></code> placeholders are self-contained). Left as-is for now — it’s the
+honest shape of wrapping pre-Transform code.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.transforms._adapters.render_strategy.RenderStrategyParams">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.transforms._adapters.render_strategy.</span></span><span class="sig-name descname"><span class="pre">RenderStrategyParams</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quality</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'balanced'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upload</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_overrides</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">str]</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/nw/transforms/_adapters/render_strategy.html#RenderStrategyParams"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.transforms._adapters.render_strategy.RenderStrategyParams" title="Link to this definition"></a></dt>
+<dd><p>Per-call parameters for a render-strategy Transform.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.transforms._adapters.render_strategy.RenderStrategyParams.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'extra':</span> <span class="pre">'forbid',</span> <span class="pre">'frozen':</span> <span class="pre">True}</span></span><a class="headerlink" href="#nw.transforms._adapters.render_strategy.RenderStrategyParams.model_config" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.transforms._adapters.render_strategy.RenderStrategyTransform">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.transforms._adapters.render_strategy.</span></span><span class="sig-name descname"><span class="pre">RenderStrategyTransform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">strategy</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../../_modules/nw/transforms/_adapters/render_strategy.html#RenderStrategyTransform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.transforms._adapters.render_strategy.RenderStrategyTransform" title="Link to this definition"></a></dt>
+<dd><p>Wraps one <code class="docutils literal notranslate"><span class="pre">nw.renderers.Strategy</span></code> instance as a Transform.</p>
+<p><code class="docutils literal notranslate"><span class="pre">input_kinds</span></code> is just <code class="docutils literal notranslate"><span class="pre">(shot,)</span></code> — the character / environment context
+a strategy needs is resolved from the <em>project</em> by <code class="docutils literal notranslate"><span class="pre">prepare_shot</span></code>, not
+passed through <code class="docutils literal notranslate"><span class="pre">TransformInputs</span></code>.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.transforms._adapters.render_strategy.RenderStrategyTransform.params_model">
+<span class="sig-name descname"><span class="pre">params_model</span></span><a class="headerlink" href="#nw.transforms._adapters.render_strategy.RenderStrategyTransform.params_model" title="Link to this definition"></a></dt>
+<dd><p>alias of <a class="reference internal" href="#nw.transforms._adapters.render_strategy.RenderStrategyParams" title="nw.transforms._adapters.render_strategy.RenderStrategyParams"><code class="xref py py-class docutils literal notranslate"><span class="pre">RenderStrategyParams</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../_adapters.html" class="btn btn-neutral float-left" title="nw.transforms._adapters" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../_provenance.html" class="btn btn-neutral float-right" title="nw.transforms._provenance" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

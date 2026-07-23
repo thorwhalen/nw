@@ -1,0 +1,488 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>nw.transforms &mdash; nw 0.0.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=282f96c0"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            nw
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw.html">nw</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies.html">nw.bodies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/character_ref.html">nw.bodies.character_ref</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/decision.html">nw.bodies.decision</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/environment_ref.html">nw.bodies.environment_ref</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/render_result.html">nw.bodies.render_result</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/section.html">nw.bodies.section</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/shot.html">nw.bodies.shot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/experiment.html">nw.experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/graph.html">nw.graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/graph_backend.html">nw.graph_backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/inspect.html">nw.inspect</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/migrate.html">nw.migrate</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/project.html">nw.project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers.html">nw.renderers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/_common.html">nw.renderers._common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/composite_lipsync.html">nw.renderers.composite_lipsync</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/image_to_video.html">nw.renderers.image_to_video</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/lipsync.html">nw.renderers.lipsync</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/still.html">nw.renderers.still</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/text_to_video.html">nw.renderers.text_to_video</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/schema.html">nw.schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/script_segmentation.html">nw.script_segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/storyboard.html">nw.storyboard</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/transforms.html">nw.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/transforms/_adapters.html">nw.transforms._adapters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/transforms/_adapters/render_strategy.html">nw.transforms._adapters.render_strategy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/transforms/_provenance.html">nw.transforms._provenance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/workflow.html">nw.workflow</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">nw</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">nw.transforms</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for nw.transforms</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Transforms — the unified, swappable &quot;A-annotation → B-annotation&quot; step.</span>
+
+<span class="sd">A :class:`Transform` generalizes :class:`nw.renderers.Strategy`: where a</span>
+<span class="sd">Strategy turns a prepared *shot* into a rendered clip, a Transform turns any</span>
+<span class="sd">input annotation(s) into any output annotation(s). Every &quot;A → B&quot; arrow in an</span>
+<span class="sd">audiovisual workflow — screenplay → treatment, beat → storyboard panel, panel</span>
+<span class="sd">→ image, clips → animatic, shot → rendered clip — is a Transform.</span>
+
+<span class="sd">Two-phase, mirroring ``nw.workflow`` (prepare → plan → execute):</span>
+
+<span class="sd">1. :meth:`Transform.plan` — *pure data*. Returns a :class:`falaw.Plan` plus</span>
+<span class="sd">   *skeleton* output annotations. The skeletons already carry provenance</span>
+<span class="sd">   (``was_derived_from`` points at the inputs), so even a dry-run plan</span>
+<span class="sd">   inspection shows what will be produced and from what. No billable calls.</span>
+<span class="sd">2. :meth:`Transform.execute` — runs the Plan via ``falaw.execute_plan``,</span>
+<span class="sd">   completes the skeleton annotations with real artifact references, writes</span>
+<span class="sd">   them to the project graph, and returns a :class:`TransformResult` with</span>
+<span class="sd">   *actual* cost and cache savings.</span>
+
+<span class="sd">Transforms are registered with an :class:`xdol.Registry` keyed by name, so</span>
+<span class="sd">apps (``reelee``, ``muvid``, …) add their own without modifying ``nw``.</span>
+
+<span class="sd">Naming convention for ``Transform.name``::</span>
+
+<span class="sd">    &lt;from_kind&gt;_to_&lt;to_kind&gt;[.&lt;flavor&gt;[.&lt;variant&gt;]]</span>
+<span class="sd">    e.g. &quot;beat_to_panel.llm.default&quot;, &quot;panel_to_image.fal.flux_kontext&quot;,</span>
+<span class="sd">         &quot;shot_to_render_result.fal.lipsync&quot;</span>
+
+<span class="sd">Most Transforms subclass :class:`BaseTransform` (which supplies a default</span>
+<span class="sd">:meth:`~BaseTransform.execute`) and override only :meth:`~BaseTransform.plan`</span>
+<span class="sd">plus the class-level ``name`` / ``input_kinds`` / ``output_kind`` /</span>
+<span class="sd">``params_model`` attributes.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Protocol</span><span class="p">,</span> <span class="n">runtime_checkable</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">xdol</span><span class="w"> </span><span class="kn">import</span> <span class="n">Registry</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">falaw</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plan</span><span class="p">,</span> <span class="n">execute_plan</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">lacing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotation</span><span class="p">,</span> <span class="n">Artifact</span>
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Input / output bundles  (frozen dataclasses — matches nw.ShotPreparation</span>
+<span class="c1"># and falaw.Plan; Pydantic is reserved for wire-validated annotation bodies)</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="TransformInputs">
+<a class="viewcode-back" href="../../module_docs/nw/transforms.html#nw.TransformInputs">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TransformInputs</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The annotations a Transform consumes.</span>
+
+<span class="sd">    ``primary`` is the subject of the operation — a single-element tuple for</span>
+<span class="sd">    one-to-one Transforms, many for batch Transforms (e.g. ``clips_to_animatic``</span>
+<span class="sd">    consumes every clip). ``context`` is side material keyed by kind name, so</span>
+<span class="sd">    a Transform that declares ``input_kinds=(beat, character-ref)`` receives</span>
+<span class="sd">    the Beat in ``primary`` and the CharacterRefs in ``context[&quot;character-ref&quot;]``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">primary</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Annotation</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+    <span class="n">context</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Annotation</span><span class="p">,</span> <span class="o">...</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="TransformResult">
+<a class="viewcode-back" href="../../module_docs/nw/transforms.html#nw.TransformResult">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TransformResult</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The outputs of a Transform&#39;s :meth:`~Transform.execute`.&quot;&quot;&quot;</span>
+
+    <span class="n">annotations</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Annotation</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The completed output annotation(s), written to the project graph.&quot;&quot;&quot;</span>
+
+    <span class="n">artifacts</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Artifact</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The ``lacing.Artifact``\\ s produced (images, videos, audio, json …).</span>
+<span class="sd">    Annotations reference these by ``artifact_id`` in their bodies.&quot;&quot;&quot;</span>
+
+    <span class="n">cost_usd_actual</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Actual USD billed during execution (cache hits cost nothing).&quot;&quot;&quot;</span>
+
+    <span class="n">cache_hit_savings_usd</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;USD that would have been spent had nothing been cached.&quot;&quot;&quot;</span></div>
+
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># The Transform contract</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="Transform">
+<a class="viewcode-back" href="../../module_docs/nw/transforms.html#nw.Transform">[docs]</a>
+<span class="nd">@runtime_checkable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Transform</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A swappable, costed function from A-annotations to B-annotations.</span>
+
+<span class="sd">    Implementations usually subclass :class:`BaseTransform` rather than</span>
+<span class="sd">    satisfying this Protocol directly, but the Protocol is the contract the</span>
+<span class="sd">    registry and orchestrator depend on.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Globally-unique identifier in :data:`transforms`.&quot;&quot;&quot;</span>
+
+    <span class="n">input_kinds</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Body-schema URIs this Transform reads. The first is the *primary*</span>
+<span class="sd">    kind; the rest are context kinds.&quot;&quot;&quot;</span>
+
+    <span class="n">output_kind</span><span class="p">:</span> <span class="nb">str</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The body-schema URI this Transform produces.&quot;&quot;&quot;</span>
+
+    <span class="n">is_batch</span><span class="p">:</span> <span class="nb">bool</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;How :meth:`plan` consumes ``inputs.primary``.</span>
+
+<span class="sd">    ``False`` (one-to-one): :meth:`plan` operates on a *single* primary</span>
+<span class="sd">    annotation (``inputs.primary[0]``) — e.g. ``beat_to_panel``, one beat in,</span>
+<span class="sd">    one panel out. A caller wanting to apply it across many annotations calls</span>
+<span class="sd">    :meth:`plan` once per annotation and composes the Plans.</span>
+
+<span class="sd">    ``True`` (batch): :meth:`plan` consumes *all* of ``inputs.primary`` at</span>
+<span class="sd">    once — e.g. ``extract_characters`` (every beat → an LLM call) or</span>
+<span class="sd">    ``clips_to_animatic`` (every clip → one animatic). A caller passes the</span>
+<span class="sd">    whole set in a single :meth:`plan` call.</span>
+
+<span class="sd">    This is the property an orchestrator needs to fan a Transform across a</span>
+<span class="sd">    project&#39;s annotations correctly — it can&#39;t be inferred from</span>
+<span class="sd">    ``input_kinds``.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Transform.plan">
+<a class="viewcode-back" href="../../module_docs/nw/transforms.html#nw.Transform.plan">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plan</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">project</span><span class="p">,</span>  <span class="c1"># nw.Project — annotated loosely to avoid an import cycle</span>
+        <span class="n">inputs</span><span class="p">:</span> <span class="n">TransformInputs</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">params</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BaseModel</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Plan</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Annotation</span><span class="p">,</span> <span class="o">...</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build a :class:`falaw.Plan` + skeleton output annotations.</span>
+
+<span class="sd">        Pure data. No billable calls. The skeleton annotations have provenance</span>
+<span class="sd">        filled in; their bodies&#39; artifact references are placeholders that</span>
+<span class="sd">        :meth:`execute` replaces.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="o">...</span></div>
+
+
+<div class="viewcode-block" id="Transform.execute">
+<a class="viewcode-back" href="../../module_docs/nw/transforms.html#nw.Transform.execute">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">project</span><span class="p">,</span>
+        <span class="n">plan</span><span class="p">:</span> <span class="n">Plan</span><span class="p">,</span>
+        <span class="n">skeleton</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Annotation</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">use_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TransformResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run ``plan``, complete ``skeleton``, write to the graph, return result.</span>
+
+<span class="sd">        ``force=True`` bypasses the cache (the &quot;regenerate this&quot; affordance).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="o">...</span></div>
+</div>
+
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Default implementation most Transforms inherit from</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="BaseTransform">
+<a class="viewcode-back" href="../../module_docs/nw/transforms.html#nw.BaseTransform">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">BaseTransform</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Default :class:`Transform` implementation.</span>
+
+<span class="sd">    Subclasses set the class attributes (``name``, ``input_kinds``,</span>
+<span class="sd">    ``output_kind``, optionally ``params_model``) and implement :meth:`plan`.</span>
+<span class="sd">    The default :meth:`execute` runs the Plan, maps artifacts onto skeletons</span>
+<span class="sd">    1:1 via :meth:`_complete_annotation`, writes to the project graph, and</span>
+<span class="sd">    reports cost. Transforms whose artifact→annotation mapping is not 1:1</span>
+<span class="sd">    (e.g. ``clips_to_animatic``: N inputs → 1 output) override :meth:`execute`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">input_kinds</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
+    <span class="n">output_kind</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">params_model</span><span class="p">:</span> <span class="nb">type</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pydantic model class for this Transform&#39;s per-call params. Exposed as</span>
+<span class="sd">    JSON Schema to the MCP server and the CLI. ``type(None)`` means no params.&quot;&quot;&quot;</span>
+    <span class="n">is_batch</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Whether :meth:`plan` consumes all of ``inputs.primary`` at once (batch)</span>
+<span class="sd">    or a single primary annotation (one-to-one — the default). See the</span>
+<span class="sd">    :class:`Transform` Protocol for the full contract. Batch Transforms</span>
+<span class="sd">    (``extract_*``, ``clips_to_animatic``) set this to ``True``.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">plan</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">project</span><span class="p">,</span>
+        <span class="n">inputs</span><span class="p">:</span> <span class="n">TransformInputs</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">params</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BaseModel</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Plan</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Annotation</span><span class="p">,</span> <span class="o">...</span><span class="p">]]:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> must implement plan().&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">project</span><span class="p">,</span>
+        <span class="n">plan</span><span class="p">:</span> <span class="n">Plan</span><span class="p">,</span>
+        <span class="n">skeleton</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Annotation</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">use_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TransformResult</span><span class="p">:</span>
+        <span class="n">artifacts</span> <span class="o">=</span> <span class="n">execute_plan</span><span class="p">(</span><span class="n">plan</span><span class="p">,</span> <span class="n">use_cache</span><span class="o">=</span><span class="n">use_cache</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">force</span><span class="p">)</span>
+        <span class="n">completed</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_complete_annotation</span><span class="p">(</span><span class="n">skel</span><span class="p">,</span> <span class="n">art</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">skel</span><span class="p">,</span> <span class="n">art</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">skeleton</span><span class="p">,</span> <span class="n">artifacts</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">completed</span><span class="p">:</span>
+            <span class="n">project</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add_annotation</span><span class="p">(</span><span class="n">ann</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">TransformResult</span><span class="p">(</span>
+            <span class="n">annotations</span><span class="o">=</span><span class="n">completed</span><span class="p">,</span>
+            <span class="n">artifacts</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">artifacts</span><span class="p">),</span>
+            <span class="n">cost_usd_actual</span><span class="o">=</span><span class="nb">sum</span><span class="p">((</span><span class="n">a</span><span class="o">.</span><span class="n">cost_usd</span> <span class="ow">or</span> <span class="mf">0.0</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">artifacts</span><span class="p">),</span>
+            <span class="n">cache_hit_savings_usd</span><span class="o">=</span><span class="n">plan</span><span class="o">.</span><span class="n">cache_hit_savings_usd</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_complete_annotation</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">skeleton</span><span class="p">:</span> <span class="n">Annotation</span><span class="p">,</span> <span class="n">artifact</span><span class="p">:</span> <span class="n">Artifact</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Annotation</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Map one executed ``artifact`` onto its ``skeleton`` annotation.</span>
+
+<span class="sd">        Two default behaviours, by artifact kind:</span>
+
+<span class="sd">        - **media** (``image`` / ``video`` / ``audio`` / ``binary``) — reference</span>
+<span class="sd">          the artifact by content id: ``body[&quot;artifact_id&quot;] = artifact.asset_id``.</span>
+<span class="sd">        - **``json``** — the LLM-backed-Transform case: read the materialized</span>
+<span class="sd">          JSON file (``artifact.path``, written by ``falaw``&#39;s converter),</span>
+<span class="sd">          shallow-merge its keys into the skeleton body. The skeleton&#39;s</span>
+<span class="sd">          placeholder fields get overwritten by the LLM&#39;s values.</span>
+
+<span class="sd">        ``text`` artifacts still raise — a bare string has no obvious target</span>
+<span class="sd">        field, so a Transform producing ``text`` must override this (or</span>
+<span class="sd">        ``execute``) to say where the text goes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">artifact</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;json&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">artifact</span><span class="o">.</span><span class="n">path</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: json artifact has no `path` to read; &quot;</span>
+                    <span class="s2">&quot;expected falaw&#39;s converter to have materialized it.&quot;</span>
+                <span class="p">)</span>
+            <span class="n">payload</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">artifact</span><span class="o">.</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: json artifact is not an object &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">); override _complete_annotation().&quot;</span>
+                <span class="p">)</span>
+            <span class="n">new_body</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">skeleton</span><span class="o">.</span><span class="n">body</span><span class="p">,</span> <span class="o">**</span><span class="n">payload</span><span class="p">}</span>
+            <span class="k">return</span> <span class="n">skeleton</span><span class="o">.</span><span class="n">model_copy</span><span class="p">(</span><span class="n">update</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;body&quot;</span><span class="p">:</span> <span class="n">new_body</span><span class="p">})</span>
+        <span class="k">if</span> <span class="n">artifact</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;text&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> produces &#39;text&#39; artifacts; override &quot;</span>
+                <span class="s2">&quot;_complete_annotation() (or execute()) to say where the text goes.&quot;</span>
+            <span class="p">)</span>
+        <span class="n">new_body</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">skeleton</span><span class="o">.</span><span class="n">body</span><span class="p">,</span> <span class="s2">&quot;artifact_id&quot;</span><span class="p">:</span> <span class="n">artifact</span><span class="o">.</span><span class="n">asset_id</span><span class="p">}</span>
+        <span class="k">return</span> <span class="n">skeleton</span><span class="o">.</span><span class="n">model_copy</span><span class="p">(</span><span class="n">update</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;body&quot;</span><span class="p">:</span> <span class="n">new_body</span><span class="p">})</span></div>
+
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># The registry</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+<span class="n">transforms</span><span class="p">:</span> <span class="n">Registry</span> <span class="o">=</span> <span class="n">Registry</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;nw.transforms&quot;</span><span class="p">,</span> <span class="n">on_conflict</span><span class="o">=</span><span class="s2">&quot;error&quot;</span><span class="p">)</span>
+<span class="sd">&quot;&quot;&quot;Public registry of Transform instances. ``on_conflict=&quot;error&quot;`` so a</span>
+<span class="sd">misconfigured plugin fails loudly instead of silently shadowing a built-in.&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="register_transform">
+<a class="viewcode-back" href="../../module_docs/nw/transforms.html#nw.register_transform">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">register_transform</span><span class="p">(</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">impl</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Transform</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Transform</span> <span class="o">|</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">type</span><span class="p">],</span> <span class="nb">type</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Register a Transform under ``name``. Two forms:</span>
+
+<span class="sd">    Direct — pass an instance::</span>
+
+<span class="sd">        register_transform(&quot;clips_to_animatic.ffmpeg&quot;, ClipsToAnimatic())</span>
+
+<span class="sd">    Decorator — decorate a class; it is instantiated and the *instance* is</span>
+<span class="sd">    registered (so :func:`get_transform` always returns something callable),</span>
+<span class="sd">    and the class is returned unchanged::</span>
+
+<span class="sd">        @register_transform(&quot;beat_to_panel.llm.default&quot;)</span>
+<span class="sd">        class BeatToPanelLLM(BaseTransform):</span>
+<span class="sd">            ...</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">impl</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">_decorator</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">:</span>
+            <span class="n">transforms</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="bp">cls</span><span class="p">())</span>
+            <span class="k">return</span> <span class="bp">cls</span>
+        <span class="k">return</span> <span class="n">_decorator</span>
+    <span class="k">return</span> <span class="n">transforms</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">impl</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="get_transform">
+<a class="viewcode-back" href="../../module_docs/nw/transforms.html#nw.get_transform">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_transform</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Transform</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Look up a Transform instance by name; raises with the known names.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">transforms</span><span class="p">:</span>
+        <span class="n">known</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">transforms</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;No Transform </span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2">; registered: </span><span class="si">{</span><span class="n">known</span><span class="si">}</span><span class="s2">. Apps register &quot;</span>
+            <span class="s2">&quot;custom Transforms via `nw.register_transform(name, impl)` or the &quot;</span>
+            <span class="s2">&quot;`@nw.register_transform(&#39;name&#39;)` class decorator.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">transforms</span><span class="p">[</span><span class="n">name</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="list_transforms">
+<a class="viewcode-back" href="../../module_docs/nw/transforms.html#nw.list_transforms">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">list_transforms</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return all registered Transform names (sorted).&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">transforms</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
+
+
+
+<span class="c1"># --- import adapters so the built-in render-strategy Transforms self-register</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">_adapters</span> <span class="k">as</span> <span class="n">_adapters</span>  <span class="c1"># noqa: E402,F401</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;Transform&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;TransformInputs&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;TransformResult&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;BaseTransform&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;transforms&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;register_transform&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;get_transform&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;list_transforms&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

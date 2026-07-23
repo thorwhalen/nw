@@ -1,0 +1,513 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>nw.migrate &mdash; nw 0.0.5 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=282f96c0"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            nw
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw.html">nw</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies.html">nw.bodies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/character_ref.html">nw.bodies.character_ref</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/decision.html">nw.bodies.decision</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/environment_ref.html">nw.bodies.environment_ref</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/render_result.html">nw.bodies.render_result</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/section.html">nw.bodies.section</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/shot.html">nw.bodies.shot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/experiment.html">nw.experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/graph.html">nw.graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/graph_backend.html">nw.graph_backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/inspect.html">nw.inspect</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/migrate.html">nw.migrate</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/project.html">nw.project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers.html">nw.renderers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/_common.html">nw.renderers._common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/composite_lipsync.html">nw.renderers.composite_lipsync</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/image_to_video.html">nw.renderers.image_to_video</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/lipsync.html">nw.renderers.lipsync</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/still.html">nw.renderers.still</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/text_to_video.html">nw.renderers.text_to_video</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/schema.html">nw.schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/script_segmentation.html">nw.script_segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/storyboard.html">nw.storyboard</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/transforms.html">nw.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/transforms/_adapters.html">nw.transforms._adapters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/transforms/_adapters/render_strategy.html">nw.transforms._adapters.render_strategy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/transforms/_provenance.html">nw.transforms._provenance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/workflow.html">nw.workflow</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">nw</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">nw.migrate</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for nw.migrate</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Idempotent migration: project.json (sections/shots/refs) → lacing graph.</span>
+
+<span class="sd">Pre-graph nw projects (and all the_bells_v* fixtures from the muvid era)</span>
+<span class="sd">keep sections, shots, characters, and environments in ``project.json`` as</span>
+<span class="sd">arrays. From Phase 3 forward, those live in a per-project lacing annotation</span>
+<span class="sd">store so reelee can walk the graph for freshness analysis, provenance</span>
+<span class="sd">queries, and view rendering. The backend is chosen by :mod:`nw.graph_backend`</span>
+<span class="sd">— a per-project ``SqliteStore`` file by default, or a shared Postgres DB when</span>
+<span class="sd">``NW_GRAPH_BACKEND=postgres`` (Phase 4, reelee#177).</span>
+
+<span class="sd">This module&#39;s job is to bridge the two formats *without losing data and</span>
+<span class="sd">without requiring the user to do anything*. :func:`migrate_to_graph`:</span>
+
+<span class="sd">- Is idempotent — running it twice is a no-op.</span>
+<span class="sd">- Only writes the graph; the original ``project.json`` is left in place</span>
+<span class="sd">  (and trimmed of fields the graph now owns, with the original kept under</span>
+<span class="sd">  ``.nw/project.json.pre-graph.bak`` so a downgrade is possible).</span>
+<span class="sd">- Marks completion via a ``.nw/migrated_to_graph`` sentinel file.</span>
+
+<span class="sd">Project-level metadata (title, song, global_style, notes, schema_version)</span>
+<span class="sd">stays in ``project.json``. Sections, shots, characters, environments,</span>
+<span class="sd">decisions move into the graph.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">_uuid</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">lacing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Annotation</span><span class="p">,</span>
+    <span class="n">MediaRef</span><span class="p">,</span>
+    <span class="n">Provenance</span><span class="p">,</span>
+    <span class="n">Tier</span><span class="p">,</span>
+    <span class="n">TierStereotype</span><span class="p">,</span>
+    <span class="n">TimeInterval</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">lacing.artifact</span><span class="w"> </span><span class="kn">import</span> <span class="n">_now_rt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">lacing.store</span><span class="w"> </span><span class="kn">import</span> <span class="n">IntervalAnnotationStore</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.bodies</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">CHARACTER_REF_BODY_SCHEMA_URI</span><span class="p">,</span>
+    <span class="n">DECISION_BODY_SCHEMA_URI</span><span class="p">,</span>
+    <span class="n">ENVIRONMENT_REF_BODY_SCHEMA_URI</span><span class="p">,</span>
+    <span class="n">SECTION_BODY_SCHEMA_URI</span><span class="p">,</span>
+    <span class="n">SHOT_BODY_SCHEMA_URI</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.graph_backend</span><span class="w"> </span><span class="kn">import</span> <span class="n">SCOPE_GRAPH</span><span class="p">,</span> <span class="n">open_graph_store</span>
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Constants</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+<span class="n">_PROJECT_GRAPH_DB_NAME</span> <span class="o">=</span> <span class="s2">&quot;project.annot.sqlite&quot;</span>
+<span class="n">_MIGRATED_SENTINEL_NAME</span> <span class="o">=</span> <span class="s2">&quot;migrated_to_graph&quot;</span>
+<span class="n">_BACKUP_NAME</span> <span class="o">=</span> <span class="s2">&quot;project.json.pre-graph.bak&quot;</span>
+
+<span class="c1"># Tiers used for project-graph annotations.</span>
+<span class="n">_TIER_SECTION</span> <span class="o">=</span> <span class="s2">&quot;section&quot;</span>
+<span class="n">_TIER_SHOT</span> <span class="o">=</span> <span class="s2">&quot;shot&quot;</span>
+<span class="n">_TIER_CHARACTER_REF</span> <span class="o">=</span> <span class="s2">&quot;character-ref&quot;</span>
+<span class="n">_TIER_ENVIRONMENT_REF</span> <span class="o">=</span> <span class="s2">&quot;environment-ref&quot;</span>
+<span class="n">_TIER_DECISION</span> <span class="o">=</span> <span class="s2">&quot;decision&quot;</span>
+
+<span class="n">_PROJECT_TIERS</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">_TIER_SECTION</span><span class="p">,</span>
+    <span class="n">_TIER_SHOT</span><span class="p">,</span>
+    <span class="n">_TIER_CHARACTER_REF</span><span class="p">,</span>
+    <span class="n">_TIER_ENVIRONMENT_REF</span><span class="p">,</span>
+    <span class="n">_TIER_DECISION</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Public helpers</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">project_graph_db_path</span><span class="p">(</span><span class="n">project_root</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="n">project_root</span><span class="p">)</span> <span class="o">/</span> <span class="n">_PROJECT_GRAPH_DB_NAME</span>
+
+
+<div class="viewcode-block" id="is_migrated">
+<a class="viewcode-back" href="../../module_docs/nw/migrate.html#nw.is_migrated">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_migrated</span><span class="p">(</span><span class="n">project_root</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;True iff this project has been migrated to the lacing graph.&quot;&quot;&quot;</span>
+    <span class="n">sentinel</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">project_root</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;.nw&quot;</span> <span class="o">/</span> <span class="n">_MIGRATED_SENTINEL_NAME</span>
+    <span class="k">return</span> <span class="n">sentinel</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="open_project_graph">
+<a class="viewcode-back" href="../../module_docs/nw/migrate.html#nw.open_project_graph">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">open_project_graph</span><span class="p">(</span><span class="n">project_root</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IntervalAnnotationStore</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Open (and create on first call) the project&#39;s graph store, with tiers.</span>
+
+<span class="sd">    The backend (SQLite file by default, or a shared Postgres DB when</span>
+<span class="sd">    ``NW_GRAPH_BACKEND=postgres``) is resolved by :mod:`nw.graph_backend` — the</span>
+<span class="sd">    single config-driven seam. Callers get an ``IntervalAnnotationStore`` and</span>
+<span class="sd">    never learn which backend answered.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">project_graph_db_path</span><span class="p">(</span><span class="n">project_root</span><span class="p">)</span>
+    <span class="n">store</span> <span class="o">=</span> <span class="n">open_graph_store</span><span class="p">(</span>
+        <span class="n">db</span><span class="p">,</span> <span class="n">asset_id</span><span class="o">=</span><span class="n">project_asset_id</span><span class="p">(</span><span class="n">project_root</span><span class="p">),</span> <span class="n">scope</span><span class="o">=</span><span class="n">SCOPE_GRAPH</span>
+    <span class="p">)</span>
+    <span class="n">_ensure_tiers</span><span class="p">(</span><span class="n">store</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">store</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_ensure_tiers</span><span class="p">(</span><span class="n">store</span><span class="p">:</span> <span class="n">IntervalAnnotationStore</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">_PROJECT_TIERS</span><span class="p">:</span>
+        <span class="n">store</span><span class="o">.</span><span class="n">add_tier</span><span class="p">(</span><span class="n">Tier</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">stereotype</span><span class="o">=</span><span class="n">TierStereotype</span><span class="o">.</span><span class="n">NONE</span><span class="p">))</span>
+
+
+<div class="viewcode-block" id="project_asset_id">
+<a class="viewcode-back" href="../../module_docs/nw/migrate.html#nw.project_asset_id">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">project_asset_id</span><span class="p">(</span><span class="n">project_root</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The asset_id used as the project&#39;s graph anchor.</span>
+
+<span class="sd">    For projects with a song registered in project.json, this is the SHA-256</span>
+<span class="sd">    of the song bytes. Otherwise a stable fallback derived from the title.</span>
+
+<span class="sd">    Mirrors :func:`nw.storyboard.project_asset_id` so the project graph and</span>
+<span class="sd">    the storyboard share an asset_id.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">project_json</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">project_root</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;project.json&quot;</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">song_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">project_json</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="n">spec</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">project_json</span><span class="o">.</span><span class="n">read_text</span><span class="p">())</span>
+        <span class="n">title</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;title&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">song</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;song&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">song</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="n">song</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;audio_path&quot;</span><span class="p">):</span>
+            <span class="n">sp</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">song</span><span class="p">[</span><span class="s2">&quot;audio_path&quot;</span><span class="p">])</span>
+            <span class="n">song_path</span> <span class="o">=</span> <span class="n">sp</span> <span class="k">if</span> <span class="n">sp</span><span class="o">.</span><span class="n">is_absolute</span><span class="p">()</span> <span class="k">else</span> <span class="n">Path</span><span class="p">(</span><span class="n">project_root</span><span class="p">)</span> <span class="o">/</span> <span class="n">sp</span>
+    <span class="k">if</span> <span class="n">song_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">song_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">lacing</span><span class="w"> </span><span class="kn">import</span> <span class="n">hash_file</span>
+        <span class="k">return</span> <span class="n">hash_file</span><span class="p">(</span><span class="n">song_path</span><span class="p">)</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">hashlib</span>
+    <span class="n">seed</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;nw:project:</span><span class="si">{</span><span class="n">Path</span><span class="p">(</span><span class="n">project_root</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span></div>
+
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Migration</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="migrate_to_graph">
+<a class="viewcode-back" href="../../module_docs/nw/migrate.html#nw.migrate_to_graph">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">migrate_to_graph</span><span class="p">(</span>
+    <span class="n">project_root</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">backup</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">was_attributed_to</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;agent:nw.migrate&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Migrate ``project_root``&#39;s project.json into the lacing graph.</span>
+
+<span class="sd">    Idempotent: returns ``{&quot;already_migrated&quot;: 1, ...}`` with zero writes if</span>
+<span class="sd">    the sentinel exists. Otherwise reads ``project.json``, writes equivalent</span>
+<span class="sd">    annotations into ``project.annot.sqlite``, drops the migrated arrays from</span>
+<span class="sd">    ``project.json``, and writes the sentinel.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        project_root: Path to a project root.</span>
+<span class="sd">        backup: When True (default), copy the original ``project.json`` to</span>
+<span class="sd">            ``.nw/project.json.pre-graph.bak`` before trimming.</span>
+<span class="sd">        was_attributed_to: Provenance for the migrator. Defaults to</span>
+<span class="sd">            ``&quot;agent:nw.migrate&quot;``; pass ``&quot;user:&lt;handle&gt;&quot;`` from a CLI.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Counts: ``{&quot;sections&quot;: N, &quot;shots&quot;: N, &quot;characters&quot;: N, &quot;environments&quot;: N,</span>
+<span class="sd">                   &quot;decisions&quot;: N}``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">project_root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">project_root</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+    <span class="n">counts</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;sections&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;shots&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;characters&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;environments&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;decisions&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">is_migrated</span><span class="p">(</span><span class="n">project_root</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span><span class="o">**</span><span class="n">counts</span><span class="p">,</span> <span class="s2">&quot;already_migrated&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+
+    <span class="n">project_json</span> <span class="o">=</span> <span class="n">project_root</span> <span class="o">/</span> <span class="s2">&quot;project.json&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">project_json</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">project_root</span><span class="si">}</span><span class="s2"> is not an nw project (no project.json).&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">spec</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">project_json</span><span class="o">.</span><span class="n">read_text</span><span class="p">())</span>
+    <span class="k">if</span> <span class="n">backup</span><span class="p">:</span>
+        <span class="n">backup_path</span> <span class="o">=</span> <span class="n">project_root</span> <span class="o">/</span> <span class="s2">&quot;.nw&quot;</span> <span class="o">/</span> <span class="n">_BACKUP_NAME</span>
+        <span class="n">backup_path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">project_json</span><span class="p">,</span> <span class="n">backup_path</span><span class="p">)</span>
+
+    <span class="n">asset_id</span> <span class="o">=</span> <span class="n">project_asset_id</span><span class="p">(</span><span class="n">project_root</span><span class="p">)</span>
+    <span class="n">store</span> <span class="o">=</span> <span class="n">open_project_graph</span><span class="p">(</span><span class="n">project_root</span><span class="p">)</span>
+    <span class="n">prov</span> <span class="o">=</span> <span class="n">_make_prov</span><span class="p">(</span><span class="n">was_attributed_to</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Sections: each is an interval annotation [start_s..end_s).</span>
+        <span class="k">for</span> <span class="n">section</span> <span class="ow">in</span> <span class="n">spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sections&quot;</span><span class="p">,</span> <span class="p">()):</span>
+            <span class="n">iv</span> <span class="o">=</span> <span class="n">TimeInterval</span><span class="o">.</span><span class="n">from_seconds</span><span class="p">(</span>
+                <span class="n">_wrap_seconds</span><span class="p">(</span><span class="n">section</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;start_s&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)),</span>
+                <span class="n">_wrap_seconds</span><span class="p">(</span><span class="n">section</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;end_s&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)),</span>
+            <span class="p">)</span>
+            <span class="n">ann</span> <span class="o">=</span> <span class="n">Annotation</span><span class="p">(</span>
+                <span class="nb">id</span><span class="o">=</span><span class="n">_uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">(),</span>
+                <span class="n">tier</span><span class="o">=</span><span class="n">_TIER_SECTION</span><span class="p">,</span>
+                <span class="n">reference</span><span class="o">=</span><span class="n">MediaRef</span><span class="p">(</span><span class="n">asset_id</span><span class="o">=</span><span class="n">asset_id</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="n">iv</span><span class="p">),</span>
+                <span class="n">body</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">&quot;section_id&quot;</span><span class="p">:</span> <span class="n">section</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="n">section</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+                    <span class="s2">&quot;energy&quot;</span><span class="p">:</span> <span class="n">section</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;energy&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+                    <span class="s2">&quot;mood&quot;</span><span class="p">:</span> <span class="n">section</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;mood&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+                <span class="p">},</span>
+                <span class="n">body_schema_uri</span><span class="o">=</span><span class="n">SECTION_BODY_SCHEMA_URI</span><span class="p">,</span>
+                <span class="n">provenance</span><span class="o">=</span><span class="n">prov</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">store</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ann</span><span class="p">)</span>
+            <span class="n">counts</span><span class="p">[</span><span class="s2">&quot;sections&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="c1"># Shots: interval annotation, body holds strategy/characters/etc.</span>
+        <span class="k">for</span> <span class="n">shot</span> <span class="ow">in</span> <span class="n">spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;shots&quot;</span><span class="p">,</span> <span class="p">()):</span>
+            <span class="n">iv</span> <span class="o">=</span> <span class="n">TimeInterval</span><span class="o">.</span><span class="n">from_seconds</span><span class="p">(</span>
+                <span class="n">_wrap_seconds</span><span class="p">(</span><span class="n">shot</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;start_s&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)),</span>
+                <span class="n">_wrap_seconds</span><span class="p">(</span><span class="n">shot</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;end_s&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)),</span>
+            <span class="p">)</span>
+            <span class="n">body</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;shot_id&quot;</span><span class="p">:</span> <span class="n">shot</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">],</span>
+                <span class="s2">&quot;section_id&quot;</span><span class="p">:</span> <span class="n">shot</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;section_id&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+                <span class="s2">&quot;render_strategy&quot;</span><span class="p">:</span> <span class="n">shot</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;render_strategy&quot;</span><span class="p">,</span> <span class="s2">&quot;image_to_video&quot;</span><span class="p">),</span>
+                <span class="s2">&quot;environment&quot;</span><span class="p">:</span> <span class="n">shot</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;environment&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+                <span class="s2">&quot;characters&quot;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">shot</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;characters&quot;</span><span class="p">,</span> <span class="p">())),</span>
+                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="n">shot</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;description&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+                <span class="s2">&quot;camera&quot;</span><span class="p">:</span> <span class="n">shot</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;camera&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+                <span class="s2">&quot;framing&quot;</span><span class="p">:</span> <span class="n">shot</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;framing&quot;</span><span class="p">,</span> <span class="s2">&quot;medium&quot;</span><span class="p">),</span>
+                <span class="s2">&quot;notes&quot;</span><span class="p">:</span> <span class="n">shot</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;notes&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+            <span class="p">}</span>
+            <span class="n">ann</span> <span class="o">=</span> <span class="n">Annotation</span><span class="p">(</span>
+                <span class="nb">id</span><span class="o">=</span><span class="n">_uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">(),</span>
+                <span class="n">tier</span><span class="o">=</span><span class="n">_TIER_SHOT</span><span class="p">,</span>
+                <span class="n">reference</span><span class="o">=</span><span class="n">MediaRef</span><span class="p">(</span><span class="n">asset_id</span><span class="o">=</span><span class="n">asset_id</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="n">iv</span><span class="p">),</span>
+                <span class="n">body</span><span class="o">=</span><span class="n">body</span><span class="p">,</span>
+                <span class="n">body_schema_uri</span><span class="o">=</span><span class="n">SHOT_BODY_SCHEMA_URI</span><span class="p">,</span>
+                <span class="n">provenance</span><span class="o">=</span><span class="n">prov</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">store</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ann</span><span class="p">)</span>
+            <span class="n">counts</span><span class="p">[</span><span class="s2">&quot;shots&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="c1"># Character refs: timeless annotations (zero-width interval at t=0).</span>
+        <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;characters&quot;</span><span class="p">,</span> <span class="p">()):</span>
+            <span class="n">ann</span> <span class="o">=</span> <span class="n">Annotation</span><span class="p">(</span>
+                <span class="nb">id</span><span class="o">=</span><span class="n">_uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">(),</span>
+                <span class="n">tier</span><span class="o">=</span><span class="n">_TIER_CHARACTER_REF</span><span class="p">,</span>
+                <span class="n">reference</span><span class="o">=</span><span class="n">MediaRef</span><span class="p">(</span>
+                    <span class="n">asset_id</span><span class="o">=</span><span class="n">asset_id</span><span class="p">,</span>
+                    <span class="n">interval</span><span class="o">=</span><span class="n">TimeInterval</span><span class="o">.</span><span class="n">from_seconds</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                <span class="p">),</span>
+                <span class="n">body</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">char</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="n">char</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;description&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+                <span class="p">},</span>
+                <span class="n">body_schema_uri</span><span class="o">=</span><span class="n">CHARACTER_REF_BODY_SCHEMA_URI</span><span class="p">,</span>
+                <span class="n">provenance</span><span class="o">=</span><span class="n">prov</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">store</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ann</span><span class="p">)</span>
+            <span class="n">counts</span><span class="p">[</span><span class="s2">&quot;characters&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="c1"># Environment refs: same pattern.</span>
+        <span class="k">for</span> <span class="n">env</span> <span class="ow">in</span> <span class="n">spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;environments&quot;</span><span class="p">,</span> <span class="p">()):</span>
+            <span class="n">ann</span> <span class="o">=</span> <span class="n">Annotation</span><span class="p">(</span>
+                <span class="nb">id</span><span class="o">=</span><span class="n">_uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">(),</span>
+                <span class="n">tier</span><span class="o">=</span><span class="n">_TIER_ENVIRONMENT_REF</span><span class="p">,</span>
+                <span class="n">reference</span><span class="o">=</span><span class="n">MediaRef</span><span class="p">(</span>
+                    <span class="n">asset_id</span><span class="o">=</span><span class="n">asset_id</span><span class="p">,</span>
+                    <span class="n">interval</span><span class="o">=</span><span class="n">TimeInterval</span><span class="o">.</span><span class="n">from_seconds</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                <span class="p">),</span>
+                <span class="n">body</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">env</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="n">env</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;description&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+                <span class="p">},</span>
+                <span class="n">body_schema_uri</span><span class="o">=</span><span class="n">ENVIRONMENT_REF_BODY_SCHEMA_URI</span><span class="p">,</span>
+                <span class="n">provenance</span><span class="o">=</span><span class="n">prov</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">store</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ann</span><span class="p">)</span>
+            <span class="n">counts</span><span class="p">[</span><span class="s2">&quot;environments&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="c1"># Existing .nw/decisions.jsonl entries (if any) → decision annotations.</span>
+        <span class="n">decisions_jsonl</span> <span class="o">=</span> <span class="n">project_root</span> <span class="o">/</span> <span class="s2">&quot;.nw&quot;</span> <span class="o">/</span> <span class="s2">&quot;decisions.jsonl&quot;</span>
+        <span class="k">if</span> <span class="n">decisions_jsonl</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">decisions_jsonl</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span><span class="o">.</span><span class="n">splitlines</span><span class="p">():</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">rec</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+                <span class="k">except</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONDecodeError</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="n">kind</span> <span class="o">=</span> <span class="n">rec</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;kind&quot;</span><span class="p">,</span> <span class="s2">&quot;unknown&quot;</span><span class="p">)</span>
+                <span class="n">rec</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;ts&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>  <span class="c1"># generated_at_time on the annotation itself</span>
+                <span class="n">ann</span> <span class="o">=</span> <span class="n">Annotation</span><span class="p">(</span>
+                    <span class="nb">id</span><span class="o">=</span><span class="n">_uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">(),</span>
+                    <span class="n">tier</span><span class="o">=</span><span class="n">_TIER_DECISION</span><span class="p">,</span>
+                    <span class="n">reference</span><span class="o">=</span><span class="n">MediaRef</span><span class="p">(</span>
+                        <span class="n">asset_id</span><span class="o">=</span><span class="n">asset_id</span><span class="p">,</span>
+                        <span class="n">interval</span><span class="o">=</span><span class="n">TimeInterval</span><span class="o">.</span><span class="n">from_seconds</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                    <span class="p">),</span>
+                    <span class="n">body</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;kind&quot;</span><span class="p">:</span> <span class="n">kind</span><span class="p">,</span> <span class="s2">&quot;payload&quot;</span><span class="p">:</span> <span class="n">rec</span><span class="p">},</span>
+                    <span class="n">body_schema_uri</span><span class="o">=</span><span class="n">DECISION_BODY_SCHEMA_URI</span><span class="p">,</span>
+                    <span class="n">provenance</span><span class="o">=</span><span class="n">prov</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="n">store</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ann</span><span class="p">)</span>
+                <span class="n">counts</span><span class="p">[</span><span class="s2">&quot;decisions&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">_close_if_possible</span><span class="p">(</span><span class="n">store</span><span class="p">)</span>
+
+    <span class="c1"># Trim project.json: keep title, song, global_style, notes, schema_version.</span>
+    <span class="n">trimmed</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;schema_version&quot;</span><span class="p">:</span> <span class="n">spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;schema_version&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="n">spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;song&quot;</span><span class="p">:</span> <span class="n">spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;song&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;global_style&quot;</span><span class="p">:</span> <span class="n">spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;global_style&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+        <span class="s2">&quot;notes&quot;</span><span class="p">:</span> <span class="n">spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;notes&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+        <span class="c1"># Tombstone marker so a human reading project.json knows where the</span>
+        <span class="c1"># graph data went.</span>
+        <span class="s2">&quot;_graph_db&quot;</span><span class="p">:</span> <span class="n">_PROJECT_GRAPH_DB_NAME</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">project_json</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">trimmed</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+
+    <span class="n">sentinel</span> <span class="o">=</span> <span class="n">project_root</span> <span class="o">/</span> <span class="s2">&quot;.nw&quot;</span> <span class="o">/</span> <span class="n">_MIGRATED_SENTINEL_NAME</span>
+    <span class="n">sentinel</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">sentinel</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span>
+        <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&quot;migrated_at&quot;</span><span class="p">:</span> <span class="n">_now_iso</span><span class="p">(),</span> <span class="s2">&quot;counts&quot;</span><span class="p">:</span> <span class="n">counts</span><span class="p">},</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">counts</span></div>
+
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Internals</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_wrap_seconds</span><span class="p">(</span><span class="n">v</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Stringify floats so RationalTime.from_seconds takes the lossless path.</span>
+
+<span class="sd">    Floats like 8.021333 may not quantize exactly to DEFAULT_RATE. Strings</span>
+<span class="sd">    are parsed via Fraction, which fails fast on lossy conversion — but with</span>
+<span class="sd">    the integer-string form below we get clean ticks.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_make_prov</span><span class="p">(</span><span class="n">was_attributed_to</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Provenance</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">Provenance</span><span class="p">(</span>
+        <span class="n">was_generated_by</span><span class="o">=</span><span class="s2">&quot;agent:nw.migrate&quot;</span><span class="p">,</span>
+        <span class="n">was_attributed_to</span><span class="o">=</span><span class="n">was_attributed_to</span><span class="p">,</span>
+        <span class="n">was_derived_from</span><span class="o">=</span><span class="p">[],</span>
+        <span class="n">generated_at_time</span><span class="o">=</span><span class="n">_now_rt</span><span class="p">(),</span>
+        <span class="n">activity</span><span class="o">=</span><span class="s2">&quot;migrate&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_close_if_possible</span><span class="p">(</span><span class="n">store</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">close</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">store</span><span class="p">,</span> <span class="s2">&quot;close&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">close</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">close</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_now_iso</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
+    <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
