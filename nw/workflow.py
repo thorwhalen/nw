@@ -251,7 +251,9 @@ def execute_render(
         Path to ``shot_dir/output.mp4`` (trimmed/padded to ``prep.duration_s``).
     """
     _refuse_plan_only_plan(plan)
-    artifacts: list[Artifact] = execute_plan(plan, on_event=on_event, use_cache=use_cache)
+    artifacts: list[Artifact] = execute_plan(
+        plan, on_event=on_event, use_cache=use_cache
+    )
     strategy = get_strategy(prep.shot.render_strategy)
     output = strategy.materialize(prep, plan, artifacts)
 
@@ -286,7 +288,8 @@ def _record_render_decision(
         "strategy": prep.shot.render_strategy,
         "duration_s": prep.duration_s,
         "output_path": str(output.relative_to(project.root))
-            if output.is_relative_to(project.root) else str(output),
+        if output.is_relative_to(project.root)
+        else str(output),
         "calls": [
             {
                 "tool": c.tool,
@@ -309,6 +312,7 @@ def _record_render_decision(
         "total_estimated_cost_usd": plan.total_cost_usd,
     }
     from .bodies import DecisionBodyV1
+
     project.graph.append_decision(
         DecisionBodyV1(kind="render_shot", payload=payload),
         was_derived_from=(matching.annotation_id,),
@@ -364,6 +368,7 @@ def _ensure_audio_slice(project: Project, shot: ShotSpec) -> Path:
 
     try:
         from mixing.audio import Audio  # type: ignore[import-not-found]
+
         seg = Audio(str(song))[shot.start_s : shot.end_s]
         seg.save(str(out))
         return out
@@ -372,13 +377,19 @@ def _ensure_audio_slice(project: Project, shot: ShotSpec) -> Path:
 
     # Fallback: ffmpeg.
     import subprocess
+
     subprocess.run(
         [
-            "ffmpeg", "-y",
-            "-i", str(song),
-            "-ss", f"{shot.start_s:.3f}",
-            "-to", f"{shot.end_s:.3f}",
-            "-c:a", "pcm_s16le",
+            "ffmpeg",
+            "-y",
+            "-i",
+            str(song),
+            "-ss",
+            f"{shot.start_s:.3f}",
+            "-to",
+            f"{shot.end_s:.3f}",
+            "-c:a",
+            "pcm_s16le",
             str(out),
         ],
         check=True,
@@ -407,7 +418,9 @@ def _resolve_character_anchors(project: Project, shot: ShotSpec) -> dict[str, Pa
             card = project.read_character_card(name)
             ref = card.get("reference_image_path") or ""
             if ref:
-                p = (Path(ref) if Path(ref).is_absolute() else project.root / ref).resolve()
+                p = (
+                    Path(ref) if Path(ref).is_absolute() else project.root / ref
+                ).resolve()
                 if p.exists():
                     out[name] = p
                     continue
@@ -421,7 +434,10 @@ def _resolve_character_anchors(project: Project, shot: ShotSpec) -> dict[str, Pa
                 continue
             for image_path in sorted(sub_dir.iterdir()):
                 if image_path.is_file() and image_path.suffix.lower() in {
-                    ".png", ".jpg", ".jpeg", ".webp"
+                    ".png",
+                    ".jpg",
+                    ".jpeg",
+                    ".webp",
                 }:
                     out[name] = image_path
                     break

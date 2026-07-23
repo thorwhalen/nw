@@ -241,9 +241,7 @@ def iter_scope_stores(
         for scope, db_path in scope_paths.items():
             if backend == _SQLITE and not Path(db_path).exists():
                 continue
-            store = open_graph_store(
-                db_path, asset_id=asset_id, scope=scope, env=env
-            )
+            store = open_graph_store(db_path, asset_id=asset_id, scope=scope, env=env)
             try:
                 yield store
             finally:

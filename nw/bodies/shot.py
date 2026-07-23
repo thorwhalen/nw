@@ -28,14 +28,12 @@ class ShotBodyV1(BaseModel):
 
     model_config = {"frozen": True, "extra": "forbid"}
 
-    shot_id: str = Field(
-        ..., description="Stable id within a project (e.g. 's01')."
-    )
+    shot_id: str = Field(..., description="Stable id within a project (e.g. 's01').")
     section_id: str = Field("", description="Optional pointer to a parent section.")
     render_strategy: str = Field(
         "image_to_video",
         description=(
-            'Open string — apps register their own strategies via '
+            "Open string — apps register their own strategies via "
             'nw.renderers. Built-ins: "lipsync", "image_to_video", '
             '"text_to_video", "still", "composite_lipsync".'
         ),
@@ -55,7 +53,9 @@ class ShotBodyV1(BaseModel):
         "", description="Prose direction for the shot (drives the prompt)."
     )
     camera: str = Field("", description='Camera move: "static" | "slow push-in" | …')
-    framing: str = Field("medium", description='Framing: "wide" | "medium" | "close" | …')
+    framing: str = Field(
+        "medium", description='Framing: "wide" | "medium" | "close" | …'
+    )
     notes: str = Field("", description="Director's notes; not a prompt component.")
 
 

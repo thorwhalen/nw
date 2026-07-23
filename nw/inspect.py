@@ -42,6 +42,7 @@ class FrozenSegment(BaseModel):
     is almost always a bug — Hailuo Pro returning a too-short clip + a tpad
     fallback that froze the last frame, etc.
     """
+
     start_s: float
     end_s: float
 
@@ -197,9 +198,12 @@ def compose_report(
     has_final = final.exists()
 
     shots = tuple(
-        shot_report(project, s.id,
-                    freeze_sample_fps=freeze_sample_fps,
-                    duration_tolerance_s=duration_tolerance_s)
+        shot_report(
+            project,
+            s.id,
+            freeze_sample_fps=freeze_sample_fps,
+            duration_tolerance_s=duration_tolerance_s,
+        )
         for s in spec.shots
     )
 
@@ -222,8 +226,10 @@ def compose_report(
     else:
         total_duration = 0.0
 
-    target_total = spec.song.duration_s if spec.song else (
-        max((s.end_s for s in spec.shots), default=0.0)
+    target_total = (
+        spec.song.duration_s
+        if spec.song
+        else (max((s.end_s for s in spec.shots), default=0.0))
     )
 
     return ComposeReport(
@@ -254,13 +260,18 @@ def _ffprobe(path: Path) -> dict:
     try:
         out = subprocess.run(
             [
-                "ffprobe", "-v", "error",
+                "ffprobe",
+                "-v",
+                "error",
                 "-show_format",
                 "-show_streams",
-                "-of", "json",
+                "-of",
+                "json",
                 str(path),
             ],
-            check=True, capture_output=True, text=True,
+            check=True,
+            capture_output=True,
+            text=True,
         )
         data = json.loads(out.stdout)
     except (subprocess.CalledProcessError, json.JSONDecodeError):
@@ -323,10 +334,16 @@ def _detect_frozen_segments(
         td_path = Path(td)
         # Extract sampled frames as JPEGs.
         cmd = [
-            "ffmpeg", "-v", "error", "-y",
-            "-i", str(video),
-            "-vf", f"fps={sample_fps}",
-            "-q:v", "2",
+            "ffmpeg",
+            "-v",
+            "error",
+            "-y",
+            "-i",
+            str(video),
+            "-vf",
+            f"fps={sample_fps}",
+            "-q:v",
+            "2",
             str(td_path / "f_%05d.jpg"),
         ]
         try:

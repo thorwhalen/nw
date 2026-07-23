@@ -65,9 +65,7 @@ def clone_project(
     dst = Path(dst_root).resolve()
 
     if not (src / "project.json").exists():
-        raise FileNotFoundError(
-            f"{src} is not an nw project (no project.json)."
-        )
+        raise FileNotFoundError(f"{src} is not an nw project (no project.json).")
 
     if dst.exists():
         if not force:

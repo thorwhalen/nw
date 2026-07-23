@@ -51,7 +51,8 @@ class RenderStrategyParams(BaseModel):
     model_config = ConfigDict(frozen=True, extra="forbid")
 
     quality: str = Field(
-        "balanced", description='Quality tier passed to the strategy: "draft" | "balanced" | "high".'
+        "balanced",
+        description='Quality tier passed to the strategy: "draft" | "balanced" | "high".',
     )
     upload: bool = Field(
         True,

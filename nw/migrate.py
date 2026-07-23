@@ -132,8 +132,10 @@ def project_asset_id(project_root: Path) -> str:
             song_path = sp if sp.is_absolute() else Path(project_root) / sp
     if song_path is not None and song_path.exists():
         from lacing import hash_file
+
         return hash_file(song_path)
     import hashlib
+
     seed = f"nw:project:{Path(project_root).resolve()}:{title}".encode()
     return hashlib.sha256(seed).hexdigest()
 
@@ -168,7 +170,13 @@ def migrate_to_graph(
                    "decisions": N}``.
     """
     project_root = Path(project_root).resolve()
-    counts = {"sections": 0, "shots": 0, "characters": 0, "environments": 0, "decisions": 0}
+    counts = {
+        "sections": 0,
+        "shots": 0,
+        "characters": 0,
+        "environments": 0,
+        "decisions": 0,
+    }
 
     if is_migrated(project_root):
         return {**counts, "already_migrated": 1}
@@ -364,4 +372,5 @@ def _close_if_possible(store) -> None:
 
 def _now_iso() -> str:
     from datetime import datetime, timezone
+
     return datetime.now(timezone.utc).isoformat()

@@ -28,7 +28,14 @@ from . import inspect  # noqa: F401  — `nw.inspect.shot_report(...)`
 from . import migrate  # noqa: F401  — `nw.migrate.migrate_to_graph(...)`
 from . import storyboard as _storyboard_module  # noqa: F401
 from .experiment import apply_to_projects, clone_project, summarize_all
-from .inspect import ComposeReport, FrozenSegment, Gap, ShotReport, compose_report, shot_report
+from .inspect import (
+    ComposeReport,
+    FrozenSegment,
+    Gap,
+    ShotReport,
+    compose_report,
+    shot_report,
+)
 from .project import CharacterImage, Project
 from .graph import (
     ProjectGraph,

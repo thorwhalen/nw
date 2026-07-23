@@ -305,9 +305,7 @@ class ProjectGraph:
                 tier=_TIER_DECISION,
                 schema_uri=DECISION_BODY_SCHEMA_URI,
                 model=DecisionBodyV1,
-                wrap=lambda ann, body: StoredDecision(
-                    annotation_id=ann.id, body=body
-                ),
+                wrap=lambda ann, body: StoredDecision(annotation_id=ann.id, body=body),
                 sort_key=lambda s: 0,  # decisions arrive in insertion order
             )
 
@@ -405,9 +403,7 @@ def iter_all_annotations(project_root: str | Path) -> Iterator[Annotation]:
             yield from store.all()
 
 
-def descendants_of(
-    project_root: str | Path, ancestor_id: UUID
-) -> list[Annotation]:
+def descendants_of(project_root: str | Path, ancestor_id: UUID) -> list[Annotation]:
     """Return every annotation whose provenance chain leads back to ``ancestor_id``.
 
     Walks ``provenance.was_derived_from`` *transitively* across all of the
@@ -438,9 +434,7 @@ def descendants_of(
     return [by_id[i] for i in seen if i in by_id]
 
 
-def derived_from(
-    project_root: str | Path, annotation_id: UUID
-) -> list[Annotation]:
+def derived_from(project_root: str | Path, annotation_id: UUID) -> list[Annotation]:
     """Return the annotations this one was directly derived from.
 
     Walks ``provenance.was_derived_from`` *one hop only* across all of the
@@ -454,9 +448,7 @@ def derived_from(
     return [by_id[i] for i in target.provenance.was_derived_from if i in by_id]
 
 
-def stale_after(
-    project_root: str | Path, changed_id: UUID
-) -> list[Annotation]:
+def stale_after(project_root: str | Path, changed_id: UUID) -> list[Annotation]:
     """Return every annotation that is downstream of ``changed_id``.
 
     Reelee's freshness operation (system overview §7): when a node changes
@@ -472,9 +464,7 @@ def stale_after(
     return descendants_of(project_root, changed_id)
 
 
-def annotations_at_tier(
-    project_root: str | Path, tier: str
-) -> list[Annotation]:
+def annotations_at_tier(project_root: str | Path, tier: str) -> list[Annotation]:
     """Return every annotation at the given tier across all of the project's stores.
 
     Useful for reelee views that lens on a single annotation kind:
@@ -503,6 +493,7 @@ def _put(
 ) -> UUID:
     """Insert one annotation; return its UUID."""
     import uuid as _uuid
+
     new_id = _uuid.uuid4()
     ann = Annotation(
         id=new_id,

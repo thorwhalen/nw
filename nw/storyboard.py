@@ -78,6 +78,7 @@ def project_asset_id(project: Project) -> str:
     song = project.song_path()
     if song is not None and song.exists():
         from lacing import hash_file
+
         return hash_file(song)
     # Stable fallback: derived from project root + title.
     spec = project.read_spec()
@@ -122,12 +123,13 @@ def save_storyboard(
     try:
         # The store enforces a foreign key on tier; register it first so the
         # save is not rejected. Idempotent — re-registering is a no-op in lacing.
-        store.add_tier(
-            Tier(name="storyboard", stereotype=TierStereotype.NONE)
-        )
+        store.add_tier(Tier(name="storyboard", stereotype=TierStereotype.NONE))
         # Drop any existing panels for this asset+tier so save is idempotent.
         for ann in list(store.all()):
-            if ann.tier == "storyboard" and getattr(ann.reference, "asset_id", None) == storyboard.asset_id:
+            if (
+                ann.tier == "storyboard"
+                and getattr(ann.reference, "asset_id", None) == storyboard.asset_id
+            ):
                 store.remove(ann.id)
 
         _save_storyboard(
@@ -313,6 +315,7 @@ def execute_render_panel_images(
         # the downloaded bytes for a true content-hash so future references
         # to the local file resolve consistently.
         from lacing import hash_file
+
         true_artifact_id = hash_file(local)
 
         new_image = PanelImage(
@@ -352,6 +355,7 @@ def _image_size_for_aspect(aspect: str, default: str) -> str:
 
 def _download_to(url: str, dst: Path) -> Path:
     import urllib.request
+
     dst.parent.mkdir(parents=True, exist_ok=True)
     urllib.request.urlretrieve(url, str(dst))
     return dst

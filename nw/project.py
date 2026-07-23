@@ -48,9 +48,13 @@ def _iv(start_s: float, end_s: float) -> TimeInterval:
 def _seconds_to_rt(seconds: float):
     from fractions import Fraction
     from lacing import RationalTime, DEFAULT_RATE
+
     # Round to nearest sample at DEFAULT_RATE.
     samples = round(float(seconds) * DEFAULT_RATE)
-    return RationalTime.from_fraction(Fraction(samples, DEFAULT_RATE), rate=DEFAULT_RATE)
+    return RationalTime.from_fraction(
+        Fraction(samples, DEFAULT_RATE), rate=DEFAULT_RATE
+    )
+
 
 from lacing import TimeInterval
 
@@ -188,7 +192,16 @@ class Project:
         # Conventional subfolders. Empty is fine — they're created lazily
         # by the setters too, but creating them up front makes the layout
         # discoverable.
-        for sub in ("characters", "environments", "shots", "output", "lyrics", "script", "song", ".nw"):
+        for sub in (
+            "characters",
+            "environments",
+            "shots",
+            "output",
+            "lyrics",
+            "script",
+            "song",
+            ".nw",
+        ):
             (root / sub).mkdir(exist_ok=True)
 
         spec = ProjectSpec(
@@ -314,6 +327,7 @@ class Project:
         names = {r.name for r in refs}
         with self.graph._open() as store:
             from .migrate import _TIER_CHARACTER_REF
+
             for ann in list(store.all()):
                 if ann.tier == _TIER_CHARACTER_REF:
                     if isinstance(ann.body, dict) and ann.body.get("name") not in names:
@@ -327,6 +341,7 @@ class Project:
         names = {r.name for r in refs}
         with self.graph._open() as store:
             from .migrate import _TIER_ENVIRONMENT_REF
+
             for ann in list(store.all()):
                 if ann.tier == _TIER_ENVIRONMENT_REF:
                     if isinstance(ann.body, dict) and ann.body.get("name") not in names:
@@ -340,9 +355,13 @@ class Project:
         ids = {s.id for s in sections}
         with self.graph._open() as store:
             from .migrate import _TIER_SECTION
+
             for ann in list(store.all()):
                 if ann.tier == _TIER_SECTION:
-                    if isinstance(ann.body, dict) and ann.body.get("section_id") not in ids:
+                    if (
+                        isinstance(ann.body, dict)
+                        and ann.body.get("section_id") not in ids
+                    ):
                         store.remove(ann.id)
         for sec in sections:
             self.graph.upsert_section(
@@ -359,9 +378,13 @@ class Project:
         ids = {s.id for s in shots}
         with self.graph._open() as store:
             from .migrate import _TIER_SHOT
+
             for ann in list(store.all()):
                 if ann.tier == _TIER_SHOT:
-                    if isinstance(ann.body, dict) and ann.body.get("shot_id") not in ids:
+                    if (
+                        isinstance(ann.body, dict)
+                        and ann.body.get("shot_id") not in ids
+                    ):
                         store.remove(ann.id)
         for shot in shots:
             self.graph.upsert_shot(
@@ -514,11 +537,16 @@ class Project:
             for image_path in sorted(sub_dir.iterdir()):
                 if not image_path.is_file():
                     continue
-                if image_path.suffix.lower() not in {".png", ".jpg", ".jpeg", ".webp", ".gif"}:
+                if image_path.suffix.lower() not in {
+                    ".png",
+                    ".jpg",
+                    ".jpeg",
+                    ".webp",
+                    ".gif",
+                }:
                     continue
                 is_anchor = (
-                    anchor_path is not None
-                    and image_path.resolve() == anchor_path
+                    anchor_path is not None and image_path.resolve() == anchor_path
                 )
                 out.append(
                     CharacterImage(
@@ -555,9 +583,7 @@ class Project:
         rel = abs_p.relative_to(self.root).as_posix()
         card["reference_image_path"] = rel
         self.write_character_card(name, card)
-        self.log_decision(
-            "set_character_anchor", character=name, anchor_path=rel
-        )
+        self.log_decision("set_character_anchor", character=name, anchor_path=rel)
         return card
 
     # -- environments ------------------------------------------------------
@@ -623,9 +649,7 @@ class Project:
         """
         # Graph (canonical).
         try:
-            self.graph.append_decision(
-                DecisionBodyV1(kind=kind, payload=dict(payload))
-            )
+            self.graph.append_decision(DecisionBodyV1(kind=kind, payload=dict(payload)))
         except Exception:
             # Don't fail user operations on graph write errors; the JSONL
             # below preserves the record as a fallback audit.
@@ -649,9 +673,7 @@ class Project:
         """Return a typed read view of the project — all the facts at once."""
         spec = self.read_spec()
         rendered = sum(
-            1
-            for shot in spec.shots
-            if (self.shot_dir(shot.id) / "output.mp4").exists()
+            1 for shot in spec.shots if (self.shot_dir(shot.id) / "output.mp4").exists()
         )
 
         return ProjectSummary(
@@ -667,9 +689,9 @@ class Project:
             rendered_shot_count=rendered,
             has_lyrics=(self.root / "lyrics" / "lyrics.md").exists()
             or (self.root / "lyrics" / "transcript.json").exists(),
-            has_alignment=any(
-                (self.root / "lyrics").glob("alignment.*")
-            ) if (self.root / "lyrics").exists() else False,
+            has_alignment=any((self.root / "lyrics").glob("alignment.*"))
+            if (self.root / "lyrics").exists()
+            else False,
             has_script=(self.root / "script" / "script.md").exists(),
             has_final_compose=(self.root / "output" / "final.mp4").exists(),
         )
@@ -689,6 +711,7 @@ def _probe_audio(path: Path) -> dict:
     """Best-effort audio metadata probe via ``mixing.audio``; quiet on failure."""
     try:
         from mixing.audio import Audio  # type: ignore[import-not-found]
+
         a = Audio(str(path))
         return {
             "duration_s": float(a.duration),

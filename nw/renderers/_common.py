@@ -42,6 +42,7 @@ def trim_or_pad_video(src: Path, target_s: float, dst: Path) -> Path:
     """
     try:
         from mixing.video import Video  # type: ignore[import-not-found]
+
         v = Video(str(src))
         delta = target_s - v.duration
 
@@ -69,15 +70,24 @@ def _pad_video_to_duration(
             shutil.copy2(src, dst)
         return dst
     cmd = [
-        "ffmpeg", "-y",
-        "-i", str(src),
-        "-vf", f"tpad=stop_mode=clone:stop_duration={pad_seconds:.3f}",
-        "-af", f"apad=pad_dur={pad_seconds:.3f}",
-        "-t", f"{target_s:.3f}",
-        "-c:v", "libx264",
-        "-pix_fmt", "yuv420p",
-        "-c:a", "aac",
-        "-movflags", "+faststart",
+        "ffmpeg",
+        "-y",
+        "-i",
+        str(src),
+        "-vf",
+        f"tpad=stop_mode=clone:stop_duration={pad_seconds:.3f}",
+        "-af",
+        f"apad=pad_dur={pad_seconds:.3f}",
+        "-t",
+        f"{target_s:.3f}",
+        "-c:v",
+        "libx264",
+        "-pix_fmt",
+        "yuv420p",
+        "-c:a",
+        "aac",
+        "-movflags",
+        "+faststart",
         str(dst),
     ]
     try:
@@ -88,24 +98,32 @@ def _pad_video_to_duration(
         return dst
 
 
-def loop_image_with_audio(
-    image: Path, audio: Path, target_s: float, dst: Path
-) -> Path:
+def loop_image_with_audio(image: Path, audio: Path, target_s: float, dst: Path) -> Path:
     """Build an mp4 that holds ``image`` for ``target_s`` seconds with
     ``audio`` as the soundtrack. ffmpeg-only; no fal calls.
     """
     cmd = [
-        "ffmpeg", "-y",
-        "-loop", "1",
-        "-i", str(image),
-        "-i", str(audio),
-        "-c:v", "libx264",
-        "-tune", "stillimage",
-        "-pix_fmt", "yuv420p",
-        "-c:a", "aac",
+        "ffmpeg",
+        "-y",
+        "-loop",
+        "1",
+        "-i",
+        str(image),
+        "-i",
+        str(audio),
+        "-c:v",
+        "libx264",
+        "-tune",
+        "stillimage",
+        "-pix_fmt",
+        "yuv420p",
+        "-c:a",
+        "aac",
         "-shortest",
-        "-t", f"{target_s:.3f}",
-        "-movflags", "+faststart",
+        "-t",
+        f"{target_s:.3f}",
+        "-movflags",
+        "+faststart",
         str(dst),
     ]
     subprocess.run(cmd, check=True, capture_output=True)

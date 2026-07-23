@@ -192,9 +192,7 @@ class BaseTransform:
         *,
         params: Optional[BaseModel] = None,
     ) -> tuple[Plan, tuple[Annotation, ...]]:
-        raise NotImplementedError(
-            f"{type(self).__name__} must implement plan()."
-        )
+        raise NotImplementedError(f"{type(self).__name__} must implement plan().")
 
     def execute(
         self,
@@ -287,9 +285,11 @@ def register_transform(
             ...
     """
     if impl is None:
+
         def _decorator(cls: type) -> type:
             transforms.register(name, cls())
             return cls
+
         return _decorator
     return transforms.register(name, impl)
 

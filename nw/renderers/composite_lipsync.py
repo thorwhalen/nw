@@ -86,7 +86,9 @@ class CompositeLipsyncStrategy:
 
         overrides = model_overrides or {}
         compose_quality = quality
-        avatar_quality = "high" if quality == "balanced" else quality  # default omnihuman
+        avatar_quality = (
+            "high" if quality == "balanced" else quality
+        )  # default omnihuman
 
         # Per-shot composition prompt: include the shot's framing/action so
         # Kontext does more than just "place the person there" — it places

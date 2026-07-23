@@ -117,9 +117,7 @@ def segment_script_into_panels(
     if not script or not script.strip():
         raise ValueError("segment_script_into_panels: script is empty")
     if target_panel_count < 1:
-        raise ValueError(
-            f"target_panel_count must be ≥ 1, got {target_panel_count}"
-        )
+        raise ValueError(f"target_panel_count must be ≥ 1, got {target_panel_count}")
 
     prompt = build_prompt(script, target_panel_count=target_panel_count)
     raw = llm(prompt)
@@ -144,9 +142,7 @@ def _parse_panel_response(raw: str) -> list[PanelProposal]:
     # outermost array / object in the string.
     payload = _try_parse_json(text) or _try_parse_json(_first_json_value(text))
     if payload is None:
-        raise ValueError(
-            f"could not parse LLM response as JSON; got: {raw[:200]!r}…"
-        )
+        raise ValueError(f"could not parse LLM response as JSON; got: {raw[:200]!r}…")
     items = _coerce_items(payload)
     panels: list[PanelProposal] = []
     errors: list[str] = []

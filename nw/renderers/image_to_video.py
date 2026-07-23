@@ -63,7 +63,11 @@ class ImageToVideoStrategy:
                     quality=quality,
                     image_size="landscape_16_9",
                     model_id=overrides.get("image"),
-                    metadata={"shot_id": prep.shot_id, "strategy": "image_to_video", "step": "still"},
+                    metadata={
+                        "shot_id": prep.shot_id,
+                        "strategy": "image_to_video",
+                        "step": "still",
+                    },
                 )
             )
             seed_url_marker = "<from 0>"
@@ -75,7 +79,11 @@ class ImageToVideoStrategy:
             model_id=overrides.get("image_to_video"),
             duration_s=prep.duration_s,
             extra={"duration": max(1, int(round(prep.duration_s)))},
-            metadata={"shot_id": prep.shot_id, "strategy": "image_to_video", "step": "motion"},
+            metadata={
+                "shot_id": prep.shot_id,
+                "strategy": "image_to_video",
+                "step": "motion",
+            },
         )
         calls.append(i2v_call)
         return Plan(calls=tuple(calls))
