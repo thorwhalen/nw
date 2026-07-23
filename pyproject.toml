@@ -6,10 +6,14 @@ build-backend = "hatchling.build"
 
 [project]
 name = "nw"
-version = "0.0.1"
+# Bumped to match PyPI's latest (0.0.5) so the CI publish bumps to 0.0.6
+# instead of colliding on an already-published version — the local pyproject
+# had drifted to 0.0.1 while PyPI advanced to 0.0.5.
+version = "0.0.5"
 description = "Narrative Workflow"
 readme = "README.md"
 requires-python = ">=3.10"
+license = "MIT"
 keywords = []
 authors = [
     { name = "Thor Whalen" },
@@ -21,9 +25,6 @@ dependencies = [
     "xdol>=0.1.11",
     "artful>=0.0.2",
 ]
-
-[project.license]
-text = "mit"
 
 [project.urls]
 Homepage = "https://github.com/thorwhalen/nw"
@@ -140,7 +141,10 @@ exclude_paths = [
     "examples",
     "scrap",
 ]
-test_on_windows = true
+# nw's audio/video tests shell out to ffmpeg; Windows ffmpeg setup is finicky
+# and the job was continue-on-error (informational) anyway. Linux + macOS-dev
+# coverage is sufficient for this package.
+test_on_windows = false
 
 [tool.wads.ci.metrics]
 enabled = true
@@ -164,3 +168,15 @@ ignore_paths = [
     "scrap/",
     "examples/",
 ]
+
+# System dependencies installed by the wads `install-system-deps` CI action.
+# nw's workflow/transforms/lipsync tests shell out to ffmpeg (audio slicing,
+# probing), so CI must have it — its absence is why every run since 0.0.5
+# (June 2025) failed and nw stopped publishing.
+[tool.wads.ops.ffmpeg]
+description = "Multimedia framework for video/audio processing"
+url = "https://ffmpeg.org/"
+check.linux = "which ffmpeg"
+check.macos = "which ffmpeg"
+install.linux = ["sudo apt-get update", "sudo apt-get install -y ffmpeg"]
+install.macos = "brew install ffmpeg"
