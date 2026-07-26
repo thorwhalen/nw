@@ -24,7 +24,7 @@ dependencies = [
     "lacing>=0.0.13",
     "xdol>=0.1.11",
     "artful>=0.0.2",
-    "au",
+    "au>=0.1.1",
     "dol",
 ]
 
