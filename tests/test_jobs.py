@@ -47,12 +47,19 @@ def _poll_until(project, job_id, predicate, *, timeout=5.0, config=jobs.DEFAULT_
     return job
 
 
-def _blocking_stub(release: threading.Event, *, calls=None, cached=False):
-    """A stub render that blocks on ``release`` then completes, emitting events."""
+def _blocking_stub(release: threading.Event, *, calls=None, cached=False, emit_delay=0.0):
+    """A stub render that blocks on ``release`` then completes, emitting events.
+
+    ``emit_delay`` sleeps before the first stage event is emitted, widening the
+    window in which a job is observably ``running`` with no stage event mirrored
+    yet — used to stress the lifecycle test's async-milestone polling.
+    """
 
     def stub(project, params, *, job_id, on_event, should_cancel):
         if calls is not None:
             calls.append(job_id)
+        if emit_delay:
+            time.sleep(emit_delay)
         on_event(
             {
                 "kind": "journey.stage_started",
@@ -114,19 +121,39 @@ def test_enqueue_returns_queued_immediately(project):
 
 
 def test_full_lifecycle_success_carries_artifact_and_cost(project):
+    """The full success lifecycle, asserted milestone-by-milestone.
+
+    Every field is asserted only once it is actually reached (polled with a
+    timeout), never snapshot-asserted at the instant status first flips —
+    progress/last_event_id are populated by async stage-event mirroring, so
+    they are legitimately absent right when a job becomes ``running``. The stub
+    adds an ``emit_delay`` to widen that async window and surface any residual
+    race locally.
+    """
     release = threading.Event()
-    dispatch = {"journey.full_auto": _blocking_stub(release)}
+    dispatch = {"journey.full_auto": _blocking_stub(release, emit_delay=0.03)}
     events = []
     job = jobs.enqueue(
         project, "journey.full_auto", VIDEO_PARAMS,
         on_event=events.append, dispatch=dispatch,
     )
+
+    # Milestone 1 — observably running, with started_at (a real nw.jobs
+    # invariant, stamped at the running transition before the callable runs).
     running = _poll_until(project, job.job_id, lambda j: j.status == jobs.RUNNING)
     assert running.status == jobs.RUNNING
     assert running.started_at is not None
-    assert running.progress.stage_index == 1 and running.progress.stage_count == 3
-    assert running.last_event_id == "ev-start"
 
+    # Milestone 2 — the first stage event has been mirrored (async: poll for it).
+    # The mirror writes stage_index/stage_count/current_transform/last_event_id
+    # in one atomic index update, so once stage_index is present the rest are too.
+    staged = _poll_until(project, job.job_id, lambda j: j.progress.stage_index is not None)
+    assert staged.progress.stage_index == 1
+    assert staged.progress.stage_count == 3
+    assert staged.progress.current_transform == "panel_to_image"
+    assert staged.last_event_id == "ev-start"
+
+    # Milestone 3 — terminal success carries artifact + reconciled cost.
     release.set()
     done = _poll_until(project, job.job_id, lambda j: j.status == jobs.SUCCEEDED)
     assert done.status == jobs.SUCCEEDED
@@ -136,7 +163,11 @@ def test_full_lifecycle_success_carries_artifact_and_cost(project):
     assert done.cost.cache_hit_savings_usd == 0.10
     assert done.result and done.result["journey_status"] == "completed"
     assert done.finished_at is not None
-    # caller saw every emitted event (stamped with correlation)
+
+    # By the terminal milestone the caller's sink saw every emitted event,
+    # correlation-stamped. (Poll: the second event is emitted just before the
+    # worker writes the terminal record.)
+    _poll_until(project, job.job_id, lambda j: len(events) >= 2, timeout=2.0)
     assert len(events) >= 2
     assert all(e.get("job_id") == job.job_id for e in events)
 

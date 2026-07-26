@@ -734,10 +734,26 @@ def _reconcile_terminal(rt, job_id, result) -> None:
 
 
 def _read_job(rt, record, config) -> Job:
-    """Read one job: reap-if-stale, project, and persist a grown pct floor."""
+    """Read one job: reap-if-stale, project, and persist a grown pct floor.
+
+    Terminal-read consistency: a caller may hand us an index ``record`` snapshot
+    taken *before* the worker mirrored the render's terminal fields (cost,
+    artifact, finished_at), yet read the au store *after* the COMPLETED write.
+    Because the worker commits those index writes strictly before writing the
+    terminal au record, once we observe a terminal au status a fresh index
+    re-read is guaranteed to include them — so a job observed ``succeeded`` never
+    reports a stale/empty cost or a missing artifact_ref.
+    """
     job_id = record["job_id"]
     au_result = rt.au_store[job_id]
     au_result = _maybe_reap(rt, record, au_result, config)
+    if au_result.status in (
+        ComputationStatus.COMPLETED,
+        ComputationStatus.FAILED,
+        ComputationStatus.CANCELLED,
+    ):
+        with rt.lock:
+            record = _index_get_locked(rt, job_id) or record
     job = _project_job(rt, record, au_result, config)
     if job.status in (RUNNING, CANCELLING) and job.pct is not None:
         if record.get("pct_floor") is None or job.pct > record["pct_floor"]:
