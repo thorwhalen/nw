@@ -27,6 +27,7 @@ from . import graph  # noqa: F401  — `nw.graph.descendants_of(...)`
 from . import inspect  # noqa: F401  — `nw.inspect.shot_report(...)`
 from . import migrate  # noqa: F401  — `nw.migrate.migrate_to_graph(...)`
 from . import storyboard as _storyboard_module  # noqa: F401
+from . import jobs  # noqa: F401  — `nw.jobs.enqueue(...)` async render-job facade over au
 from .experiment import apply_to_projects, clone_project, summarize_all
 from .inspect import (
     ComposeReport,
