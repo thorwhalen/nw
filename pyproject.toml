@@ -20,7 +20,7 @@ authors = [
 ]
 dependencies = [
     "pydantic>=2.6",
-    "falaw>=0.0.7",
+    "falaw>=0.0.22",
     "lacing>=0.0.13",
     "xdol>=0.1.11",
     "artful>=0.0.2",
