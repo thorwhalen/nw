@@ -455,8 +455,18 @@ class DurationLearningMiddleware(Middleware):
         self._start: dict[str, float] = {}
 
     def before_compute(self, func: Callable, args: tuple, kwargs: dict, key: str) -> None:
+        # This hook is the running-transition boundary: the ThreadBackend worker
+        # runs it *before* it writes the RUNNING record (base.py: middleware-before
+        # → store[key]=RUNNING → func()). Stamping ``started_at`` here — in the
+        # same lock as the liveness map — guarantees a job can never be observed
+        # as ``running`` with ``started_at is None`` (closes a CI race where a slow
+        # runner polled the window between the RUNNING write and a later stamp).
         with self._lock:
             self._start[key] = time.monotonic()
+            record = self._index.get(key)
+            if record is not None and record.get("started_at") is None:
+                record["started_at"] = _now_iso()
+                self._index[key] = record
 
     def after_compute(self, key: str, result: ComputationResult) -> None:
         with self._lock:
@@ -608,9 +618,9 @@ def _bind_worker(project, kind, params, callable_, *, job_id, on_event, rt, conf
                 pass
 
     def run():
-        with rt.lock:
-            _index_update_locked(rt, job_id, started_at=_now_iso())
-
+        # ``started_at`` is stamped by the backend's ``before_compute`` hook, which
+        # runs before the RUNNING transition is observable — see
+        # :meth:`DurationLearningMiddleware.before_compute`. Nothing to stamp here.
         def call():
             return _call_dispatch(
                 callable_, project, params,
@@ -765,6 +775,12 @@ def _project_job(rt, record, au_result, config) -> Job:
 
     created_at = record.get("created_at")
     started_at = record.get("started_at")
+    # Invariant (defense in depth): a job observable as running/cancelling/terminal
+    # always has a started_at. The primary stamp is `before_compute`; here we
+    # derive it from au's RUNNING-record `created_at` for any backend that might
+    # write RUNNING without the index having caught up.
+    if started_at is None and status != QUEUED and au_result.created_at:
+        started_at = _iso(au_result.created_at)
     finished_at = record.get("finished_at")
     if finished_at is None and status in TERMINAL_STATUSES and au_result.completed_at:
         finished_at = _iso(au_result.completed_at)

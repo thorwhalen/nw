@@ -141,6 +141,28 @@ def test_full_lifecycle_success_carries_artifact_and_cost(project):
     assert all(e.get("job_id") == job.job_id for e in events)
 
 
+def test_started_at_set_when_observable_as_running(project):
+    """Invariant (regression guard for the CI race): a job observed as ``running``
+    always has ``started_at`` set. The stub blocks on its very first line, so
+    ``started_at`` cannot have been stamped by the callable — it must have been
+    set at the running transition (``before_compute``), before the render body
+    ran a single statement."""
+    entered = threading.Event()
+    release = threading.Event()
+
+    def stub(project, params, *, job_id, on_event, should_cancel):
+        entered.set()
+        release.wait(timeout=5)
+        return {}
+
+    job = jobs.enqueue(project, "op", VIDEO_PARAMS, dispatch={"op": stub})
+    running = _poll_until(project, job.job_id, lambda j: j.status == jobs.RUNNING)
+    assert running.status == jobs.RUNNING
+    assert running.started_at is not None
+    release.set()
+    _poll_until(project, job.job_id, lambda j: j.status in jobs.TERMINAL_STATUSES)
+
+
 def test_failed_job_surfaces_error(project):
     def boom(project, params, **kw):
         raise RuntimeError("kaboom")
