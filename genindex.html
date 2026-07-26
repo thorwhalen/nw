@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; nw 0.0.5 documentation</title>
+  <title>Index &mdash; nw 0.0.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=282f96c0"></script>
+      <script src="_static/documentation_options.js?v=1fd71caa"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -58,6 +58,7 @@
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/graph.html">nw.graph</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/graph_backend.html">nw.graph_backend</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/inspect.html">nw.inspect</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/jobs.html">nw.jobs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/migrate.html">nw.migrate</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/project.html">nw.project</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/renderers.html">nw.renderers</a></li>
@@ -113,6 +114,7 @@
  | <a href="#G"><strong>G</strong></a>
  | <a href="#H"><strong>H</strong></a>
  | <a href="#I"><strong>I</strong></a>
+ | <a href="#J"><strong>J</strong></a>
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
  | <a href="#N"><strong>N</strong></a>
@@ -140,6 +142,8 @@
         <li><a href="module_docs/nw/project.html#nw.project.Project.add_character">(nw.project.Project method)</a>
 </li>
       </ul></li>
+      <li><a href="module_docs/nw/jobs.html#nw.jobs.DurationLearningMiddleware.after_compute">after_compute() (nw.jobs.DurationLearningMiddleware method)</a>
+</li>
       <li><a href="module_docs/nw/graph.html#nw.graph.all_project_stores">all_project_stores() (in module nw.graph)</a>
 </li>
       <li><a href="module_docs/nw.html#nw.TransformResult.annotations">annotations (nw.TransformResult attribute)</a>
@@ -168,6 +172,8 @@
         <li><a href="module_docs/nw/experiment.html#nw.experiment.apply_to_projects">(in module nw.experiment)</a>
 </li>
       </ul></li>
+      <li><a href="module_docs/nw/jobs.html#nw.jobs.JobsConfig.approval_threshold_usd">approval_threshold_usd (nw.jobs.JobsConfig attribute)</a>
+</li>
       <li><a href="module_docs/nw.html#nw.TransformResult.artifacts">artifacts (nw.TransformResult attribute)</a>
 
       <ul>
@@ -200,6 +206,8 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="module_docs/nw/jobs.html#nw.jobs.DurationLearningMiddleware.before_compute">before_compute() (nw.jobs.DurationLearningMiddleware method)</a>
+</li>
       <li><a href="module_docs/nw/script_segmentation.html#nw.script_segmentation.build_prompt">build_prompt() (in module nw.script_segmentation)</a>
 </li>
   </ul></td>
@@ -208,12 +216,16 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="module_docs/nw/jobs.html#nw.jobs.JobsConfig.cache_hit_floor_s">cache_hit_floor_s (nw.jobs.JobsConfig attribute)</a>
+</li>
       <li><a href="module_docs/nw.html#nw.TransformResult.cache_hit_savings_usd">cache_hit_savings_usd (nw.TransformResult attribute)</a>
 
       <ul>
         <li><a href="module_docs/nw/transforms.html#nw.transforms.TransformResult.cache_hit_savings_usd">(nw.transforms.TransformResult attribute)</a>
 </li>
       </ul></li>
+      <li><a href="module_docs/nw/jobs.html#nw.jobs.cancel_job">cancel_job() (in module nw.jobs)</a>
+</li>
       <li><a href="module_docs/nw.html#nw.ShotPreparation.character_anchor_paths">character_anchor_paths (nw.ShotPreparation attribute)</a>
 
       <ul>
@@ -284,6 +296,8 @@
         <li><a href="module_docs/nw/bodies/decision.html#nw.bodies.decision.DecisionBodyV1">(class in nw.bodies.decision)</a>
 </li>
       </ul></li>
+      <li><a href="module_docs/nw/jobs.html#nw.jobs.JobsConfig.default_prior_total_s">default_prior_total_s (nw.jobs.JobsConfig attribute)</a>
+</li>
       <li><a href="module_docs/nw/transforms/_provenance.html#nw.transforms._provenance.derive_provenance">derive_provenance() (in module nw.transforms._provenance)</a>
 </li>
       <li><a href="module_docs/nw.html#nw.derived_from">derived_from() (in module nw)</a>
@@ -302,12 +316,18 @@
       </ul></li>
       <li><a href="module_docs/nw/renderers/_common.html#nw.renderers._common.download_to">download_to() (in module nw.renderers._common)</a>
 </li>
+      <li><a href="module_docs/nw/jobs.html#nw.jobs.JobsConfig.dur_buckets_s">dur_buckets_s (nw.jobs.JobsConfig attribute)</a>
+</li>
+      <li><a href="module_docs/nw/jobs.html#nw.jobs.DurationLearningMiddleware">DurationLearningMiddleware (class in nw.jobs)</a>
+</li>
   </ul></td>
 </tr></table>
 
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="module_docs/nw/jobs.html#nw.jobs.enqueue">enqueue() (in module nw.jobs)</a>
+</li>
       <li><a href="module_docs/nw.html#nw.ShotPreparation.environment_anchor_path">environment_anchor_path (nw.ShotPreparation attribute)</a>
 
       <ul>
@@ -334,6 +354,8 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="module_docs/nw/jobs.html#nw.jobs.estimate">estimate() (in module nw.jobs)</a>
+</li>
       <li><a href="module_docs/nw.html#nw.Transform.execute">execute() (nw.Transform method)</a>
 
       <ul>
@@ -376,6 +398,8 @@
         <li><a href="module_docs/nw/inspect.html#nw.inspect.Gap">(class in nw.inspect)</a>
 </li>
       </ul></li>
+      <li><a href="module_docs/nw/jobs.html#nw.jobs.get_job">get_job() (in module nw.jobs)</a>
+</li>
       <li><a href="module_docs/nw.html#nw.get_strategy">get_strategy() (in module nw)</a>
 
       <ul>
@@ -453,6 +477,24 @@
   </ul></td>
 </tr></table>
 
+<h2 id="J">J</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="module_docs/nw/jobs.html#nw.jobs.Job">Job (class in nw.jobs)</a>
+</li>
+      <li><a href="module_docs/nw/jobs.html#nw.jobs.JobCost">JobCost (class in nw.jobs)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="module_docs/nw/jobs.html#nw.jobs.JobProgress">JobProgress (class in nw.jobs)</a>
+</li>
+      <li><a href="module_docs/nw/jobs.html#nw.jobs.JobsConfig.jobs_dirname">jobs_dirname (nw.jobs.JobsConfig attribute)</a>
+</li>
+      <li><a href="module_docs/nw/jobs.html#nw.jobs.JobsConfig">JobsConfig (class in nw.jobs)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -464,6 +506,8 @@
         <li><a href="module_docs/nw/project.html#nw.project.Project.list_character_images">(nw.project.Project method)</a>
 </li>
       </ul></li>
+      <li><a href="module_docs/nw/jobs.html#nw.jobs.list_jobs">list_jobs() (in module nw.jobs)</a>
+</li>
       <li><a href="module_docs/nw.html#nw.list_strategies">list_strategies() (in module nw)</a>
 
       <ul>
@@ -616,6 +660,8 @@
 </li>
         <li><a href="module_docs/nw/inspect.html#module-nw.inspect">nw.inspect</a>
 </li>
+        <li><a href="module_docs/nw/jobs.html#module-nw.jobs">nw.jobs</a>
+</li>
         <li><a href="module_docs/nw/migrate.html#module-nw.migrate">nw.migrate</a>
 </li>
         <li><a href="module_docs/nw/project.html#module-nw.project">nw.project</a>
@@ -657,6 +703,8 @@
 <h2 id="N">N</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="module_docs/nw/jobs.html#nw.jobs.JobsConfig.n_min">n_min (nw.jobs.JobsConfig attribute)</a>
+</li>
       <li><a href="module_docs/nw.html#nw.Transform.name">name (nw.Transform attribute)</a>
 
       <ul>
@@ -748,12 +796,21 @@
 </li>
       </ul></li>
       <li>
+    nw.jobs
+
+      <ul>
+        <li><a href="module_docs/nw/jobs.html#module-nw.jobs">module</a>
+</li>
+      </ul></li>
+      <li>
     nw.migrate
 
       <ul>
         <li><a href="module_docs/nw/migrate.html#module-nw.migrate">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     nw.project
 
@@ -761,8 +818,6 @@
         <li><a href="module_docs/nw/project.html#module-nw.project">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     nw.renderers
 
@@ -874,6 +929,8 @@
 <h2 id="O">O</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="module_docs/nw/jobs.html#nw.jobs.DurationLearningMiddleware.on_error">on_error() (nw.jobs.DurationLearningMiddleware method)</a>
+</li>
       <li><a href="module_docs/nw/graph_backend.html#nw.graph_backend.open_graph_store">open_graph_store() (in module nw.graph_backend)</a>
 </li>
       <li><a href="module_docs/nw/migrate.html#nw.migrate.open_project_graph">open_project_graph() (in module nw.migrate)</a>
@@ -898,6 +955,8 @@
         <li><a href="module_docs/nw/transforms.html#nw.transforms.Transform.output_kind">(nw.transforms.Transform attribute)</a>
 </li>
       </ul></li>
+      <li><a href="module_docs/nw/jobs.html#nw.jobs.JobsConfig.overrun_factor">overrun_factor (nw.jobs.JobsConfig attribute)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -914,6 +973,8 @@
         <li><a href="module_docs/nw/transforms.html#nw.transforms.BaseTransform.params_model">(nw.transforms.BaseTransform attribute)</a>
 </li>
       </ul></li>
+      <li><a href="module_docs/nw/jobs.html#nw.jobs.JobsConfig.pct_ceil">pct_ceil (nw.jobs.JobsConfig attribute)</a>
+</li>
       <li><a href="module_docs/nw/renderers.html#nw.renderers.Strategy.plan">plan() (nw.renderers.Strategy method)</a>
 
       <ul>
@@ -936,6 +997,8 @@
         <li><a href="module_docs/nw/workflow.html#nw.workflow.plan_render_shot">(in module nw.workflow)</a>
 </li>
       </ul></li>
+      <li><a href="module_docs/nw/jobs.html#nw.jobs.predict_total_s">predict_total_s() (in module nw.jobs)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module_docs/nw.html#nw.prepare_shot">prepare_shot() (in module nw)</a>
@@ -944,6 +1007,8 @@
         <li><a href="module_docs/nw/workflow.html#nw.workflow.prepare_shot">(in module nw.workflow)</a>
 </li>
       </ul></li>
+      <li><a href="module_docs/nw/jobs.html#nw.jobs.JobsConfig.prior_total_s">prior_total_s (nw.jobs.JobsConfig attribute)</a>
+</li>
       <li><a href="module_docs/nw.html#nw.Project">Project (class in nw)</a>
 
       <ul>
@@ -1024,6 +1089,8 @@
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="module_docs/nw/jobs.html#nw.jobs.JobsConfig.sample_window_k">sample_window_k (nw.jobs.JobsConfig attribute)</a>
+</li>
       <li><a href="module_docs/nw.html#nw.save_storyboard">save_storyboard() (in module nw)</a>
 
       <ul>
@@ -1122,6 +1189,8 @@
         <li><a href="module_docs/nw/graph.html#nw.graph.stale_after">(in module nw.graph)</a>
 </li>
       </ul></li>
+      <li><a href="module_docs/nw/jobs.html#nw.jobs.JobsConfig.stale_running_s">stale_running_s (nw.jobs.JobsConfig attribute)</a>
+</li>
       <li><a href="module_docs/nw/renderers/still.html#nw.renderers.still.StillStrategy">StillStrategy (class in nw.renderers.still)</a>
 </li>
       <li><a href="module_docs/nw/graph.html#nw.graph.StoredCharacterRef">StoredCharacterRef (class in nw.graph)</a>
@@ -1173,6 +1242,8 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module_docs/nw/renderers/text_to_video.html#nw.renderers.text_to_video.TextToVideoStrategy">TextToVideoStrategy (class in nw.renderers.text_to_video)</a>
+</li>
+      <li><a href="module_docs/nw/jobs.html#nw.jobs.to_dict">to_dict() (in module nw.jobs)</a>
 </li>
       <li><a href="module_docs/nw.html#nw.Transform">Transform (class in nw)</a>
 

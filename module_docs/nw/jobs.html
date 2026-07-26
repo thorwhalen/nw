@@ -1,0 +1,443 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>nw.jobs &mdash; nw 0.0.6 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=1fd71caa"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="nw.migrate" href="migrate.html" />
+    <link rel="prev" title="nw.inspect" href="inspect.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            nw
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../nw.html">nw</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies.html">nw.bodies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/character_ref.html">nw.bodies.character_ref</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/decision.html">nw.bodies.decision</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/environment_ref.html">nw.bodies.environment_ref</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/render_result.html">nw.bodies.render_result</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/section.html">nw.bodies.section</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/shot.html">nw.bodies.shot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experiment.html">nw.experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graph.html">nw.graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graph_backend.html">nw.graph_backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="inspect.html">nw.inspect</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">nw.jobs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#nw.jobs.DurationLearningMiddleware"><code class="docutils literal notranslate"><span class="pre">DurationLearningMiddleware</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#nw.jobs.DurationLearningMiddleware.after_compute"><code class="docutils literal notranslate"><span class="pre">DurationLearningMiddleware.after_compute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.jobs.DurationLearningMiddleware.before_compute"><code class="docutils literal notranslate"><span class="pre">DurationLearningMiddleware.before_compute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.jobs.DurationLearningMiddleware.on_error"><code class="docutils literal notranslate"><span class="pre">DurationLearningMiddleware.on_error()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.jobs.Job"><code class="docutils literal notranslate"><span class="pre">Job</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.jobs.JobCost"><code class="docutils literal notranslate"><span class="pre">JobCost</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.jobs.JobProgress"><code class="docutils literal notranslate"><span class="pre">JobProgress</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.jobs.JobsConfig"><code class="docutils literal notranslate"><span class="pre">JobsConfig</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#nw.jobs.JobsConfig.approval_threshold_usd"><code class="docutils literal notranslate"><span class="pre">JobsConfig.approval_threshold_usd</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.jobs.JobsConfig.cache_hit_floor_s"><code class="docutils literal notranslate"><span class="pre">JobsConfig.cache_hit_floor_s</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.jobs.JobsConfig.default_prior_total_s"><code class="docutils literal notranslate"><span class="pre">JobsConfig.default_prior_total_s</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.jobs.JobsConfig.dur_buckets_s"><code class="docutils literal notranslate"><span class="pre">JobsConfig.dur_buckets_s</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.jobs.JobsConfig.jobs_dirname"><code class="docutils literal notranslate"><span class="pre">JobsConfig.jobs_dirname</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.jobs.JobsConfig.n_min"><code class="docutils literal notranslate"><span class="pre">JobsConfig.n_min</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.jobs.JobsConfig.overrun_factor"><code class="docutils literal notranslate"><span class="pre">JobsConfig.overrun_factor</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.jobs.JobsConfig.pct_ceil"><code class="docutils literal notranslate"><span class="pre">JobsConfig.pct_ceil</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.jobs.JobsConfig.prior_total_s"><code class="docutils literal notranslate"><span class="pre">JobsConfig.prior_total_s</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.jobs.JobsConfig.sample_window_k"><code class="docutils literal notranslate"><span class="pre">JobsConfig.sample_window_k</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.jobs.JobsConfig.stale_running_s"><code class="docutils literal notranslate"><span class="pre">JobsConfig.stale_running_s</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.jobs.cancel_job"><code class="docutils literal notranslate"><span class="pre">cancel_job()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.jobs.enqueue"><code class="docutils literal notranslate"><span class="pre">enqueue()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.jobs.estimate"><code class="docutils literal notranslate"><span class="pre">estimate()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.jobs.get_job"><code class="docutils literal notranslate"><span class="pre">get_job()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.jobs.list_jobs"><code class="docutils literal notranslate"><span class="pre">list_jobs()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.jobs.predict_total_s"><code class="docutils literal notranslate"><span class="pre">predict_total_s()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.jobs.to_dict"><code class="docutils literal notranslate"><span class="pre">to_dict()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="migrate.html">nw.migrate</a></li>
+<li class="toctree-l1"><a class="reference internal" href="project.html">nw.project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers.html">nw.renderers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/_common.html">nw.renderers._common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/composite_lipsync.html">nw.renderers.composite_lipsync</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/image_to_video.html">nw.renderers.image_to_video</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/lipsync.html">nw.renderers.lipsync</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/still.html">nw.renderers.still</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/text_to_video.html">nw.renderers.text_to_video</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema.html">nw.schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="script_segmentation.html">nw.script_segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="storyboard.html">nw.storyboard</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms.html">nw.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms/_adapters.html">nw.transforms._adapters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms/_adapters/render_strategy.html">nw.transforms._adapters.render_strategy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms/_provenance.html">nw.transforms._provenance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow.html">nw.workflow</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">nw</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">nw.jobs</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/module_docs/nw/jobs.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-nw.jobs">
+<span id="nw-jobs"></span><h1>nw.jobs<a class="headerlink" href="#module-nw.jobs" title="Link to this heading"></a></h1>
+<p>nw.jobs — a project-scoped async <strong>job</strong> facade over <code class="docutils literal notranslate"><span class="pre">au</span></code>.</p>
+<p>A “job” is one long, cancellable unit of render work (a full-auto journey, a
+single <code class="docutils literal notranslate"><span class="pre">panel.animate</span></code>, an <code class="docutils literal notranslate"><span class="pre">assemble_animatic</span></code> pass, …). It has a durable
+id, a persistent terminal state, live progress + ETA, a cost, and a cancel
+entry keyed by that id — everything a task tray needs and none of which a bare
+HTTP request provides.</p>
+<p>This module is the <em>only</em> place async substance lives for the render layer:
+<code class="docutils literal notranslate"><span class="pre">au</span></code> supplies the submit → poll → result skeleton and the durable store;
+<code class="docutils literal notranslate"><span class="pre">nw.jobs</span></code> adds the five render-domain concerns <code class="docutils literal notranslate"><span class="pre">au</span></code> has no data model for —
+progress %, ETA, human label/kind, idempotency (dedup), and cost — plus the
+5-state normalization, context-capture so a job outlives its request, and the
+active-jobs index that makes membership meaningful. Consumers (reelee’s
+<code class="docutils literal notranslate"><span class="pre">/api/jobs</span></code> closures) stay thin: they call <a class="reference internal" href="#nw.jobs.enqueue" title="nw.jobs.enqueue"><code class="xref py py-func docutils literal notranslate"><span class="pre">enqueue()</span></code></a> / <a class="reference internal" href="#nw.jobs.estimate" title="nw.jobs.estimate"><code class="xref py py-func docutils literal notranslate"><span class="pre">estimate()</span></code></a>
+/ <a class="reference internal" href="#nw.jobs.list_jobs" title="nw.jobs.list_jobs"><code class="xref py py-func docutils literal notranslate"><span class="pre">list_jobs()</span></code></a> / <a class="reference internal" href="#nw.jobs.get_job" title="nw.jobs.get_job"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_job()</span></code></a> / <a class="reference internal" href="#nw.jobs.cancel_job" title="nw.jobs.cancel_job"><code class="xref py py-func docutils literal notranslate"><span class="pre">cancel_job()</span></code></a> / <a class="reference internal" href="#nw.jobs.to_dict" title="nw.jobs.to_dict"><code class="xref py py-func docutils literal notranslate"><span class="pre">to_dict()</span></code></a>
+and serialize the result.</p>
+<p>Design decisions (from the <code class="docutils literal notranslate"><span class="pre">nw.jobs</span></code>-on-<code class="docutils literal notranslate"><span class="pre">au</span></code> design report,
+<code class="docutils literal notranslate"><span class="pre">misc/docs/research/async-job-manager-on-au.md</span></code>):</p>
+<ul class="simple">
+<li><p><strong>Backend = ``au.ThreadBackend``</strong>, not <code class="docutils literal notranslate"><span class="pre">ProcessBackend</span></code>. A fal render is
+I/O-bound (a blocking upstream wait), and the worker must share the live
+in-process <code class="docutils literal notranslate"><span class="pre">Project</span></code> graph and write events to the same channel the
+existing SSE tails. Process isolation buys no real fal cancel (fal still
+bills) while breaking the live-progress channel. Where bounded concurrent
+paid renders matter, swap in <code class="docutils literal notranslate"><span class="pre">StdLibQueueBackend(use_processes=False)</span></code> —
+a construction detail behind this facade.</p></li>
+<li><p><strong>au store is SSOT for *status* only.</strong> <code class="docutils literal notranslate"><span class="pre">ThreadBackend</span></code> overwrites the
+store record with a bare <code class="docutils literal notranslate"><span class="pre">ComputationResult</span></code> at start (RUNNING) and end
+(COMPLETED), carrying no metadata — so every job-semantic field lives in a
+per-project <strong>active-jobs index</strong> (a <code class="docutils literal notranslate"><span class="pre">dol</span></code> mapping), which <code class="docutils literal notranslate"><span class="pre">au</span></code> cannot
+clobber. The index is also the membership authority: <code class="docutils literal notranslate"><span class="pre">au.FileSystemStore</span></code>
+synthesizes <code class="docutils literal notranslate"><span class="pre">PENDING</span></code> for a missing key, so store membership is
+meaningless.</p></li>
+<li><p><strong>Idempotency</strong>: the au store key <em>is</em> the idempotency key
+(<code class="docutils literal notranslate"><span class="pre">sha256(project:kind:plan_hash-or-params)</span></code>). A resubmit while a job with
+that key is live returns the existing job instead of launching a duplicate.</p></li>
+<li><p><strong>Cancel is boundary-grained and race-proof.</strong> <code class="docutils literal notranslate"><span class="pre">cancel_job</span></code> flips the au
+record terminal <em>and</em> sets a durable should-cancel flag; the <code class="docutils literal notranslate"><span class="pre">cancel_requested</span></code>
+flag is the authority for cancellation intent, so a job reads
+<code class="docutils literal notranslate"><span class="pre">cancelling</span></code> → <code class="docutils literal notranslate"><span class="pre">cancelled</span></code> regardless of whether the still-running
+<code class="docutils literal notranslate"><span class="pre">ThreadBackend</span></code> thread later clobbers the store with COMPLETED.</p></li>
+<li><p><strong>ETA is learned from observed wall-time</strong>, per <code class="docutils literal notranslate"><span class="pre">(model,</span> <span class="pre">operation,</span> <span class="pre">dur_bucket)</span></code>
+with back-off, median (not mean), honest “estimating…” before enough
+history, and <strong>cache-hits excluded from learning</strong>.</p></li>
+</ul>
+<p>All tunables are keyword-configurable via <a class="reference internal" href="#nw.jobs.JobsConfig" title="nw.jobs.JobsConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobsConfig</span></code></a>; defaults live at
+the top of this module — no magic numbers below.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.jobs.DurationLearningMiddleware">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.jobs.</span></span><span class="sig-name descname"><span class="pre">DurationLearningMiddleware</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">durations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MutableMapping</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MutableMapping</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lock</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">allocate_lock</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nw.jobs.JobsConfig" title="nw.jobs.JobsConfig"><span class="pre">JobsConfig</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">JobsConfig(n_min=3,</span> <span class="pre">sample_window_k=20,</span> <span class="pre">pct_ceil=99,</span> <span class="pre">overrun_factor=1.5,</span> <span class="pre">cache_hit_floor_s=0.5,</span> <span class="pre">dur_buckets_s=(4.0,</span> <span class="pre">8.0,</span> <span class="pre">12.0),</span> <span class="pre">prior_total_s={'image':</span> <span class="pre">12.0,</span> <span class="pre">'video':</span> <span class="pre">90.0,</span> <span class="pre">'audio':</span> <span class="pre">15.0},</span> <span class="pre">default_prior_total_s=30.0,</span> <span class="pre">stale_running_s=900.0,</span> <span class="pre">approval_threshold_usd=1.0,</span> <span class="pre">jobs_dirname='.nw/jobs')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nw/jobs.html#DurationLearningMiddleware"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.jobs.DurationLearningMiddleware" title="Link to this definition"></a></dt>
+<dd><p>Keyed, percentile duration learner — a cousin of <code class="docutils literal notranslate"><span class="pre">au.MetricsMiddleware</span></code>.</p>
+<p>Records the render wall-time under every ETA-key candidate for the job, so
+a cold specific key backs off to a warmer coarse one. Two deliberate
+departures from <code class="docutils literal notranslate"><span class="pre">au</span></code>’s built-in metrics:</p>
+<ul class="simple">
+<li><p><strong>Self-timed</strong> (<code class="docutils literal notranslate"><span class="pre">time.monotonic</span></code> in <code class="docutils literal notranslate"><span class="pre">before_compute</span></code> → <code class="docutils literal notranslate"><span class="pre">after_compute</span></code>)
+rather than reading <code class="docutils literal notranslate"><span class="pre">result.duration</span></code>: <code class="docutils literal notranslate"><span class="pre">ThreadBackend</span></code> constructs a
+<em>fresh</em> COMPLETED <code class="docutils literal notranslate"><span class="pre">ComputationResult</span></code> whose <code class="docutils literal notranslate"><span class="pre">created_at</span></code> is the
+completion instant, so <code class="docutils literal notranslate"><span class="pre">result.duration</span></code> is ~0 and useless. (Surfaced
+as an <code class="docutils literal notranslate"><span class="pre">au</span></code> finding.)</p></li>
+<li><p><strong>Cache-hits are never learned</strong> — a ~0s cache hit would drag the median
+to zero. The job’s <code class="docutils literal notranslate"><span class="pre">cached</span></code> flag (mirrored from a <code class="docutils literal notranslate"><span class="pre">cache_hit</span></code> event
+during the run) gates recording.</p></li>
+</ul>
+<p>Its <code class="docutils literal notranslate"><span class="pre">_start</span></code> map doubles as the in-process <strong>liveness signal</strong> the stale
+reaper uses (a RUNNING au record whose key is not in <code class="docutils literal notranslate"><span class="pre">_start</span></code> and whose
+<code class="docutils literal notranslate"><span class="pre">started_at</span></code> is old is a dead worker).</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.jobs.DurationLearningMiddleware.after_compute">
+<span class="sig-name descname"><span class="pre">after_compute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">result</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ComputationResult</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/nw/jobs.html#DurationLearningMiddleware.after_compute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.jobs.DurationLearningMiddleware.after_compute" title="Link to this definition"></a></dt>
+<dd><p>Called after computation completes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.jobs.DurationLearningMiddleware.before_compute">
+<span class="sig-name descname"><span class="pre">before_compute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/nw/jobs.html#DurationLearningMiddleware.before_compute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.jobs.DurationLearningMiddleware.before_compute" title="Link to this definition"></a></dt>
+<dd><p>Called before computation starts.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.jobs.DurationLearningMiddleware.on_error">
+<span class="sig-name descname"><span class="pre">on_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Exception</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/nw/jobs.html#DurationLearningMiddleware.on_error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.jobs.DurationLearningMiddleware.on_error" title="Link to this definition"></a></dt>
+<dd><p>Called when computation fails.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.jobs.Job">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.jobs.</span></span><span class="sig-name descname"><span class="pre">Job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idempotency_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">created_at</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">started_at</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">finished_at</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">queue_wait_s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elapsed_s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nw.jobs.JobProgress" title="nw.jobs.JobProgress"><span class="pre">JobProgress</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">predicted_total_s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remaining_s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eta_ts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eta_s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pct</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_hint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eta_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cost</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nw.jobs.JobCost" title="nw.jobs.JobCost"><span class="pre">JobCost</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cached</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artifact_ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">result</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">last_event_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nw/jobs.html#Job"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.jobs.Job" title="Link to this definition"></a></dt>
+<dd><p>Projected, JSON-serializable view of one job (see <a class="reference internal" href="#nw.jobs.to_dict" title="nw.jobs.to_dict"><code class="xref py py-func docutils literal notranslate"><span class="pre">to_dict()</span></code></a>).</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.jobs.JobCost">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.jobs.</span></span><span class="sig-name descname"><span class="pre">JobCost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">estimated_usd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'float</span> <span class="pre">|</span> <span class="pre">None'</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actual_usd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'float</span> <span class="pre">|</span> <span class="pre">None'</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_hit_savings_usd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'float</span> <span class="pre">|</span> <span class="pre">None'</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nw/jobs.html#JobCost"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.jobs.JobCost" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.jobs.JobProgress">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.jobs.</span></span><span class="sig-name descname"><span class="pre">JobProgress</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stage_index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'int</span> <span class="pre">|</span> <span class="pre">None'</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stage_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'int</span> <span class="pre">|</span> <span class="pre">None'</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_transform</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'str</span> <span class="pre">|</span> <span class="pre">None'</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fraction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'float</span> <span class="pre">|</span> <span class="pre">None'</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nw/jobs.html#JobProgress"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.jobs.JobProgress" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.jobs.JobsConfig">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.jobs.</span></span><span class="sig-name descname"><span class="pre">JobsConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_window_k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pct_ceil</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">99</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overrun_factor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_hit_floor_s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dur_buckets_s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple[float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">...]</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(4.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">8.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">12.0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prior_total_s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">float]</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_prior_total_s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">30.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stale_running_s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">900.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">approval_threshold_usd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jobs_dirname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'.nw/jobs'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nw/jobs.html#JobsConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.jobs.JobsConfig" title="Link to this definition"></a></dt>
+<dd><p>Tunables for the job manager. All keyword-configurable; sensible defaults.</p>
+<p>ETA knobs (<code class="docutils literal notranslate"><span class="pre">n_min</span></code> … <code class="docutils literal notranslate"><span class="pre">prior_total_s</span></code>) mirror the design report §5.7.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.jobs.JobsConfig.approval_threshold_usd">
+<span class="sig-name descname"><span class="pre">approval_threshold_usd</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1.0</span></span><a class="headerlink" href="#nw.jobs.JobsConfig.approval_threshold_usd" title="Link to this definition"></a></dt>
+<dd><p>Estimated cost at/above which a render requires explicit approval.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.jobs.JobsConfig.cache_hit_floor_s">
+<span class="sig-name descname"><span class="pre">cache_hit_floor_s</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.5</span></span><a class="headerlink" href="#nw.jobs.JobsConfig.cache_hit_floor_s" title="Link to this definition"></a></dt>
+<dd><p>Predicted total for an all-cache-hit plan (<code class="docutils literal notranslate"><span class="pre">confidence=&quot;exact&quot;</span></code>).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.jobs.JobsConfig.default_prior_total_s">
+<span class="sig-name descname"><span class="pre">default_prior_total_s</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">30.0</span></span><a class="headerlink" href="#nw.jobs.JobsConfig.default_prior_total_s" title="Link to this definition"></a></dt>
+<dd><p>Prior when even the output kind is unknown.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.jobs.JobsConfig.dur_buckets_s">
+<span class="sig-name descname"><span class="pre">dur_buckets_s</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(4.0,</span> <span class="pre">8.0,</span> <span class="pre">12.0)</span></span><a class="headerlink" href="#nw.jobs.JobsConfig.dur_buckets_s" title="Link to this definition"></a></dt>
+<dd><p>Upper edges of the output-duration buckets for <code class="docutils literal notranslate"><span class="pre">per_second</span></code> models.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.jobs.JobsConfig.jobs_dirname">
+<span class="sig-name descname"><span class="pre">jobs_dirname</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'.nw/jobs'</span></span><a class="headerlink" href="#nw.jobs.JobsConfig.jobs_dirname" title="Link to this definition"></a></dt>
+<dd><p>Sub-path under <code class="docutils literal notranslate"><span class="pre">project.root</span></code> for the job stores (nw’s <code class="docutils literal notranslate"><span class="pre">.nw/</span></code> convention).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.jobs.JobsConfig.n_min">
+<span class="sig-name descname"><span class="pre">n_min</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></span><a class="headerlink" href="#nw.jobs.JobsConfig.n_min" title="Link to this definition"></a></dt>
+<dd><p>Minimum samples for a key before its prediction is <code class="docutils literal notranslate"><span class="pre">&quot;learned&quot;</span></code> (not prior).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.jobs.JobsConfig.overrun_factor">
+<span class="sig-name descname"><span class="pre">overrun_factor</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1.5</span></span><a class="headerlink" href="#nw.jobs.JobsConfig.overrun_factor" title="Link to this definition"></a></dt>
+<dd><p>Synthesize <code class="docutils literal notranslate"><span class="pre">p90</span> <span class="pre">=</span> <span class="pre">p50</span> <span class="pre">*</span> <span class="pre">overrun_factor</span></code> when a real p90 isn’t available.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.jobs.JobsConfig.pct_ceil">
+<span class="sig-name descname"><span class="pre">pct_ceil</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">99</span></span><a class="headerlink" href="#nw.jobs.JobsConfig.pct_ceil" title="Link to this definition"></a></dt>
+<dd><p>Never <em>compute</em> 100% — only the → succeeded transition sets 100.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.jobs.JobsConfig.prior_total_s">
+<span class="sig-name descname"><span class="pre">prior_total_s</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#nw.jobs.JobsConfig.prior_total_s" title="Link to this definition"></a></dt>
+<dd><p>Cold-start priors by output kind (drives the honest “estimating…” label).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.jobs.JobsConfig.sample_window_k">
+<span class="sig-name descname"><span class="pre">sample_window_k</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">20</span></span><a class="headerlink" href="#nw.jobs.JobsConfig.sample_window_k" title="Link to this definition"></a></dt>
+<dd><p>Keep only the most-recent K duration samples per key (robust to drift).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.jobs.JobsConfig.stale_running_s">
+<span class="sig-name descname"><span class="pre">stale_running_s</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">900.0</span></span><a class="headerlink" href="#nw.jobs.JobsConfig.stale_running_s" title="Link to this definition"></a></dt>
+<dd><p>A RUNNING record older than this with no live worker is reaped as
+<code class="docutils literal notranslate"><span class="pre">FAILED(&quot;worker</span> <span class="pre">died</span> <span class="pre">—</span> <span class="pre">resumable&quot;)</span></code> (kills the stuck-toast bug).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.jobs.cancel_job">
+<span class="sig-prename descclassname"><span class="pre">nw.jobs.</span></span><span class="sig-name descname"><span class="pre">cancel_job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">job_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nw.jobs.JobsConfig" title="nw.jobs.JobsConfig"><span class="pre">JobsConfig</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">JobsConfig(n_min=3,</span> <span class="pre">sample_window_k=20,</span> <span class="pre">pct_ceil=99,</span> <span class="pre">overrun_factor=1.5,</span> <span class="pre">cache_hit_floor_s=0.5,</span> <span class="pre">dur_buckets_s=(4.0,</span> <span class="pre">8.0,</span> <span class="pre">12.0),</span> <span class="pre">prior_total_s={'image':</span> <span class="pre">12.0,</span> <span class="pre">'video':</span> <span class="pre">90.0,</span> <span class="pre">'audio':</span> <span class="pre">15.0},</span> <span class="pre">default_prior_total_s=30.0,</span> <span class="pre">stale_running_s=900.0,</span> <span class="pre">approval_threshold_usd=1.0,</span> <span class="pre">jobs_dirname='.nw/jobs')</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nw.jobs.Job" title="nw.jobs.Job"><span class="pre">Job</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/nw/jobs.html#cancel_job"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.jobs.cancel_job" title="Link to this definition"></a></dt>
+<dd><p>Request cancellation. <strong>Idempotent.</strong> <code class="docutils literal notranslate"><span class="pre">None</span></code> if unknown.</p>
+<p>Sets a durable should-cancel flag (a running stage stops at its next
+boundary) <em>and</em> flips the au record terminal at once via <code class="docutils literal notranslate"><span class="pre">au.cancel_task</span></code>
+(which builds the handle <strong>with the backend</strong> so <code class="docutils literal notranslate"><span class="pre">terminate</span></code> is reached).
+The <code class="docutils literal notranslate"><span class="pre">cancel_requested</span></code> flag is authoritative, so the job reads
+<code class="docutils literal notranslate"><span class="pre">cancelling</span></code> → <code class="docutils literal notranslate"><span class="pre">cancelled</span></code> even if the still-running thread later
+overwrites the store with COMPLETED.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.jobs.enqueue">
+<span class="sig-prename descclassname"><span class="pre">nw.jobs.</span></span><span class="sig-name descname"><span class="pre">enqueue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dispatch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ComputationBackend</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idempotency_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nw.jobs.JobsConfig" title="nw.jobs.JobsConfig"><span class="pre">JobsConfig</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">JobsConfig(n_min=3,</span> <span class="pre">sample_window_k=20,</span> <span class="pre">pct_ceil=99,</span> <span class="pre">overrun_factor=1.5,</span> <span class="pre">cache_hit_floor_s=0.5,</span> <span class="pre">dur_buckets_s=(4.0,</span> <span class="pre">8.0,</span> <span class="pre">12.0),</span> <span class="pre">prior_total_s={'image':</span> <span class="pre">12.0,</span> <span class="pre">'video':</span> <span class="pre">90.0,</span> <span class="pre">'audio':</span> <span class="pre">15.0},</span> <span class="pre">default_prior_total_s=30.0,</span> <span class="pre">stale_running_s=900.0,</span> <span class="pre">approval_threshold_usd=1.0,</span> <span class="pre">jobs_dirname='.nw/jobs')</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nw.jobs.Job" title="nw.jobs.Job"><span class="pre">Job</span></a></span></span><a class="reference internal" href="../../_modules/nw/jobs.html#enqueue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.jobs.enqueue" title="Link to this definition"></a></dt>
+<dd><p>Enqueue a billable render as a background job. Returns a <a class="reference internal" href="#nw.jobs.Job" title="nw.jobs.Job"><code class="xref py py-class docutils literal notranslate"><span class="pre">Job</span></code></a>
+(<code class="docutils literal notranslate"><span class="pre">status=&quot;queued&quot;</span></code>) <strong>immediately</strong> — the call never blocks and never
+bills on the calling thread.</p>
+<p>The request context (fal credentials + the resolved <code class="docutils literal notranslate"><span class="pre">Project</span></code>) is
+captured now and re-established inside the worker so the job outlives its
+request. If a <em>live</em> (non-terminal) job with the same <code class="docutils literal notranslate"><span class="pre">idempotency_key</span></code>
+already exists, that job is returned instead of launching a duplicate.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>project</strong> – the <code class="docutils literal notranslate"><span class="pre">nw.Project</span></code> the render operates on.</p></li>
+<li><p><strong>kind</strong> – dispatch key selecting the render callable (e.g.
+<code class="docutils literal notranslate"><span class="pre">&quot;journey.full_auto&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;panel.animate&quot;</span></code>).</p></li>
+<li><p><strong>params</strong> – render parameters (also the ETA-key + default-idempotency basis).</p></li>
+<li><p><strong>on_event</strong> – sink for the render’s lifecycle events (reelee wires this to
+its <code class="docutils literal notranslate"><span class="pre">agent_log</span></code> / SSE tail). Events are stamped with
+<code class="docutils literal notranslate"><span class="pre">job_id</span></code>/<code class="docutils literal notranslate"><span class="pre">run_id</span></code> and mirrored into progress/cost/eta.</p></li>
+<li><p><strong>dispatch</strong> – <code class="docutils literal notranslate"><span class="pre">{kind:</span> <span class="pre">callable}</span></code> table. Each callable is invoked as
+<code class="docutils literal notranslate"><span class="pre">callable(project,</span> <span class="pre">params,</span> <span class="pre">*,</span> <span class="pre">job_id,</span> <span class="pre">on_event,</span> <span class="pre">should_cancel)</span></code>
+(only the kwargs it declares are passed) and should return a
+JSON-serializable result payload.</p></li>
+<li><p><strong>backend</strong> – advanced override; default is the managed <code class="docutils literal notranslate"><span class="pre">ThreadBackend</span></code>
+(which carries the duration-learning middleware + liveness map).</p></li>
+<li><p><strong>idempotency_key</strong> – dedup handle; default derived from <code class="docutils literal notranslate"><span class="pre">falaw.plan_hash</span></code>
+of <code class="docutils literal notranslate"><span class="pre">params[&quot;plan&quot;]</span></code> when present, else a stable hash of params.</p></li>
+<li><p><strong>label</strong> – human tray label; default derived from <code class="docutils literal notranslate"><span class="pre">kind</span></code>/<code class="docutils literal notranslate"><span class="pre">params</span></code>.</p></li>
+<li><p><strong>config</strong> – tunables (see <a class="reference internal" href="#nw.jobs.JobsConfig" title="nw.jobs.JobsConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobsConfig</span></code></a>).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>KeyError</strong> – if <code class="docutils literal notranslate"><span class="pre">kind</span></code> is not in <code class="docutils literal notranslate"><span class="pre">dispatch</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.jobs.estimate">
+<span class="sig-prename descclassname"><span class="pre">nw.jobs.</span></span><span class="sig-name descname"><span class="pre">estimate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nw.jobs.JobsConfig" title="nw.jobs.JobsConfig"><span class="pre">JobsConfig</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">JobsConfig(n_min=3,</span> <span class="pre">sample_window_k=20,</span> <span class="pre">pct_ceil=99,</span> <span class="pre">overrun_factor=1.5,</span> <span class="pre">cache_hit_floor_s=0.5,</span> <span class="pre">dur_buckets_s=(4.0,</span> <span class="pre">8.0,</span> <span class="pre">12.0),</span> <span class="pre">prior_total_s={'image':</span> <span class="pre">12.0,</span> <span class="pre">'video':</span> <span class="pre">90.0,</span> <span class="pre">'audio':</span> <span class="pre">15.0},</span> <span class="pre">default_prior_total_s=30.0,</span> <span class="pre">stale_running_s=900.0,</span> <span class="pre">approval_threshold_usd=1.0,</span> <span class="pre">jobs_dirname='.nw/jobs')</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../../_modules/nw/jobs.html#estimate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.jobs.estimate" title="Link to this definition"></a></dt>
+<dd><p>Dry-run cost gate <strong>without enqueueing</strong>.</p>
+<p>Returns <code class="docutils literal notranslate"><span class="pre">{estimated_usd,</span> <span class="pre">has_unknown_costs,</span> <span class="pre">approval_threshold_usd,</span>
+<span class="pre">requires_approval}</span></code>. Unknown cost always requires approval (preserves the
+one-price-per-clip gate). reelee computes the falaw-<code class="docutils literal notranslate"><span class="pre">Plan</span></code> cost and either
+passes it via <code class="docutils literal notranslate"><span class="pre">params[&quot;estimated_usd&quot;]</span></code> or overrides this per its own
+policy.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.jobs.get_job">
+<span class="sig-prename descclassname"><span class="pre">nw.jobs.</span></span><span class="sig-name descname"><span class="pre">get_job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">job_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nw.jobs.JobsConfig" title="nw.jobs.JobsConfig"><span class="pre">JobsConfig</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">JobsConfig(n_min=3,</span> <span class="pre">sample_window_k=20,</span> <span class="pre">pct_ceil=99,</span> <span class="pre">overrun_factor=1.5,</span> <span class="pre">cache_hit_floor_s=0.5,</span> <span class="pre">dur_buckets_s=(4.0,</span> <span class="pre">8.0,</span> <span class="pre">12.0),</span> <span class="pre">prior_total_s={'image':</span> <span class="pre">12.0,</span> <span class="pre">'video':</span> <span class="pre">90.0,</span> <span class="pre">'audio':</span> <span class="pre">15.0},</span> <span class="pre">default_prior_total_s=30.0,</span> <span class="pre">stale_running_s=900.0,</span> <span class="pre">approval_threshold_usd=1.0,</span> <span class="pre">jobs_dirname='.nw/jobs')</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nw.jobs.Job" title="nw.jobs.Job"><span class="pre">Job</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/nw/jobs.html#get_job"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.jobs.get_job" title="Link to this definition"></a></dt>
+<dd><p>One job (projecting the au status + mirrored index metadata). <code class="docutils literal notranslate"><span class="pre">None</span></code> if
+unknown. Reaps a stale-RUNNING record on read.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.jobs.list_jobs">
+<span class="sig-prename descclassname"><span class="pre">nw.jobs.</span></span><span class="sig-name descname"><span class="pre">list_jobs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nw.jobs.JobsConfig" title="nw.jobs.JobsConfig"><span class="pre">JobsConfig</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">JobsConfig(n_min=3,</span> <span class="pre">sample_window_k=20,</span> <span class="pre">pct_ceil=99,</span> <span class="pre">overrun_factor=1.5,</span> <span class="pre">cache_hit_floor_s=0.5,</span> <span class="pre">dur_buckets_s=(4.0,</span> <span class="pre">8.0,</span> <span class="pre">12.0),</span> <span class="pre">prior_total_s={'image':</span> <span class="pre">12.0,</span> <span class="pre">'video':</span> <span class="pre">90.0,</span> <span class="pre">'audio':</span> <span class="pre">15.0},</span> <span class="pre">default_prior_total_s=30.0,</span> <span class="pre">stale_running_s=900.0,</span> <span class="pre">approval_threshold_usd=1.0,</span> <span class="pre">jobs_dirname='.nw/jobs')</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#nw.jobs.Job" title="nw.jobs.Job"><span class="pre">Job</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nw/jobs.html#list_jobs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.jobs.list_jobs" title="Link to this definition"></a></dt>
+<dd><p>Jobs for this project, <strong>newest first</strong>, optionally filtered by status.</p>
+<p>Backed by the per-project active-jobs index (not by scanning the au store,
+whose missing-key-returns-PENDING gotcha makes membership meaningless).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.jobs.predict_total_s">
+<span class="sig-prename descclassname"><span class="pre">nw.jobs.</span></span><span class="sig-name descname"><span class="pre">predict_total_s</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">eta_candidates</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_kind</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">durations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MutableMapping</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected_cache_hit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nw.jobs.JobsConfig" title="nw.jobs.JobsConfig"><span class="pre">JobsConfig</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">JobsConfig(n_min=3,</span> <span class="pre">sample_window_k=20,</span> <span class="pre">pct_ceil=99,</span> <span class="pre">overrun_factor=1.5,</span> <span class="pre">cache_hit_floor_s=0.5,</span> <span class="pre">dur_buckets_s=(4.0,</span> <span class="pre">8.0,</span> <span class="pre">12.0),</span> <span class="pre">prior_total_s={'image':</span> <span class="pre">12.0,</span> <span class="pre">'video':</span> <span class="pre">90.0,</span> <span class="pre">'audio':</span> <span class="pre">15.0},</span> <span class="pre">default_prior_total_s=30.0,</span> <span class="pre">stale_running_s=900.0,</span> <span class="pre">approval_threshold_usd=1.0,</span> <span class="pre">jobs_dirname='.nw/jobs')</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">_Prediction</span></span></span><a class="reference internal" href="../../_modules/nw/jobs.html#predict_total_s"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.jobs.predict_total_s" title="Link to this definition"></a></dt>
+<dd><p>Predict the total render seconds for a job as <code class="docutils literal notranslate"><span class="pre">(p50,</span> <span class="pre">p90,</span> <span class="pre">confidence)</span></code>.</p>
+<p>Walks the ETA-key candidates most-specific-first; the first key with
+<code class="docutils literal notranslate"><span class="pre">&gt;=</span> <span class="pre">n_min</span></code> samples wins (median, with a real or synthesized p90). Falls
+back through the coarse key, the output-kind key, then the cold prior. An
+all-cache-hit plan short-circuits to <code class="docutils literal notranslate"><span class="pre">cache_hit_floor_s</span></code> (<code class="docutils literal notranslate"><span class="pre">&quot;exact&quot;</span></code>).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.jobs.to_dict">
+<span class="sig-prename descclassname"><span class="pre">nw.jobs.</span></span><span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">job</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nw.jobs.Job" title="nw.jobs.Job"><span class="pre">Job</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../../_modules/nw/jobs.html#to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.jobs.to_dict" title="Link to this definition"></a></dt>
+<dd><p>Serialize a <a class="reference internal" href="#nw.jobs.Job" title="nw.jobs.Job"><code class="xref py py-class docutils literal notranslate"><span class="pre">Job</span></code></a> to the JSON contract (design report §7.4).</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="inspect.html" class="btn btn-neutral float-left" title="nw.inspect" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="migrate.html" class="btn btn-neutral float-right" title="nw.migrate" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

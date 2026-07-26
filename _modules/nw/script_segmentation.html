@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.script_segmentation &mdash; nw 0.0.5 documentation</title>
+  <title>nw.script_segmentation &mdash; nw 0.0.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=282f96c0"></script>
+      <script src="../../_static/documentation_options.js?v=1fd71caa"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -58,6 +58,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/graph.html">nw.graph</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/graph_backend.html">nw.graph_backend</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/inspect.html">nw.inspect</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/jobs.html">nw.jobs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/migrate.html">nw.migrate</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/project.html">nw.project</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers.html">nw.renderers</a></li>
@@ -229,9 +230,7 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">script</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">script</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;segment_script_into_panels: script is empty&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">target_panel_count</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;target_panel_count must be ≥ 1, got </span><span class="si">{</span><span class="n">target_panel_count</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;target_panel_count must be ≥ 1, got </span><span class="si">{</span><span class="n">target_panel_count</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="n">prompt</span> <span class="o">=</span> <span class="n">build_prompt</span><span class="p">(</span><span class="n">script</span><span class="p">,</span> <span class="n">target_panel_count</span><span class="o">=</span><span class="n">target_panel_count</span><span class="p">)</span>
     <span class="n">raw</span> <span class="o">=</span> <span class="n">llm</span><span class="p">(</span><span class="n">prompt</span><span class="p">)</span>
@@ -257,9 +256,7 @@
     <span class="c1"># outermost array / object in the string.</span>
     <span class="n">payload</span> <span class="o">=</span> <span class="n">_try_parse_json</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="ow">or</span> <span class="n">_try_parse_json</span><span class="p">(</span><span class="n">_first_json_value</span><span class="p">(</span><span class="n">text</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">payload</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;could not parse LLM response as JSON; got: </span><span class="si">{</span><span class="n">raw</span><span class="p">[:</span><span class="mi">200</span><span class="p">]</span><span class="si">!r}</span><span class="s2">…&quot;</span>
-        <span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;could not parse LLM response as JSON; got: </span><span class="si">{</span><span class="n">raw</span><span class="p">[:</span><span class="mi">200</span><span class="p">]</span><span class="si">!r}</span><span class="s2">…&quot;</span><span class="p">)</span>
     <span class="n">items</span> <span class="o">=</span> <span class="n">_coerce_items</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
     <span class="n">panels</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">PanelProposal</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">errors</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>

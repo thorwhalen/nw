@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.graph &mdash; nw 0.0.5 documentation</title>
+  <title>nw.graph &mdash; nw 0.0.6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=282f96c0"></script>
+      <script src="../../_static/documentation_options.js?v=1fd71caa"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -58,6 +58,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/graph.html">nw.graph</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/graph_backend.html">nw.graph_backend</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/inspect.html">nw.inspect</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/jobs.html">nw.jobs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/migrate.html">nw.migrate</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/project.html">nw.project</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers.html">nw.renderers</a></li>
@@ -432,9 +433,7 @@
                 <span class="n">tier</span><span class="o">=</span><span class="n">_TIER_DECISION</span><span class="p">,</span>
                 <span class="n">schema_uri</span><span class="o">=</span><span class="n">DECISION_BODY_SCHEMA_URI</span><span class="p">,</span>
                 <span class="n">model</span><span class="o">=</span><span class="n">DecisionBodyV1</span><span class="p">,</span>
-                <span class="n">wrap</span><span class="o">=</span><span class="k">lambda</span> <span class="n">ann</span><span class="p">,</span> <span class="n">body</span><span class="p">:</span> <span class="n">StoredDecision</span><span class="p">(</span>
-                    <span class="n">annotation_id</span><span class="o">=</span><span class="n">ann</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="n">body</span>
-                <span class="p">),</span>
+                <span class="n">wrap</span><span class="o">=</span><span class="k">lambda</span> <span class="n">ann</span><span class="p">,</span> <span class="n">body</span><span class="p">:</span> <span class="n">StoredDecision</span><span class="p">(</span><span class="n">annotation_id</span><span class="o">=</span><span class="n">ann</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="n">body</span><span class="p">),</span>
                 <span class="n">sort_key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>  <span class="c1"># decisions arrive in insertion order</span>
             <span class="p">)</span>
 
@@ -550,9 +549,7 @@
 
 <div class="viewcode-block" id="descendants_of">
 <a class="viewcode-back" href="../../module_docs/nw/graph.html#nw.descendants_of">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">descendants_of</span><span class="p">(</span>
-    <span class="n">project_root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span> <span class="n">ancestor_id</span><span class="p">:</span> <span class="n">UUID</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">descendants_of</span><span class="p">(</span><span class="n">project_root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span> <span class="n">ancestor_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return every annotation whose provenance chain leads back to ``ancestor_id``.</span>
 
 <span class="sd">    Walks ``provenance.was_derived_from`` *transitively* across all of the</span>
@@ -586,9 +583,7 @@
 
 <div class="viewcode-block" id="derived_from">
 <a class="viewcode-back" href="../../module_docs/nw/graph.html#nw.derived_from">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">derived_from</span><span class="p">(</span>
-    <span class="n">project_root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span> <span class="n">annotation_id</span><span class="p">:</span> <span class="n">UUID</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">derived_from</span><span class="p">(</span><span class="n">project_root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span> <span class="n">annotation_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the annotations this one was directly derived from.</span>
 
 <span class="sd">    Walks ``provenance.was_derived_from`` *one hop only* across all of the</span>
@@ -605,9 +600,7 @@
 
 <div class="viewcode-block" id="stale_after">
 <a class="viewcode-back" href="../../module_docs/nw/graph.html#nw.stale_after">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">stale_after</span><span class="p">(</span>
-    <span class="n">project_root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span> <span class="n">changed_id</span><span class="p">:</span> <span class="n">UUID</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">stale_after</span><span class="p">(</span><span class="n">project_root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span> <span class="n">changed_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return every annotation that is downstream of ``changed_id``.</span>
 
 <span class="sd">    Reelee&#39;s freshness operation (system overview §7): when a node changes</span>
@@ -626,9 +619,7 @@
 
 <div class="viewcode-block" id="annotations_at_tier">
 <a class="viewcode-back" href="../../module_docs/nw/graph.html#nw.annotations_at_tier">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">annotations_at_tier</span><span class="p">(</span>
-    <span class="n">project_root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span> <span class="n">tier</span><span class="p">:</span> <span class="nb">str</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">annotations_at_tier</span><span class="p">(</span><span class="n">project_root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span> <span class="n">tier</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return every annotation at the given tier across all of the project&#39;s stores.</span>
 
 <span class="sd">    Useful for reelee views that lens on a single annotation kind:</span>
@@ -658,6 +649,7 @@
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UUID</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Insert one annotation; return its UUID.&quot;&quot;&quot;</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">_uuid</span>
+
     <span class="n">new_id</span> <span class="o">=</span> <span class="n">_uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span>
     <span class="n">ann</span> <span class="o">=</span> <span class="n">Annotation</span><span class="p">(</span>
         <span class="nb">id</span><span class="o">=</span><span class="n">new_id</span><span class="p">,</span>

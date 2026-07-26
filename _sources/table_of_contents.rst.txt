@@ -14,6 +14,7 @@
    module_docs/nw/graph
    module_docs/nw/graph_backend
    module_docs/nw/inspect
+   module_docs/nw/jobs
    module_docs/nw/migrate
    module_docs/nw/project
    module_docs/nw/renderers
