@@ -14,13 +14,18 @@ import nw
 proj = nw.Project.init("my_video", song="track.mp3")
 proj.add_character("alex", description="warm, deadpan")
 proj.set_character_anchor("alex", "characters/alex/refs/headshot.png")
-proj.upsert_shot(nw.ShotSpec(
-    id="shot_01", start_s=0.0, end_s=8.0,
-    characters=("alex",), render_strategy="lipsync",
-))
+proj.upsert_shot(
+    nw.ShotSpec(
+        id="shot_01",
+        start_s=0.0,
+        end_s=8.0,
+        characters=("alex",),
+        render_strategy="lipsync",
+    )
+)
 
-prep = nw.prepare_shot(proj, "shot_01")        # local-only work
-plan = nw.plan_render_shot(prep)               # pure data; inspect cost
+prep = nw.prepare_shot(proj, "shot_01")  # local-only work
+plan = nw.plan_render_shot(prep)  # pure data; inspect cost
 print(f"estimated: ${plan.total_cost_usd:.2f}")
 output = nw.execute_render(prep, plan, project=proj)  # the only billable phase
 ```
@@ -41,10 +46,10 @@ per-project lacing graph (`project.annot.sqlite`) holds sections, shots,
 character/environment refs, and decisions.
 
 ```python
-proj = nw.Project("path/to/project")        # opens existing
-summary = proj.read_summary()               # typed ProjectSummary
-spec = proj.read_spec()                     # typed ProjectSpec
-proj.upsert_shot(shot)                      # graph-backed
+proj = nw.Project("path/to/project")  # opens existing
+summary = proj.read_summary()  # typed ProjectSummary
+spec = proj.read_spec()  # typed ProjectSpec
+proj.upsert_shot(shot)  # graph-backed
 proj.log_decision("retry_shot", shot_id="shot_03", reason="lipsync drift")
 ```
 
@@ -65,11 +70,11 @@ Rendering splits cleanly into three phases:
    the project graph.
 
 ```python
-prep = nw.prepare_shot(proj, "shot_01", upload=False)   # for dry-run / cost preview
+prep = nw.prepare_shot(proj, "shot_01", upload=False)  # for dry-run / cost preview
 plan = nw.plan_render_shot(prep, quality="balanced")
 print(plan.total_cost_usd, [c.tool for c in plan.calls])
 
-prep = nw.prepare_shot(proj, "shot_01")                 # upload=True for real run
+prep = nw.prepare_shot(proj, "shot_01")  # upload=True for real run
 output = nw.execute_render(prep, plan, project=proj)
 ```
 
@@ -88,7 +93,7 @@ touching `nw`:
 | `composite_lipsync`   | character + environment + audio → composite, then talking video |
 
 ```python
-nw.list_strategies()                       # ['composite_lipsync', 'image_to_video', ...]
+nw.list_strategies()  # ['composite_lipsync', 'image_to_video', ...]
 nw.register_strategy("my_app_strategy", MyStrategy())
 ```
 
@@ -113,12 +118,12 @@ nw.save_storyboard(proj, sb, panel_intervals=intervals)
 
 ```python
 report = nw.shot_report(proj, "shot_01")
-report.duration_within_tolerance          # False if Hailuo returned a short clip
-report.has_long_freeze                    # True if a ≥1s frozen segment is detected
+report.duration_within_tolerance  # False if Hailuo returned a short clip
+report.has_long_freeze  # True if a ≥1s frozen segment is detected
 
 compose = nw.compose_report(proj)
-compose.freeze_alerts                     # tuple of suspicious shots
-compose.gaps                              # gaps between consecutive shots
+compose.freeze_alerts  # tuple of suspicious shots
+compose.gaps  # gaps between consecutive shots
 ```
 
 ### A provenance graph (and freshness queries)
@@ -142,9 +147,12 @@ Comparing four interpretations of the same song is a first-class
 operation, not a shell loop:
 
 ```python
-nw.clone_project("the_bells", "the_bells_v1_lipsync",
-                 preserve=("song", "lyrics", "characters"),
-                 reset=("script", "shots", "output", ".nw"))
+nw.clone_project(
+    "the_bells",
+    "the_bells_v1_lipsync",
+    preserve=("song", "lyrics", "characters"),
+    reset=("script", "shots", "output", ".nw"),
+)
 
 # Apply the same operation across a cohort:
 summaries = nw.summarize_all(["the_bells_v1", "the_bells_v2", "the_bells_v3"])
@@ -184,27 +192,53 @@ my_video/
 nw.Project, nw.Project.init, nw.CharacterImage
 
 # Schema
-nw.ProjectSpec, nw.ProjectSummary, nw.SectionSpec, nw.ShotSpec,
+(
+    nw.ProjectSpec,
+    nw.ProjectSummary,
+    nw.SectionSpec,
+    nw.ShotSpec,
+)
 nw.CharacterRef, nw.EnvironmentRef, nw.SongInfo, nw.SCHEMA_VERSION
 
 # Workflow
 nw.prepare_shot, nw.plan_render_shot, nw.execute_render, nw.ShotPreparation
 
 # Strategies
-nw.Strategy, nw.get_strategy, nw.list_strategies,
+(
+    nw.Strategy,
+    nw.get_strategy,
+    nw.list_strategies,
+)
 nw.register_strategy, nw.strategies
 
 # Storyboard
-nw.open_storyboard, nw.save_storyboard, nw.storyboard_from_shots,
-nw.plan_render_panel_images, nw.execute_render_panel_images,
+(
+    nw.open_storyboard,
+    nw.save_storyboard,
+    nw.storyboard_from_shots,
+)
+(
+    nw.plan_render_panel_images,
+    nw.execute_render_panel_images,
+)
 nw.storyboard_db_path, nw.project_asset_id
 
 # Inspect / QA
-nw.shot_report, nw.compose_report, nw.ShotReport, nw.ComposeReport,
+(
+    nw.shot_report,
+    nw.compose_report,
+    nw.ShotReport,
+    nw.ComposeReport,
+)
 nw.FrozenSegment, nw.Gap
 
 # Graph / provenance
-nw.ProjectGraph, nw.derived_from, nw.descendants_of, nw.stale_after,
+(
+    nw.ProjectGraph,
+    nw.derived_from,
+    nw.descendants_of,
+    nw.stale_after,
+)
 nw.annotations_at_tier, nw.iter_all_annotations
 
 # Experiments

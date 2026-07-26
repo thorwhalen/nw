@@ -146,41 +146,48 @@ A dataclass `nw.jobs` maintains by projecting `au`'s `ComputationResult` + the r
 # nw/jobs.py
 from dataclasses import dataclass, field
 
+
 @dataclass
 class JobProgress:
-    stage_index: int | None = None      # 1-based current stage
-    stage_count: int | None = None      # upper bound (== params.max_stages)
+    stage_index: int | None = None  # 1-based current stage
+    stage_count: int | None = None  # upper bound (== params.max_stages)
     current_transform: str | None = None
-    fraction: float | None = None       # 0..1; None when indeterminate ("estimating…")
+    fraction: float | None = None  # 0..1; None when indeterminate ("estimating…")
+
 
 @dataclass
 class JobCost:
-    estimated_usd: float | None = None       # from the dry-run gate captured at enqueue
-    actual_usd: float | None = None          # sum of completed-stage costs so far
+    estimated_usd: float | None = None  # from the dry-run gate captured at enqueue
+    actual_usd: float | None = None  # sum of completed-stage costs so far
     cache_hit_savings_usd: float | None = None
+
 
 @dataclass
 class Job:
-    job_id: str                              # == au store key
-    kind: str                                # dispatch key: journey.full_auto | panel.animate | assemble_animatic | panel.voiceover | panel.alternates | regen_one …
-    label: str                              # human tray label, e.g. "Clip render · kling-v2"
-    status: str                             # queued | running | cancelling | succeeded | failed | cancelled
-    idempotency_key: str                    # sha256(project:op:plan_hash) — dedup handle (§4.4)
+    job_id: str  # == au store key
+    kind: str  # dispatch key: journey.full_auto | panel.animate | assemble_animatic | panel.voiceover | panel.alternates | regen_one …
+    label: str  # human tray label, e.g. "Clip render · kling-v2"
+    status: str  # queued | running | cancelling | succeeded | failed | cancelled
+    idempotency_key: str  # sha256(project:op:plan_hash) — dedup handle (§4.4)
     params: dict = field(default_factory=dict)
 
     created_at: str | None = None
-    started_at: str | None = None            # null while queued
-    finished_at: str | None = None           # set on any terminal status
+    started_at: str | None = None  # null while queued
+    finished_at: str | None = None  # set on any terminal status
 
     progress: JobProgress = field(default_factory=JobProgress)
-    eta_s: float | None = None               # remaining seconds; null when unknown
+    eta_s: float | None = None  # remaining seconds; null when unknown
     cost: JobCost = field(default_factory=JobCost)
 
-    artifact_ref: str | None = None          # animatic_artifact_id (the play handle) once succeeded
-    result: dict | None = None               # full terminal payload (§7.5)
-    error: str | None = None                 # human string when failed
-    run_id: str | None = None                # == job_id; correlation stamped on journey.* events
-    last_event_id: str | None = None         # newest agent_log event id — FE's SSE resume cursor
+    artifact_ref: str | None = (
+        None  # animatic_artifact_id (the play handle) once succeeded
+    )
+    result: dict | None = None  # full terminal payload (§7.5)
+    error: str | None = None  # human string when failed
+    run_id: str | None = None  # == job_id; correlation stamped on journey.* events
+    last_event_id: str | None = (
+        None  # newest agent_log event id — FE's SSE resume cursor
+    )
 ```
 
 **Status normalization** (`nw.jobs` maps `au.ComputationStatus` + render outcome; the two states `au` can't express are supplied by `nw.jobs`):
@@ -198,37 +205,47 @@ class Job:
 ```python
 # nw/jobs.py — the entire facade reelee consumes
 
+
 def enqueue(
     project: "nw.Project",
     kind: str,
     params: dict,
     *,
-    on_event: Callable[[Event], None],       # sink → reelee's agent_log.record_event (SSE tail)
-    dispatch: Mapping[str, Callable] | None = None,  # kind → callable table (reelee supplies)
+    on_event: Callable[
+        [Event], None
+    ],  # sink → reelee's agent_log.record_event (SSE tail)
+    dispatch: Mapping[str, Callable]
+    | None = None,  # kind → callable table (reelee supplies)
     backend: "au.ComputationBackend | None" = None,  # default: ThreadBackend over the project store
-    idempotency_key: str | None = None,      # default: derived from the falaw plan_hash (§4.4)
-    label: str | None = None,                # default: derived from kind
+    idempotency_key: str
+    | None = None,  # default: derived from the falaw plan_hash (§4.4)
+    label: str | None = None,  # default: derived from kind
 ) -> Job:
     """Snapshot the request context (fal key, vision key, resolved Project — §6.4),
     dedup against any live job with the same idempotency_key, else au.launch the
     bound callable and return a Job with status='queued' — IMMEDIATELY."""
 
+
 def estimate(project, kind: str, params: dict) -> dict:
     """Dry-run cost gate WITHOUT enqueueing.
     → {estimated_usd, has_unknown_costs, approval_threshold_usd, requires_approval}."""
+
 
 def list_jobs(project, *, status: str | None = None, limit: int = 50) -> list[Job]:
     """Jobs for this project, newest first, optionally filtered by status.
     Backed by the per-project active-jobs index (§6), not by scanning the au store
     (whose missing-key-returns-PENDING gotcha makes membership meaningless)."""
 
+
 def get_job(project, job_id: str) -> Job | None:
     """One job, projecting the au ComputationResult + mirrored metadata. None if unknown."""
+
 
 def cancel_job(project, job_id: str) -> Job | None:
     """Idempotent. Calls au.cancel_task(job_id) (flips the store record terminal at once)
     AND sets reelee's should_cancel flag so a running stage stops at its next boundary.
     None if unknown."""
+
 
 def to_dict(job: Job) -> dict:
     """Serialize a Job to the JSON contract in §7."""
@@ -244,8 +261,12 @@ Internals `nw.jobs` owns but reelee never sees: `_bind_worker(...)` (context re-
 # falaw/plan.py
 def plan_hash(plan: Plan) -> str:
     blob = json.dumps(
-        [{"app": c.application, "args": c.arguments, "tool": c.tool} for c in plan.calls],
-        sort_keys=True, default=str,
+        [
+            {"app": c.application, "args": c.arguments, "tool": c.tool}
+            for c in plan.calls
+        ],
+        sort_keys=True,
+        default=str,
     ).encode("utf-8")
     return hashlib.sha256(blob).hexdigest()
 ```
@@ -408,12 +429,17 @@ The bound callable is just the existing sync render with its hooks wired to job 
 ```python
 # nw.jobs, conceptually — reelee passes the kind→callable table + the event sink
 def _run_journey(project, params, *, job_id, on_event, should_cancel):
-    def sink(ev):                       # stamp correlation onto every journey.* event
+    def sink(ev):  # stamp correlation onto every journey.* event
         ev.fields.setdefault("job_id", job_id)
         ev.fields.setdefault("run_id", job_id)
-        on_event(ev)                    # → _agent_log.record_event → SSE tail sees it
-        nw.jobs._mirror_stage_into_metadata(job_id, ev)   # progress/cost/eta for the poll surface
-    return render_final_cut(project, **params, event_sink=sink, should_cancel=should_cancel)
+        on_event(ev)  # → _agent_log.record_event → SSE tail sees it
+        nw.jobs._mirror_stage_into_metadata(
+            job_id, ev
+        )  # progress/cost/eta for the poll surface
+
+    return render_final_cut(
+        project, **params, event_sink=sink, should_cancel=should_cancel
+    )
 ```
 
 Because the default `ThreadBackend` runs in-process, `sink` writes to the **same** `.reelee/agent.jsonl` the SSE tails — the existing live channel keeps working with zero change (a forked `ProcessBackend` would need a second IPC channel here — another reason §4.1 chose threads).
@@ -447,37 +473,51 @@ Registered in `_build_routes`'s route-config dict exactly like existing routes (
 ```python
 # in _build_routes(project, …):
 
+
 def post_jobs(kind: str, params: dict | None = None, dry_run: bool = False) -> dict:
     """Enqueue a billable render as a background job. Returns a job id IMMEDIATELY —
     no spend-on-click block. dry_run=true returns the cost gate WITHOUT enqueueing."""
     from fastapi import HTTPException
+
     if dry_run:
         return nw.jobs.estimate(project, kind, params or {})
     try:
         job = nw.jobs.enqueue(
-            project, kind, params or {},
+            project,
+            kind,
+            params or {},
             on_event=lambda ev: _agent_log.record_event(project, ev),
-            dispatch=_JOB_DISPATCH,          # kind → callable table (reelee owns)
+            dispatch=_JOB_DISPATCH,  # kind → callable table (reelee owns)
         )
-    except KeyError as e:                     # unknown kind
+    except KeyError as e:  # unknown kind
         raise HTTPException(status_code=400, detail=str(e))
-    return nw.jobs.to_dict(job)               # status="queued"
+    return nw.jobs.to_dict(job)  # status="queued"
+
 
 def get_jobs(status: str | None = None, limit: int = 50) -> dict:
     """List jobs for this project, newest first (optionally filtered). The FE poll target."""
-    return {"jobs": [nw.jobs.to_dict(j) for j in nw.jobs.list_jobs(project, status=status, limit=limit)]}
+    return {
+        "jobs": [
+            nw.jobs.to_dict(j)
+            for j in nw.jobs.list_jobs(project, status=status, limit=limit)
+        ]
+    }
+
 
 def get_job(job_id: str) -> dict:
     from fastapi import HTTPException
+
     job = nw.jobs.get_job(project, job_id)
     if job is None:
         raise HTTPException(status_code=404, detail=f"no job {job_id!r}")
     return nw.jobs.to_dict(job)
 
+
 def post_job_cancel(job_id: str) -> dict:
     """Request cancellation. Idempotent; stops at the next stage boundary
     (an in-flight fal call can't be interrupted — finished stages are kept)."""
     from fastapi import HTTPException
+
     job = nw.jobs.cancel_job(project, job_id)
     if job is None:
         raise HTTPException(status_code=404, detail=f"no job {job_id!r}")

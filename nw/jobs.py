@@ -253,7 +253,8 @@ def enqueue(
         if existing is not None:
             au_result = rt.au_store[job_id]
             status = _normalize_status(
-                au_result.status, cancel_requested=existing.get("cancel_requested", False)
+                au_result.status,
+                cancel_requested=existing.get("cancel_requested", False),
             )
             if status not in TERMINAL_STATUSES:
                 # Live job with this key already exists → dedup, run once.
@@ -261,7 +262,9 @@ def enqueue(
 
         callable_ = dispatch.get(kind)
         if callable_ is None:
-            raise KeyError(f"unknown job kind {kind!r} (dispatch has {sorted(dispatch)})")
+            raise KeyError(
+                f"unknown job kind {kind!r} (dispatch has {sorted(dispatch)})"
+            )
 
         record = {
             "job_id": job_id,
@@ -289,8 +292,14 @@ def enqueue(
 
         the_backend = backend if backend is not None else rt.backend
         bound = _bind_worker(
-            project, kind, params, callable_,
-            job_id=job_id, on_event=on_event, rt=rt, config=config,
+            project,
+            kind,
+            params,
+            callable_,
+            job_id=job_id,
+            on_event=on_event,
+            rt=rt,
+            config=config,
         )
         the_backend.launch(bound, (), {}, job_id, rt.au_store)
 
@@ -311,7 +320,9 @@ def estimate(
     estimated = params.get("estimated_usd")
     has_unknown = estimated is None
     threshold = config.approval_threshold_usd
-    requires_approval = has_unknown or (estimated is not None and estimated >= threshold)
+    requires_approval = has_unknown or (
+        estimated is not None and estimated >= threshold
+    )
     return {
         "estimated_usd": estimated,
         "has_unknown_costs": has_unknown,
@@ -358,7 +369,9 @@ def get_job(project, job_id: str, *, config: JobsConfig = DEFAULT_CONFIG) -> Job
     return _read_job(rt, record, config)
 
 
-def cancel_job(project, job_id: str, *, config: JobsConfig = DEFAULT_CONFIG) -> Job | None:
+def cancel_job(
+    project, job_id: str, *, config: JobsConfig = DEFAULT_CONFIG
+) -> Job | None:
     """Request cancellation. **Idempotent.** ``None`` if unknown.
 
     Sets a durable should-cancel flag (a running stage stops at its next
@@ -454,7 +467,9 @@ class DurationLearningMiddleware(Middleware):
         self._config = config
         self._start: dict[str, float] = {}
 
-    def before_compute(self, func: Callable, args: tuple, kwargs: dict, key: str) -> None:
+    def before_compute(
+        self, func: Callable, args: tuple, kwargs: dict, key: str
+    ) -> None:
         # This hook is the running-transition boundary: the ThreadBackend worker
         # runs it *before* it writes the RUNNING record (base.py: middleware-before
         # → store[key]=RUNNING → func()). Stamping ``started_at`` here — in the
@@ -572,8 +587,14 @@ def _runtime(project, config: JobsConfig = DEFAULT_CONFIG) -> _JobsRuntime:
             )
             backend = ThreadBackend(store=au_store, middleware=[middleware])
             rt = _JobsRuntime(
-                root=root, au_store=au_store, index=index, durations=durations,
-                backend=backend, middleware=middleware, lock=lock, config=config,
+                root=root,
+                au_store=au_store,
+                index=index,
+                durations=durations,
+                backend=backend,
+                middleware=middleware,
+                lock=lock,
+                config=config,
             )
             _RUNTIMES[root] = rt
     return rt
@@ -623,8 +644,12 @@ def _bind_worker(project, kind, params, callable_, *, job_id, on_event, rt, conf
         # :meth:`DurationLearningMiddleware.before_compute`. Nothing to stamp here.
         def call():
             return _call_dispatch(
-                callable_, project, params,
-                job_id=job_id, on_event=sink, should_cancel=should_cancel,
+                callable_,
+                project,
+                params,
+                job_id=job_id,
+                on_event=sink,
+                should_cancel=should_cancel,
             )
 
         if captured_fal_key:
@@ -770,7 +795,10 @@ def _maybe_reap(rt, record, au_result, config) -> ComputationResult:
     if rt.middleware.is_running(job_id):
         return au_result  # a live worker in this process is on it
     started = _parse_iso(record.get("started_at") or record.get("created_at"))
-    if started is not None and (_utcnow() - started).total_seconds() < config.stale_running_s:
+    if (
+        started is not None
+        and (_utcnow() - started).total_seconds() < config.stale_running_s
+    ):
         return au_result
     reaped = ComputationResult(
         None,
@@ -840,9 +868,9 @@ def _project_job(rt, record, au_result, config) -> Job:
         if isinstance(au_result.value, Mapping):
             result_payload = dict(au_result.value)
             if artifact_ref is None:
-                artifact_ref = result_payload.get("animatic_artifact_id") or result_payload.get(
-                    "artifact_id"
-                )
+                artifact_ref = result_payload.get(
+                    "animatic_artifact_id"
+                ) or result_payload.get("artifact_id")
     elif status == FAILED:
         error = str(au_result.error) if au_result.error else record.get("error")
     elif status == CANCELLED:
@@ -920,7 +948,11 @@ def _compute_pct_eta(elapsed_s, prediction: _Prediction, record, config):
         return None, remaining, "cached · instant"
 
     if elapsed_s <= p50:
-        pct = min(100.0 * elapsed_s / p50, config.pct_ceil) if p50 > 0 else config.pct_ceil
+        pct = (
+            min(100.0 * elapsed_s / p50, config.pct_ceil)
+            if p50 > 0
+            else config.pct_ceil
+        )
         remaining = max(0.0, p50 - elapsed_s)
     else:
         pct = min(90.0 + 9.0 * (elapsed_s - p50) / max(p90 - p50, 1.0), config.pct_ceil)
