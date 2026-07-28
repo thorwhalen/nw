@@ -5,6 +5,8 @@ stub emits the same shape of lifecycle events reelee's render will, so the
 progress/cost/eta/cancel machinery is exercised without spending money.
 """
 
+import contextlib
+import contextvars
 import threading
 import time
 
@@ -555,3 +557,75 @@ def test_to_dict_matches_json_contract(project):
     import json
 
     json.dumps(d)  # must be JSON-serializable
+
+
+# ---------------------------------------------------------------------------
+# caller-supplied context capture (BYO credentials that outlive the request)
+# ---------------------------------------------------------------------------
+
+
+def _reader_stub(seen: dict, var: contextvars.ContextVar):
+    """A stub render that records the ContextVar value it observes in the worker."""
+
+    def stub(project, params, *, job_id, on_event, should_cancel):
+        seen["value"] = var.get()
+        return {"journey_status": "completed"}
+
+    return stub
+
+
+def test_worker_does_not_inherit_contextvars_by_default(project):
+    """Documents the gap the capture_context hook closes: ``ThreadBackend``
+    runs the render on a bare thread, which does NOT copy ``ContextVars`` — so
+    a request-bound var reads its *default* inside the worker."""
+    var = contextvars.ContextVar("byo_gap_demo", default="owner-default")
+    var.set("byo-from-request")  # bound on the request thread
+    seen: dict = {}
+    job = jobs.enqueue(
+        project,
+        "journey.full_auto",
+        VIDEO_PARAMS,
+        on_event=lambda e: None,
+        dispatch={"journey.full_auto": _reader_stub(seen, var)},
+    )
+    jobs_done = _poll_until(
+        project, job.job_id, lambda j: j.status in jobs.TERMINAL_STATUSES
+    )
+    assert jobs_done.status == jobs.SUCCEEDED
+    assert seen["value"] == "owner-default"  # the worker did NOT see the request value
+
+
+def test_capture_context_rebinds_caller_state_in_the_worker(project):
+    """The capture_context hook snapshots request-scoped state on the request
+    thread and re-establishes it inside the worker — so BYO credentials (reelee's
+    vision + ElevenLabs keys) survive into a background job."""
+    var = contextvars.ContextVar("byo_hook_demo", default="owner-default")
+    var.set("byo-from-request")
+    seen: dict = {}
+
+    def capture():
+        captured = var.get()  # snapshot NOW (request thread)
+
+        @contextlib.contextmanager
+        def _rebind():
+            token = var.set(captured)
+            try:
+                yield
+            finally:
+                var.reset(token)
+
+        return _rebind()
+
+    job = jobs.enqueue(
+        project,
+        "journey.full_auto",
+        VIDEO_PARAMS,
+        on_event=lambda e: None,
+        dispatch={"journey.full_auto": _reader_stub(seen, var)},
+        capture_context=capture,
+    )
+    jobs_done = _poll_until(
+        project, job.job_id, lambda j: j.status in jobs.TERMINAL_STATUSES
+    )
+    assert jobs_done.status == jobs.SUCCEEDED
+    assert seen["value"] == "byo-from-request"  # the hook re-bound it in the worker

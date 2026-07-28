@@ -58,6 +58,7 @@ import threading
 import time
 import urllib.parse
 from collections.abc import Callable, Mapping, MutableMapping
+from contextlib import AbstractContextManager, nullcontext
 from dataclasses import dataclass, field, asdict
 from datetime import datetime, timezone
 from pathlib import Path
@@ -208,6 +209,7 @@ def enqueue(
     backend: ComputationBackend | None = None,
     idempotency_key: str | None = None,
     label: str | None = None,
+    capture_context: Callable[[], AbstractContextManager[Any]] | None = None,
     config: JobsConfig = DEFAULT_CONFIG,
 ) -> Job:
     """Enqueue a billable render as a background job. Returns a :class:`Job`
@@ -236,6 +238,15 @@ def enqueue(
         idempotency_key: dedup handle; default derived from ``falaw.plan_hash``
             of ``params["plan"]`` when present, else a stable hash of params.
         label: human tray label; default derived from ``kind``/``params``.
+        capture_context: optional caller-supplied context hook. Called **now**
+            (on the request thread) to snapshot any request-scoped state the
+            caller needs re-established inside the worker, returning a context
+            manager entered around the render on the worker thread. ``nw.jobs``
+            handles fal credentials itself (``falaw`` is its dependency); this
+            hook is how a caller re-binds credentials it owns without ``nw``
+            importing them — e.g. reelee's BYO vision (aix) + ElevenLabs keys,
+            which otherwise fall back to owner/env in a background job because
+            ``ThreadBackend`` does not copy ``ContextVars`` into the worker.
         config: tunables (see :class:`JobsConfig`).
 
     Raises:
@@ -300,6 +311,7 @@ def enqueue(
             on_event=on_event,
             rt=rt,
             config=config,
+            capture_context=capture_context,
         )
         the_backend.launch(bound, (), {}, job_id, rt.au_store)
 
@@ -611,11 +623,22 @@ def _reset_runtimes() -> None:
 # ---------------------------------------------------------------------------
 
 
-def _bind_worker(project, kind, params, callable_, *, job_id, on_event, rt, config):
+def _bind_worker(
+    project, kind, params, callable_, *, job_id, on_event, rt, config, capture_context=None
+):
     """Bind the render callable into a zero-arg worker body that (a) re-establishes
-    request context (fal credentials + project), (b) routes events into both the
-    caller's sink and the index mirror, (c) exposes a durable ``should_cancel``."""
+    request context (fal credentials + project + any caller-supplied context), (b)
+    routes events into both the caller's sink and the index mirror, (c) exposes a
+    durable ``should_cancel``.
+
+    ``capture_context`` (if given) is invoked **here**, on the request thread, so
+    it snapshots request-scoped state now; the context manager it returns is
+    entered around the render on the worker thread (``ThreadBackend`` does not
+    copy ``ContextVars`` into the worker, so anything the caller owns must be
+    re-bound explicitly — see :func:`enqueue`)."""
     captured_fal_key = _capture_fal_credentials()
+    # Snapshot the caller's context NOW (request thread); enter it in the worker.
+    extra_ctx = capture_context() if capture_context is not None else None
 
     def should_cancel() -> bool:
         with rt.lock:
@@ -652,12 +675,19 @@ def _bind_worker(project, kind, params, callable_, *, job_id, on_event, rt, conf
                 should_cancel=should_cancel,
             )
 
+        # Re-establish both credential contexts on the worker thread: fal
+        # (nw's own dependency, imported lazily) and the caller's captured
+        # context (e.g. reelee's BYO vision + ElevenLabs keys). ``nullcontext``
+        # keeps the ``with`` shape uniform when either is absent.
         if captured_fal_key:
             from falaw import using_fal_credentials
 
-            with using_fal_credentials(captured_fal_key):
-                result = call()
+            fal_ctx: AbstractContextManager[Any] = using_fal_credentials(
+                captured_fal_key
+            )
         else:
+            fal_ctx = nullcontext()
+        with fal_ctx, (extra_ctx if extra_ctx is not None else nullcontext()):
             result = call()
         _reconcile_terminal(rt, job_id, result)
         return result
