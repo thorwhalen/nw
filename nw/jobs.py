@@ -624,7 +624,16 @@ def _reset_runtimes() -> None:
 
 
 def _bind_worker(
-    project, kind, params, callable_, *, job_id, on_event, rt, config, capture_context=None
+    project,
+    kind,
+    params,
+    callable_,
+    *,
+    job_id,
+    on_event,
+    rt,
+    config,
+    capture_context=None,
 ):
     """Bind the render callable into a zero-arg worker body that (a) re-establishes
     request context (fal credentials + project + any caller-supplied context), (b)
@@ -687,7 +696,7 @@ def _bind_worker(
             )
         else:
             fal_ctx = nullcontext()
-        with fal_ctx, (extra_ctx if extra_ctx is not None else nullcontext()):
+        with fal_ctx, extra_ctx if extra_ctx is not None else nullcontext():
             result = call()
         _reconcile_terminal(rt, job_id, result)
         return result
