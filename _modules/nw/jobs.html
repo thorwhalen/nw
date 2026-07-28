@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.jobs &mdash; nw 0.0.6 documentation</title>
+  <title>nw.jobs &mdash; nw 0.0.7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=1fd71caa"></script>
+      <script src="../../_static/documentation_options.js?v=bbaf98b3"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -163,6 +163,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">urllib.parse</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">MutableMapping</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">AbstractContextManager</span><span class="p">,</span> <span class="n">nullcontext</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">asdict</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
@@ -327,6 +328,7 @@
     <span class="n">backend</span><span class="p">:</span> <span class="n">ComputationBackend</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">idempotency_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">capture_context</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="n">AbstractContextManager</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">config</span><span class="p">:</span> <span class="n">JobsConfig</span> <span class="o">=</span> <span class="n">DEFAULT_CONFIG</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Job</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Enqueue a billable render as a background job. Returns a :class:`Job`</span>
@@ -355,6 +357,15 @@
 <span class="sd">        idempotency_key: dedup handle; default derived from ``falaw.plan_hash``</span>
 <span class="sd">            of ``params[&quot;plan&quot;]`` when present, else a stable hash of params.</span>
 <span class="sd">        label: human tray label; default derived from ``kind``/``params``.</span>
+<span class="sd">        capture_context: optional caller-supplied context hook. Called **now**</span>
+<span class="sd">            (on the request thread) to snapshot any request-scoped state the</span>
+<span class="sd">            caller needs re-established inside the worker, returning a context</span>
+<span class="sd">            manager entered around the render on the worker thread. ``nw.jobs``</span>
+<span class="sd">            handles fal credentials itself (``falaw`` is its dependency); this</span>
+<span class="sd">            hook is how a caller re-binds credentials it owns without ``nw``</span>
+<span class="sd">            importing them — e.g. reelee&#39;s BYO vision (aix) + ElevenLabs keys,</span>
+<span class="sd">            which otherwise fall back to owner/env in a background job because</span>
+<span class="sd">            ``ThreadBackend`` does not copy ``ContextVars`` into the worker.</span>
 <span class="sd">        config: tunables (see :class:`JobsConfig`).</span>
 
 <span class="sd">    Raises:</span>
@@ -372,7 +383,8 @@
         <span class="k">if</span> <span class="n">existing</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">au_result</span> <span class="o">=</span> <span class="n">rt</span><span class="o">.</span><span class="n">au_store</span><span class="p">[</span><span class="n">job_id</span><span class="p">]</span>
             <span class="n">status</span> <span class="o">=</span> <span class="n">_normalize_status</span><span class="p">(</span>
-                <span class="n">au_result</span><span class="o">.</span><span class="n">status</span><span class="p">,</span> <span class="n">cancel_requested</span><span class="o">=</span><span class="n">existing</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cancel_requested&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+                <span class="n">au_result</span><span class="o">.</span><span class="n">status</span><span class="p">,</span>
+                <span class="n">cancel_requested</span><span class="o">=</span><span class="n">existing</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cancel_requested&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="n">status</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">TERMINAL_STATUSES</span><span class="p">:</span>
                 <span class="c1"># Live job with this key already exists → dedup, run once.</span>
@@ -380,7 +392,9 @@
 
         <span class="n">callable_</span> <span class="o">=</span> <span class="n">dispatch</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">kind</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">callable_</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unknown job kind </span><span class="si">{</span><span class="n">kind</span><span class="si">!r}</span><span class="s2"> (dispatch has </span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><span class="n">dispatch</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;unknown job kind </span><span class="si">{</span><span class="n">kind</span><span class="si">!r}</span><span class="s2"> (dispatch has </span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><span class="n">dispatch</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
+            <span class="p">)</span>
 
         <span class="n">record</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;job_id&quot;</span><span class="p">:</span> <span class="n">job_id</span><span class="p">,</span>
@@ -408,8 +422,15 @@
 
         <span class="n">the_backend</span> <span class="o">=</span> <span class="n">backend</span> <span class="k">if</span> <span class="n">backend</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">rt</span><span class="o">.</span><span class="n">backend</span>
         <span class="n">bound</span> <span class="o">=</span> <span class="n">_bind_worker</span><span class="p">(</span>
-            <span class="n">project</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">callable_</span><span class="p">,</span>
-            <span class="n">job_id</span><span class="o">=</span><span class="n">job_id</span><span class="p">,</span> <span class="n">on_event</span><span class="o">=</span><span class="n">on_event</span><span class="p">,</span> <span class="n">rt</span><span class="o">=</span><span class="n">rt</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span>
+            <span class="n">project</span><span class="p">,</span>
+            <span class="n">kind</span><span class="p">,</span>
+            <span class="n">params</span><span class="p">,</span>
+            <span class="n">callable_</span><span class="p">,</span>
+            <span class="n">job_id</span><span class="o">=</span><span class="n">job_id</span><span class="p">,</span>
+            <span class="n">on_event</span><span class="o">=</span><span class="n">on_event</span><span class="p">,</span>
+            <span class="n">rt</span><span class="o">=</span><span class="n">rt</span><span class="p">,</span>
+            <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span>
+            <span class="n">capture_context</span><span class="o">=</span><span class="n">capture_context</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">the_backend</span><span class="o">.</span><span class="n">launch</span><span class="p">(</span><span class="n">bound</span><span class="p">,</span> <span class="p">(),</span> <span class="p">{},</span> <span class="n">job_id</span><span class="p">,</span> <span class="n">rt</span><span class="o">.</span><span class="n">au_store</span><span class="p">)</span>
 
@@ -433,7 +454,9 @@
     <span class="n">estimated</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;estimated_usd&quot;</span><span class="p">)</span>
     <span class="n">has_unknown</span> <span class="o">=</span> <span class="n">estimated</span> <span class="ow">is</span> <span class="kc">None</span>
     <span class="n">threshold</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">approval_threshold_usd</span>
-    <span class="n">requires_approval</span> <span class="o">=</span> <span class="n">has_unknown</span> <span class="ow">or</span> <span class="p">(</span><span class="n">estimated</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">estimated</span> <span class="o">&gt;=</span> <span class="n">threshold</span><span class="p">)</span>
+    <span class="n">requires_approval</span> <span class="o">=</span> <span class="n">has_unknown</span> <span class="ow">or</span> <span class="p">(</span>
+        <span class="n">estimated</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">estimated</span> <span class="o">&gt;=</span> <span class="n">threshold</span>
+    <span class="p">)</span>
     <span class="k">return</span> <span class="p">{</span>
         <span class="s2">&quot;estimated_usd&quot;</span><span class="p">:</span> <span class="n">estimated</span><span class="p">,</span>
         <span class="s2">&quot;has_unknown_costs&quot;</span><span class="p">:</span> <span class="n">has_unknown</span><span class="p">,</span>
@@ -489,7 +512,9 @@
 
 <div class="viewcode-block" id="cancel_job">
 <a class="viewcode-back" href="../../module_docs/nw/jobs.html#nw.jobs.cancel_job">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">cancel_job</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">job_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">JobsConfig</span> <span class="o">=</span> <span class="n">DEFAULT_CONFIG</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Job</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">cancel_job</span><span class="p">(</span>
+    <span class="n">project</span><span class="p">,</span> <span class="n">job_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">JobsConfig</span> <span class="o">=</span> <span class="n">DEFAULT_CONFIG</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Job</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Request cancellation. **Idempotent.** ``None`` if unknown.</span>
 
 <span class="sd">    Sets a durable should-cancel flag (a running stage stops at its next</span>
@@ -593,7 +618,9 @@
 
 <div class="viewcode-block" id="DurationLearningMiddleware.before_compute">
 <a class="viewcode-back" href="../../module_docs/nw/jobs.html#nw.jobs.DurationLearningMiddleware.before_compute">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">before_compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">before_compute</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># This hook is the running-transition boundary: the ThreadBackend worker</span>
         <span class="c1"># runs it *before* it writes the RUNNING record (base.py: middleware-before</span>
         <span class="c1"># → store[key]=RUNNING → func()). Stamping ``started_at`` here — in the</span>
@@ -722,8 +749,14 @@
             <span class="p">)</span>
             <span class="n">backend</span> <span class="o">=</span> <span class="n">ThreadBackend</span><span class="p">(</span><span class="n">store</span><span class="o">=</span><span class="n">au_store</span><span class="p">,</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">middleware</span><span class="p">])</span>
             <span class="n">rt</span> <span class="o">=</span> <span class="n">_JobsRuntime</span><span class="p">(</span>
-                <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="n">au_store</span><span class="o">=</span><span class="n">au_store</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span> <span class="n">durations</span><span class="o">=</span><span class="n">durations</span><span class="p">,</span>
-                <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span> <span class="n">middleware</span><span class="o">=</span><span class="n">middleware</span><span class="p">,</span> <span class="n">lock</span><span class="o">=</span><span class="n">lock</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span>
+                <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span>
+                <span class="n">au_store</span><span class="o">=</span><span class="n">au_store</span><span class="p">,</span>
+                <span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span>
+                <span class="n">durations</span><span class="o">=</span><span class="n">durations</span><span class="p">,</span>
+                <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">,</span>
+                <span class="n">middleware</span><span class="o">=</span><span class="n">middleware</span><span class="p">,</span>
+                <span class="n">lock</span><span class="o">=</span><span class="n">lock</span><span class="p">,</span>
+                <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="n">_RUNTIMES</span><span class="p">[</span><span class="n">root</span><span class="p">]</span> <span class="o">=</span> <span class="n">rt</span>
     <span class="k">return</span> <span class="n">rt</span>
@@ -740,11 +773,22 @@
 <span class="c1"># ---------------------------------------------------------------------------</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_bind_worker</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">callable_</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">job_id</span><span class="p">,</span> <span class="n">on_event</span><span class="p">,</span> <span class="n">rt</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_bind_worker</span><span class="p">(</span>
+    <span class="n">project</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">callable_</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">job_id</span><span class="p">,</span> <span class="n">on_event</span><span class="p">,</span> <span class="n">rt</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">capture_context</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Bind the render callable into a zero-arg worker body that (a) re-establishes</span>
-<span class="sd">    request context (fal credentials + project), (b) routes events into both the</span>
-<span class="sd">    caller&#39;s sink and the index mirror, (c) exposes a durable ``should_cancel``.&quot;&quot;&quot;</span>
+<span class="sd">    request context (fal credentials + project + any caller-supplied context), (b)</span>
+<span class="sd">    routes events into both the caller&#39;s sink and the index mirror, (c) exposes a</span>
+<span class="sd">    durable ``should_cancel``.</span>
+
+<span class="sd">    ``capture_context`` (if given) is invoked **here**, on the request thread, so</span>
+<span class="sd">    it snapshots request-scoped state now; the context manager it returns is</span>
+<span class="sd">    entered around the render on the worker thread (``ThreadBackend`` does not</span>
+<span class="sd">    copy ``ContextVars`` into the worker, so anything the caller owns must be</span>
+<span class="sd">    re-bound explicitly — see :func:`enqueue`).&quot;&quot;&quot;</span>
     <span class="n">captured_fal_key</span> <span class="o">=</span> <span class="n">_capture_fal_credentials</span><span class="p">()</span>
+    <span class="c1"># Snapshot the caller&#39;s context NOW (request thread); enter it in the worker.</span>
+    <span class="n">extra_ctx</span> <span class="o">=</span> <span class="n">capture_context</span><span class="p">()</span> <span class="k">if</span> <span class="n">capture_context</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">should_cancel</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">with</span> <span class="n">rt</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
@@ -773,16 +817,27 @@
         <span class="c1"># :meth:`DurationLearningMiddleware.before_compute`. Nothing to stamp here.</span>
         <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">():</span>
             <span class="k">return</span> <span class="n">_call_dispatch</span><span class="p">(</span>
-                <span class="n">callable_</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span>
-                <span class="n">job_id</span><span class="o">=</span><span class="n">job_id</span><span class="p">,</span> <span class="n">on_event</span><span class="o">=</span><span class="n">sink</span><span class="p">,</span> <span class="n">should_cancel</span><span class="o">=</span><span class="n">should_cancel</span><span class="p">,</span>
+                <span class="n">callable_</span><span class="p">,</span>
+                <span class="n">project</span><span class="p">,</span>
+                <span class="n">params</span><span class="p">,</span>
+                <span class="n">job_id</span><span class="o">=</span><span class="n">job_id</span><span class="p">,</span>
+                <span class="n">on_event</span><span class="o">=</span><span class="n">sink</span><span class="p">,</span>
+                <span class="n">should_cancel</span><span class="o">=</span><span class="n">should_cancel</span><span class="p">,</span>
             <span class="p">)</span>
 
+        <span class="c1"># Re-establish both credential contexts on the worker thread: fal</span>
+        <span class="c1"># (nw&#39;s own dependency, imported lazily) and the caller&#39;s captured</span>
+        <span class="c1"># context (e.g. reelee&#39;s BYO vision + ElevenLabs keys). ``nullcontext``</span>
+        <span class="c1"># keeps the ``with`` shape uniform when either is absent.</span>
         <span class="k">if</span> <span class="n">captured_fal_key</span><span class="p">:</span>
             <span class="kn">from</span><span class="w"> </span><span class="nn">falaw</span><span class="w"> </span><span class="kn">import</span> <span class="n">using_fal_credentials</span>
 
-            <span class="k">with</span> <span class="n">using_fal_credentials</span><span class="p">(</span><span class="n">captured_fal_key</span><span class="p">):</span>
-                <span class="n">result</span> <span class="o">=</span> <span class="n">call</span><span class="p">()</span>
+            <span class="n">fal_ctx</span><span class="p">:</span> <span class="n">AbstractContextManager</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">using_fal_credentials</span><span class="p">(</span>
+                <span class="n">captured_fal_key</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
+            <span class="n">fal_ctx</span> <span class="o">=</span> <span class="n">nullcontext</span><span class="p">()</span>
+        <span class="k">with</span> <span class="n">fal_ctx</span><span class="p">,</span> <span class="p">(</span><span class="n">extra_ctx</span> <span class="k">if</span> <span class="n">extra_ctx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">nullcontext</span><span class="p">()):</span>
             <span class="n">result</span> <span class="o">=</span> <span class="n">call</span><span class="p">()</span>
         <span class="n">_reconcile_terminal</span><span class="p">(</span><span class="n">rt</span><span class="p">,</span> <span class="n">job_id</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span>
@@ -920,7 +975,10 @@
     <span class="k">if</span> <span class="n">rt</span><span class="o">.</span><span class="n">middleware</span><span class="o">.</span><span class="n">is_running</span><span class="p">(</span><span class="n">job_id</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">au_result</span>  <span class="c1"># a live worker in this process is on it</span>
     <span class="n">started</span> <span class="o">=</span> <span class="n">_parse_iso</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;started_at&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;created_at&quot;</span><span class="p">))</span>
-    <span class="k">if</span> <span class="n">started</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span><span class="n">_utcnow</span><span class="p">()</span> <span class="o">-</span> <span class="n">started</span><span class="p">)</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">config</span><span class="o">.</span><span class="n">stale_running_s</span><span class="p">:</span>
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="n">started</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="ow">and</span> <span class="p">(</span><span class="n">_utcnow</span><span class="p">()</span> <span class="o">-</span> <span class="n">started</span><span class="p">)</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">config</span><span class="o">.</span><span class="n">stale_running_s</span>
+    <span class="p">):</span>
         <span class="k">return</span> <span class="n">au_result</span>
     <span class="n">reaped</span> <span class="o">=</span> <span class="n">ComputationResult</span><span class="p">(</span>
         <span class="kc">None</span><span class="p">,</span>
@@ -990,9 +1048,9 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">au_result</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
             <span class="n">result_payload</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">au_result</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">artifact_ref</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">artifact_ref</span> <span class="o">=</span> <span class="n">result_payload</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;animatic_artifact_id&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">result_payload</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                    <span class="s2">&quot;artifact_id&quot;</span>
-                <span class="p">)</span>
+                <span class="n">artifact_ref</span> <span class="o">=</span> <span class="n">result_payload</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                    <span class="s2">&quot;animatic_artifact_id&quot;</span>
+                <span class="p">)</span> <span class="ow">or</span> <span class="n">result_payload</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;artifact_id&quot;</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">status</span> <span class="o">==</span> <span class="n">FAILED</span><span class="p">:</span>
         <span class="n">error</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">au_result</span><span class="o">.</span><span class="n">error</span><span class="p">)</span> <span class="k">if</span> <span class="n">au_result</span><span class="o">.</span><span class="n">error</span> <span class="k">else</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;error&quot;</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">status</span> <span class="o">==</span> <span class="n">CANCELLED</span><span class="p">:</span>
@@ -1070,7 +1128,11 @@
         <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="n">remaining</span><span class="p">,</span> <span class="s2">&quot;cached · instant&quot;</span>
 
     <span class="k">if</span> <span class="n">elapsed_s</span> <span class="o">&lt;=</span> <span class="n">p50</span><span class="p">:</span>
-        <span class="n">pct</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mf">100.0</span> <span class="o">*</span> <span class="n">elapsed_s</span> <span class="o">/</span> <span class="n">p50</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">pct_ceil</span><span class="p">)</span> <span class="k">if</span> <span class="n">p50</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">config</span><span class="o">.</span><span class="n">pct_ceil</span>
+        <span class="n">pct</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="nb">min</span><span class="p">(</span><span class="mf">100.0</span> <span class="o">*</span> <span class="n">elapsed_s</span> <span class="o">/</span> <span class="n">p50</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">pct_ceil</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">p50</span> <span class="o">&gt;</span> <span class="mi">0</span>
+            <span class="k">else</span> <span class="n">config</span><span class="o">.</span><span class="n">pct_ceil</span>
+        <span class="p">)</span>
         <span class="n">remaining</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">p50</span> <span class="o">-</span> <span class="n">elapsed_s</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">pct</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mf">90.0</span> <span class="o">+</span> <span class="mf">9.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">elapsed_s</span> <span class="o">-</span> <span class="n">p50</span><span class="p">)</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="n">p90</span> <span class="o">-</span> <span class="n">p50</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span> <span class="n">config</span><span class="o">.</span><span class="n">pct_ceil</span><span class="p">)</span>
