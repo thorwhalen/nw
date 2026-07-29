@@ -39,6 +39,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from dataclasses import dataclass, field
+from types import MappingProxyType
 
 from xdol import Registry
 
@@ -84,12 +85,20 @@ class Genre:
     transform_names: tuple[str, ...] = ()
     strategy_names: tuple[str, ...] = ()
     projection_entrypoint: str | None = None
-    folder_conventions: Mapping[str, str] = field(default_factory=dict)
+    # ``compare=False`` keeps the descriptor hashable (a dict field would break
+    # the frozen dataclass's generated ``__hash__``) and keeps folder layout —
+    # incidental metadata — out of genre *identity*. Normalized to an immutable
+    # mapping in ``__post_init__`` so a "frozen" Genre is genuinely frozen.
+    folder_conventions: Mapping[str, str] = field(default_factory=dict, compare=False)
     status: str = DFLT_GENRE_STATUS
 
     def __post_init__(self) -> None:
-        if not self.slug or not isinstance(self.slug, str):
+        if not isinstance(self.slug, str) or not self.slug.strip():
             raise ValueError("Genre.slug must be a non-empty string")
+        if any(ch.isspace() for ch in self.slug):
+            raise ValueError(f"Genre.slug {self.slug!r} must not contain whitespace")
+        if not isinstance(self.title, str) or not self.title.strip():
+            raise ValueError(f"Genre {self.slug!r}: title must be a non-empty string")
         if self.status not in GENRE_STATUSES:
             raise ValueError(
                 f"Genre {self.slug!r}: status {self.status!r} not in {GENRE_STATUSES}"
@@ -103,6 +112,12 @@ class Genre:
             raise ValueError(
                 f"Genre {self.slug!r}: projection_entrypoint {pe!r} is not among "
                 "its transform_names or strategy_names"
+            )
+        if not isinstance(self.folder_conventions, MappingProxyType):
+            object.__setattr__(
+                self,
+                "folder_conventions",
+                MappingProxyType(dict(self.folder_conventions)),
             )
 
     def missing_transforms(self) -> list[str]:
