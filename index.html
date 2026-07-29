@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Welcome to nw’s documentation! &mdash; nw 0.0.7 documentation</title>
+  <title>Welcome to nw’s documentation! &mdash; nw 0.0.8 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=bbaf98b3"></script>
+      <script src="_static/documentation_options.js?v=53b53b71"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -57,6 +57,7 @@
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/section.html">nw.bodies.section</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/shot.html">nw.bodies.shot</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/experiment.html">nw.experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/genres.html">nw.genres</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/graph.html">nw.graph</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/graph_backend.html">nw.graph_backend</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/inspect.html">nw.inspect</a></li>
@@ -117,6 +118,7 @@
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.EnvironmentRef"><code class="docutils literal notranslate"><span class="pre">EnvironmentRef</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.FrozenSegment"><code class="docutils literal notranslate"><span class="pre">FrozenSegment</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.Gap"><code class="docutils literal notranslate"><span class="pre">Gap</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.Genre"><code class="docutils literal notranslate"><span class="pre">Genre</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.Project"><code class="docutils literal notranslate"><span class="pre">Project</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.ProjectGraph"><code class="docutils literal notranslate"><span class="pre">ProjectGraph</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.ProjectSpec"><code class="docutils literal notranslate"><span class="pre">ProjectSpec</span></code></a></li>
@@ -138,10 +140,12 @@
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.descendants_of"><code class="docutils literal notranslate"><span class="pre">descendants_of()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.execute_render"><code class="docutils literal notranslate"><span class="pre">execute_render()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.execute_render_panel_images"><code class="docutils literal notranslate"><span class="pre">execute_render_panel_images()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.get_genre"><code class="docutils literal notranslate"><span class="pre">get_genre()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.get_strategy"><code class="docutils literal notranslate"><span class="pre">get_strategy()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.get_transform"><code class="docutils literal notranslate"><span class="pre">get_transform()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.is_migrated"><code class="docutils literal notranslate"><span class="pre">is_migrated()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.iter_all_annotations"><code class="docutils literal notranslate"><span class="pre">iter_all_annotations()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.list_genres"><code class="docutils literal notranslate"><span class="pre">list_genres()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.list_strategies"><code class="docutils literal notranslate"><span class="pre">list_strategies()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.list_transforms"><code class="docutils literal notranslate"><span class="pre">list_transforms()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.migrate_to_graph"><code class="docutils literal notranslate"><span class="pre">migrate_to_graph()</span></code></a></li>
@@ -151,6 +155,7 @@
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.plan_render_shot"><code class="docutils literal notranslate"><span class="pre">plan_render_shot()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.prepare_shot"><code class="docutils literal notranslate"><span class="pre">prepare_shot()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.project_asset_id"><code class="docutils literal notranslate"><span class="pre">project_asset_id()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.register_genre"><code class="docutils literal notranslate"><span class="pre">register_genre()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.register_strategy"><code class="docutils literal notranslate"><span class="pre">register_strategy()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.register_transform"><code class="docutils literal notranslate"><span class="pre">register_transform()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.save_storyboard"><code class="docutils literal notranslate"><span class="pre">save_storyboard()</span></code></a></li>
@@ -198,6 +203,15 @@
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/experiment.html#nw.experiment.apply_to_projects"><code class="docutils literal notranslate"><span class="pre">apply_to_projects()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/experiment.html#nw.experiment.clone_project"><code class="docutils literal notranslate"><span class="pre">clone_project()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/experiment.html#nw.experiment.summarize_all"><code class="docutils literal notranslate"><span class="pre">summarize_all()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/genres.html">nw.genres</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.GENRE_STATUSES"><code class="docutils literal notranslate"><span class="pre">GENRE_STATUSES</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.Genre"><code class="docutils literal notranslate"><span class="pre">Genre</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.genres"><code class="docutils literal notranslate"><span class="pre">genres</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.get_genre"><code class="docutils literal notranslate"><span class="pre">get_genre()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.list_genres"><code class="docutils literal notranslate"><span class="pre">list_genres()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.register_genre"><code class="docutils literal notranslate"><span class="pre">register_genre()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/graph.html">nw.graph</a><ul>
@@ -363,8 +377,8 @@
 <li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
 <li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
 </ul>
-<p>Release: 0.0.7</p>
-<p>Last change: Jul 28, 2026</p>
+<p>Release: 0.0.8</p>
+<p>Last change: Jul 29, 2026</p>
 </section>
 
 

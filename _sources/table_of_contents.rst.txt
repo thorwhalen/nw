@@ -11,6 +11,7 @@
    module_docs/nw/bodies/section
    module_docs/nw/bodies/shot
    module_docs/nw/experiment
+   module_docs/nw/genres
    module_docs/nw/graph
    module_docs/nw/graph_backend
    module_docs/nw/inspect

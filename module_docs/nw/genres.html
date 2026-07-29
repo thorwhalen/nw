@@ -1,0 +1,277 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>nw.genres &mdash; nw 0.0.8 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=53b53b71"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="nw.graph" href="graph.html" />
+    <link rel="prev" title="nw.experiment" href="experiment.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            nw
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../nw.html">nw</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies.html">nw.bodies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/character_ref.html">nw.bodies.character_ref</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/decision.html">nw.bodies.decision</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/environment_ref.html">nw.bodies.environment_ref</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/render_result.html">nw.bodies.render_result</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/section.html">nw.bodies.section</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/shot.html">nw.bodies.shot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experiment.html">nw.experiment</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">nw.genres</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#nw.genres.GENRE_STATUSES"><code class="docutils literal notranslate"><span class="pre">GENRE_STATUSES</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.genres.Genre"><code class="docutils literal notranslate"><span class="pre">Genre</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#nw.genres.Genre.is_ready"><code class="docutils literal notranslate"><span class="pre">Genre.is_ready()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.genres.Genre.missing_strategies"><code class="docutils literal notranslate"><span class="pre">Genre.missing_strategies()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.genres.Genre.missing_transforms"><code class="docutils literal notranslate"><span class="pre">Genre.missing_transforms()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.genres.genres"><code class="docutils literal notranslate"><span class="pre">genres</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.genres.get_genre"><code class="docutils literal notranslate"><span class="pre">get_genre()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.genres.list_genres"><code class="docutils literal notranslate"><span class="pre">list_genres()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.genres.register_genre"><code class="docutils literal notranslate"><span class="pre">register_genre()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="graph.html">nw.graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graph_backend.html">nw.graph_backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="inspect.html">nw.inspect</a></li>
+<li class="toctree-l1"><a class="reference internal" href="jobs.html">nw.jobs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrate.html">nw.migrate</a></li>
+<li class="toctree-l1"><a class="reference internal" href="project.html">nw.project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers.html">nw.renderers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/_common.html">nw.renderers._common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/composite_lipsync.html">nw.renderers.composite_lipsync</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/image_to_video.html">nw.renderers.image_to_video</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/lipsync.html">nw.renderers.lipsync</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/still.html">nw.renderers.still</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/text_to_video.html">nw.renderers.text_to_video</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema.html">nw.schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="script_segmentation.html">nw.script_segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="storyboard.html">nw.storyboard</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms.html">nw.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms/_adapters.html">nw.transforms._adapters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms/_adapters/render_strategy.html">nw.transforms._adapters.render_strategy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms/_provenance.html">nw.transforms._provenance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow.html">nw.workflow</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">nw</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">nw.genres</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/module_docs/nw/genres.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-nw.genres">
+<span id="nw-genres"></span><h1>nw.genres<a class="headerlink" href="#module-nw.genres" title="Link to this heading"></a></h1>
+<p>nw.genres — production <em>genres</em>: the reusable specialization of a project.</p>
+<p>A <strong>Genre</strong> is a pure-data descriptor of a <em>kind</em> of audiovisual production
+(music video, narrative video, commentary weave, music visualizer, …). It is
+the first-class formalization of what nw informally called an “app”: a bundle
+declared <em>over the substrate that already exists</em>, carrying no engine of its
+own.</p>
+<p>A genre bundles, by reference:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">body_schema_uris</span></code> — the lacing body schemas (<code class="docutils literal notranslate"><span class="pre">annot://schema/&lt;kind&gt;/vN</span></code>)
+its artifacts are validated against;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">transform_names</span></code> — the <a class="reference internal" href="transforms.html#module-nw.transforms" title="nw.transforms"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nw.transforms</span></code></a> entries forming its pipeline DAG;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">strategy_names</span></code> — the optional <a class="reference internal" href="renderers.html#module-nw.renderers" title="nw.renderers"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nw.renderers</span></code></a> strategies it dispatches to;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">projection_entrypoint</span></code> — the final assemble/render step that turns the
+graph into the delivered artifact (e.g. <code class="docutils literal notranslate"><span class="pre">clips_to_animatic</span></code>);</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">folder_conventions</span></code> — optional project-folder layout hints.</p></li>
+</ul>
+<p><a class="reference internal" href="../nw.html#nw.Project" title="nw.Project"><code class="xref py py-class docutils literal notranslate"><span class="pre">nw.Project</span></code></a>, the <code class="docutils literal notranslate"><span class="pre">prepare</span> <span class="pre">-&gt;</span> <span class="pre">plan</span> <span class="pre">-&gt;</span> <span class="pre">execute</span></code> split, <code class="docutils literal notranslate"><span class="pre">stale_after</span></code>
+freshness, <code class="docutils literal notranslate"><span class="pre">nw.jobs</span></code> and the cost gate are all genre-agnostic and serve every
+genre unchanged — so <em>adding a genre is a one-file registration</em>, the same
+open-closed shape as <a class="reference internal" href="renderers.html#module-nw.renderers" title="nw.renderers"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nw.renderers</span></code></a> and <a class="reference internal" href="transforms.html#module-nw.transforms" title="nw.transforms"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nw.transforms</span></code></a>.</p>
+<p>Genres live in the <a class="reference internal" href="#nw.genres.genres" title="nw.genres.genres"><code class="xref py py-data docutils literal notranslate"><span class="pre">genres</span></code></a> registry (an <code class="xref py py-class docutils literal notranslate"><span class="pre">xdol.Registry</span></code> with
+<code class="docutils literal notranslate"><span class="pre">on_conflict=&quot;error&quot;</span></code>). nw ships <strong>no</strong> built-in genres: concrete genres
+register themselves from their own packages (<code class="docutils literal notranslate"><span class="pre">muvid</span></code>, <code class="docutils literal notranslate"><span class="pre">braidio</span></code>) or from
+the studio host (<code class="docutils literal notranslate"><span class="pre">reelee</span></code>), which keeps app-layer concerns (output intents,
+flavors, prompt packs, cost profiles) out of the substrate. A named preset
+<em>within</em> a genre (a filled-in default configuration) is a <strong>Template</strong>, and
+Templates are an app-layer concept — see <code class="docutils literal notranslate"><span class="pre">reelee.GenreProfile</span></code>.</p>
+<p>Naming rationale (Genre vs the alternatives <code class="docutils literal notranslate"><span class="pre">kind</span></code> / <code class="docutils literal notranslate"><span class="pre">format</span></code> / …) is in
+GitHub issue thorwhalen/nw#10; the “nw owns the engine, each app supplies its
+schemas + Transforms” stance is in
+<code class="docutils literal notranslate"><span class="pre">misc/docs/Rendering</span> <span class="pre">Provenance</span> <span class="pre">and</span> <span class="pre">Partial</span> <span class="pre">Re-render.md</span></code>.</p>
+<dl class="py data">
+<dt class="sig sig-object py" id="nw.genres.GENRE_STATUSES">
+<span class="sig-prename descclassname"><span class="pre">nw.genres.</span></span><span class="sig-name descname"><span class="pre">GENRE_STATUSES</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('available',</span> <span class="pre">'experimental',</span> <span class="pre">'planned')</span></span><a class="headerlink" href="#nw.genres.GENRE_STATUSES" title="Link to this definition"></a></dt>
+<dd><p>Genre lifecycle statuses. <code class="docutils literal notranslate"><span class="pre">available</span></code> = usable now; <code class="docutils literal notranslate"><span class="pre">experimental</span></code> =
+usable but unstable; <code class="docutils literal notranslate"><span class="pre">planned</span></code> = declared for discovery, not yet ready.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.genres.Genre">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.genres.</span></span><span class="sig-name descname"><span class="pre">Genre</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slug</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">body_schema_uris</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">...]</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">...]</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strategy_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">...]</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">projection_entrypoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">folder_conventions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">str]</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'available'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nw/genres.html#Genre"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.genres.Genre" title="Link to this definition"></a></dt>
+<dd><p>A reusable definition of a <em>production kind</em> over the nw substrate.</p>
+<p>Pure data: it <em>references</em> substrate pieces by name rather than owning
+them, so declaring a genre never touches the engine.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">slideshow</span> <span class="o">=</span> <span class="n">Genre</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">slug</span><span class="o">=</span><span class="s2">&quot;slideshow&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Slideshow&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Stills over narration, assembled to a video.&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">transform_names</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;clips_to_animatic.ffmpeg&quot;</span><span class="p">,),</span>
+<span class="gp">... </span>    <span class="n">projection_entrypoint</span><span class="o">=</span><span class="s2">&quot;clips_to_animatic.ffmpeg&quot;</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">slideshow</span><span class="o">.</span><span class="n">title</span>
+<span class="go">&#39;Slideshow&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">slideshow</span><span class="o">.</span><span class="n">status</span>
+<span class="go">&#39;available&#39;</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">projection_entrypoint</span></code>, when given, must be one of the genre’s own
+declared transforms or strategies:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Genre</span><span class="p">(</span><span class="n">slug</span><span class="o">=</span><span class="s2">&quot;bad&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Bad&quot;</span><span class="p">,</span> <span class="n">projection_entrypoint</span><span class="o">=</span><span class="s2">&quot;nope&quot;</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="w">    </span><span class="o">...</span>
+<span class="gr">ValueError</span>: <span class="n">Genre &#39;bad&#39;: projection_entrypoint &#39;nope&#39; is not among its transform_names or strategy_names</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.genres.Genre.is_ready">
+<span class="sig-name descname"><span class="pre">is_ready</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../../_modules/nw/genres.html#Genre.is_ready"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.genres.Genre.is_ready" title="Link to this definition"></a></dt>
+<dd><p>True iff every declared transform and strategy is registered.</p>
+<p>A <code class="docutils literal notranslate"><span class="pre">planned</span></code> genre may legitimately be <em>not</em> ready; an <code class="docutils literal notranslate"><span class="pre">available</span></code>
+one that isn’t ready is a wiring bug worth catching in a test.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.genres.Genre.missing_strategies">
+<span class="sig-name descname"><span class="pre">missing_strategies</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nw/genres.html#Genre.missing_strategies"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.genres.Genre.missing_strategies" title="Link to this definition"></a></dt>
+<dd><p>Declared <code class="docutils literal notranslate"><span class="pre">strategy_names</span></code> not (yet) present in <code class="docutils literal notranslate"><span class="pre">nw.renderers</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.genres.Genre.missing_transforms">
+<span class="sig-name descname"><span class="pre">missing_transforms</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nw/genres.html#Genre.missing_transforms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.genres.Genre.missing_transforms" title="Link to this definition"></a></dt>
+<dd><p>Declared <code class="docutils literal notranslate"><span class="pre">transform_names</span></code> not (yet) present in <code class="docutils literal notranslate"><span class="pre">nw.transforms</span></code>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="nw.genres.genres">
+<span class="sig-prename descclassname"><span class="pre">nw.genres.</span></span><span class="sig-name descname"><span class="pre">genres</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Registry</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Registry</span> <span class="pre">nw.genres&gt;</span></span><a class="headerlink" href="#nw.genres.genres" title="Link to this definition"></a></dt>
+<dd><p>Public registry of <a class="reference internal" href="#nw.genres.Genre" title="nw.genres.Genre"><code class="xref py py-class docutils literal notranslate"><span class="pre">Genre</span></code></a> instances, keyed by <code class="docutils literal notranslate"><span class="pre">genre.slug</span></code>.
+Apps add genres via <a class="reference internal" href="#nw.genres.register_genre" title="nw.genres.register_genre"><code class="xref py py-func docutils literal notranslate"><span class="pre">register_genre()</span></code></a> (or <code class="docutils literal notranslate"><span class="pre">nw.register_genre</span></code>).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.genres.get_genre">
+<span class="sig-prename descclassname"><span class="pre">nw.genres.</span></span><span class="sig-name descname"><span class="pre">get_genre</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slug</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nw.genres.Genre" title="nw.genres.Genre"><span class="pre">Genre</span></a></span></span><a class="reference internal" href="../../_modules/nw/genres.html#get_genre"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.genres.get_genre" title="Link to this definition"></a></dt>
+<dd><p>Look up a genre by slug; raises <code class="xref py py-class docutils literal notranslate"><span class="pre">KeyError</span></code> with the known slugs.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.genres.list_genres">
+<span class="sig-prename descclassname"><span class="pre">nw.genres.</span></span><span class="sig-name descname"><span class="pre">list_genres</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nw/genres.html#list_genres"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.genres.list_genres" title="Link to this definition"></a></dt>
+<dd><p>Return all registered genre slugs (sorted).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.genres.register_genre">
+<span class="sig-prename descclassname"><span class="pre">nw.genres.</span></span><span class="sig-name descname"><span class="pre">register_genre</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">genre</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nw.genres.Genre" title="nw.genres.Genre"><span class="pre">Genre</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nw.genres.Genre" title="nw.genres.Genre"><span class="pre">Genre</span></a></span></span><a class="reference internal" href="../../_modules/nw/genres.html#register_genre"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.genres.register_genre" title="Link to this definition"></a></dt>
+<dd><p>Register a <a class="reference internal" href="#nw.genres.Genre" title="nw.genres.Genre"><code class="xref py py-class docutils literal notranslate"><span class="pre">Genre</span></code></a> under its <code class="docutils literal notranslate"><span class="pre">slug</span></code>; returns it for inline use.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">g</span> <span class="o">=</span> <span class="n">register_genre</span><span class="p">(</span><span class="n">Genre</span><span class="p">(</span><span class="n">slug</span><span class="o">=</span><span class="s2">&quot;doctest_demo&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Demo&quot;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_genre</span><span class="p">(</span><span class="s2">&quot;doctest_demo&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">title</span>
+<span class="go">&#39;Demo&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s2">&quot;doctest_demo&quot;</span> <span class="ow">in</span> <span class="n">list_genres</span><span class="p">()</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">del</span> <span class="n">genres</span><span class="p">[</span><span class="s2">&quot;doctest_demo&quot;</span><span class="p">]</span>  <span class="c1"># keep the shared registry clean</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="experiment.html" class="btn btn-neutral float-left" title="nw.experiment" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="graph.html" class="btn btn-neutral float-right" title="nw.graph" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

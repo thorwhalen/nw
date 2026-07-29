@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.jobs &mdash; nw 0.0.7 documentation</title>
+  <title>nw.jobs &mdash; nw 0.0.8 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=bbaf98b3"></script>
+      <script src="../../_static/documentation_options.js?v=53b53b71"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -55,6 +55,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/section.html">nw.bodies.section</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/shot.html">nw.bodies.shot</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/experiment.html">nw.experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/genres.html">nw.genres</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/graph.html">nw.graph</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/graph_backend.html">nw.graph_backend</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/inspect.html">nw.inspect</a></li>
@@ -774,7 +775,16 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_bind_worker</span><span class="p">(</span>
-    <span class="n">project</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">callable_</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">job_id</span><span class="p">,</span> <span class="n">on_event</span><span class="p">,</span> <span class="n">rt</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">capture_context</span><span class="o">=</span><span class="kc">None</span>
+    <span class="n">project</span><span class="p">,</span>
+    <span class="n">kind</span><span class="p">,</span>
+    <span class="n">params</span><span class="p">,</span>
+    <span class="n">callable_</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">job_id</span><span class="p">,</span>
+    <span class="n">on_event</span><span class="p">,</span>
+    <span class="n">rt</span><span class="p">,</span>
+    <span class="n">config</span><span class="p">,</span>
+    <span class="n">capture_context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Bind the render callable into a zero-arg worker body that (a) re-establishes</span>
 <span class="sd">    request context (fal credentials + project + any caller-supplied context), (b)</span>
@@ -837,7 +847,7 @@
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">fal_ctx</span> <span class="o">=</span> <span class="n">nullcontext</span><span class="p">()</span>
-        <span class="k">with</span> <span class="n">fal_ctx</span><span class="p">,</span> <span class="p">(</span><span class="n">extra_ctx</span> <span class="k">if</span> <span class="n">extra_ctx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">nullcontext</span><span class="p">()):</span>
+        <span class="k">with</span> <span class="n">fal_ctx</span><span class="p">,</span> <span class="n">extra_ctx</span> <span class="k">if</span> <span class="n">extra_ctx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">nullcontext</span><span class="p">():</span>
             <span class="n">result</span> <span class="o">=</span> <span class="n">call</span><span class="p">()</span>
         <span class="n">_reconcile_terminal</span><span class="p">(</span><span class="n">rt</span><span class="p">,</span> <span class="n">job_id</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span>
