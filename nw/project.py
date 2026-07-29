@@ -27,6 +27,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable, Optional
 
+from dol import Files, mk_dirs_if_missing, wrap_kvs
+
 
 def _now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
@@ -152,6 +154,8 @@ class Project:
         if auto_migrate and not is_migrated(self.root):
             migrate_to_graph(self.root)
         self.graph = ProjectGraph(self.root)
+        # Single storage seam for the project's JSON documents (see _json_docs).
+        self._docs = _json_docs(self.root)
 
     # -- bootstrap ---------------------------------------------------------
 
@@ -213,15 +217,12 @@ class Project:
         # New projects are graph-native from the start; mark migrated so the
         # auto-migrator skips them. The graph store is created lazily on first
         # write.
-        sentinel = root / ".nw" / "migrated_to_graph"
-        sentinel.parent.mkdir(parents=True, exist_ok=True)
-        if not sentinel.exists():
-            sentinel.write_text(
-                json.dumps(
-                    {"migrated_at": _now_iso(), "counts": {"native": 1}},
-                    indent=2,
-                )
-            )
+        docs = _json_docs(root)
+        if ".nw/migrated_to_graph" not in docs:
+            docs[".nw/migrated_to_graph"] = {
+                "migrated_at": _now_iso(),
+                "counts": {"native": 1},
+            }
 
         proj = cls(root)
         if song is not None:
@@ -245,7 +246,7 @@ class Project:
         synthesized into the returned :class:`ProjectSpec` for back-compat
         with code that still reads via ``read_spec()``.
         """
-        meta = json.loads(self.project_file.read_text())
+        meta = self._docs[_PROJECT_FILE_NAME]
 
         # Pull graph-backed entities.
         sections = tuple(
@@ -314,7 +315,7 @@ class Project:
             "notes": spec.notes,
             "_graph_db": "project.annot.sqlite",
         }
-        self.project_file.write_text(json.dumps(meta, indent=2))
+        self._docs[_PROJECT_FILE_NAME] = meta
 
         # Graph entities — sync each tier to the spec by removing entries
         # not in spec and upserting the ones that are.
@@ -480,33 +481,26 @@ class Project:
         self.update_spec(characters=chars)
         # Initialize a card.json so set_character_anchor / list_character_images
         # always have something to read.
-        card_path = d / "card.json"
-        if not card_path.exists():
-            card_path.write_text(
-                json.dumps(
-                    {
-                        "name": name,
-                        "description": description,
-                        "reference_image_path": "",
-                        "voice": {},
-                    },
-                    indent=2,
-                )
-            )
+        card_key = f"characters/{name}/card.json"
+        if card_key not in self._docs:
+            self._docs[card_key] = {
+                "name": name,
+                "description": description,
+                "reference_image_path": "",
+                "voice": {},
+            }
         return ref
 
     def read_character_card(self, name: str) -> dict[str, Any]:
-        path = self.character_dir(name) / "card.json"
-        if not path.exists():
+        key = f"characters/{name}/card.json"
+        if key not in self._docs:
             raise FileNotFoundError(
                 f"No card.json for character {name!r}; add the character first."
             )
-        return json.loads(path.read_text())
+        return self._docs[key]
 
     def write_character_card(self, name: str, card: dict[str, Any]) -> None:
-        path = self.character_dir(name) / "card.json"
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(json.dumps(card, indent=2))
+        self._docs[f"characters/{name}/card.json"] = card
 
     def list_character_images(self, name: str) -> list[CharacterImage]:
         """Return all images associated with a character, with provenance flags.
@@ -601,15 +595,13 @@ class Project:
         return ref
 
     def read_environment_card(self, name: str) -> dict[str, Any]:
-        path = self.environment_dir(name) / "card.json"
-        if not path.exists():
+        key = f"environments/{name}/card.json"
+        if key not in self._docs:
             return {"name": name, "description": ""}
-        return json.loads(path.read_text())
+        return self._docs[key]
 
     def write_environment_card(self, name: str, card: dict[str, Any]) -> None:
-        path = self.environment_dir(name) / "card.json"
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(json.dumps(card, indent=2))
+        self._docs[f"environments/{name}/card.json"] = card
 
     # -- shots / sections --------------------------------------------------
 
@@ -617,9 +609,7 @@ class Project:
         return self.root / "shots" / shot_id
 
     def upsert_shot(self, shot: ShotSpec) -> ShotSpec:
-        d = self.shot_dir(shot.id)
-        d.mkdir(parents=True, exist_ok=True)
-        (d / "shot.json").write_text(shot.model_dump_json(indent=2))
+        self._docs[f"shots/{shot.id}/shot.json"] = json.loads(shot.model_dump_json())
         spec = self.read_spec()
         shots = tuple(s for s in spec.shots if s.id != shot.id) + (shot,)
         # Preserve start_s ordering.
@@ -656,15 +646,21 @@ class Project:
             pass
 
         # JSONL audit log (back-compat surface).
+        self._append_decision_log({"ts": _now_iso(), "kind": kind, **payload})
+
+    def _append_decision_log(self, record: dict[str, Any]) -> None:
+        """Append one record to the ``.nw/decisions.jsonl`` audit stream.
+
+        This is the one persistence path that is *not* routed through the
+        :func:`_json_docs` key-value store: an append-only, tail-grep-able log
+        is a stream, not a document, and modelling it as a ``MutableMapping``
+        would force a read-modify-write per line. It is a secondary surface —
+        the lacing graph (``decision`` tier) is the store-backed SSOT — so the
+        raw append is isolated here behind a single named method.
+        """
         nw_dir = self.root / ".nw"
         nw_dir.mkdir(exist_ok=True)
-        path = nw_dir / "decisions.jsonl"
-        record = {
-            "ts": _now_iso(),
-            "kind": kind,
-            **payload,
-        }
-        with open(path, "a") as f:
+        with open(nw_dir / "decisions.jsonl", "a") as f:
             f.write(json.dumps(record) + "\n")
 
     # -- summary -----------------------------------------------------------
@@ -702,9 +698,31 @@ class Project:
 # ---------------------------------------------------------------------------
 
 
+def _json_docs(root: str | Path):
+    """The storage facade for a project's JSON documents.
+
+    A ``dol`` ``MutableMapping`` keyed by project-relative POSIX path
+    (``"project.json"``, ``"characters/<name>/card.json"``,
+    ``"environments/<name>/card.json"``, ``"shots/<id>/shot.json"``, the
+    ``".nw/migrated_to_graph"`` sentinel). Values are Python objects; on disk
+    they are ``indent=2`` JSON, preserving the historical layout so existing
+    projects and any external readers keep working. Parent directories are
+    created on write; a missing key raises ``KeyError``.
+
+    This is the single seam through which project state is persisted — no
+    business-method touches ``open``/``write_text`` directly (the append-only
+    ``decisions.jsonl`` audit stream is the one documented exception; see
+    :meth:`Project._append_decision_log`).
+    """
+    return wrap_kvs(
+        mk_dirs_if_missing(Files(str(root))),
+        data_of_obj=lambda obj: json.dumps(obj, indent=2).encode("utf-8"),
+        obj_of_data=lambda data: json.loads(data),
+    )
+
+
 def _write_spec(root: Path, spec: ProjectSpec) -> None:
-    path = root / _PROJECT_FILE_NAME
-    path.write_text(spec.model_dump_json(indent=2))
+    _json_docs(root)[_PROJECT_FILE_NAME] = json.loads(spec.model_dump_json())
 
 
 def _probe_audio(path: Path) -> dict:
