@@ -58,6 +58,39 @@ def test_projection_entrypoint_must_be_declared():
     Genre(slug="d", title="x", strategy_names=("s",), projection_entrypoint="s")
 
 
+def test_genre_is_hashable_and_set_usable():
+    # A frozen dataclass with a dict field would raise on hash(); the descriptor
+    # must stay hashable so it can be deduped / used as a set member.
+    g1 = Genre(slug="a", title="A")
+    g2 = Genre(slug="a", title="A")
+    assert hash(g1) == hash(g2)
+    assert {g1, g2} == {g1}
+    with_conventions = Genre(
+        slug="b", title="B", folder_conventions={"sources": "sources/"}
+    )
+    assert isinstance(hash(with_conventions), int)
+
+
+def test_folder_conventions_are_immutable():
+    g = Genre(slug="c", title="C", folder_conventions={"sources": "sources/"})
+    assert g.folder_conventions["sources"] == "sources/"
+    # folder_conventions is normalized to a read-only MappingProxyType.
+    with pytest.raises(TypeError):
+        g.folder_conventions["injected"] = "nope"
+
+
+def test_whitespace_slug_rejected():
+    with pytest.raises(ValueError):
+        Genre(slug="   ", title="x")
+    with pytest.raises(ValueError):
+        Genre(slug="has space", title="x")
+
+
+def test_empty_title_rejected():
+    with pytest.raises(ValueError):
+        Genre(slug="ok", title="   ")
+
+
 # --- registry facade -------------------------------------------------------
 
 
