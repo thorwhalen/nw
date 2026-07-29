@@ -1,8 +1,9 @@
 """nw — Narrative Workflow.
 
 Application-orchestration framework for audiovisual projects. A project is
-a folder; an "app" (music video, explainer, podcast clip, slideshow) is a
-small specialization on top.
+a folder; a **genre** (music video, explainer, podcast clip, slideshow) is a
+reusable specialization on top — the first-class successor to what nw
+informally called an "app" (see :mod:`nw.genres` and issue #10).
 
 Public surface:
 
@@ -16,6 +17,7 @@ Public surface:
 - ``nw.workflow`` — the ``prepare`` → ``plan`` → ``execute`` render split
   (Plan/Execute over rendering; records render-result provenance).
 - ``nw.renderers`` — render strategies.
+- ``nw.genres`` — production genres (the reusable project specialization).
 
 On rendering provenance and partial re-render (why choices, not just content,
 are recorded as linked artifacts), see
@@ -79,6 +81,13 @@ from .transforms import (
     register_transform,
     transforms,
 )
+from .genres import (
+    Genre,
+    genres,
+    get_genre,
+    list_genres,
+    register_genre,
+)
 from .schema import (
     SCHEMA_VERSION,
     CharacterRef,
@@ -105,6 +114,7 @@ __all__ = [
     "EnvironmentRef",
     "FrozenSegment",
     "Gap",
+    "Genre",
     "Project",
     "ProjectGraph",
     "ProjectSpec",
@@ -126,11 +136,14 @@ __all__ = [
     "descendants_of",
     "execute_render",
     "execute_render_panel_images",
+    "genres",
+    "get_genre",
     "get_strategy",
     "get_transform",
     "inspect",
     "is_migrated",
     "iter_all_annotations",
+    "list_genres",
     "list_strategies",
     "list_transforms",
     "migrate_to_graph",
@@ -140,6 +153,7 @@ __all__ = [
     "plan_render_shot",
     "prepare_shot",
     "project_asset_id",
+    "register_genre",
     "register_strategy",
     "register_transform",
     "save_storyboard",
