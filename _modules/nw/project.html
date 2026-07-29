@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.project &mdash; nw 0.0.9 documentation</title>
+  <title>nw.project &mdash; nw 0.0.10 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=f7cdbf68"></script>
+      <script src="../../_static/documentation_options.js?v=a83ce22a"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -132,6 +132,8 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">dol</span><span class="w"> </span><span class="kn">import</span> <span class="n">Files</span><span class="p">,</span> <span class="n">mk_dirs_if_missing</span><span class="p">,</span> <span class="n">wrap_kvs</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_now_iso</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -263,6 +265,8 @@
         <span class="k">if</span> <span class="n">auto_migrate</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_migrated</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">):</span>
             <span class="n">migrate_to_graph</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="o">=</span> <span class="n">ProjectGraph</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
+        <span class="c1"># Single storage seam for the project&#39;s JSON documents (see _json_docs).</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_docs</span> <span class="o">=</span> <span class="n">_json_docs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
 
     <span class="c1"># -- bootstrap ---------------------------------------------------------</span>
 
@@ -326,15 +330,12 @@
         <span class="c1"># New projects are graph-native from the start; mark migrated so the</span>
         <span class="c1"># auto-migrator skips them. The graph store is created lazily on first</span>
         <span class="c1"># write.</span>
-        <span class="n">sentinel</span> <span class="o">=</span> <span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;.nw&quot;</span> <span class="o">/</span> <span class="s2">&quot;migrated_to_graph&quot;</span>
-        <span class="n">sentinel</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">sentinel</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-            <span class="n">sentinel</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span>
-                <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span>
-                    <span class="p">{</span><span class="s2">&quot;migrated_at&quot;</span><span class="p">:</span> <span class="n">_now_iso</span><span class="p">(),</span> <span class="s2">&quot;counts&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;native&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}},</span>
-                    <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-                <span class="p">)</span>
-            <span class="p">)</span>
+        <span class="n">docs</span> <span class="o">=</span> <span class="n">_json_docs</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;.nw/migrated_to_graph&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">docs</span><span class="p">:</span>
+            <span class="n">docs</span><span class="p">[</span><span class="s2">&quot;.nw/migrated_to_graph&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;migrated_at&quot;</span><span class="p">:</span> <span class="n">_now_iso</span><span class="p">(),</span>
+                <span class="s2">&quot;counts&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;native&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+            <span class="p">}</span>
 
         <span class="n">proj</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">song</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -361,7 +362,7 @@
 <span class="sd">        synthesized into the returned :class:`ProjectSpec` for back-compat</span>
 <span class="sd">        with code that still reads via ``read_spec()``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">meta</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_file</span><span class="o">.</span><span class="n">read_text</span><span class="p">())</span>
+        <span class="n">meta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_docs</span><span class="p">[</span><span class="n">_PROJECT_FILE_NAME</span><span class="p">]</span>
 
         <span class="c1"># Pull graph-backed entities.</span>
         <span class="n">sections</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
@@ -433,7 +434,7 @@
             <span class="s2">&quot;notes&quot;</span><span class="p">:</span> <span class="n">spec</span><span class="o">.</span><span class="n">notes</span><span class="p">,</span>
             <span class="s2">&quot;_graph_db&quot;</span><span class="p">:</span> <span class="s2">&quot;project.annot.sqlite&quot;</span><span class="p">,</span>
         <span class="p">}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">project_file</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">meta</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_docs</span><span class="p">[</span><span class="n">_PROJECT_FILE_NAME</span><span class="p">]</span> <span class="o">=</span> <span class="n">meta</span>
 
         <span class="c1"># Graph entities — sync each tier to the spec by removing entries</span>
         <span class="c1"># not in spec and upserting the ones that are.</span>
@@ -614,34 +615,27 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">update_spec</span><span class="p">(</span><span class="n">characters</span><span class="o">=</span><span class="n">chars</span><span class="p">)</span>
         <span class="c1"># Initialize a card.json so set_character_anchor / list_character_images</span>
         <span class="c1"># always have something to read.</span>
-        <span class="n">card_path</span> <span class="o">=</span> <span class="n">d</span> <span class="o">/</span> <span class="s2">&quot;card.json&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">card_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-            <span class="n">card_path</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span>
-                <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span>
-                    <span class="p">{</span>
-                        <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
-                        <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="n">description</span><span class="p">,</span>
-                        <span class="s2">&quot;reference_image_path&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-                        <span class="s2">&quot;voice&quot;</span><span class="p">:</span> <span class="p">{},</span>
-                    <span class="p">},</span>
-                    <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-                <span class="p">)</span>
-            <span class="p">)</span>
+        <span class="n">card_key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;characters/</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">/card.json&quot;</span>
+        <span class="k">if</span> <span class="n">card_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_docs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_docs</span><span class="p">[</span><span class="n">card_key</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+                <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="n">description</span><span class="p">,</span>
+                <span class="s2">&quot;reference_image_path&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;voice&quot;</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="p">}</span>
         <span class="k">return</span> <span class="n">ref</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">read_character_card</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-        <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">character_dir</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;card.json&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;characters/</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">/card.json&quot;</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_docs</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;No card.json for character </span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2">; add the character first.&quot;</span>
             <span class="p">)</span>
-        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">read_text</span><span class="p">())</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_docs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">write_character_card</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">card</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">character_dir</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;card.json&quot;</span>
-        <span class="n">path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">path</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">card</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_docs</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;characters/</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">/card.json&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">card</span>
 
 <div class="viewcode-block" id="Project.list_character_images">
 <a class="viewcode-back" href="../../module_docs/nw/project.html#nw.Project.list_character_images">[docs]</a>
@@ -742,15 +736,13 @@
         <span class="k">return</span> <span class="n">ref</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">read_environment_card</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-        <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">environment_dir</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;card.json&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;environments/</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">/card.json&quot;</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_docs</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">}</span>
-        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">read_text</span><span class="p">())</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_docs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">write_environment_card</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">card</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">environment_dir</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;card.json&quot;</span>
-        <span class="n">path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">path</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">card</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_docs</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;environments/</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">/card.json&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">card</span>
 
     <span class="c1"># -- shots / sections --------------------------------------------------</span>
 
@@ -758,9 +750,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;shots&quot;</span> <span class="o">/</span> <span class="n">shot_id</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">upsert_shot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shot</span><span class="p">:</span> <span class="n">ShotSpec</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ShotSpec</span><span class="p">:</span>
-        <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shot_dir</span><span class="p">(</span><span class="n">shot</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
-        <span class="n">d</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="p">(</span><span class="n">d</span> <span class="o">/</span> <span class="s2">&quot;shot.json&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">shot</span><span class="o">.</span><span class="n">model_dump_json</span><span class="p">(</span><span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_docs</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;shots/</span><span class="si">{</span><span class="n">shot</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/shot.json&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">shot</span><span class="o">.</span><span class="n">model_dump_json</span><span class="p">())</span>
         <span class="n">spec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_spec</span><span class="p">()</span>
         <span class="n">shots</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">spec</span><span class="o">.</span><span class="n">shots</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">id</span> <span class="o">!=</span> <span class="n">shot</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">shot</span><span class="p">,)</span>
         <span class="c1"># Preserve start_s ordering.</span>
@@ -799,17 +789,23 @@
             <span class="k">pass</span>
 
         <span class="c1"># JSONL audit log (back-compat surface).</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_append_decision_log</span><span class="p">({</span><span class="s2">&quot;ts&quot;</span><span class="p">:</span> <span class="n">_now_iso</span><span class="p">(),</span> <span class="s2">&quot;kind&quot;</span><span class="p">:</span> <span class="n">kind</span><span class="p">,</span> <span class="o">**</span><span class="n">payload</span><span class="p">})</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_append_decision_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Append one record to the ``.nw/decisions.jsonl`` audit stream.</span>
+
+<span class="sd">        This is the one persistence path that is *not* routed through the</span>
+<span class="sd">        :func:`_json_docs` key-value store: an append-only, tail-grep-able log</span>
+<span class="sd">        is a stream, not a document, and modelling it as a ``MutableMapping``</span>
+<span class="sd">        would force a read-modify-write per line. It is a secondary surface —</span>
+<span class="sd">        the lacing graph (``decision`` tier) is the store-backed SSOT — so the</span>
+<span class="sd">        raw append is isolated here behind a single named method.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">nw_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;.nw&quot;</span>
         <span class="n">nw_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">path</span> <span class="o">=</span> <span class="n">nw_dir</span> <span class="o">/</span> <span class="s2">&quot;decisions.jsonl&quot;</span>
-        <span class="n">record</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;ts&quot;</span><span class="p">:</span> <span class="n">_now_iso</span><span class="p">(),</span>
-            <span class="s2">&quot;kind&quot;</span><span class="p">:</span> <span class="n">kind</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">payload</span><span class="p">,</span>
-        <span class="p">}</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">record</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span></div>
-
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">nw_dir</span> <span class="o">/</span> <span class="s2">&quot;decisions.jsonl&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">record</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="c1"># -- summary -----------------------------------------------------------</span>
 
@@ -850,9 +846,31 @@
 <span class="c1"># ---------------------------------------------------------------------------</span>
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_json_docs</span><span class="p">(</span><span class="n">root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The storage facade for a project&#39;s JSON documents.</span>
+
+<span class="sd">    A ``dol`` ``MutableMapping`` keyed by project-relative POSIX path</span>
+<span class="sd">    (``&quot;project.json&quot;``, ``&quot;characters/&lt;name&gt;/card.json&quot;``,</span>
+<span class="sd">    ``&quot;environments/&lt;name&gt;/card.json&quot;``, ``&quot;shots/&lt;id&gt;/shot.json&quot;``, the</span>
+<span class="sd">    ``&quot;.nw/migrated_to_graph&quot;`` sentinel). Values are Python objects; on disk</span>
+<span class="sd">    they are ``indent=2`` JSON, preserving the historical layout so existing</span>
+<span class="sd">    projects and any external readers keep working. Parent directories are</span>
+<span class="sd">    created on write; a missing key raises ``KeyError``.</span>
+
+<span class="sd">    This is the single seam through which project state is persisted — no</span>
+<span class="sd">    business-method touches ``open``/``write_text`` directly (the append-only</span>
+<span class="sd">    ``decisions.jsonl`` audit stream is the one documented exception; see</span>
+<span class="sd">    :meth:`Project._append_decision_log`).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">wrap_kvs</span><span class="p">(</span>
+        <span class="n">mk_dirs_if_missing</span><span class="p">(</span><span class="n">Files</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">root</span><span class="p">))),</span>
+        <span class="n">data_of_obj</span><span class="o">=</span><span class="k">lambda</span> <span class="n">obj</span><span class="p">:</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">),</span>
+        <span class="n">obj_of_data</span><span class="o">=</span><span class="k">lambda</span> <span class="n">data</span><span class="p">:</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">data</span><span class="p">),</span>
+    <span class="p">)</span>
+
+
 <span class="k">def</span><span class="w"> </span><span class="nf">_write_spec</span><span class="p">(</span><span class="n">root</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">spec</span><span class="p">:</span> <span class="n">ProjectSpec</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">path</span> <span class="o">=</span> <span class="n">root</span> <span class="o">/</span> <span class="n">_PROJECT_FILE_NAME</span>
-    <span class="n">path</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="n">spec</span><span class="o">.</span><span class="n">model_dump_json</span><span class="p">(</span><span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
+    <span class="n">_json_docs</span><span class="p">(</span><span class="n">root</span><span class="p">)[</span><span class="n">_PROJECT_FILE_NAME</span><span class="p">]</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">spec</span><span class="o">.</span><span class="n">model_dump_json</span><span class="p">())</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_probe_audio</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
