@@ -83,10 +83,15 @@ from .transforms import (
 )
 from .genres import (
     Genre,
+    Template,
     genres,
     get_genre,
     list_genres,
     register_genre,
+    genre_catalog,
+    describe_genre,
+    recommend_genre,
+    resolve_defaults,
 )
 from .schema import (
     SCHEMA_VERSION,
@@ -115,6 +120,11 @@ __all__ = [
     "FrozenSegment",
     "Gap",
     "Genre",
+    "Template",
+    "genre_catalog",
+    "describe_genre",
+    "recommend_genre",
+    "resolve_defaults",
     "Project",
     "ProjectGraph",
     "ProjectSpec",

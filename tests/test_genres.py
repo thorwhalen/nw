@@ -9,7 +9,18 @@ that mutate it snapshot and restore it via the ``clean_registry`` fixture.
 import pytest
 
 import nw
-from nw.genres import Genre, genres, get_genre, list_genres, register_genre
+from nw.genres import (
+    Genre,
+    Template,
+    genres,
+    get_genre,
+    list_genres,
+    register_genre,
+    genre_catalog,
+    describe_genre,
+    recommend_genre,
+    resolve_defaults,
+)
 
 
 @pytest.fixture
@@ -152,3 +163,152 @@ def test_exposed_on_nw_namespace():
     assert nw.register_genre is register_genre
     assert nw.get_genre is get_genre
     assert callable(nw.list_genres)
+    assert nw.Template is Template
+    for name in ("genre_catalog", "describe_genre", "recommend_genre", "resolve_defaults"):
+        assert callable(getattr(nw, name))
+
+
+# --- Template (AV-general preset within a genre) ----------------------------
+
+
+def test_template_construction_and_to_dict():
+    t = Template(
+        slug="cinematic_clip",
+        title="Cinematic clip",
+        description="filmic look",
+        params={"output_intent": "animatic", "flavor": "fal.cinematic"},
+    )
+    assert t.params["flavor"] == "fal.cinematic"
+    assert t.to_dict() == {
+        "slug": "cinematic_clip",
+        "title": "Cinematic clip",
+        "description": "filmic look",
+        "params": {"output_intent": "animatic", "flavor": "fal.cinematic"},
+    }
+
+
+def test_template_validation_and_immutability():
+    with pytest.raises(ValueError):
+        Template(slug="", title="x")
+    with pytest.raises(ValueError):
+        Template(slug="has space", title="x")
+    with pytest.raises(ValueError):
+        Template(slug="ok", title="  ")
+    t = Template(slug="ok", title="Ok", params={"a": 1})
+    with pytest.raises(TypeError):  # params normalized to a read-only mapping
+        t.params["b"] = 2
+    # frozen + hashable even with a params payload
+    assert isinstance(hash(t), int)
+
+
+# --- Genre: templates / intake_kinds / cost_profile / defaults --------------
+
+
+def _av_genre(**kw) -> Genre:
+    base = dict(
+        slug="av_demo",
+        title="AV Demo",
+        intake_kinds=("podcast",),
+        cost_profile="tts",
+        defaults={"format_id": "solo"},
+        templates=(
+            Template(slug="solo", title="Solo", params={"format_id": "solo"}),
+            Template(slug="duo", title="Duo", params={"format_id": "duo"}),
+        ),
+    )
+    base.update(kw)
+    return Genre(**base)
+
+
+def test_genre_with_templates_stays_hashable():
+    g = _av_genre()
+    assert isinstance(hash(g), int) and {g} == {g}
+    assert g.list_templates() == ["solo", "duo"]
+    assert g.template("duo").params["format_id"] == "duo"
+    with pytest.raises(KeyError):
+        g.template("missing")
+
+
+def test_genre_normalizes_list_sequence_fields_to_tuple():
+    # A Genre built with LISTS (the natural `templates=[Template(...) for ...]`)
+    # must still be genuinely frozen + hashable — sequence fields are coerced to
+    # tuple, symmetrically with the Mapping fields.
+    g = Genre(
+        slug="listy",
+        title="Listy",
+        transform_names=["t1"],
+        templates=[Template(slug="a", title="A"), Template(slug="b", title="B")],
+        intake_kinds=["essay"],
+    )
+    assert isinstance(g.templates, tuple) and isinstance(g.intake_kinds, tuple)
+    assert isinstance(g.transform_names, tuple)
+    assert isinstance(hash(g), int) and {g} == {g}  # hashable, set-usable
+
+
+def test_genre_rejects_duplicate_template_slugs():
+    with pytest.raises(ValueError):
+        Genre(
+            slug="d",
+            title="D",
+            templates=(
+                Template(slug="x", title="X"),
+                Template(slug="x", title="X2"),
+            ),
+        )
+
+
+def test_genre_rejects_non_template_and_bad_intake_and_cost():
+    with pytest.raises(ValueError):
+        Genre(slug="d", title="D", templates=("not a template",))  # type: ignore[arg-type]
+    with pytest.raises(ValueError):
+        Genre(slug="d", title="D", intake_kinds=("ok", "  "))
+    with pytest.raises(ValueError):
+        Genre(slug="d", title="D", cost_profile="   ")
+
+
+def test_genre_defaults_are_immutable():
+    g = _av_genre()
+    assert g.defaults["format_id"] == "solo"
+    with pytest.raises(TypeError):
+        g.defaults["x"] = 1
+
+
+def test_genre_to_dict_shape():
+    d = _av_genre().to_dict()
+    assert d["slug"] == "av_demo" and d["intake_kinds"] == ["podcast"]
+    assert d["cost_profile"] == "tts" and d["defaults"] == {"format_id": "solo"}
+    assert [t["slug"] for t in d["templates"]] == ["solo", "duo"]
+    assert d["templates"][0]["params"] == {"format_id": "solo"}
+    assert set(d) == {
+        "slug", "title", "description", "status", "ready",
+        "intake_kinds", "cost_profile", "defaults", "templates",
+    }
+
+
+# --- generic catalog / recommend / resolve ----------------------------------
+
+
+def test_genre_catalog_and_describe(clean_registry):
+    register_genre(_av_genre(slug="cat_demo"))
+    cat = genre_catalog()
+    entry = next(e for e in cat if e["slug"] == "cat_demo")
+    assert entry == describe_genre("cat_demo")
+    with pytest.raises(KeyError):
+        describe_genre("no_such_genre_xyz")
+
+
+def test_recommend_genre(clean_registry):
+    register_genre(_av_genre(slug="rec_demo", intake_kinds=("podcast", "audio-essay")))
+    assert recommend_genre("audio-essay") == "rec_demo"
+    assert recommend_genre("nope") is None
+    assert recommend_genre(None) is None
+
+
+def test_resolve_defaults_with_and_without_template(clean_registry):
+    register_genre(_av_genre(slug="res_demo"))
+    scratch = resolve_defaults("res_demo")
+    assert scratch == {"genre": "res_demo", "template": None, "params": {"format_id": "solo"}}
+    picked = resolve_defaults("res_demo", "duo")
+    assert picked == {"genre": "res_demo", "template": "duo", "params": {"format_id": "duo"}}
+    with pytest.raises(KeyError):
+        resolve_defaults("res_demo", "missing")
