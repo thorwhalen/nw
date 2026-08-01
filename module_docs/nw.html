@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw &mdash; nw 0.0.10 documentation</title>
+  <title>nw &mdash; nw 0.0.11 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=a83ce22a"></script>
+      <script src="../_static/documentation_options.js?v=0c446633"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -77,9 +77,16 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.Genre"><code class="docutils literal notranslate"><span class="pre">Genre</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#nw.Genre.cost_profile"><code class="docutils literal notranslate"><span class="pre">Genre.cost_profile</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.Genre.defaults"><code class="docutils literal notranslate"><span class="pre">Genre.defaults</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.Genre.intake_kinds"><code class="docutils literal notranslate"><span class="pre">Genre.intake_kinds</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.Genre.is_ready"><code class="docutils literal notranslate"><span class="pre">Genre.is_ready()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.Genre.list_templates"><code class="docutils literal notranslate"><span class="pre">Genre.list_templates()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.Genre.missing_strategies"><code class="docutils literal notranslate"><span class="pre">Genre.missing_strategies()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.Genre.missing_transforms"><code class="docutils literal notranslate"><span class="pre">Genre.missing_transforms()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.Genre.template"><code class="docutils literal notranslate"><span class="pre">Genre.template()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.Genre.templates"><code class="docutils literal notranslate"><span class="pre">Genre.templates</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.Genre.to_dict"><code class="docutils literal notranslate"><span class="pre">Genre.to_dict()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.Project"><code class="docutils literal notranslate"><span class="pre">Project</span></code></a><ul>
@@ -146,6 +153,10 @@
 <li class="toctree-l3"><a class="reference internal" href="#nw.Strategy.plan"><code class="docutils literal notranslate"><span class="pre">Strategy.plan()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.Template"><code class="docutils literal notranslate"><span class="pre">Template</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#nw.Template.to_dict"><code class="docutils literal notranslate"><span class="pre">Template.to_dict()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.Transform"><code class="docutils literal notranslate"><span class="pre">Transform</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#nw.Transform.execute"><code class="docutils literal notranslate"><span class="pre">Transform.execute()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.Transform.input_kinds"><code class="docutils literal notranslate"><span class="pre">Transform.input_kinds</span></code></a></li>
@@ -169,8 +180,10 @@
 <li class="toctree-l2"><a class="reference internal" href="#nw.compose_report"><code class="docutils literal notranslate"><span class="pre">compose_report()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.derived_from"><code class="docutils literal notranslate"><span class="pre">derived_from()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.descendants_of"><code class="docutils literal notranslate"><span class="pre">descendants_of()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.describe_genre"><code class="docutils literal notranslate"><span class="pre">describe_genre()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.execute_render"><code class="docutils literal notranslate"><span class="pre">execute_render()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.execute_render_panel_images"><code class="docutils literal notranslate"><span class="pre">execute_render_panel_images()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.genre_catalog"><code class="docutils literal notranslate"><span class="pre">genre_catalog()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.get_genre"><code class="docutils literal notranslate"><span class="pre">get_genre()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.get_strategy"><code class="docutils literal notranslate"><span class="pre">get_strategy()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.get_transform"><code class="docutils literal notranslate"><span class="pre">get_transform()</span></code></a></li>
@@ -186,9 +199,11 @@
 <li class="toctree-l2"><a class="reference internal" href="#nw.plan_render_shot"><code class="docutils literal notranslate"><span class="pre">plan_render_shot()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.prepare_shot"><code class="docutils literal notranslate"><span class="pre">prepare_shot()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.project_asset_id"><code class="docutils literal notranslate"><span class="pre">project_asset_id()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.recommend_genre"><code class="docutils literal notranslate"><span class="pre">recommend_genre()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.register_genre"><code class="docutils literal notranslate"><span class="pre">register_genre()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.register_strategy"><code class="docutils literal notranslate"><span class="pre">register_strategy()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.register_transform"><code class="docutils literal notranslate"><span class="pre">register_transform()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.resolve_defaults"><code class="docutils literal notranslate"><span class="pre">resolve_defaults()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.save_storyboard"><code class="docutils literal notranslate"><span class="pre">save_storyboard()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.shot_report"><code class="docutils literal notranslate"><span class="pre">shot_report()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.stale_after"><code class="docutils literal notranslate"><span class="pre">stale_after()</span></code></a></li>
@@ -383,7 +398,7 @@ fallback that froze the last frame, etc.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="nw.Genre">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.</span></span><span class="sig-name descname"><span class="pre">Genre</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slug</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">body_schema_uris</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">...]</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">...]</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strategy_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">...]</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">projection_entrypoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">folder_conventions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">str]</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'available'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/genres.html#Genre"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.Genre" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.</span></span><span class="sig-name descname"><span class="pre">Genre</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slug</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">body_schema_uris</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">...]</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">...]</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strategy_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">...]</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">projection_entrypoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">folder_conventions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">str]</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'available'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">templates</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple[~nw.genres.Template</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">...]</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intake_kinds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">...]</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cost_profile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">defaults</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">~typing.Any]</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/genres.html#Genre"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.Genre" title="Link to this definition"></a></dt>
 <dd><p>A reusable definition of a <em>production kind</em> over the nw substrate.</p>
 <p>Pure data: it <em>references</em> substrate pieces by name rather than owning
 them, so declaring a genre never touches the engine.</p>
@@ -408,12 +423,41 @@ declared transforms or strategies:</p>
 <span class="gr">ValueError</span>: <span class="n">Genre &#39;bad&#39;: projection_entrypoint &#39;nope&#39; is not among its transform_names or strategy_names</span>
 </pre></div>
 </div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.Genre.cost_profile">
+<span class="sig-name descname"><span class="pre">cost_profile</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#nw.Genre.cost_profile" title="Link to this definition"></a></dt>
+<dd><p>A short discriminator slug routing the cost gate to the right estimator
+(e.g. <code class="docutils literal notranslate"><span class="pre">&quot;tts&quot;</span></code> = per-character audio, <code class="docutils literal notranslate"><span class="pre">&quot;per_clip&quot;</span></code> = per-render video).
+The real numbers stay in the app; this is only the routing tag.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.Genre.defaults">
+<span class="sig-name descname"><span class="pre">defaults</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#nw.Genre.defaults" title="Link to this definition"></a></dt>
+<dd><p>The “start from scratch” params for this genre (same opaque shape as a
+<a class="reference internal" href="#nw.Template" title="nw.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a>’s <code class="docutils literal notranslate"><span class="pre">params</span></code>) — used when no template is chosen.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.Genre.intake_kinds">
+<span class="sig-name descname"><span class="pre">intake_kinds</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">()</span></span><a class="headerlink" href="#nw.Genre.intake_kinds" title="Link to this definition"></a></dt>
+<dd><p>Intake “what are you making?” answers that select this genre (the edge
+<a class="reference internal" href="#nw.recommend_genre" title="nw.recommend_genre"><code class="xref py py-func docutils literal notranslate"><span class="pre">recommend_genre()</span></code></a> walks). App data (e.g. reelee’s intake form) owns
+the vocabulary; the genre just declares which answers it covers.</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="nw.Genre.is_ready">
 <span class="sig-name descname"><span class="pre">is_ready</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/nw/genres.html#Genre.is_ready"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.Genre.is_ready" title="Link to this definition"></a></dt>
 <dd><p>True iff every declared transform and strategy is registered.</p>
 <p>A <code class="docutils literal notranslate"><span class="pre">planned</span></code> genre may legitimately be <em>not</em> ready; an <code class="docutils literal notranslate"><span class="pre">available</span></code>
 one that isn’t ready is a wiring bug worth catching in a test.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.Genre.list_templates">
+<span class="sig-name descname"><span class="pre">list_templates</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/nw/genres.html#Genre.list_templates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.Genre.list_templates" title="Link to this definition"></a></dt>
+<dd><p>This genre’s Template slugs, in declared order.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -426,6 +470,27 @@ one that isn’t ready is a wiring bug worth catching in a test.</p>
 <dt class="sig sig-object py" id="nw.Genre.missing_transforms">
 <span class="sig-name descname"><span class="pre">missing_transforms</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/nw/genres.html#Genre.missing_transforms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.Genre.missing_transforms" title="Link to this definition"></a></dt>
 <dd><p>Declared <code class="docutils literal notranslate"><span class="pre">transform_names</span></code> not (yet) present in <code class="docutils literal notranslate"><span class="pre">nw.transforms</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.Genre.template">
+<span class="sig-name descname"><span class="pre">template</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slug</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="nw/genres.html#nw.genres.Template" title="nw.genres.Template"><span class="pre">Template</span></a></span></span><a class="reference internal" href="../_modules/nw/genres.html#Genre.template"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.Genre.template" title="Link to this definition"></a></dt>
+<dd><p>Look up one of this genre’s <a class="reference internal" href="#nw.Template" title="nw.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a>s by slug (KeyError if absent).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.Genre.templates">
+<span class="sig-name descname"><span class="pre">templates</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="nw/genres.html#nw.genres.Template" title="nw.genres.Template"><span class="pre">Template</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">()</span></span><a class="headerlink" href="#nw.Genre.templates" title="Link to this definition"></a></dt>
+<dd><p>Named presets (“subgenres”) within this genre — see <a class="reference internal" href="#nw.Template" title="nw.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.Genre.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/nw/genres.html#Genre.to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.Genre.to_dict" title="Link to this definition"></a></dt>
+<dd><p>A JSON-able catalog entry — the shape apps serve to a frontend / MCP client.</p>
+<p>Templates are emitted with their opaque <code class="docutils literal notranslate"><span class="pre">params</span></code> (not flattened), and
+<code class="docutils literal notranslate"><span class="pre">intake_kinds</span></code>/<code class="docutils literal notranslate"><span class="pre">cost_profile</span></code>/<code class="docutils literal notranslate"><span class="pre">defaults</span></code> ride at the genre level, so a
+consumer needs no app-specific knowledge to render the catalog.</p>
 </dd></dl>
 
 </dd></dl>
@@ -777,6 +842,33 @@ run ffmpeg, but no fal calls.</p>
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="nw.Template">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.</span></span><span class="sig-name descname"><span class="pre">Template</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slug</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">~typing.Any]</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/genres.html#Template"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.Template" title="Link to this definition"></a></dt>
+<dd><p>A named preset (“subgenre”) <em>within</em> a genre — a filled-in default config.</p>
+<p>AV-general: the substrate owns the Template’s identity (<code class="docutils literal notranslate"><span class="pre">slug</span></code>/<code class="docutils literal notranslate"><span class="pre">title</span></code>/
+<code class="docutils literal notranslate"><span class="pre">description</span></code>) and carries an opaque <code class="docutils literal notranslate"><span class="pre">params</span></code> payload it does <strong>not</strong>
+interpret. The app that owns the genre puts meaning in <code class="docutils literal notranslate"><span class="pre">params</span></code> (reelee:
+<code class="docutils literal notranslate"><span class="pre">{&quot;output_intent&quot;:</span> <span class="pre">...,</span> <span class="pre">&quot;flavor&quot;:</span> <span class="pre">...}</span></code>; braidio: <code class="docutils literal notranslate"><span class="pre">{&quot;format_id&quot;:</span> <span class="pre">...}</span></code>)
+and validates/resolves it. Frozen + hashable (<code class="docutils literal notranslate"><span class="pre">params</span></code> is excluded from
+identity and normalized to an immutable mapping), so a Template can live in a
+<code class="docutils literal notranslate"><span class="pre">Genre.templates</span></code> tuple without breaking the genre’s <code class="docutils literal notranslate"><span class="pre">__hash__</span></code>.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="n">slug</span><span class="o">=</span><span class="s2">&quot;cinematic_clip&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Cinematic clip&quot;</span><span class="p">,</span>
+<span class="gp">... </span>             <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;flavor&quot;</span><span class="p">:</span> <span class="s2">&quot;fal.cinematic&quot;</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;flavor&quot;</span><span class="p">]</span>
+<span class="go">&#39;fal.cinematic&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()[</span><span class="s2">&quot;params&quot;</span><span class="p">]</span>
+<span class="go">{&#39;flavor&#39;: &#39;fal.cinematic&#39;}</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.Template.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/nw/genres.html#Template.to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.Template.to_dict" title="Link to this definition"></a></dt>
+<dd><p>A JSON-able catalog entry: <code class="docutils literal notranslate"><span class="pre">{slug,</span> <span class="pre">title,</span> <span class="pre">description,</span> <span class="pre">params}</span></code>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="nw.Transform">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.</span></span><span class="sig-name descname"><span class="pre">Transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/transforms.html#Transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.Transform" title="Link to this definition"></a></dt>
 <dd><p>A swappable, costed function from A-annotations to B-annotations.</p>
@@ -970,6 +1062,12 @@ annotation in the closure of this set is “downstream of the change.”</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="nw.describe_genre">
+<span class="sig-prename descclassname"><span class="pre">nw.</span></span><span class="sig-name descname"><span class="pre">describe_genre</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slug</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/nw/genres.html#describe_genre"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.describe_genre" title="Link to this definition"></a></dt>
+<dd><p>One genre’s catalog entry (raises <code class="xref py py-class docutils literal notranslate"><span class="pre">KeyError</span></code> if the slug is unknown).</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="nw.execute_render">
 <span class="sig-prename descclassname"><span class="pre">nw.</span></span><span class="sig-name descname"><span class="pre">execute_render</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prep</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nw/workflow.html#nw.workflow.ShotPreparation" title="nw.workflow.ShotPreparation"><span class="pre">ShotPreparation</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">plan</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Plan</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_event</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nw/project.html#nw.project.Project" title="nw.project.Project"><span class="pre">Project</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Path</span></span></span><a class="reference internal" href="../_modules/nw/workflow.html#execute_render"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.execute_render" title="Link to this definition"></a></dt>
 <dd><p>Execute a Plan, materialize the result as <code class="docutils literal notranslate"><span class="pre">shot_dir/output.mp4</span></code>.</p>
@@ -1008,6 +1106,14 @@ the materialized seed images attached as <code class="docutils literal notransla
 PanelImage record stores both the project-relative path and the
 artifact_id (content hash via lacing.Artifact), so downstream consumers
 can prefer one or the other.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.genre_catalog">
+<span class="sig-prename descclassname"><span class="pre">nw.</span></span><span class="sig-name descname"><span class="pre">genre_catalog</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/nw/genres.html#genre_catalog"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.genre_catalog" title="Link to this definition"></a></dt>
+<dd><p>Every registered genre as a JSON-able catalog entry (sorted by slug).</p>
+<p>This is the generic, app-agnostic catalog an HTTP route / MCP tool serves; see
+<a class="reference internal" href="#nw.Genre.to_dict" title="nw.Genre.to_dict"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Genre.to_dict()</span></code></a> for the entry shape.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -1198,6 +1304,21 @@ song isn’t available yet.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="nw.recommend_genre">
+<span class="sig-prename descclassname"><span class="pre">nw.</span></span><span class="sig-name descname"><span class="pre">recommend_genre</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/nw/genres.html#recommend_genre"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.recommend_genre" title="Link to this definition"></a></dt>
+<dd><p>The slug of the genre whose <code class="docutils literal notranslate"><span class="pre">intake_kinds</span></code> contains <code class="docutils literal notranslate"><span class="pre">kind</span></code> (first in slug
+order), or <code class="docutils literal notranslate"><span class="pre">None</span></code> when <code class="docutils literal notranslate"><span class="pre">kind</span></code> is falsy / unmatched.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">g</span> <span class="o">=</span> <span class="n">register_genre</span><span class="p">(</span><span class="n">Genre</span><span class="p">(</span><span class="n">slug</span><span class="o">=</span><span class="s2">&quot;_rec_demo&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Rec&quot;</span><span class="p">,</span> <span class="n">intake_kinds</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;essay&quot;</span><span class="p">,)))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">recommend_genre</span><span class="p">(</span><span class="s2">&quot;essay&quot;</span><span class="p">)</span>
+<span class="go">&#39;_rec_demo&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">recommend_genre</span><span class="p">(</span><span class="s2">&quot;nope&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">recommend_genre</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">del</span> <span class="n">genres</span><span class="p">[</span><span class="s2">&quot;_rec_demo&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="nw.register_genre">
 <span class="sig-prename descclassname"><span class="pre">nw.</span></span><span class="sig-name descname"><span class="pre">register_genre</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">genre</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nw/genres.html#nw.genres.Genre" title="nw.genres.Genre"><span class="pre">Genre</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="nw/genres.html#nw.genres.Genre" title="nw.genres.Genre"><span class="pre">Genre</span></a></span></span><a class="reference internal" href="../_modules/nw/genres.html#register_genre"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.register_genre" title="Link to this definition"></a></dt>
 <dd><p>Register a <a class="reference internal" href="#nw.Genre" title="nw.Genre"><code class="xref py py-class docutils literal notranslate"><span class="pre">Genre</span></code></a> under its <code class="docutils literal notranslate"><span class="pre">slug</span></code>; returns it for inline use.</p>
@@ -1233,6 +1354,17 @@ and the class is returned unchanged:</p>
     <span class="o">...</span>
 </pre></div>
 </div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.resolve_defaults">
+<span class="sig-prename descclassname"><span class="pre">nw.</span></span><span class="sig-name descname"><span class="pre">resolve_defaults</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">genre</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/nw/genres.html#resolve_defaults"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.resolve_defaults" title="Link to this definition"></a></dt>
+<dd><p>Resolve a genre (+ optional template) to the params for a new project.</p>
+<p>Returns <code class="docutils literal notranslate"><span class="pre">{&quot;genre&quot;:</span> <span class="pre">slug,</span> <span class="pre">&quot;template&quot;:</span> <span class="pre">template_or_None,</span> <span class="pre">&quot;params&quot;:</span> <span class="pre">{...}}</span></code> — the
+chosen <a class="reference internal" href="#nw.Template" title="nw.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a>’s <code class="docutils literal notranslate"><span class="pre">params</span></code> when <code class="docutils literal notranslate"><span class="pre">template</span></code> is given, else the genre’s
+<code class="docutils literal notranslate"><span class="pre">defaults</span></code>. Raises <code class="xref py py-class docutils literal notranslate"><span class="pre">KeyError</span></code> on an unknown genre or template. The caller
+(app) interprets <code class="docutils literal notranslate"><span class="pre">params</span></code> (reelee reads <code class="docutils literal notranslate"><span class="pre">output_intent</span></code>/<code class="docutils literal notranslate"><span class="pre">flavor</span></code>; braidio a
+<code class="docutils literal notranslate"><span class="pre">format_id</span></code>).</p>
 </dd></dl>
 
 <dl class="py function">
