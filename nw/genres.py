@@ -89,7 +89,9 @@ class Template:
         if any(ch.isspace() for ch in self.slug):
             raise ValueError(f"Template.slug {self.slug!r} must not contain whitespace")
         if not isinstance(self.title, str) or not self.title.strip():
-            raise ValueError(f"Template {self.slug!r}: title must be a non-empty string")
+            raise ValueError(
+                f"Template {self.slug!r}: title must be a non-empty string"
+            )
         if not isinstance(self.params, MappingProxyType):
             object.__setattr__(self, "params", MappingProxyType(dict(self.params)))
 
