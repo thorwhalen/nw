@@ -45,7 +45,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 from types import MappingProxyType
-from typing import Any
+from typing import Any, Callable, Optional
 
 from xdol import Registry
 
@@ -54,6 +54,19 @@ from xdol import Registry
 #: usable but unstable; ``planned`` = declared for discovery, not yet ready.
 GENRE_STATUSES = ("available", "experimental", "planned")
 DFLT_GENRE_STATUS = "available"
+
+
+def _validate_slug(slug: object, *, what: str) -> None:
+    """Assert ``slug`` is a registry-safe key: a non-empty, whitespace-free string.
+
+    The one place the slug contract for :class:`Genre`, :class:`Template`, and a
+    genre resolver is defined — so every registrable thing keyed by a slug fails
+    fast on a bad key instead of becoming silent dead state.
+    """
+    if not isinstance(slug, str) or not slug.strip():
+        raise ValueError(f"{what} slug must be a non-empty string")
+    if any(ch.isspace() for ch in slug):
+        raise ValueError(f"{what} slug {slug!r} must not contain whitespace")
 
 
 @dataclass(frozen=True)
@@ -84,10 +97,7 @@ class Template:
     params: Mapping[str, Any] = field(default_factory=dict, compare=False)
 
     def __post_init__(self) -> None:
-        if not isinstance(self.slug, str) or not self.slug.strip():
-            raise ValueError("Template.slug must be a non-empty string")
-        if any(ch.isspace() for ch in self.slug):
-            raise ValueError(f"Template.slug {self.slug!r} must not contain whitespace")
+        _validate_slug(self.slug, what="Template")
         if not isinstance(self.title, str) or not self.title.strip():
             raise ValueError(
                 f"Template {self.slug!r}: title must be a non-empty string"
@@ -176,10 +186,7 @@ class Genre:
             _value = getattr(self, _name)
             if not isinstance(_value, tuple):
                 object.__setattr__(self, _name, tuple(_value))
-        if not isinstance(self.slug, str) or not self.slug.strip():
-            raise ValueError("Genre.slug must be a non-empty string")
-        if any(ch.isspace() for ch in self.slug):
-            raise ValueError(f"Genre.slug {self.slug!r} must not contain whitespace")
+        _validate_slug(self.slug, what="Genre")
         if not isinstance(self.title, str) or not self.title.strip():
             raise ValueError(f"Genre {self.slug!r}: title must be a non-empty string")
         if self.status not in GENRE_STATUSES:
@@ -360,6 +367,74 @@ def resolve_defaults(genre: str, template: str | None = None) -> dict:
     return {"genre": genre, "template": template, "params": params}
 
 
+#: A genre resolver: ``(genre, template) -> params`` — an owning-app-defined,
+#: JSON-able ``params`` payload (e.g. reelee's ``{output_intent, flavor}``, braidio's
+#: ``{format_id}``) for the chosen template (or ``None`` = "start from scratch").
+#: :func:`resolve_genre` wraps this in the standard ``{genre, template, params}``
+#: envelope — the resolver returns ONLY the bare params. Registered per genre via
+#: :func:`register_genre_resolver`.
+GenreResolver = Callable[[Genre, Optional[str]], dict]
+
+#: Registry of per-genre resolvers, keyed by genre slug. A genre's **owning app**
+#: registers how to turn a ``(genre, template)`` into its params, so a host that
+#: aggregates many genres (a CLI, an HTTP API, an MCP connector) can create ANY
+#: genre's project via :func:`resolve_genre` without hardcoding which app owns it.
+genre_resolvers: Registry = Registry(name="nw.genre_resolvers", on_conflict="error")
+
+
+def register_genre_resolver(slug: str, resolver: "GenreResolver") -> "GenreResolver":
+    """Register a resolver for a genre slug; returns it for inline use.
+
+    Called by the genre's owning app. ``resolver(genre, template) -> params`` maps a
+    chosen template (or ``None`` for "start from scratch") to that app's bare params
+    payload; :func:`resolve_genre` adds the ``{genre, template, params}`` envelope.
+    Independent of genre *registration order* (keyed by the slug string).
+
+    >>> _ = register_genre(Genre(slug="_resolver_demo", title="Demo",
+    ...                          defaults={"look": "plain"}))
+    >>> _ = register_genre_resolver("_resolver_demo",
+    ...     lambda genre, template: {"look": genre.defaults["look"], "via": "resolver"})
+    >>> resolve_genre("_resolver_demo")
+    {'genre': '_resolver_demo', 'template': None, 'params': {'look': 'plain', 'via': 'resolver'}}
+    >>> del genres["_resolver_demo"]; del genre_resolvers["_resolver_demo"]
+    """
+    _validate_slug(slug, what="genre resolver")
+    if not callable(resolver):
+        raise TypeError(
+            f"register_genre_resolver expects a callable, got {type(resolver).__name__}"
+        )
+    genre_resolvers.register(slug, resolver)
+    return resolver
+
+
+def resolve_genre(genre: str, template: Optional[str] = None) -> dict:
+    """Resolve a genre (+ optional template) to the standard creation envelope.
+
+    Always returns ``{"genre": slug, "template": template_or_None, "params": {...}}`` —
+    ONE stable contract for every host, regardless of whether the genre has a resolver.
+    ``params`` comes from the genre's registered resolver
+    (:func:`register_genre_resolver`) when one exists, else from the generic
+    :func:`resolve_defaults` (the template's params, or the genre's ``defaults``).
+
+    Raises :class:`KeyError` on an unknown genre or — **uniformly, resolver or not** —
+    an unknown ``template`` slug (the substrate owns template identity; a resolver only
+    interprets params, it doesn't get to invent template slugs).
+
+    >>> _ = register_genre(Genre(slug="_rg_demo", title="Demo",
+    ...                          defaults={"flavor": "cinematic"}))
+    >>> resolve_genre("_rg_demo")  # no resolver registered -> generic params
+    {'genre': '_rg_demo', 'template': None, 'params': {'flavor': 'cinematic'}}
+    >>> del genres["_rg_demo"]
+    """
+    g = get_genre(genre)
+    chosen = g.template(template) if template is not None else None  # validates the slug
+    if genre in genre_resolvers:
+        params = genre_resolvers[genre](g, template)
+    else:
+        params = dict(g.defaults) if chosen is None else dict(chosen.params)
+    return {"genre": genre, "template": template, "params": params}
+
+
 __all__ = [
     "GENRE_STATUSES",
     "Genre",
@@ -372,4 +447,8 @@ __all__ = [
     "describe_genre",
     "recommend_genre",
     "resolve_defaults",
+    "GenreResolver",
+    "genre_resolvers",
+    "register_genre_resolver",
+    "resolve_genre",
 ]
