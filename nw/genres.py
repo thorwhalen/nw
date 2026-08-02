@@ -427,7 +427,9 @@ def resolve_genre(genre: str, template: Optional[str] = None) -> dict:
     >>> del genres["_rg_demo"]
     """
     g = get_genre(genre)
-    chosen = g.template(template) if template is not None else None  # validates the slug
+    chosen = (
+        g.template(template) if template is not None else None
+    )  # validates the slug
     if genre in genre_resolvers:
         params = genre_resolvers[genre](g, template)
     else:
