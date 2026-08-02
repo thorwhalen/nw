@@ -23,6 +23,9 @@ from nw.genres import (
     genre_resolvers,
     register_genre_resolver,
     resolve_genre,
+    genre_initializers,
+    register_genre_initializer,
+    initialize_genre,
 )
 
 
@@ -406,3 +409,101 @@ def test_full_genre_public_surface_exposed_on_nw():
     assert nw.GenreResolver is _g.GenreResolver
     assert nw.register_genre_resolver is register_genre_resolver
     assert nw.resolve_genre is resolve_genre and nw.genre_resolvers is genre_resolvers
+    # the initializer twins (nw#229/reelee#230) are re-exported too
+    assert nw.GenreInitializer is _g.GenreInitializer
+    assert nw.register_genre_initializer is register_genre_initializer
+    assert nw.initialize_genre is initialize_genre
+    assert nw.genre_initializers is genre_initializers
+
+
+# --- genre initializer registry (reelee#230) -------------------------------
+
+
+@pytest.fixture
+def clean_initializers():
+    """Snapshot + restore BOTH the genre registry and the initializer registry."""
+    genres_before = dict(genres)
+    inits_before = dict(genre_initializers)
+    try:
+        yield
+    finally:
+        for reg, before in (
+            (genres, genres_before),
+            (genre_initializers, inits_before),
+        ):
+            for key in list(reg.keys()):
+                del reg[key]
+            for key, value in before.items():
+                reg.register(key, value)
+
+
+def test_initialize_genre_dispatches_with_full_context(clean_initializers):
+    # The initializer is the true twin of the resolver: it receives the Genre
+    # OBJECT + template slug (the resolver's context) PLUS the project + resolved
+    # params — so a genre can seed folder_conventions / record its template lineage.
+    register_genre(_av_genre(slug="init_disp"))
+    seen = {}
+
+    def _init(genre, template, project, params):
+        seen["args"] = (genre, template, project, params)
+
+    assert register_genre_initializer("init_disp", _init) is _init
+    sentinel_project = object()
+    initialize_genre(
+        "init_disp", sentinel_project, template="duo", params={"format_id": "duo"}
+    )
+    genre_obj, template, project, params = seen["args"]
+    assert genre_obj is get_genre("init_disp")
+    assert template == "duo"
+    assert project is sentinel_project
+    assert params == {"format_id": "duo"}
+
+
+def test_initialize_genre_noop_when_unregistered(clean_initializers):
+    # A genre that seeds nothing on create registers NO initializer -> no-op (the
+    # load-bearing default: braidio applies its format at render time, not create).
+    register_genre(_av_genre(slug="init_noop"))
+    initialize_genre("init_noop", object())  # must not raise, must do nothing
+    assert "init_noop" not in genre_initializers
+
+
+def test_initialize_genre_resolves_params_when_none(clean_initializers):
+    # params=None -> resolved from the genre's template/defaults (one-call seed).
+    register_genre(_av_genre(slug="init_resolve"))
+    seen = {}
+    register_genre_initializer(
+        "init_resolve", lambda g, t, p, params: seen.update(params=params, t=t)
+    )
+    initialize_genre("init_resolve", object())  # defaults
+    assert seen == {"params": {"format_id": "solo"}, "t": None}
+    seen.clear()
+    initialize_genre("init_resolve", object(), template="duo")  # from a template
+    assert seen == {"params": {"format_id": "duo"}, "t": "duo"}
+
+
+def test_initialize_genre_validates_genre_and_template(clean_initializers):
+    with pytest.raises(KeyError):  # unknown genre
+        initialize_genre("no_such_genre_xyz", object())
+    register_genre(_av_genre(slug="init_tval"))
+    register_genre_initializer("init_tval", lambda g, t, p, params: None)
+    # unknown template KeyErrors uniformly — whether params is resolved here (None)
+    # or supplied by the caller (already-resolved).
+    with pytest.raises(KeyError):
+        initialize_genre("init_tval", object(), template="bogus")
+    with pytest.raises(KeyError):
+        initialize_genre(
+            "init_tval", object(), template="bogus", params={"format_id": "x"}
+        )
+
+
+def test_register_genre_initializer_validates_slug_type_and_conflict(
+    clean_initializers,
+):
+    with pytest.raises(TypeError):
+        register_genre_initializer("x", "not callable")  # type: ignore[arg-type]
+    for bad in ("", "   ", "has space"):
+        with pytest.raises(ValueError):  # slug guard, like Genre/Template/resolver
+            register_genre_initializer(bad, lambda g, t, p, params: None)
+    register_genre_initializer("dup_init", lambda g, t, p, params: None)
+    with pytest.raises(Exception):  # xdol RegistryConflict (on_conflict="error")
+        register_genre_initializer("dup_init", lambda g, t, p, params: None)
