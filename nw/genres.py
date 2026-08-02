@@ -45,9 +45,12 @@ from __future__ import annotations
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 from types import MappingProxyType
-from typing import Any, Callable, Optional
+from typing import TYPE_CHECKING, Any, Callable, Optional
 
 from xdol import Registry
+
+if TYPE_CHECKING:  # runtime-free: only for the GenreInitializer type hint
+    from .project import Project
 
 
 #: Genre lifecycle statuses. ``available`` = usable now; ``experimental`` =
@@ -437,6 +440,107 @@ def resolve_genre(genre: str, template: Optional[str] = None) -> dict:
     return {"genre": genre, "template": template, "params": params}
 
 
+# ---------------------------------------------------------------------------
+# Genre INITIALIZERS — the *apply* half of the genre→project contract.
+#
+# :func:`resolve_genre` is the *pure* half: ``(genre, template) -> params`` (the
+# JSON-able creation envelope). A genre initializer is its *side-effecting* twin:
+# ``(genre, template, project, params) -> None`` — it **seeds a freshly-created
+# project** for the chosen genre/template (reelee writes an output-intent
+# annotation; braidio applies its format at *render* time, so it registers none).
+# Together they let a host that aggregates many genres (a CLI, an HTTP API, an MCP
+# connector) create ANY genre's project — resolve to get the params, create the
+# bare project, then initialize — without hardcoding which app owns the genre.
+# ---------------------------------------------------------------------------
+
+#: A genre initializer: ``(genre, template, project, params) -> None``. The
+#: side-effecting apply-counterpart to a :data:`GenreResolver`'s pure
+#: ``(genre, template) -> params``. It receives the full resolver context (the
+#: :class:`Genre` object + chosen ``template`` slug) plus the freshly-created
+#: ``project`` to seed and the resolved ``params``. reelee's writes the
+#: output-intent annotation; a genre that seeds nothing on create registers none.
+#:
+#: **Contract:** an initializer MUST confine all side effects to ``project``
+#: (typically writing annotations under ``project.root``) — so a host can revert a
+#: failed create by deleting the project folder — or own its own rollback. Writing
+#: to a shared store / external service / global registry breaks that guarantee.
+GenreInitializer = Callable[["Genre", Optional[str], "Project", Mapping[str, Any]], None]
+
+#: Registry of per-genre initializers, keyed by genre slug. A genre's **owning
+#: app** registers how to seed a fresh project for that genre; a genre that seeds
+#: nothing on create simply registers none (:func:`initialize_genre` no-ops).
+genre_initializers: Registry = Registry(
+    name="nw.genre_initializers", on_conflict="error"
+)
+
+
+def register_genre_initializer(
+    slug: str, initializer: "GenreInitializer"
+) -> "GenreInitializer":
+    """Register an initializer for a genre slug; returns it for inline use.
+
+    Called by the genre's owning app. ``initializer(genre, template, project,
+    params) -> None`` seeds a freshly-created project for the chosen genre/template
+    (see :data:`GenreInitializer` for the side-effect contract);
+    :func:`initialize_genre` dispatches to it. Independent of genre *registration
+    order* (keyed by the slug string). A genre that seeds nothing on create needs
+    no initializer at all.
+
+    >>> _ = register_genre(Genre(slug="_init_demo", title="Demo",
+    ...                          defaults={"look": "plain"}))
+    >>> seen = {}
+    >>> def _seed(genre, template, project, params):
+    ...     seen["applied"] = (genre.slug, template, params)
+    >>> _ = register_genre_initializer("_init_demo", _seed)
+    >>> initialize_genre("_init_demo", object())  # params default to the genre's
+    >>> seen["applied"]
+    ('_init_demo', None, {'look': 'plain'})
+    >>> del genres["_init_demo"]; del genre_initializers["_init_demo"]
+    """
+    _validate_slug(slug, what="genre initializer")
+    if not callable(initializer):
+        raise TypeError(
+            "register_genre_initializer expects a callable, got "
+            f"{type(initializer).__name__}"
+        )
+    genre_initializers.register(slug, initializer)
+    return initializer
+
+
+def initialize_genre(
+    genre: str,
+    project: "Project",
+    *,
+    template: Optional[str] = None,
+    params: Optional[Mapping[str, Any]] = None,
+) -> None:
+    """Seed a freshly-created ``project`` for ``genre`` (+ optional ``template``).
+
+    The side-effecting apply-counterpart to :func:`resolve_genre`. Dispatches to
+    the genre's registered initializer (:func:`register_genre_initializer`) when
+    one exists; **when none is registered this is a no-op** — the correct default
+    for a genre that seeds nothing on create (e.g. one whose preset is applied at
+    render time).
+
+    ``params`` is the resolved creation params (from :func:`resolve_genre`); when
+    ``None`` it is resolved from the genre's ``template``/``defaults`` here, so
+    ``initialize_genre(genre, project)`` seeds a project in the genre's defaults in
+    one call. Raises :class:`KeyError` on an unknown genre or — **uniformly** — an
+    unknown ``template`` slug (matching :func:`resolve_genre`).
+
+    >>> _ = register_genre(Genre(slug="_noinit_demo", title="Demo"))
+    >>> initialize_genre("_noinit_demo", object())  # no initializer -> no-op
+    >>> del genres["_noinit_demo"]
+    """
+    g = get_genre(genre)  # validates the genre slug (KeyError otherwise)
+    if params is None:
+        params = resolve_genre(genre, template)["params"]  # also validates template
+    elif template is not None:
+        g.template(template)  # validate template uniformly even when params given
+    if genre in genre_initializers:
+        genre_initializers[genre](g, template, project, dict(params))
+
+
 __all__ = [
     "GENRE_STATUSES",
     "Genre",
@@ -453,4 +557,8 @@ __all__ = [
     "genre_resolvers",
     "register_genre_resolver",
     "resolve_genre",
+    "GenreInitializer",
+    "genre_initializers",
+    "register_genre_initializer",
+    "initialize_genre",
 ]

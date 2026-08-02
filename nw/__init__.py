@@ -97,6 +97,10 @@ from .genres import (
     genre_resolvers,
     register_genre_resolver,
     resolve_genre,
+    GenreInitializer,
+    genre_initializers,
+    register_genre_initializer,
+    initialize_genre,
 )
 from .schema import (
     SCHEMA_VERSION,
@@ -135,6 +139,10 @@ __all__ = [
     "genre_resolvers",
     "register_genre_resolver",
     "resolve_genre",
+    "GenreInitializer",
+    "genre_initializers",
+    "register_genre_initializer",
+    "initialize_genre",
     "Project",
     "ProjectGraph",
     "ProjectSpec",
