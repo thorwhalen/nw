@@ -464,7 +464,9 @@ def resolve_genre(genre: str, template: Optional[str] = None) -> dict:
 #: (typically writing annotations under ``project.root``) — so a host can revert a
 #: failed create by deleting the project folder — or own its own rollback. Writing
 #: to a shared store / external service / global registry breaks that guarantee.
-GenreInitializer = Callable[["Genre", Optional[str], "Project", Mapping[str, Any]], None]
+GenreInitializer = Callable[
+    ["Genre", Optional[str], "Project", Mapping[str, Any]], None
+]
 
 #: Registry of per-genre initializers, keyed by genre slug. A genre's **owning
 #: app** registers how to seed a fresh project for that genre; a genre that seeds
