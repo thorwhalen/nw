@@ -82,8 +82,10 @@ from .transforms import (
     transforms,
 )
 from .genres import (
+    GENRE_STATUSES,
     Genre,
     Template,
+    GenreResolver,
     genres,
     get_genre,
     list_genres,
@@ -92,6 +94,9 @@ from .genres import (
     describe_genre,
     recommend_genre,
     resolve_defaults,
+    genre_resolvers,
+    register_genre_resolver,
+    resolve_genre,
 )
 from .schema import (
     SCHEMA_VERSION,
@@ -119,12 +124,17 @@ __all__ = [
     "EnvironmentRef",
     "FrozenSegment",
     "Gap",
+    "GENRE_STATUSES",
     "Genre",
     "Template",
+    "GenreResolver",
     "genre_catalog",
     "describe_genre",
     "recommend_genre",
     "resolve_defaults",
+    "genre_resolvers",
+    "register_genre_resolver",
+    "resolve_genre",
     "Project",
     "ProjectGraph",
     "ProjectSpec",
