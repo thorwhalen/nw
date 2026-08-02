@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.genres &mdash; nw 0.0.12 documentation</title>
+  <title>nw.genres &mdash; nw 0.0.13 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=3bbcec59"></script>
+      <script src="../../_static/documentation_options.js?v=9fc46840"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -151,9 +151,12 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mapping</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">types</span><span class="w"> </span><span class="kn">import</span> <span class="n">MappingProxyType</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">xdol</span><span class="w"> </span><span class="kn">import</span> <span class="n">Registry</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>  <span class="c1"># runtime-free: only for the GenreInitializer type hint</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">.project</span><span class="w"> </span><span class="kn">import</span> <span class="n">Project</span>
 
 
 <span class="c1">#: Genre lifecycle statuses. ``available`` = usable now; ``experimental`` =</span>
@@ -586,12 +589,121 @@
 <span class="sd">    &gt;&gt;&gt; del genres[&quot;_rg_demo&quot;]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">g</span> <span class="o">=</span> <span class="n">get_genre</span><span class="p">(</span><span class="n">genre</span><span class="p">)</span>
-    <span class="n">chosen</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">template</span><span class="p">(</span><span class="n">template</span><span class="p">)</span> <span class="k">if</span> <span class="n">template</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>  <span class="c1"># validates the slug</span>
+    <span class="n">chosen</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">template</span><span class="p">(</span><span class="n">template</span><span class="p">)</span> <span class="k">if</span> <span class="n">template</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="p">)</span>  <span class="c1"># validates the slug</span>
     <span class="k">if</span> <span class="n">genre</span> <span class="ow">in</span> <span class="n">genre_resolvers</span><span class="p">:</span>
         <span class="n">params</span> <span class="o">=</span> <span class="n">genre_resolvers</span><span class="p">[</span><span class="n">genre</span><span class="p">](</span><span class="n">g</span><span class="p">,</span> <span class="n">template</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">defaults</span><span class="p">)</span> <span class="k">if</span> <span class="n">chosen</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">dict</span><span class="p">(</span><span class="n">chosen</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;genre&quot;</span><span class="p">:</span> <span class="n">genre</span><span class="p">,</span> <span class="s2">&quot;template&quot;</span><span class="p">:</span> <span class="n">template</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="n">params</span><span class="p">}</span></div>
+
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Genre INITIALIZERS — the *apply* half of the genre→project contract.</span>
+<span class="c1">#</span>
+<span class="c1"># :func:`resolve_genre` is the *pure* half: ``(genre, template) -&gt; params`` (the</span>
+<span class="c1"># JSON-able creation envelope). A genre initializer is its *side-effecting* twin:</span>
+<span class="c1"># ``(genre, template, project, params) -&gt; None`` — it **seeds a freshly-created</span>
+<span class="c1"># project** for the chosen genre/template (reelee writes an output-intent</span>
+<span class="c1"># annotation; braidio applies its format at *render* time, so it registers none).</span>
+<span class="c1"># Together they let a host that aggregates many genres (a CLI, an HTTP API, an MCP</span>
+<span class="c1"># connector) create ANY genre&#39;s project — resolve to get the params, create the</span>
+<span class="c1"># bare project, then initialize — without hardcoding which app owns the genre.</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+<span class="c1">#: A genre initializer: ``(genre, template, project, params) -&gt; None``. The</span>
+<span class="c1">#: side-effecting apply-counterpart to a :data:`GenreResolver`&#39;s pure</span>
+<span class="c1">#: ``(genre, template) -&gt; params``. It receives the full resolver context (the</span>
+<span class="c1">#: :class:`Genre` object + chosen ``template`` slug) plus the freshly-created</span>
+<span class="c1">#: ``project`` to seed and the resolved ``params``. reelee&#39;s writes the</span>
+<span class="c1">#: output-intent annotation; a genre that seeds nothing on create registers none.</span>
+<span class="c1">#:</span>
+<span class="c1">#: **Contract:** an initializer MUST confine all side effects to ``project``</span>
+<span class="c1">#: (typically writing annotations under ``project.root``) — so a host can revert a</span>
+<span class="c1">#: failed create by deleting the project folder — or own its own rollback. Writing</span>
+<span class="c1">#: to a shared store / external service / global registry breaks that guarantee.</span>
+<span class="n">GenreInitializer</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[[</span><span class="s2">&quot;Genre&quot;</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="s2">&quot;Project&quot;</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="kc">None</span><span class="p">]</span>
+
+<span class="c1">#: Registry of per-genre initializers, keyed by genre slug. A genre&#39;s **owning</span>
+<span class="c1">#: app** registers how to seed a fresh project for that genre; a genre that seeds</span>
+<span class="c1">#: nothing on create simply registers none (:func:`initialize_genre` no-ops).</span>
+<span class="n">genre_initializers</span><span class="p">:</span> <span class="n">Registry</span> <span class="o">=</span> <span class="n">Registry</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;nw.genre_initializers&quot;</span><span class="p">,</span> <span class="n">on_conflict</span><span class="o">=</span><span class="s2">&quot;error&quot;</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="register_genre_initializer">
+<a class="viewcode-back" href="../../module_docs/nw/genres.html#nw.register_genre_initializer">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">register_genre_initializer</span><span class="p">(</span>
+    <span class="n">slug</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">initializer</span><span class="p">:</span> <span class="s2">&quot;GenreInitializer&quot;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;GenreInitializer&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Register an initializer for a genre slug; returns it for inline use.</span>
+
+<span class="sd">    Called by the genre&#39;s owning app. ``initializer(genre, template, project,</span>
+<span class="sd">    params) -&gt; None`` seeds a freshly-created project for the chosen genre/template</span>
+<span class="sd">    (see :data:`GenreInitializer` for the side-effect contract);</span>
+<span class="sd">    :func:`initialize_genre` dispatches to it. Independent of genre *registration</span>
+<span class="sd">    order* (keyed by the slug string). A genre that seeds nothing on create needs</span>
+<span class="sd">    no initializer at all.</span>
+
+<span class="sd">    &gt;&gt;&gt; _ = register_genre(Genre(slug=&quot;_init_demo&quot;, title=&quot;Demo&quot;,</span>
+<span class="sd">    ...                          defaults={&quot;look&quot;: &quot;plain&quot;}))</span>
+<span class="sd">    &gt;&gt;&gt; seen = {}</span>
+<span class="sd">    &gt;&gt;&gt; def _seed(genre, template, project, params):</span>
+<span class="sd">    ...     seen[&quot;applied&quot;] = (genre.slug, template, params)</span>
+<span class="sd">    &gt;&gt;&gt; _ = register_genre_initializer(&quot;_init_demo&quot;, _seed)</span>
+<span class="sd">    &gt;&gt;&gt; initialize_genre(&quot;_init_demo&quot;, object())  # params default to the genre&#39;s</span>
+<span class="sd">    &gt;&gt;&gt; seen[&quot;applied&quot;]</span>
+<span class="sd">    (&#39;_init_demo&#39;, None, {&#39;look&#39;: &#39;plain&#39;})</span>
+<span class="sd">    &gt;&gt;&gt; del genres[&quot;_init_demo&quot;]; del genre_initializers[&quot;_init_demo&quot;]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_validate_slug</span><span class="p">(</span><span class="n">slug</span><span class="p">,</span> <span class="n">what</span><span class="o">=</span><span class="s2">&quot;genre initializer&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">initializer</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="s2">&quot;register_genre_initializer expects a callable, got &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">initializer</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+    <span class="n">genre_initializers</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">slug</span><span class="p">,</span> <span class="n">initializer</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">initializer</span></div>
+
+
+
+<div class="viewcode-block" id="initialize_genre">
+<a class="viewcode-back" href="../../module_docs/nw/genres.html#nw.initialize_genre">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">initialize_genre</span><span class="p">(</span>
+    <span class="n">genre</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">project</span><span class="p">:</span> <span class="s2">&quot;Project&quot;</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">template</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">params</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Seed a freshly-created ``project`` for ``genre`` (+ optional ``template``).</span>
+
+<span class="sd">    The side-effecting apply-counterpart to :func:`resolve_genre`. Dispatches to</span>
+<span class="sd">    the genre&#39;s registered initializer (:func:`register_genre_initializer`) when</span>
+<span class="sd">    one exists; **when none is registered this is a no-op** — the correct default</span>
+<span class="sd">    for a genre that seeds nothing on create (e.g. one whose preset is applied at</span>
+<span class="sd">    render time).</span>
+
+<span class="sd">    ``params`` is the resolved creation params (from :func:`resolve_genre`); when</span>
+<span class="sd">    ``None`` it is resolved from the genre&#39;s ``template``/``defaults`` here, so</span>
+<span class="sd">    ``initialize_genre(genre, project)`` seeds a project in the genre&#39;s defaults in</span>
+<span class="sd">    one call. Raises :class:`KeyError` on an unknown genre or — **uniformly** — an</span>
+<span class="sd">    unknown ``template`` slug (matching :func:`resolve_genre`).</span>
+
+<span class="sd">    &gt;&gt;&gt; _ = register_genre(Genre(slug=&quot;_noinit_demo&quot;, title=&quot;Demo&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; initialize_genre(&quot;_noinit_demo&quot;, object())  # no initializer -&gt; no-op</span>
+<span class="sd">    &gt;&gt;&gt; del genres[&quot;_noinit_demo&quot;]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="n">get_genre</span><span class="p">(</span><span class="n">genre</span><span class="p">)</span>  <span class="c1"># validates the genre slug (KeyError otherwise)</span>
+    <span class="k">if</span> <span class="n">params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">resolve_genre</span><span class="p">(</span><span class="n">genre</span><span class="p">,</span> <span class="n">template</span><span class="p">)[</span><span class="s2">&quot;params&quot;</span><span class="p">]</span>  <span class="c1"># also validates template</span>
+    <span class="k">elif</span> <span class="n">template</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">template</span><span class="p">(</span><span class="n">template</span><span class="p">)</span>  <span class="c1"># validate template uniformly even when params given</span>
+    <span class="k">if</span> <span class="n">genre</span> <span class="ow">in</span> <span class="n">genre_initializers</span><span class="p">:</span>
+        <span class="n">genre_initializers</span><span class="p">[</span><span class="n">genre</span><span class="p">](</span><span class="n">g</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">params</span><span class="p">))</span></div>
 
 
 
@@ -611,6 +723,10 @@
     <span class="s2">&quot;genre_resolvers&quot;</span><span class="p">,</span>
     <span class="s2">&quot;register_genre_resolver&quot;</span><span class="p">,</span>
     <span class="s2">&quot;resolve_genre&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;GenreInitializer&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;genre_initializers&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;register_genre_initializer&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;initialize_genre&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 </pre></div>
 
