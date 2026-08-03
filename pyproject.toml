@@ -9,7 +9,7 @@ name = "nw"
 # Bumped to match PyPI's latest (0.0.5) so the CI publish bumps to 0.0.6
 # instead of colliding on an already-published version — the local pyproject
 # had drifted to 0.0.1 while PyPI advanced to 0.0.5.
-version = "0.0.14"
+version = "0.0.15"
 description = "Narrative Workflow"
 readme = "README.md"
 requires-python = ">=3.10"
