@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.genres &mdash; nw 0.0.13 documentation</title>
+  <title>nw.genres &mdash; nw 0.0.14 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=9fc46840"></script>
+      <script src="../../_static/documentation_options.js?v=544df88d"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -74,22 +74,27 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.genres.GenreInitializer"><code class="docutils literal notranslate"><span class="pre">GenreInitializer</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.genres.GenreProjectFactory"><code class="docutils literal notranslate"><span class="pre">GenreProjectFactory</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.genres.GenreResolver"><code class="docutils literal notranslate"><span class="pre">GenreResolver</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.genres.Template"><code class="docutils literal notranslate"><span class="pre">Template</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#nw.genres.Template.to_dict"><code class="docutils literal notranslate"><span class="pre">Template.to_dict()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.genres.create_genre_project"><code class="docutils literal notranslate"><span class="pre">create_genre_project()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.genres.describe_genre"><code class="docutils literal notranslate"><span class="pre">describe_genre()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.genres.genre_catalog"><code class="docutils literal notranslate"><span class="pre">genre_catalog()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.genres.genre_initializers"><code class="docutils literal notranslate"><span class="pre">genre_initializers</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.genres.genre_project_factories"><code class="docutils literal notranslate"><span class="pre">genre_project_factories</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.genres.genre_resolvers"><code class="docutils literal notranslate"><span class="pre">genre_resolvers</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.genres.genres"><code class="docutils literal notranslate"><span class="pre">genres</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.genres.get_genre"><code class="docutils literal notranslate"><span class="pre">get_genre()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.genres.has_genre_project_factory"><code class="docutils literal notranslate"><span class="pre">has_genre_project_factory()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.genres.initialize_genre"><code class="docutils literal notranslate"><span class="pre">initialize_genre()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.genres.list_genres"><code class="docutils literal notranslate"><span class="pre">list_genres()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.genres.recommend_genre"><code class="docutils literal notranslate"><span class="pre">recommend_genre()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.genres.register_genre"><code class="docutils literal notranslate"><span class="pre">register_genre()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.genres.register_genre_initializer"><code class="docutils literal notranslate"><span class="pre">register_genre_initializer()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.genres.register_genre_project_factory"><code class="docutils literal notranslate"><span class="pre">register_genre_project_factory()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.genres.register_genre_resolver"><code class="docutils literal notranslate"><span class="pre">register_genre_resolver()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.genres.resolve_defaults"><code class="docutils literal notranslate"><span class="pre">resolve_defaults()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.genres.resolve_genre"><code class="docutils literal notranslate"><span class="pre">resolve_genre()</span></code></a></li>
@@ -308,6 +313,23 @@ to a shared store / external service / global registry breaks that guarantee.</p
 </dd></dl>
 
 <dl class="py data">
+<dt class="sig sig-object py" id="nw.genres.GenreProjectFactory">
+<span class="sig-prename descclassname"><span class="pre">nw.genres.</span></span><span class="sig-name descname"><span class="pre">GenreProjectFactory</span></span><a class="headerlink" href="#nw.genres.GenreProjectFactory" title="Link to this definition"></a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">(caller,</span> <span class="pre">project_id,</span> <span class="pre">*,</span> <span class="pre">title,</span> <span class="pre">template,</span> <span class="pre">params)</span> <span class="pre">-&gt;</span> <span class="pre">dict</span></code>.
+Creates a NEW project for a plugged-in <code class="docutils literal notranslate"><span class="pre">genre</span></code> in <code class="docutils literal notranslate"><span class="pre">caller</span></code>’s own (e.g. email-keyed)
+space and returns info including <code class="docutils literal notranslate"><span class="pre">{&quot;project&quot;:</span> <span class="pre">&lt;created</span> <span class="pre">project&gt;,</span> <span class="pre">...}</span></code> — see
+<a class="reference internal" href="#nw.genres.create_genre_project" title="nw.genres.create_genre_project"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_genre_project()</span></code></a> (which seeds it then strips the live object from the JSON
+result). <strong>Contract:</strong> confine creation to the caller’s own space (so a host can offer
+it multi-tenant safely); a host-tenancy genre does NOT register here.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A genre project factory</p>
+</dd>
+</dl>
+<p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">Callable</span></code>[[…], <code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>]</p>
+</dd></dl>
+
+<dl class="py data">
 <dt class="sig sig-object py" id="nw.genres.GenreResolver">
 <span class="sig-prename descclassname"><span class="pre">nw.genres.</span></span><span class="sig-name descname"><span class="pre">GenreResolver</span></span><a class="headerlink" href="#nw.genres.GenreResolver" title="Link to this definition"></a></dt>
 <dd><p><code class="docutils literal notranslate"><span class="pre">(genre,</span> <span class="pre">template)</span> <span class="pre">-&gt;</span> <span class="pre">params</span></code> — an owning-app-defined,
@@ -352,6 +374,20 @@ identity and normalized to an immutable mapping), so a Template can live in a
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="nw.genres.create_genre_project">
+<span class="sig-prename descclassname"><span class="pre">nw.genres.</span></span><span class="sig-name descname"><span class="pre">create_genre_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">genre</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">caller</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../../_modules/nw/genres.html#create_genre_project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.genres.create_genre_project" title="Link to this definition"></a></dt>
+<dd><p>Create + seed a new project for a PLUGGED-IN <code class="docutils literal notranslate"><span class="pre">genre</span></code> in <code class="docutils literal notranslate"><span class="pre">caller</span></code>’s space.</p>
+<p>The <em>create</em>-counterpart to <a class="reference internal" href="#nw.genres.resolve_genre" title="nw.genres.resolve_genre"><code class="xref py py-func docutils literal notranslate"><span class="pre">resolve_genre()</span></code></a> (params) + <a class="reference internal" href="#nw.genres.initialize_genre" title="nw.genres.initialize_genre"><code class="xref py py-func docutils literal notranslate"><span class="pre">initialize_genre()</span></code></a>
+(seed): resolve → the genre’s factory (create in the caller’s space) → initialize.
+<strong>All-or-nothing</strong> — if seeding fails the just-created project is rolled back (its
+folder removed) and the error re-raised. Returns the factory’s JSON-able info (minus
+the live <code class="docutils literal notranslate"><span class="pre">project</span></code>) plus the resolved <code class="docutils literal notranslate"><span class="pre">{genre,</span> <span class="pre">template,</span> <span class="pre">params}</span></code> envelope, so the
+caller can immediately address the new project (e.g. by <code class="docutils literal notranslate"><span class="pre">project_id</span></code>).</p>
+<p>Raises <code class="xref py py-class docutils literal notranslate"><span class="pre">KeyError</span></code> on an unknown genre/template, or a genre with no registered
+factory (a host’s own genre is created by the host, not via this path).</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="nw.genres.describe_genre">
 <span class="sig-prename descclassname"><span class="pre">nw.genres.</span></span><span class="sig-name descname"><span class="pre">describe_genre</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slug</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../../_modules/nw/genres.html#describe_genre"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.genres.describe_genre" title="Link to this definition"></a></dt>
 <dd><p>One genre’s catalog entry (raises <code class="xref py py-class docutils literal notranslate"><span class="pre">KeyError</span></code> if the slug is unknown).</p>
@@ -374,6 +410,12 @@ nothing on create simply registers none (<a class="reference internal" href="#nw
 </dd></dl>
 
 <dl class="py data">
+<dt class="sig sig-object py" id="nw.genres.genre_project_factories">
+<span class="sig-prename descclassname"><span class="pre">nw.genres.</span></span><span class="sig-name descname"><span class="pre">genre_project_factories</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Registry</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Registry</span> <span class="pre">nw.genre_project_factories&gt;</span></span><a class="headerlink" href="#nw.genres.genre_project_factories" title="Link to this definition"></a></dt>
+<dd><p>Registry of per-genre project factories, keyed by genre slug (the owning app registers).</p>
+</dd></dl>
+
+<dl class="py data">
 <dt class="sig sig-object py" id="nw.genres.genre_resolvers">
 <span class="sig-prename descclassname"><span class="pre">nw.genres.</span></span><span class="sig-name descname"><span class="pre">genre_resolvers</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Registry</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Registry</span> <span class="pre">nw.genre_resolvers&gt;</span></span><a class="headerlink" href="#nw.genres.genre_resolvers" title="Link to this definition"></a></dt>
 <dd><p>Registry of per-genre resolvers, keyed by genre slug. A genre’s <strong>owning app</strong>
@@ -393,6 +435,12 @@ Apps add genres via <a class="reference internal" href="#nw.genres.register_genr
 <dt class="sig sig-object py" id="nw.genres.get_genre">
 <span class="sig-prename descclassname"><span class="pre">nw.genres.</span></span><span class="sig-name descname"><span class="pre">get_genre</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slug</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nw.genres.Genre" title="nw.genres.Genre"><span class="pre">Genre</span></a></span></span><a class="reference internal" href="../../_modules/nw/genres.html#get_genre"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.genres.get_genre" title="Link to this definition"></a></dt>
 <dd><p>Look up a genre by slug; raises <code class="xref py py-class docutils literal notranslate"><span class="pre">KeyError</span></code> with the known slugs.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.genres.has_genre_project_factory">
+<span class="sig-prename descclassname"><span class="pre">nw.genres.</span></span><span class="sig-name descname"><span class="pre">has_genre_project_factory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slug</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../../_modules/nw/genres.html#has_genre_project_factory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.genres.has_genre_project_factory" title="Link to this definition"></a></dt>
+<dd><p>True iff a plugged-in project factory is registered for <code class="docutils literal notranslate"><span class="pre">slug</span></code>.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -471,6 +519,29 @@ no initializer at all.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">seen</span><span class="p">[</span><span class="s2">&quot;applied&quot;</span><span class="p">]</span>
 <span class="go">(&#39;_init_demo&#39;, None, {&#39;look&#39;: &#39;plain&#39;})</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">del</span> <span class="n">genres</span><span class="p">[</span><span class="s2">&quot;_init_demo&quot;</span><span class="p">];</span> <span class="k">del</span> <span class="n">genre_initializers</span><span class="p">[</span><span class="s2">&quot;_init_demo&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.genres.register_genre_project_factory">
+<span class="sig-prename descclassname"><span class="pre">nw.genres.</span></span><span class="sig-name descname"><span class="pre">register_genre_project_factory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slug</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">factory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nw/genres.html#register_genre_project_factory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.genres.register_genre_project_factory" title="Link to this definition"></a></dt>
+<dd><p>Register a project factory for a genre slug; returns it for inline use.</p>
+<p>Called by the genre’s <strong>owning app</strong> so a host that aggregates the genre can create
+its projects via <a class="reference internal" href="#nw.genres.create_genre_project" title="nw.genres.create_genre_project"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_genre_project()</span></code></a> without knowing its storage. See
+<a class="reference internal" href="#nw.genres.GenreProjectFactory" title="nw.genres.GenreProjectFactory"><code class="xref py py-data docutils literal notranslate"><span class="pre">GenreProjectFactory</span></code></a> for the signature + the caller-space contract.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">register_genre</span><span class="p">(</span><span class="n">Genre</span><span class="p">(</span><span class="n">slug</span><span class="o">=</span><span class="s2">&quot;_pf_demo&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Demo&quot;</span><span class="p">,</span>
+<span class="gp">... </span>                         <span class="n">defaults</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;format_id&quot;</span><span class="p">:</span> <span class="s2">&quot;solo&quot;</span><span class="p">}))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">made</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="nf">_f</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">made</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span> <span class="n">project_id</span><span class="o">=</span><span class="n">project_id</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;project&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;project_id&quot;</span><span class="p">:</span> <span class="n">project_id</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">register_genre_project_factory</span><span class="p">(</span><span class="s2">&quot;_pf_demo&quot;</span><span class="p">,</span> <span class="n">_f</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">create_genre_project</span><span class="p">(</span><span class="s2">&quot;_pf_demo&quot;</span><span class="p">,</span> <span class="s2">&quot;u@x.com&quot;</span><span class="p">,</span> <span class="s2">&quot;p1&quot;</span><span class="p">)[</span><span class="s2">&quot;project_id&quot;</span><span class="p">]</span>
+<span class="go">&#39;p1&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">made</span><span class="p">[</span><span class="s2">&quot;caller&quot;</span><span class="p">],</span> <span class="n">made</span><span class="p">[</span><span class="s2">&quot;params&quot;</span><span class="p">])</span>
+<span class="go">(&#39;u@x.com&#39;, {&#39;format_id&#39;: &#39;solo&#39;})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">del</span> <span class="n">genres</span><span class="p">[</span><span class="s2">&quot;_pf_demo&quot;</span><span class="p">];</span> <span class="k">del</span> <span class="n">genre_project_factories</span><span class="p">[</span><span class="s2">&quot;_pf_demo&quot;</span><span class="p">]</span>
 </pre></div>
 </div>
 </dd></dl>

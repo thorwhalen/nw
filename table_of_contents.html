@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>&lt;no title&gt; &mdash; nw 0.0.13 documentation</title>
+  <title>&lt;no title&gt; &mdash; nw 0.0.14 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=9fc46840"></script>
+      <script src="_static/documentation_options.js?v=544df88d"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -134,6 +134,7 @@
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.apply_to_projects"><code class="docutils literal notranslate"><span class="pre">apply_to_projects()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.clone_project"><code class="docutils literal notranslate"><span class="pre">clone_project()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.compose_report"><code class="docutils literal notranslate"><span class="pre">compose_report()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.create_genre_project"><code class="docutils literal notranslate"><span class="pre">create_genre_project()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.derived_from"><code class="docutils literal notranslate"><span class="pre">derived_from()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.descendants_of"><code class="docutils literal notranslate"><span class="pre">descendants_of()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.describe_genre"><code class="docutils literal notranslate"><span class="pre">describe_genre()</span></code></a></li>
@@ -143,6 +144,7 @@
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.get_genre"><code class="docutils literal notranslate"><span class="pre">get_genre()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.get_strategy"><code class="docutils literal notranslate"><span class="pre">get_strategy()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.get_transform"><code class="docutils literal notranslate"><span class="pre">get_transform()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.has_genre_project_factory"><code class="docutils literal notranslate"><span class="pre">has_genre_project_factory()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.initialize_genre"><code class="docutils literal notranslate"><span class="pre">initialize_genre()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.is_migrated"><code class="docutils literal notranslate"><span class="pre">is_migrated()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.iter_all_annotations"><code class="docutils literal notranslate"><span class="pre">iter_all_annotations()</span></code></a></li>
@@ -159,6 +161,7 @@
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.recommend_genre"><code class="docutils literal notranslate"><span class="pre">recommend_genre()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.register_genre"><code class="docutils literal notranslate"><span class="pre">register_genre()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.register_genre_initializer"><code class="docutils literal notranslate"><span class="pre">register_genre_initializer()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.register_genre_project_factory"><code class="docutils literal notranslate"><span class="pre">register_genre_project_factory()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.register_genre_resolver"><code class="docutils literal notranslate"><span class="pre">register_genre_resolver()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.register_strategy"><code class="docutils literal notranslate"><span class="pre">register_strategy()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.register_transform"><code class="docutils literal notranslate"><span class="pre">register_transform()</span></code></a></li>
@@ -215,19 +218,24 @@
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.GENRE_STATUSES"><code class="docutils literal notranslate"><span class="pre">GENRE_STATUSES</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.Genre"><code class="docutils literal notranslate"><span class="pre">Genre</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.GenreInitializer"><code class="docutils literal notranslate"><span class="pre">GenreInitializer</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.GenreProjectFactory"><code class="docutils literal notranslate"><span class="pre">GenreProjectFactory</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.GenreResolver"><code class="docutils literal notranslate"><span class="pre">GenreResolver</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.Template"><code class="docutils literal notranslate"><span class="pre">Template</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.create_genre_project"><code class="docutils literal notranslate"><span class="pre">create_genre_project()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.describe_genre"><code class="docutils literal notranslate"><span class="pre">describe_genre()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.genre_catalog"><code class="docutils literal notranslate"><span class="pre">genre_catalog()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.genre_initializers"><code class="docutils literal notranslate"><span class="pre">genre_initializers</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.genre_project_factories"><code class="docutils literal notranslate"><span class="pre">genre_project_factories</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.genre_resolvers"><code class="docutils literal notranslate"><span class="pre">genre_resolvers</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.genres"><code class="docutils literal notranslate"><span class="pre">genres</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.get_genre"><code class="docutils literal notranslate"><span class="pre">get_genre()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.has_genre_project_factory"><code class="docutils literal notranslate"><span class="pre">has_genre_project_factory()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.initialize_genre"><code class="docutils literal notranslate"><span class="pre">initialize_genre()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.list_genres"><code class="docutils literal notranslate"><span class="pre">list_genres()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.recommend_genre"><code class="docutils literal notranslate"><span class="pre">recommend_genre()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.register_genre"><code class="docutils literal notranslate"><span class="pre">register_genre()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.register_genre_initializer"><code class="docutils literal notranslate"><span class="pre">register_genre_initializer()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.register_genre_project_factory"><code class="docutils literal notranslate"><span class="pre">register_genre_project_factory()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.register_genre_resolver"><code class="docutils literal notranslate"><span class="pre">register_genre_resolver()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.resolve_defaults"><code class="docutils literal notranslate"><span class="pre">resolve_defaults()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.resolve_genre"><code class="docutils literal notranslate"><span class="pre">resolve_genre()</span></code></a></li>

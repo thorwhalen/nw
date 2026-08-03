@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.genres &mdash; nw 0.0.13 documentation</title>
+  <title>nw.genres &mdash; nw 0.0.14 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=9fc46840"></script>
+      <script src="../../_static/documentation_options.js?v=544df88d"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -624,7 +624,9 @@
 <span class="c1">#: (typically writing annotations under ``project.root``) — so a host can revert a</span>
 <span class="c1">#: failed create by deleting the project folder — or own its own rollback. Writing</span>
 <span class="c1">#: to a shared store / external service / global registry breaks that guarantee.</span>
-<span class="n">GenreInitializer</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[[</span><span class="s2">&quot;Genre&quot;</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="s2">&quot;Project&quot;</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="kc">None</span><span class="p">]</span>
+<span class="n">GenreInitializer</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[</span>
+    <span class="p">[</span><span class="s2">&quot;Genre&quot;</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="s2">&quot;Project&quot;</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="kc">None</span>
+<span class="p">]</span>
 
 <span class="c1">#: Registry of per-genre initializers, keyed by genre slug. A genre&#39;s **owning</span>
 <span class="c1">#: app** registers how to seed a fresh project for that genre; a genre that seeds</span>
@@ -707,6 +709,141 @@
 
 
 
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Genre PROJECT FACTORIES — the *create* half of the genre→project contract, for</span>
+<span class="c1"># PLUGGED-IN genres (ones a host aggregates but does not natively own).</span>
+<span class="c1">#</span>
+<span class="c1"># resolve_genre (params) + initialize_genre (seed) assume the host already HAS a</span>
+<span class="c1"># project to seed. But when a host (e.g. an MCP connector) aggregates a genre owned by</span>
+<span class="c1"># ANOTHER app — reelee hosting braidio&#39;s ``commentary_weave`` — it can&#39;t build that</span>
+<span class="c1"># genre&#39;s project itself (a braidio project lives in the owning app&#39;s per-user</span>
+<span class="c1"># workspace, not a reelee sibling folder). A project factory lets the owning app supply</span>
+<span class="c1"># &quot;create a fresh project for this genre in the CALLER&#39;s own space&quot;, so a host can offer</span>
+<span class="c1"># ``create_project(genre)`` for any plugged-in genre without knowing its storage. A</span>
+<span class="c1"># host&#39;s OWN genres (which it places itself) do NOT use this registry.</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+<span class="c1">#: A genre project factory: ``(caller, project_id, *, title, template, params) -&gt; dict``.</span>
+<span class="c1">#: Creates a NEW project for a plugged-in ``genre`` in ``caller``&#39;s own (e.g. email-keyed)</span>
+<span class="c1">#: space and returns info including ``{&quot;project&quot;: &lt;created project&gt;, ...}`` — see</span>
+<span class="c1">#: :func:`create_genre_project` (which seeds it then strips the live object from the JSON</span>
+<span class="c1">#: result). **Contract:** confine creation to the caller&#39;s own space (so a host can offer</span>
+<span class="c1">#: it multi-tenant safely); a host-tenancy genre does NOT register here.</span>
+<span class="n">GenreProjectFactory</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]</span>
+
+<span class="c1">#: Registry of per-genre project factories, keyed by genre slug (the owning app registers).</span>
+<span class="n">genre_project_factories</span><span class="p">:</span> <span class="n">Registry</span> <span class="o">=</span> <span class="n">Registry</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;nw.genre_project_factories&quot;</span><span class="p">,</span> <span class="n">on_conflict</span><span class="o">=</span><span class="s2">&quot;error&quot;</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="register_genre_project_factory">
+<a class="viewcode-back" href="../../module_docs/nw/genres.html#nw.register_genre_project_factory">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">register_genre_project_factory</span><span class="p">(</span>
+    <span class="n">slug</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">factory</span><span class="p">:</span> <span class="s2">&quot;GenreProjectFactory&quot;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;GenreProjectFactory&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Register a project factory for a genre slug; returns it for inline use.</span>
+
+<span class="sd">    Called by the genre&#39;s **owning app** so a host that aggregates the genre can create</span>
+<span class="sd">    its projects via :func:`create_genre_project` without knowing its storage. See</span>
+<span class="sd">    :data:`GenreProjectFactory` for the signature + the caller-space contract.</span>
+
+<span class="sd">    &gt;&gt;&gt; _ = register_genre(Genre(slug=&quot;_pf_demo&quot;, title=&quot;Demo&quot;,</span>
+<span class="sd">    ...                          defaults={&quot;format_id&quot;: &quot;solo&quot;}))</span>
+<span class="sd">    &gt;&gt;&gt; made = {}</span>
+<span class="sd">    &gt;&gt;&gt; def _f(caller, project_id, *, title, template, params):</span>
+<span class="sd">    ...     made.update(caller=caller, project_id=project_id, params=params)</span>
+<span class="sd">    ...     return {&quot;project&quot;: None, &quot;project_id&quot;: project_id}</span>
+<span class="sd">    &gt;&gt;&gt; _ = register_genre_project_factory(&quot;_pf_demo&quot;, _f)</span>
+<span class="sd">    &gt;&gt;&gt; create_genre_project(&quot;_pf_demo&quot;, &quot;u@x.com&quot;, &quot;p1&quot;)[&quot;project_id&quot;]</span>
+<span class="sd">    &#39;p1&#39;</span>
+<span class="sd">    &gt;&gt;&gt; (made[&quot;caller&quot;], made[&quot;params&quot;])</span>
+<span class="sd">    (&#39;u@x.com&#39;, {&#39;format_id&#39;: &#39;solo&#39;})</span>
+<span class="sd">    &gt;&gt;&gt; del genres[&quot;_pf_demo&quot;]; del genre_project_factories[&quot;_pf_demo&quot;]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_validate_slug</span><span class="p">(</span><span class="n">slug</span><span class="p">,</span> <span class="n">what</span><span class="o">=</span><span class="s2">&quot;genre project factory&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">factory</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="s2">&quot;register_genre_project_factory expects a callable, got &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">factory</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+    <span class="n">genre_project_factories</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">slug</span><span class="p">,</span> <span class="n">factory</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">factory</span></div>
+
+
+
+<div class="viewcode-block" id="has_genre_project_factory">
+<a class="viewcode-back" href="../../module_docs/nw/genres.html#nw.has_genre_project_factory">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">has_genre_project_factory</span><span class="p">(</span><span class="n">slug</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;True iff a plugged-in project factory is registered for ``slug``.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">slug</span> <span class="ow">in</span> <span class="n">genre_project_factories</span></div>
+
+
+
+<div class="viewcode-block" id="create_genre_project">
+<a class="viewcode-back" href="../../module_docs/nw/genres.html#nw.create_genre_project">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_genre_project</span><span class="p">(</span>
+    <span class="n">genre</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">caller</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">project_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">title</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">template</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create + seed a new project for a PLUGGED-IN ``genre`` in ``caller``&#39;s space.</span>
+
+<span class="sd">    The *create*-counterpart to :func:`resolve_genre` (params) + :func:`initialize_genre`</span>
+<span class="sd">    (seed): resolve → the genre&#39;s factory (create in the caller&#39;s space) → initialize.</span>
+<span class="sd">    **All-or-nothing** — if seeding fails the just-created project is rolled back (its</span>
+<span class="sd">    folder removed) and the error re-raised. Returns the factory&#39;s JSON-able info (minus</span>
+<span class="sd">    the live ``project``) plus the resolved ``{genre, template, params}`` envelope, so the</span>
+<span class="sd">    caller can immediately address the new project (e.g. by ``project_id``).</span>
+
+<span class="sd">    Raises :class:`KeyError` on an unknown genre/template, or a genre with no registered</span>
+<span class="sd">    factory (a host&#39;s own genre is created by the host, not via this path).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">genre</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">genre_project_factories</span><span class="p">:</span>
+        <span class="n">known</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">genre_project_factories</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;genre </span><span class="si">{</span><span class="n">genre</span><span class="si">!r}</span><span class="s2"> has no project factory (registered: </span><span class="si">{</span><span class="n">known</span><span class="si">}</span><span class="s2">); a host&#39;s &quot;</span>
+            <span class="s2">&quot;own genres are created by the host, not via create_genre_project.&quot;</span>
+        <span class="p">)</span>
+    <span class="n">envelope</span> <span class="o">=</span> <span class="n">resolve_genre</span><span class="p">(</span><span class="n">genre</span><span class="p">,</span> <span class="n">template</span><span class="p">)</span>  <span class="c1"># validates genre + template</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="n">envelope</span><span class="p">[</span><span class="s2">&quot;params&quot;</span><span class="p">]</span>
+    <span class="n">info</span> <span class="o">=</span> <span class="n">genre_project_factories</span><span class="p">[</span><span class="n">genre</span><span class="p">](</span>
+        <span class="n">caller</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">title</span> <span class="ow">or</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="n">template</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span>
+    <span class="p">)</span>
+    <span class="n">project</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;project&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">initialize_genre</span><span class="p">(</span><span class="n">genre</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="n">template</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="n">_rollback_project</span><span class="p">(</span><span class="n">project</span><span class="p">)</span>  <span class="c1"># all-or-nothing: leave no half-built orphan</span>
+        <span class="k">raise</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">info</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="o">!=</span> <span class="s2">&quot;project&quot;</span><span class="p">}</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
+        <span class="k">else</span> <span class="p">{}</span>
+    <span class="p">)</span>
+    <span class="n">result</span><span class="p">[</span><span class="s2">&quot;genre&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">genre</span>
+    <span class="n">result</span><span class="p">[</span><span class="s2">&quot;template&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">template</span>
+    <span class="n">result</span><span class="p">[</span><span class="s2">&quot;params&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">params</span>
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_rollback_project</span><span class="p">(</span><span class="n">project</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Best-effort delete of a just-created project after a failed seed (all-or-nothing).</span>
+
+<span class="sd">    Removes ``project.root`` if present — the factory creates in the caller&#39;s own space,</span>
+<span class="sd">    so this only reverts what was just made.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">root</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="s2">&quot;root&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">root</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+
+        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">ignore_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;GENRE_STATUSES&quot;</span><span class="p">,</span>
     <span class="s2">&quot;Genre&quot;</span><span class="p">,</span>
@@ -727,6 +864,11 @@
     <span class="s2">&quot;genre_initializers&quot;</span><span class="p">,</span>
     <span class="s2">&quot;register_genre_initializer&quot;</span><span class="p">,</span>
     <span class="s2">&quot;initialize_genre&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;GenreProjectFactory&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;genre_project_factories&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;register_genre_project_factory&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;has_genre_project_factory&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;create_genre_project&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 </pre></div>
 
