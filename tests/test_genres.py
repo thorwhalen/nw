@@ -26,6 +26,10 @@ from nw.genres import (
     genre_initializers,
     register_genre_initializer,
     initialize_genre,
+    genre_project_factories,
+    register_genre_project_factory,
+    has_genre_project_factory,
+    create_genre_project,
 )
 
 
@@ -507,3 +511,113 @@ def test_register_genre_initializer_validates_slug_type_and_conflict(
     register_genre_initializer("dup_init", lambda g, t, p, params: None)
     with pytest.raises(Exception):  # xdol RegistryConflict (on_conflict="error")
         register_genre_initializer("dup_init", lambda g, t, p, params: None)
+
+
+# --- genre project-factory registry (braidio#18) ---------------------------
+
+
+@pytest.fixture
+def clean_factories():
+    """Snapshot + restore the genre + project-factory + initializer registries."""
+    snaps = [
+        (genres, dict(genres)),
+        (genre_project_factories, dict(genre_project_factories)),
+        (genre_initializers, dict(genre_initializers)),
+    ]
+    try:
+        yield
+    finally:
+        for reg, before in snaps:
+            for key in list(reg.keys()):
+                del reg[key]
+            for key, value in before.items():
+                reg.register(key, value)
+
+
+def test_create_genre_project_orchestrates_resolve_factory_initialize(clean_factories):
+    register_genre(_av_genre(slug="pf_disp"))  # params {format_id} from templates
+    seen = {}
+    seeded = {}
+
+    def _factory(caller, project_id, *, title, template, params):
+        seen.update(caller=caller, project_id=project_id, title=title, params=params)
+        return {"project": None, "project_id": project_id, "title": title}
+
+    register_genre_project_factory("pf_disp", _factory)
+    register_genre_initializer(
+        "pf_disp", lambda g, t, p, params: seeded.update(params=params)
+    )
+    out = create_genre_project(
+        "pf_disp", "u@x.com", "myproj", title="My Proj", template="duo"
+    )
+    assert seen == {
+        "caller": "u@x.com", "project_id": "myproj",
+        "title": "My Proj", "params": {"format_id": "duo"},
+    }
+    assert seeded == {"params": {"format_id": "duo"}}  # initializer ran
+    # returns the factory info (minus the live project) + the resolved envelope
+    assert out == {
+        "project_id": "myproj", "title": "My Proj",
+        "genre": "pf_disp", "template": "duo", "params": {"format_id": "duo"},
+    }
+
+
+def test_create_genre_project_title_defaults_to_project_id(clean_factories):
+    register_genre(_av_genre(slug="pf_title"))
+    got = {}
+    register_genre_project_factory(
+        "pf_title",
+        lambda caller, pid, *, title, template, params: got.update(title=title) or {"project": None},
+    )
+    create_genre_project("pf_title", "u@x.com", "pid1")
+    assert got["title"] == "pid1"
+
+
+def test_create_genre_project_rolls_back_on_initializer_failure(tmp_path, clean_factories):
+    # All-or-nothing: a failing initializer removes the just-created project (root).
+    register_genre(_av_genre(slug="pf_boom"))
+    proj_root = tmp_path / "made"
+    proj_root.mkdir()
+
+    class _Proj:
+        root = str(proj_root)
+
+    register_genre_project_factory(
+        "pf_boom", lambda caller, pid, *, title, template, params: {"project": _Proj()}
+    )
+    register_genre_initializer(
+        "pf_boom", lambda g, t, p, params: (_ for _ in ()).throw(RuntimeError("boom"))
+    )
+    with pytest.raises(RuntimeError, match="boom"):
+        create_genre_project("pf_boom", "u@x.com", "made")
+    assert not proj_root.exists()  # rolled back
+
+
+def test_create_genre_project_unknown_or_no_factory_raises(clean_factories):
+    with pytest.raises(KeyError):
+        create_genre_project("no_such_genre_xyz", "u@x.com", "p")
+    register_genre(_av_genre(slug="pf_nofactory"))  # registered genre, NO factory
+    with pytest.raises(KeyError, match="no project factory"):
+        create_genre_project("pf_nofactory", "u@x.com", "p")
+
+
+def test_register_genre_project_factory_validates_and_has(clean_factories):
+    with pytest.raises(TypeError):
+        register_genre_project_factory("x", "not callable")  # type: ignore[arg-type]
+    for bad in ("", "  ", "has space"):
+        with pytest.raises(ValueError):
+            register_genre_project_factory(bad, lambda *a, **k: {})
+    assert has_genre_project_factory("pf_absent") is False
+    register_genre_project_factory("pf_present", lambda *a, **k: {"project": None})
+    assert has_genre_project_factory("pf_present") is True
+    with pytest.raises(Exception):  # RegistryConflict
+        register_genre_project_factory("pf_present", lambda *a, **k: {})
+
+
+def test_project_factory_symbols_reexported_on_nw():
+    for name in (
+        "GenreProjectFactory", "genre_project_factories",
+        "register_genre_project_factory", "has_genre_project_factory",
+        "create_genre_project",
+    ):
+        assert hasattr(nw, name), name

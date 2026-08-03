@@ -101,6 +101,11 @@ from .genres import (
     genre_initializers,
     register_genre_initializer,
     initialize_genre,
+    GenreProjectFactory,
+    genre_project_factories,
+    register_genre_project_factory,
+    has_genre_project_factory,
+    create_genre_project,
 )
 from .schema import (
     SCHEMA_VERSION,
@@ -143,6 +148,11 @@ __all__ = [
     "genre_initializers",
     "register_genre_initializer",
     "initialize_genre",
+    "GenreProjectFactory",
+    "genre_project_factories",
+    "register_genre_project_factory",
+    "has_genre_project_factory",
+    "create_genre_project",
     "Project",
     "ProjectGraph",
     "ProjectSpec",

@@ -543,6 +543,132 @@ def initialize_genre(
         genre_initializers[genre](g, template, project, dict(params))
 
 
+# ---------------------------------------------------------------------------
+# Genre PROJECT FACTORIES — the *create* half of the genre→project contract, for
+# PLUGGED-IN genres (ones a host aggregates but does not natively own).
+#
+# resolve_genre (params) + initialize_genre (seed) assume the host already HAS a
+# project to seed. But when a host (e.g. an MCP connector) aggregates a genre owned by
+# ANOTHER app — reelee hosting braidio's ``commentary_weave`` — it can't build that
+# genre's project itself (a braidio project lives in the owning app's per-user
+# workspace, not a reelee sibling folder). A project factory lets the owning app supply
+# "create a fresh project for this genre in the CALLER's own space", so a host can offer
+# ``create_project(genre)`` for any plugged-in genre without knowing its storage. A
+# host's OWN genres (which it places itself) do NOT use this registry.
+# ---------------------------------------------------------------------------
+
+#: A genre project factory: ``(caller, project_id, *, title, template, params) -> dict``.
+#: Creates a NEW project for a plugged-in ``genre`` in ``caller``'s own (e.g. email-keyed)
+#: space and returns info including ``{"project": <created project>, ...}`` — see
+#: :func:`create_genre_project` (which seeds it then strips the live object from the JSON
+#: result). **Contract:** confine creation to the caller's own space (so a host can offer
+#: it multi-tenant safely); a host-tenancy genre does NOT register here.
+GenreProjectFactory = Callable[..., dict]
+
+#: Registry of per-genre project factories, keyed by genre slug (the owning app registers).
+genre_project_factories: Registry = Registry(
+    name="nw.genre_project_factories", on_conflict="error"
+)
+
+
+def register_genre_project_factory(
+    slug: str, factory: "GenreProjectFactory"
+) -> "GenreProjectFactory":
+    """Register a project factory for a genre slug; returns it for inline use.
+
+    Called by the genre's **owning app** so a host that aggregates the genre can create
+    its projects via :func:`create_genre_project` without knowing its storage. See
+    :data:`GenreProjectFactory` for the signature + the caller-space contract.
+
+    >>> _ = register_genre(Genre(slug="_pf_demo", title="Demo",
+    ...                          defaults={"format_id": "solo"}))
+    >>> made = {}
+    >>> def _f(caller, project_id, *, title, template, params):
+    ...     made.update(caller=caller, project_id=project_id, params=params)
+    ...     return {"project": None, "project_id": project_id}
+    >>> _ = register_genre_project_factory("_pf_demo", _f)
+    >>> create_genre_project("_pf_demo", "u@x.com", "p1")["project_id"]
+    'p1'
+    >>> (made["caller"], made["params"])
+    ('u@x.com', {'format_id': 'solo'})
+    >>> del genres["_pf_demo"]; del genre_project_factories["_pf_demo"]
+    """
+    _validate_slug(slug, what="genre project factory")
+    if not callable(factory):
+        raise TypeError(
+            "register_genre_project_factory expects a callable, got "
+            f"{type(factory).__name__}"
+        )
+    genre_project_factories.register(slug, factory)
+    return factory
+
+
+def has_genre_project_factory(slug: str) -> bool:
+    """True iff a plugged-in project factory is registered for ``slug``."""
+    return slug in genre_project_factories
+
+
+def create_genre_project(
+    genre: str,
+    caller: str,
+    project_id: str,
+    *,
+    title: Optional[str] = None,
+    template: Optional[str] = None,
+) -> dict:
+    """Create + seed a new project for a PLUGGED-IN ``genre`` in ``caller``'s space.
+
+    The *create*-counterpart to :func:`resolve_genre` (params) + :func:`initialize_genre`
+    (seed): resolve → the genre's factory (create in the caller's space) → initialize.
+    **All-or-nothing** — if seeding fails the just-created project is rolled back (its
+    folder removed) and the error re-raised. Returns the factory's JSON-able info (minus
+    the live ``project``) plus the resolved ``{genre, template, params}`` envelope, so the
+    caller can immediately address the new project (e.g. by ``project_id``).
+
+    Raises :class:`KeyError` on an unknown genre/template, or a genre with no registered
+    factory (a host's own genre is created by the host, not via this path).
+    """
+    if genre not in genre_project_factories:
+        known = sorted(genre_project_factories.keys())
+        raise KeyError(
+            f"genre {genre!r} has no project factory (registered: {known}); a host's "
+            "own genres are created by the host, not via create_genre_project."
+        )
+    envelope = resolve_genre(genre, template)  # validates genre + template
+    params = envelope["params"]
+    info = genre_project_factories[genre](
+        caller, project_id, title=title or project_id, template=template, params=params
+    )
+    project = info.get("project") if isinstance(info, dict) else None
+    try:
+        initialize_genre(genre, project, template=template, params=params)
+    except Exception:
+        _rollback_project(project)  # all-or-nothing: leave no half-built orphan
+        raise
+    result = (
+        {k: v for k, v in info.items() if k != "project"}
+        if isinstance(info, dict)
+        else {}
+    )
+    result["genre"] = genre
+    result["template"] = template
+    result["params"] = params
+    return result
+
+
+def _rollback_project(project) -> None:
+    """Best-effort delete of a just-created project after a failed seed (all-or-nothing).
+
+    Removes ``project.root`` if present — the factory creates in the caller's own space,
+    so this only reverts what was just made.
+    """
+    root = getattr(project, "root", None)
+    if root is not None:
+        import shutil
+
+        shutil.rmtree(root, ignore_errors=True)
+
+
 __all__ = [
     "GENRE_STATUSES",
     "Genre",
@@ -563,4 +689,9 @@ __all__ = [
     "genre_initializers",
     "register_genre_initializer",
     "initialize_genre",
+    "GenreProjectFactory",
+    "genre_project_factories",
+    "register_genre_project_factory",
+    "has_genre_project_factory",
+    "create_genre_project",
 ]
