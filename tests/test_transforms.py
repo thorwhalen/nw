@@ -10,6 +10,7 @@ network: ``still`` with an anchor produces a zero-call Plan.
 
 from __future__ import annotations
 
+import importlib
 import struct
 import uuid
 from shutil import which
@@ -381,3 +382,111 @@ def test_adapter_still_full_round_trip_offline(tmp_path):
     assert persisted[0].body["shot_id"] == "s01"
     # Provenance edge shot → render-result is intact for freshness traversal.
     assert inputs.primary[0].id in persisted[0].provenance.was_derived_from
+
+
+# ---------------------------------------------------------------------------
+# BaseTransform.execute length invariant (nw#25 step 1)
+# ---------------------------------------------------------------------------
+
+
+def _skel(n: int):
+    """n minimal skeleton annotations."""
+    from lacing import Annotation, MediaRef, Provenance, RationalTime, TimeInterval
+
+    iv = TimeInterval(RationalTime(0), RationalTime(24000))
+    prov = Provenance(
+        was_generated_by="transform:t@1",
+        was_attributed_to="agent:test",
+        was_derived_from=[],
+        generated_at_time=RationalTime.now(),
+        activity="derive",
+    )
+    return tuple(
+        Annotation(
+            id=uuid.uuid4(),
+            tier="t",
+            reference=MediaRef(asset_id="a" * 64, interval=iv),
+            body={"i": i},
+            body_schema_uri="annot://schema/shot/v1",
+            provenance=prov,
+        )
+        for i in range(n)
+    )
+
+
+def _plan(n: int):
+    from falaw import CallPlan, Plan
+
+    return Plan(
+        calls=tuple(
+            CallPlan(
+                tool="generate_image",
+                application="test/app",
+                arguments={"i": i},
+                output_kind="image",
+            )
+            for i in range(n)
+        )
+    )
+
+
+def test_execute_refuses_a_skeleton_plan_length_mismatch():
+    """The zip would drop the surplus skeleton silently; refuse instead.
+
+    Raised BEFORE execute_plan, so the mismatch costs nothing: a Transform
+    whose plan and skeleton disagree must not bill first and lose the result
+    afterwards.
+    """
+    with pytest.raises(ValueError, match="2 calls but skeleton has 3"):
+        BaseTransform().execute(None, _plan(2), _skel(3))
+
+    with pytest.raises(ValueError, match="3 calls but skeleton has 2"):
+        BaseTransform().execute(None, _plan(3), _skel(2))
+
+
+def test_execute_length_check_precedes_any_spending(monkeypatch):
+    """Nothing is executed when the invariant fails."""
+    # `nw.transforms` the ATTRIBUTE is the Registry, not the module —
+    # import_module is the only way to reach the module object here.
+    _t = importlib.import_module("nw.transforms")
+
+    called = []
+    monkeypatch.setattr(_t, "execute_plan", lambda *a, **k: called.append(1) or [])
+    with pytest.raises(ValueError):
+        BaseTransform().execute(None, _plan(1), _skel(2))
+    assert called == []
+
+
+def test_execute_accepts_a_matching_skeleton_and_plan(monkeypatch):
+    """The guard does not fire on the normal 1:1 case."""
+    # `nw.transforms` the ATTRIBUTE is the Registry, not the module —
+    # import_module is the only way to reach the module object here.
+    _t = importlib.import_module("nw.transforms")
+    from lacing import Artifact
+
+    skeleton = _skel(2)
+    artifacts = [
+        Artifact(
+            asset_id=chr(ord("b") + i) * 64,
+            kind="image",
+            bytes_size=1,
+            provenance=skeleton[i].provenance,
+        )
+        for i in range(2)
+    ]
+    monkeypatch.setattr(_t, "execute_plan", lambda *a, **k: artifacts)
+
+    class _Graph:
+        def __init__(self):
+            self.written = []
+
+        def add_annotation(self, ann):
+            self.written.append(ann)
+
+    class _Project:
+        graph = _Graph()
+
+    project = _Project()
+    result = BaseTransform().execute(project, _plan(2), skeleton)
+    assert len(result.annotations) == 2
+    assert len(project.graph.written) == 2
