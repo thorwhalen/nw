@@ -27,7 +27,9 @@ nw.register_genre(
 
 nw.list_genres()  # ['slideshow']
 nw.genre_catalog()  # JSON-able: what a CLI / HTTP route / MCP tool serves
-nw.resolve_genre("slideshow", "lecture")  # {'genre': ..., 'template': ..., 'params': {...}}
+nw.resolve_genre(
+    "slideshow", "lecture"
+)  # {'genre': ..., 'template': ..., 'params': {...}}
 ```
 
 ## Install
