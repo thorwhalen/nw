@@ -233,3 +233,56 @@ def test_spec_round_trips_through_disk(tmp_path):
     proj.write_spec(spec_in)
     spec_out = proj.read_spec()
     assert spec_out == spec_in
+
+
+# --- character stable attributes survive spec round-trips (nw#5) -------------
+
+
+def _enriched(name: str = "thor") -> CharacterRef:
+    return CharacterRef(
+        name=name,
+        description="the narrator",
+        reference_image_urls=("https://example.invalid/thor.png",),
+        costume="grey tweed jacket, green flat cap",
+        age="late 50s",
+        default_setting="frozen_belltower",
+        distinguishing_features=("left eye scar",),
+        palette_anchors=("#8899aa",),
+        do_not_do=("no shamrocks",),
+    )
+
+
+def test_character_stable_attributes_round_trip_through_the_graph(tmp_path):
+    proj = Project.init(tmp_path / "p", title="p")
+    proj.update_spec(characters=(_enriched(),))
+
+    got = Project(proj.root).read_spec().character("thor")
+    assert got == _enriched()
+
+
+def test_unrelated_spec_update_does_not_erase_character_attributes(tmp_path):
+    """The regression this guards: write_spec rebuilds every character-ref body
+    from the spec-level CharacterRef, so a field that exists only on the body is
+    wiped by the next update_spec — however unrelated that update is."""
+    proj = Project.init(tmp_path / "p", title="p")
+    proj.update_spec(characters=(_enriched(),))
+
+    proj.set_title("a completely unrelated change")
+
+    got = Project(proj.root).read_spec().character("thor")
+    assert got.costume == "grey tweed jacket, green flat cap"
+    assert got.do_not_do == ("no shamrocks",)
+    assert got.palette_anchors == ("#8899aa",)
+    assert got.reference_image_urls == ("https://example.invalid/thor.png",)
+
+
+def test_re_adding_a_character_updates_description_only(tmp_path):
+    proj = Project.init(tmp_path / "p", title="p")
+    proj.update_spec(characters=(_enriched(),))
+
+    proj.add_character("thor", description="revised")
+
+    got = Project(proj.root).read_spec().character("thor")
+    assert got.description == "revised"
+    assert got.costume == "grey tweed jacket, green flat cap"
+    assert got.do_not_do == ("no shamrocks",)

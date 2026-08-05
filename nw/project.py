@@ -277,8 +277,7 @@ class Project:
             for s in self.graph.shots()
         )
         characters = tuple(
-            CharacterRef(name=c.body.name, description=c.body.description)
-            for c in self.graph.character_refs()
+            _character_ref_of_body(c.body) for c in self.graph.character_refs()
         )
         environments = tuple(
             EnvironmentRef(name=e.body.name, description=e.body.description)
@@ -334,9 +333,7 @@ class Project:
                     if isinstance(ann.body, dict) and ann.body.get("name") not in names:
                         store.remove(ann.id)
         for ch in refs:
-            self.graph.upsert_character_ref(
-                CharacterRefBodyV1(name=ch.name, description=ch.description)
-            )
+            self.graph.upsert_character_ref(_character_ref_body_of(ch))
 
     def _sync_environment_refs(self, refs: tuple[EnvironmentRef, ...]) -> None:
         names = {r.name for r in refs}
@@ -470,13 +467,24 @@ class Project:
         return self.root / "characters" / name
 
     def add_character(self, name: str, *, description: str = "") -> CharacterRef:
-        """Add a character (idempotent: re-adds update the description)."""
+        """Add a character (idempotent: re-adds update the description).
+
+        Re-adding updates *only* the description: any stable attributes
+        already recorded on the character (costume, palette anchors,
+        ``do_not_do`` …) are carried over, so calling this again is not a
+        way to lose them.
+        """
         d = self.character_dir(name)
         d.mkdir(parents=True, exist_ok=True)
         (d / "refs").mkdir(exist_ok=True)
         (d / "selected").mkdir(exist_ok=True)
-        ref = CharacterRef(name=name, description=description)
         spec = self.read_spec()
+        existing = next((c for c in spec.characters if c.name == name), None)
+        ref = (
+            existing.model_copy(update={"description": description})
+            if existing is not None
+            else CharacterRef(name=name, description=description)
+        )
         chars = tuple(c for c in spec.characters if c.name != name) + (ref,)
         self.update_spec(characters=chars)
         # Initialize a card.json so set_character_anchor / list_character_images
@@ -723,6 +731,37 @@ def _json_docs(root: str | Path):
 
 def _write_spec(root: Path, spec: ProjectSpec) -> None:
     _json_docs(root)[_PROJECT_FILE_NAME] = json.loads(spec.model_dump_json())
+
+
+# -- character-ref: the one mapping between the spec type and the graph body --
+#
+# ``CharacterRef`` (nw.schema) and ``CharacterRefBodyV1`` (nw.bodies) carry the
+# same fields; read_spec/write_spec convert between them on every spec update.
+# Keeping both directions in one place is what stops a field added to one from
+# being silently dropped by the other — the failure ``reference_image_urls``
+# used to have.
+
+_CHARACTER_REF_FIELDS = (
+    "name",
+    "description",
+    "reference_image_urls",
+    "costume",
+    "age",
+    "default_setting",
+    "distinguishing_features",
+    "palette_anchors",
+    "do_not_do",
+)
+
+
+def _character_ref_of_body(body: CharacterRefBodyV1) -> CharacterRef:
+    """Graph body → the spec-level :class:`CharacterRef` (lossless)."""
+    return CharacterRef(**{f: getattr(body, f) for f in _CHARACTER_REF_FIELDS})
+
+
+def _character_ref_body_of(ref: CharacterRef) -> CharacterRefBodyV1:
+    """Spec-level :class:`CharacterRef` → the graph body (lossless)."""
+    return CharacterRefBodyV1(**{f: getattr(ref, f) for f in _CHARACTER_REF_FIELDS})
 
 
 def _probe_audio(path: Path) -> dict:

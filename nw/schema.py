@@ -97,12 +97,29 @@ class ShotSpec(BaseModel):
 
 
 class CharacterRef(BaseModel):
-    """Pointer to a character folder under ``characters/<name>/``."""
+    """Pointer to a character folder under ``characters/<name>/``.
+
+    The stable-attribute fields mirror
+    :class:`nw.bodies.CharacterRefBodyV1` field-for-field, and that is
+    load-bearing rather than cosmetic: :meth:`nw.Project.read_spec` builds
+    a ``CharacterRef`` from the graph body and
+    :meth:`nw.Project.write_spec` writes the body back from the
+    ``CharacterRef``. Any field present on the body but missing here is
+    **silently erased** by the next ``update_spec`` — which is what used to
+    happen to ``reference_image_urls``. Add a field to one, add it to both.
+    """
 
     model_config = {"extra": "ignore"}
 
     name: str
     description: str = ""
+    reference_image_urls: tuple[str, ...] = ()
+    costume: str = ""
+    age: str = ""
+    default_setting: str = ""
+    distinguishing_features: tuple[str, ...] = ()
+    palette_anchors: tuple[str, ...] = ()
+    do_not_do: tuple[str, ...] = ()
 
 
 class EnvironmentRef(BaseModel):
