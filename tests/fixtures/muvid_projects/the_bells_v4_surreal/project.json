@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "title": "the_bells_v4_surreal",
+  "song": {
+    "audio_path": "song/the_bells_sample.wav",
+    "duration_s": 8.021333,
+    "sample_rate": 48000,
+    "bitrate": 1536171,
+    "bpm": null
+  },
+  "characters": [
+    {
+      "name": "thor",
+      "description": "Thor \u2014 the singer/narrator. Adult man, contemplative gaze, present and grounded. Aesthetic: wintry/poetic/noir palette (cool silvers, deep blues, candlelight warmth). Mood: introspective, listening to bells in the frozen night."
+    }
+  ],
+  "environments": [
+    {
+      "name": "silver_bells",
+      "description": "Extreme close-up of antique silver bells, hanging in cold air. Frost rimes the bell shoulders. Slight pendulum motion frozen in time. Black background, dramatic chiaroscuro, single cold light from above. Surreal, painterly."
+    },
+    {
+      "name": "frozen_branches",
+      "description": "Black bare tree branches encrusted in ice and snow, against a dark indigo sky. Tiny ice crystals catch starlight. The branches form a delicate, almost glass-like structure. No people, no buildings. Surreal painterly stillness."
+    }
+  ],
+  "sections": [
+    {
+      "id": "verse",
+      "start_s": 0.0,
+      "end_s": 8.0,
+      "label": "verse",
+      "energy": "",
+      "mood": ""
+    }
+  ],
+  "shots": [
+    {
+      "id": "s01",
+      "start_s": 0.0,
+      "end_s": 2.0,
+      "section_id": "verse",
+      "render_strategy": "image_to_video",
+      "environment": "silver_bells",
+      "characters": [],
+      "description": "Antique silver bells in deep darkness, frost on their shoulders, the faintest sway as if breathed on by cold air.",
+      "camera": "barely-there sway",
+      "framing": "extreme close-up",
+      "notes": ""
+    },
+    {
+      "id": "s02",
+      "start_s": 2.0,
+      "end_s": 4.0,
+      "section_id": "verse",
+      "render_strategy": "lipsync",
+      "environment": "",
+      "characters": [
+        "thor"
+      ],
+      "description": "Thor's face against black, lit cold from above. He begins the line: \"Hear the silver bells in the frozen air...\" Mouth motion only; the rest of him is still as stone.",
+      "camera": "locked",
+      "framing": "tight close-up, eyes-and-mouth",
+      "notes": ""
+    },
+    {
+      "id": "s03",
+      "start_s": 4.0,
+      "end_s": 6.0,
+      "section_id": "verse",
+      "render_strategy": "image_to_video",
+      "environment": "frozen_branches",
+      "characters": [],
+      "description": "Black ice-encrusted branches against indigo night, ice crystals catching starlight. Almost glass, almost lace. The slow rotation suggests we are turning beneath them.",
+      "camera": "very slow rotation",
+      "framing": "medium, looking up through the branches",
+      "notes": ""
+    },
+    {
+      "id": "s04",
+      "start_s": 6.0,
+      "end_s": 8.0,
+      "section_id": "verse",
+      "render_strategy": "lipsync",
+      "environment": "",
+      "characters": [
+        "thor"
+      ],
+      "description": "Cut back to Thor as he finishes the line: \"...how they tinkle and tinkle through the night.\" His expression has shifted \u2014 quieter, more haunted.",
+      "camera": "locked",
+      "framing": "medium close-up",
+      "notes": ""
+    }
+  ],
+  "global_style": "",
+  "notes": ""
+}

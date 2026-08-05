@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "title": "the_bells_v2_establish",
+  "song": {
+    "audio_path": "song/the_bells_sample.wav",
+    "duration_s": 8.021333,
+    "sample_rate": 48000,
+    "bitrate": 1536171,
+    "bpm": null
+  },
+  "characters": [
+    {
+      "name": "thor",
+      "description": "Thor \u2014 the singer/narrator. Adult man, contemplative gaze, present and grounded. Aesthetic: wintry/poetic/noir palette (cool silvers, deep blues, candlelight warmth). Mood: introspective, listening to bells in the frozen night."
+    }
+  ],
+  "environments": [
+    {
+      "name": "frozen_belltower",
+      "description": "A snowy Gothic bell tower at night, silver bells just visible inside the arch. Bare frozen branches in the foreground. Cold blue moonlight, breath of mist. Painterly, slightly haunted, Poe-esque. Cinematic 16:9."
+    }
+  ],
+  "sections": [
+    {
+      "id": "verse",
+      "start_s": 0.0,
+      "end_s": 8.0,
+      "label": "verse",
+      "energy": "",
+      "mood": ""
+    }
+  ],
+  "shots": [
+    {
+      "id": "s01",
+      "start_s": 0.0,
+      "end_s": 3.0,
+      "section_id": "verse",
+      "render_strategy": "image_to_video",
+      "environment": "frozen_belltower",
+      "characters": [],
+      "description": "The frozen bell tower at night. Silver bells glint inside the arch. Snowflakes drift. Slow push toward the bells. No people in frame.",
+      "camera": "slow push-in",
+      "framing": "wide",
+      "notes": ""
+    },
+    {
+      "id": "s02",
+      "start_s": 3.0,
+      "end_s": 8.0,
+      "section_id": "verse",
+      "render_strategy": "lipsync",
+      "environment": "",
+      "characters": [
+        "thor"
+      ],
+      "description": "Cut to Thor against the dark backdrop. He sings the latter half of the line with quiet intensity: \"...how they tinkle and tinkle through the night.\" His breath is faintly visible.",
+      "camera": "locked",
+      "framing": "medium close-up",
+      "notes": ""
+    }
+  ],
+  "global_style": "",
+  "notes": ""
+}
