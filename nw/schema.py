@@ -235,3 +235,107 @@ class ProjectSummary(BaseModel):
         if self.has_final_compose:
             out.append("compose")
         return out
+
+
+# ---------------------------------------------------------------------------
+# Session resumption — "where we left off"
+# ---------------------------------------------------------------------------
+
+
+class DecisionEntry(BaseModel):
+    """One entry of a project's decision log, flattened for display."""
+
+    model_config = {"extra": "ignore"}
+
+    kind: str
+    at: Optional[str] = Field(
+        None,
+        description=(
+            "ISO-8601 UTC timestamp from the annotation's "
+            "``provenance.generated_at_time``. ``None`` when the decision "
+            "predates provenance timestamps."
+        ),
+    )
+    payload: dict = Field(default_factory=dict)
+
+
+class ResumptionBrief(BaseModel):
+    """A "where we left off" snapshot, returned by :meth:`nw.Project.resumption_brief`.
+
+    Pure data: no fal calls, no LLM, no network. reelee renders it as prose
+    and injects it as the first tool-result of a session.
+
+    **The field names are chosen to be honest about what nw can currently
+    measure**, because a confidently wrong number is worse than no number:
+
+    - :attr:`downstream_of_last_change` is *not* "stale". ``nw.stale_after``
+      is pure provenance reachability — it never compares content or
+      timestamps — so this set includes everything already regenerated
+      since the change. It is an **upper bound** on what needs attention,
+      and it is named for what it measures. When early-cutoff freshness
+      lands, the same call returns a smaller and correct set with no change
+      to this API.
+    - :attr:`total_spend_usd` sums *every* recorded render decision. Nothing
+      records per-branch outcomes yet, so a render that failed after being
+      billed is counted here exactly like one that succeeded. Also an upper
+      bound.
+
+    :attr:`caveats` carries those qualifications as data — so a consumer
+    renders them next to the numbers instead of rediscovering them.
+    """
+
+    model_config = {"extra": "ignore"}
+
+    title: str
+    root: str
+
+    last_session_at: Optional[str] = Field(
+        None, description="ISO-8601 UTC time of the most recent graph write."
+    )
+    gap_seconds: Optional[float] = Field(
+        None, description="Seconds between ``last_session_at`` and now."
+    )
+
+    recent_decisions: tuple[DecisionEntry, ...] = ()
+
+    downstream_of_last_change: tuple[str, ...] = Field(
+        default_factory=tuple,
+        description=(
+            "Annotation ids reachable from the most recent content change "
+            "via ``was_derived_from``. Reachability, not staleness — an "
+            "upper bound. See the class docstring."
+        ),
+    )
+    last_change_id: Optional[str] = Field(
+        None,
+        description=(
+            "The annotation ``downstream_of_last_change`` was walked from — "
+            "the most recently generated non-decision annotation."
+        ),
+    )
+
+    total_spend_usd: float = Field(
+        0.0,
+        description=(
+            "Sum over recorded render-decision cost payloads. Includes "
+            "renders that were billed and then failed — an upper bound."
+        ),
+    )
+
+    unrendered_shot_ids: tuple[str, ...] = ()
+
+    suggested_next: tuple[str, ...] = Field(
+        default_factory=tuple,
+        description="Deterministic next-action hints, most actionable first.",
+    )
+    caveats: tuple[str, ...] = Field(
+        default_factory=tuple,
+        description=(
+            "Known imprecisions in *this* brief, emitted only when the "
+            "number they qualify is non-zero."
+        ),
+    )
+
+    @property
+    def downstream_count(self) -> int:
+        return len(self.downstream_of_last_change)

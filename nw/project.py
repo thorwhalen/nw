@@ -67,14 +67,16 @@ from .bodies import (
     SectionBodyV1,
     ShotBodyV1,
 )
-from .graph import ProjectGraph
-from .migrate import is_migrated, migrate_to_graph
+from .graph import ProjectGraph, descendants_of, iter_all_annotations
+from .migrate import _TIER_DECISION, is_migrated, migrate_to_graph
 from .schema import (
     SCHEMA_VERSION,
     CharacterRef,
+    DecisionEntry,
     EnvironmentRef,
     ProjectSpec,
     ProjectSummary,
+    ResumptionBrief,
     SectionSpec,
     ShotSpec,
     SongInfo,
@@ -700,6 +702,89 @@ class Project:
             has_final_compose=(self.root / "output" / "final.mp4").exists(),
         )
 
+    # -- session resumption -------------------------------------------------
+
+    def total_spend_usd(self) -> float:
+        """Sum the cost recorded on every decision in the project graph.
+
+        Prefers each decision's *actual* per-artifact ``cost_usd`` and falls
+        back to its ``total_estimated_cost_usd`` when no artifact costs were
+        recorded.
+
+        **This is an upper bound on money usefully spent.** A render that was
+        billed and then failed is recorded exactly like one that succeeded,
+        because nothing in the execution layer records a per-branch outcome
+        yet. When failure isolation lands, this should sum over the *produced*
+        branches only — and this method is the one place that changes.
+        """
+        return sum(_decision_spend_usd(d.body.payload) for d in self.graph.decisions())
+
+    def resumption_brief(self, *, recent: int = 10) -> ResumptionBrief:
+        """Return a "where we left off" snapshot for the start of a session.
+
+        Pure data, fully offline: a decision-log tail, what is reachable
+        downstream of the last change, recorded spend, and a deterministic
+        list of suggested next actions. reelee renders it as prose and
+        injects it as the opening context of a session.
+
+        Read :class:`~nw.schema.ResumptionBrief` before trusting the numbers —
+        two of them are upper bounds, and the brief says so in
+        :attr:`~nw.schema.ResumptionBrief.caveats` rather than only in a
+        docstring.
+
+        Args:
+            recent: How many decision-log entries to include, most recent last.
+        """
+        spec = self.read_spec()
+        annotations = list(iter_all_annotations(self.root))
+
+        # Stable ordering: sort by generation time, ties broken by write order.
+        indexed = sorted(
+            enumerate(annotations),
+            key=lambda pair: (pair[1].provenance.generated_at_time.to_seconds(), pair[0]),
+        )
+
+        last_session_at, gap_seconds = _last_touched(indexed)
+        decisions = tuple(
+            DecisionEntry(
+                kind=ann.body.get("kind", ""),
+                at=_iso_utc(ann.provenance.generated_at_time),
+                payload=ann.body.get("payload") or {},
+            )
+            for _, ann in indexed
+            if ann.tier == _TIER_DECISION and isinstance(ann.body, dict)
+        )[-recent:]
+
+        last_change = next(
+            (ann for _, ann in reversed(indexed) if ann.tier != _TIER_DECISION), None
+        )
+        downstream: tuple[str, ...] = ()
+        if last_change is not None:
+            downstream = tuple(
+                str(a.id) for a in descendants_of(self.root, last_change.id)
+            )
+
+        unrendered = tuple(
+            shot.id
+            for shot in spec.shots
+            if not (self.shot_dir(shot.id) / "output.mp4").exists()
+        )
+        spend = self.total_spend_usd()
+
+        return ResumptionBrief(
+            title=spec.title,
+            root=str(self.root),
+            last_session_at=last_session_at,
+            gap_seconds=gap_seconds,
+            recent_decisions=decisions,
+            downstream_of_last_change=downstream,
+            last_change_id=str(last_change.id) if last_change is not None else None,
+            total_spend_usd=spend,
+            unrendered_shot_ids=unrendered,
+            suggested_next=_suggested_next(self, spec, unrendered, downstream),
+            caveats=_brief_caveats(downstream=downstream, spend=spend),
+        )
+
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -752,6 +837,110 @@ _CHARACTER_REF_FIELDS = (
     "palette_anchors",
     "do_not_do",
 )
+
+
+def _iso_utc(rt) -> str:
+    """A lacing ``RationalTime`` wall clock → an ISO-8601 UTC string."""
+    return datetime.fromtimestamp(rt.to_seconds(), tz=timezone.utc).isoformat()
+
+
+def _last_touched(indexed) -> tuple[Optional[str], Optional[float]]:
+    """``(iso_timestamp, seconds_since)`` of the most recent graph write."""
+    if not indexed:
+        return None, None
+    newest = indexed[-1][1].provenance.generated_at_time
+    at = datetime.fromtimestamp(newest.to_seconds(), tz=timezone.utc)
+    return at.isoformat(), max(0.0, (datetime.now(timezone.utc) - at).total_seconds())
+
+
+def _decision_spend_usd(payload: dict[str, Any]) -> float:
+    """Money recorded on one decision payload, actual costs preferred."""
+    artifacts = payload.get("artifacts")
+    if isinstance(artifacts, list):
+        costs = [
+            a["cost_usd"]
+            for a in artifacts
+            if isinstance(a, dict) and isinstance(a.get("cost_usd"), (int, float))
+        ]
+        if costs:
+            return float(sum(costs))
+    estimated = payload.get("total_estimated_cost_usd")
+    return float(estimated) if isinstance(estimated, (int, float)) else 0.0
+
+
+def _brief_caveats(*, downstream: tuple[str, ...], spend: float) -> tuple[str, ...]:
+    """The qualifications that apply to *this* brief, as renderable data.
+
+    Emitted only when the number they qualify is non-zero, so a fresh project
+    carries none — and each string is deleted by the change that makes it
+    false, rather than living on in a docstring nobody renders.
+    """
+    out: list[str] = []
+    if downstream:
+        out.append(
+            f"{len(downstream)} items are downstream of the last change by "
+            "provenance reachability. That is an upper bound on what needs "
+            "attention: nothing is compared, so anything already regenerated "
+            "since is still counted."
+        )
+        out.append(
+            "It can also under-report: replacing a character or environment "
+            "ref writes a new annotation id, so lineage recorded against the "
+            "previous id is not reachable from the replacement."
+        )
+    if spend:
+        out.append(
+            f"${spend:.2f} is every render decision ever recorded, including "
+            "any that were billed and then failed — no per-branch outcome is "
+            "recorded yet."
+        )
+    return tuple(out)
+
+
+def _suggested_next(
+    project: "Project",
+    spec: ProjectSpec,
+    unrendered: tuple[str, ...],
+    downstream: tuple[str, ...],
+) -> tuple[str, ...]:
+    """Deterministic next-action hints, most actionable first.
+
+    Deliberately a pure function of project state — same project, same
+    suggestions — so a consumer can diff two briefs and an LLM never has to
+    be asked what to do next.
+    """
+    out: list[str] = []
+    if not spec.shots and not spec.characters and spec.song is None:
+        return ("Empty project — register a song or import a script to start.",)
+    if unrendered:
+        out.append(
+            f"{len(unrendered)} of {len(spec.shots)} shots have never been "
+            f"rendered: {', '.join(unrendered[:5])}"
+            + ("…" if len(unrendered) > 5 else "")
+        )
+    if downstream:
+        out.append(
+            f"Up to {len(downstream)} items are downstream of the last change "
+            "— review or regenerate them."
+        )
+    anchorless = tuple(
+        c.name for c in spec.characters if not _character_has_anchor(project, c.name)
+    )
+    if anchorless:
+        out.append(
+            "No reference image locked for: " + ", ".join(sorted(anchorless))
+        )
+    return tuple(out)
+
+
+def _character_has_anchor(project: "Project", name: str) -> bool:
+    """True when the character's card names an anchor image that exists."""
+    try:
+        card = project.read_character_card(name)
+    except FileNotFoundError:
+        return False
+    rel = card.get("reference_image_path") or ""
+    return bool(rel) and (project.root / rel).exists()
 
 
 def _character_ref_of_body(body: CharacterRefBodyV1) -> CharacterRef:

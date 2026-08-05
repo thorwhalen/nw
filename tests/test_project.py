@@ -286,3 +286,160 @@ def test_re_adding_a_character_updates_description_only(tmp_path):
     assert got.description == "revised"
     assert got.costume == "grey tweed jacket, green flat cap"
     assert got.do_not_do == ("no shamrocks",)
+
+
+# --- resumption brief (nw#7) -------------------------------------------------
+
+
+def test_resumption_brief_on_empty_project_is_benign(tmp_path):
+    brief = Project.init(tmp_path / "p", title="p").resumption_brief()
+
+    assert brief.title == "p"
+    assert brief.recent_decisions == ()
+    assert brief.downstream_of_last_change == ()
+    assert brief.downstream_count == 0
+    assert brief.last_change_id is None
+    assert brief.last_session_at is None
+    assert brief.gap_seconds is None
+    assert brief.total_spend_usd == 0.0
+    assert brief.caveats == ()
+    assert brief.suggested_next == (
+        "Empty project — register a song or import a script to start.",
+    )
+
+
+def _seeded(tmp_path):
+    proj = Project.init(tmp_path / "p", title="p")
+    proj.update_spec(
+        sections=(SectionSpec(id="verse", start_s=0.0, end_s=8.0, label="verse"),),
+        shots=(
+            ShotSpec(id="s01", start_s=0.0, end_s=4.0, section_id="verse"),
+            ShotSpec(id="s02", start_s=4.0, end_s=8.0, section_id="verse"),
+        ),
+    )
+    return proj
+
+
+def test_resumption_brief_reports_recent_decisions_newest_last(tmp_path):
+    proj = _seeded(tmp_path)
+    proj.log_decision("first_thing", note="a")
+    proj.log_decision("second_thing", note="b")
+
+    brief = proj.resumption_brief()
+    kinds = [d.kind for d in brief.recent_decisions]
+    assert kinds[-2:] == ["first_thing", "second_thing"]
+    assert brief.recent_decisions[-1].payload == {"note": "b"}
+    assert brief.recent_decisions[-1].at is not None
+
+
+def test_resumption_brief_recent_caps_the_decision_tail(tmp_path):
+    proj = _seeded(tmp_path)
+    for i in range(5):
+        proj.log_decision(f"d{i}")
+
+    brief = proj.resumption_brief(recent=2)
+    assert [d.kind for d in brief.recent_decisions] == ["d3", "d4"]
+
+
+def test_resumption_brief_records_last_session_and_gap(tmp_path):
+    proj = _seeded(tmp_path)
+    brief = proj.resumption_brief()
+
+    assert brief.last_session_at is not None
+    assert brief.gap_seconds is not None and brief.gap_seconds >= 0.0
+    assert brief.gap_seconds < 300  # just written
+
+
+def test_resumption_brief_lists_unrendered_shots(tmp_path):
+    proj = _seeded(tmp_path)
+    (proj.shot_dir("s01")).mkdir(parents=True, exist_ok=True)
+    (proj.shot_dir("s01") / "output.mp4").write_bytes(b"")
+
+    brief = proj.resumption_brief()
+    assert brief.unrendered_shot_ids == ("s02",)
+    assert any("1 of 2 shots have never been rendered" in s for s in brief.suggested_next)
+
+
+def test_total_spend_prefers_actual_artifact_cost(tmp_path):
+    proj = _seeded(tmp_path)
+    proj.log_decision(
+        "render_shot",
+        artifacts=[{"cost_usd": 0.25}, {"cost_usd": 0.75}],
+        total_estimated_cost_usd=99.0,
+    )
+    assert proj.total_spend_usd() == pytest.approx(1.0)
+
+
+def test_total_spend_falls_back_to_estimate_when_no_artifact_cost(tmp_path):
+    proj = _seeded(tmp_path)
+    proj.log_decision("render_shot", artifacts=[], total_estimated_cost_usd=0.4)
+    proj.log_decision("set_character_anchor", character="thor")  # no cost keys
+    assert proj.total_spend_usd() == pytest.approx(0.4)
+    assert proj.resumption_brief().total_spend_usd == pytest.approx(0.4)
+
+
+def test_spend_caveat_is_emitted_only_when_money_was_recorded(tmp_path):
+    proj = _seeded(tmp_path)
+    assert not any("billed and then failed" in c for c in proj.resumption_brief().caveats)
+
+    proj.log_decision("render_shot", total_estimated_cost_usd=2.0)
+    caveats = proj.resumption_brief().caveats
+    assert any("billed and then failed" in c for c in caveats)
+
+
+def test_downstream_caveats_are_emitted_when_something_is_downstream(tmp_path):
+    """The brief must not present reachability as staleness."""
+    import uuid as _uuid
+
+    from lacing import Annotation, MediaRef, Provenance, RationalTime, TimeInterval
+
+    proj = _seeded(tmp_path)
+    parent_id = proj.graph.shots()[0].annotation_id
+    iv = TimeInterval(RationalTime(0), RationalTime(24000))
+    child = Annotation(
+        id=_uuid.uuid4(),
+        tier="shot",
+        reference=MediaRef(asset_id=proj.graph.asset_id, interval=iv),
+        body={"shot_id": "derived", "section_id": "verse"},
+        body_schema_uri="annot://schema/shot/v1",
+        provenance=Provenance(
+            was_generated_by="transform:test@1",
+            was_attributed_to="agent:test",
+            was_derived_from=[parent_id],
+            generated_at_time=RationalTime.now(),
+            activity="derive",
+        ),
+    )
+    proj.graph.add_annotation(child)
+
+    # Touch the parent last so it is the "last change" the brief walks from.
+    proj.graph.upsert_shot(
+        proj.graph.shots()[0].body, interval=TimeInterval.from_seconds(0, 4)
+    )
+    brief = proj.resumption_brief()
+
+    if brief.downstream_of_last_change:
+        assert any("upper bound" in c for c in brief.caveats)
+        assert any("under-report" in c for c in brief.caveats)
+    # Whatever the walk returns, it is never silently presented as "stale".
+    assert not hasattr(brief, "stale")
+
+
+def test_resumption_brief_flags_characters_without_an_anchor(tmp_path):
+    proj = _seeded(tmp_path)
+    proj.add_character("thor", description="the narrator")
+
+    brief = proj.resumption_brief()
+    assert any("No reference image locked for: thor" in s for s in brief.suggested_next)
+
+
+def test_resumption_brief_is_deterministic(tmp_path):
+    proj = _seeded(tmp_path)
+    proj.add_character("thor")
+    proj.log_decision("render_shot", total_estimated_cost_usd=1.0)
+
+    a = proj.resumption_brief()
+    b = proj.resumption_brief()
+    assert a.suggested_next == b.suggested_next
+    assert a.caveats == b.caveats
+    assert a.downstream_of_last_change == b.downstream_of_last_change
