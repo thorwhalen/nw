@@ -741,7 +741,10 @@ class Project:
         # Stable ordering: sort by generation time, ties broken by write order.
         indexed = sorted(
             enumerate(annotations),
-            key=lambda pair: (pair[1].provenance.generated_at_time.to_seconds(), pair[0]),
+            key=lambda pair: (
+                pair[1].provenance.generated_at_time.to_seconds(),
+                pair[0],
+            ),
         )
 
         last_session_at, gap_seconds = _last_touched(indexed)
@@ -927,9 +930,7 @@ def _suggested_next(
         c.name for c in spec.characters if not _character_has_anchor(project, c.name)
     )
     if anchorless:
-        out.append(
-            "No reference image locked for: " + ", ".join(sorted(anchorless))
-        )
+        out.append("No reference image locked for: " + ", ".join(sorted(anchorless)))
     return tuple(out)
 
 
