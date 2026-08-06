@@ -495,7 +495,7 @@ Places where the substrate currently promises less than it looks like it does:
   you want it ([#7](https://github.com/thorwhalen/nw/issues/7)).
 - **A removed annotation leaves its verifying trace behind.** Orphan traces are
   inert — they are indexed by a target id that no longer resolves — but nothing
-  collects them yet ([#35](https://github.com/thorwhalen/nw/issues/35)).
+  collects them yet ([#36](https://github.com/thorwhalen/nw/issues/36)).
 - **`BaseTransform.execute` has no failure isolation** — one failing call in a
   fan-out Plan raises, and no annotations reach the graph for the calls that did
   succeed ([#25](https://github.com/thorwhalen/nw/issues/25)).

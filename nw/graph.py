@@ -29,7 +29,7 @@ from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable, Iterator, Optional
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from lacing import (
     Annotation,
@@ -315,9 +315,7 @@ class ProjectGraph:
         was_derived_from: tuple[UUID, ...] = (),
     ) -> UUID:
         """Append a decision; never replaces an existing one (the log is append-only)."""
-        import uuid as _uuid
-
-        new_id = _uuid.uuid4()
+        new_id = uuid4()
         # Resolve upstream digests *before* opening the store — the lookup
         # walks every scope and must not nest inside this store's context.
         trace = self._verifying_trace_for(new_id, was_derived_from)
@@ -617,9 +615,7 @@ def _put(
     ``annotation_id`` reuses an existing id (see :func:`_upsert`); omit it to
     mint a fresh one.
     """
-    import uuid as _uuid
-
-    new_id = annotation_id if annotation_id is not None else _uuid.uuid4()
+    new_id = annotation_id if annotation_id is not None else uuid4()
     ann = Annotation(
         id=new_id,
         tier=tier,

@@ -97,19 +97,24 @@ def _remove(proj, ann_id: UUID) -> None:
                 return
 
 
-def _rewrite_in_place(proj, ann: Annotation, *, body: dict) -> Annotation:
+def _rewrite_in_place(proj, ann: Annotation, *, body: dict, parents=None) -> Annotation:
     """Replace ``ann``'s value keeping its id — what a regeneration should do.
 
     ``store.add`` is a plain INSERT, so an in-place update is remove-then-add;
     that is what ``ProjectGraph._upsert`` does for entities too. Going back
     through ``add_annotation`` is the point: it re-records the trace.
+
+    ``parents`` also rewrites ``was_derived_from``, which is the only way to
+    build a cycle whose *traces are valid on both sides* — every parent has to
+    already exist when the trace is recorded.
     """
+    prov_update = {"generated_at_time": RationalTime.now()}
+    if parents is not None:
+        prov_update["was_derived_from"] = list(parents)
     updated = ann.model_copy(
         update={
             "body": body,
-            "provenance": ann.provenance.model_copy(
-                update={"generated_at_time": RationalTime.now()}
-            ),
+            "provenance": ann.provenance.model_copy(update=prov_update),
         }
     )
     _remove(proj, ann.id)
@@ -367,28 +372,38 @@ def test_an_undigestible_upstream_is_stale(tmp_path, monkeypatch):
 
 
 def test_a_provenance_cycle_is_stale_and_terminates(tmp_path):
-    """Malformed data must not hang a read-only query."""
+    """Malformed data must not hang a read-only query — and must say so.
+
+    The cycle is built with **valid, covering traces on both sides**, which
+    is the only version of this test that reaches the cycle branch at all: if
+    either trace fails to cover its parents, the walk short-circuits on
+    ``trace-parents-differ`` and the guard is never exercised. X is rewritten
+    last, so both A and Y already exist when its trace is recorded.
+    """
     proj = nw.Project.init(tmp_path / "p")
     a_id = _authored(proj)
     x = _derived(proj, (a_id,), body={"shot_id": "s01", "url": "x"})
     y = _derived(proj, (x.id,), body={"shot_id": "s01", "url": "y"})
-    # Close the loop: X ← Y as well as X → Y.
-    _remove(proj, x.id)
-    with nw.open_project_stores(proj.root) as stores:
-        for store in stores:
-            store.add(
-                x.model_copy(
-                    update={
-                        "provenance": x.provenance.model_copy(
-                            update={"was_derived_from": [a_id, y.id]}
-                        )
-                    }
-                )
-            )
-            break
+    # Close the loop: X ← Y as well as X → Y, re-recording X's trace.
+    _rewrite_in_place(
+        proj, x, body={"shot_id": "s01", "url": "x"}, parents=(a_id, y.id)
+    )
 
-    stale = nw.stale_after(proj.root, a_id)
-    assert _ids(stale) == {x.id, y.id}
+    verdicts = {v.annotation.id: v for v in nw.stale_verdicts(proj.root, a_id)}
+    assert {i for i, v in verdicts.items() if v.is_stale} == {x.id, y.id}
+
+    # *Which* of the two names the cycle depends on classification order, so
+    # the invariant is stated the way it actually holds: exactly one edge
+    # closes the loop and reports it, the other reads as upstream-stale.
+    # Asserting a specific node would pin an incidental ordering.
+    assert {verdicts[x.id].reason, verdicts[y.id].reason} == {
+        REASON_PROVENANCE_CYCLE,
+        REASON_UPSTREAM_STALE,
+    }, "the closing edge must name the cycle, not hide it behind upstream-stale"
+    closer, other = (
+        (x, y) if verdicts[x.id].reason == REASON_PROVENANCE_CYCLE else (y, x)
+    )
+    assert verdicts[closer.id].upstream_id == other.id
 
 
 # --- trace writing -----------------------------------------------------------
@@ -402,6 +417,7 @@ def test_a_derived_write_records_a_trace_and_an_authored_write_does_not(tmp_path
     b = _derived(proj, (a_id,))
     traces = _traces(proj)
     assert len(traces) == 1
+    assert traces[0].body_schema_uri == VERIFYING_TRACE_BODY_SCHEMA_URI
     body = VerifyingTraceBodyV1.model_validate(traces[0].body)
     assert UUID(body.for_annotation_id) == b.id
     assert [UUID(u.annotation_id) for u in body.upstream] == [a_id]
@@ -533,6 +549,29 @@ def test_stale_after_is_deterministic(tmp_path):
     runs = [[a.id for a in nw.stale_after(proj.root, a_id)] for _ in range(3)]
     assert runs[0] == runs[1] == runs[2]
     assert runs[0] == [b.id, c.id], "generation order, oldest first"
+
+
+def test_stale_after_is_always_a_subset_of_descendants_of(tmp_path):
+    """The structural invariant: freshness narrows reachability, never widens it.
+
+    Checked across the three states that matter — untouched, edited, and
+    partially regenerated — because a walk that ever returned something
+    ``descendants_of`` does not would mean the two verbs had drifted apart
+    rather than one refining the other.
+    """
+    proj, a_id, b, c = _chain(tmp_path)
+    states = []
+    states.append(("untouched", None))
+    _authored(proj, label="edited")
+    states.append(("edited", None))
+    _rewrite_in_place(proj, b, body={"shot_id": "s01", "url": "b2"})
+    states.append(("partially regenerated", None))
+
+    for label, _ in states:
+        reachable = _ids(nw.descendants_of(proj.root, a_id))
+        assert _ids(nw.stale_after(proj.root, a_id)) <= reachable, label
+    # …and not vacuously, because the middle state was a strict superset.
+    assert len(states) == 3
 
 
 def test_stale_after_of_an_unknown_id_is_empty(tmp_path):

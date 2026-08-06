@@ -165,13 +165,13 @@ def stale_verdicts(
     resolving: set[UUID] = set()
 
     def resolve(node_id: UUID) -> FreshnessVerdict:
+        # Re-entry is impossible here: the only recursive caller is the parent
+        # loop in `_classify`, which checks `resolving` itself so it can name
+        # the cycle on the edge that closes it. Top-level calls always start
+        # with `resolving` empty.
         cached = verdicts.get(node_id)
         if cached is not None:
             return cached
-        if node_id in resolving:
-            # A provenance cycle is malformed data; returning stale without
-            # memoizing keeps the cycle from poisoning the real verdict.
-            return FreshnessVerdict(by_id[node_id], True, REASON_PROVENANCE_CYCLE)
         resolving.add(node_id)
         try:
             verdict = _classify(node_id)
@@ -203,8 +203,17 @@ def stale_verdicts(
             parent = by_id.get(pid)
             if parent is None:
                 return FreshnessVerdict(ann, True, REASON_UPSTREAM_MISSING, pid)
-            if pid in reachable and resolve(pid).is_stale:
-                return FreshnessVerdict(ann, True, REASON_UPSTREAM_STALE, pid)
+            if pid in reachable:
+                if pid in resolving:
+                    # `pid` is an ancestor still being classified, so this edge
+                    # closes a provenance cycle — malformed data. Reported on
+                    # the edge that closes it rather than swallowed as a
+                    # generic "upstream is stale", which is what a re-entry
+                    # guard one level up would have produced (and which no
+                    # caller could ever observe).
+                    return FreshnessVerdict(ann, True, REASON_PROVENANCE_CYCLE, pid)
+                if resolve(pid).is_stale:
+                    return FreshnessVerdict(ann, True, REASON_UPSTREAM_STALE, pid)
             # ``digest_of`` returns None for a body lacing refuses to digest.
             # None is never equal to a recorded 64-hex digest, so the
             # undigestible case falls to "changed" by construction rather than

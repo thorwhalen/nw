@@ -56,8 +56,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field
 
-from lacing import Annotation, MediaRef, Provenance, TimeInterval
-from lacing.artifact import _now_rt
+from lacing import Annotation, MediaRef, Provenance, RationalTime, TimeInterval
 from lacing.digest import VALUE_DIGEST_SCHEME, annotation_value_digest
 from lacing.schema import register_body_schema
 
@@ -179,7 +178,7 @@ def build_verifying_trace(
             was_attributed_to="agent:nw.freshness",
             # Deliberately empty — see the module docstring, property 1.
             was_derived_from=[],
-            generated_at_time=_now_rt(),
+            generated_at_time=RationalTime.now(),
             activity="record",
         ),
     )
