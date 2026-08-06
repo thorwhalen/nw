@@ -23,7 +23,10 @@ Two fixture sources, and the difference matters:
   hundreds of MB of audio and video, so they are not committed; the variable
   exists so a machine that has a copy can run the fuller smoke test. Unset —
   the normal case, including CI — those tests skip and the committed ones
-  still prove the contract.
+  still prove the contract. These are copied into ``tmp_path`` too (JSON
+  copied, media hard-linked so the copy costs nothing) for the same reason:
+  loading a pre-graph project migrates it, and no test may mutate the
+  developer's real projects.
 
 This module previously gated *everything* on a hardcoded absolute path in
 one developer's home directory, so the contract was unguarded on CI, on the
@@ -190,11 +193,47 @@ media_fixtures = pytest.mark.skipif(
 )
 
 
+def _link_or_copy(src: str, dst: str, *, follow_symlinks: bool = True) -> None:
+    """Hard-link *src* to *dst*, except JSON — which is copied.
+
+    Loading a pre-graph project *migrates* it, and migration rewrites the
+    project's JSON documents. Hard-linking those would truncate the original
+    through the shared inode, so a test run would silently mutate the
+    developer's real projects. The media (hundreds of MB) is never written,
+    so linking it is safe and keeps the copy free.
+    """
+    if src.endswith(".json"):
+        shutil.copy2(src, dst)
+        return
+    try:
+        os.link(src, dst)
+    except OSError:  # different filesystem, or a filesystem without hard links
+        shutil.copy2(src, dst)
+
+
 @media_fixtures
-def test_media_fixtures_load_and_report_rendered_shots():
-    """The fuller smoke test: the real experiment projects, with their media."""
-    summaries = summarize_all(_media_fixture_roots())
+def test_media_fixtures_load_and_report_rendered_shots(tmp_path):
+    """The fuller smoke test: the real experiment projects, with their media.
+
+    Also asserts the run left the *sources* alone: these are a developer's
+    real project folders, not a checkout, and ``summarize_all`` migrates a
+    pre-graph project in place.
+    """
+    sources = _media_fixture_roots()
+    before = {src: (src / "project.json").read_bytes() for src in sources}
+
+    roots = []
+    for src in sources:
+        dst = tmp_path / src.name
+        shutil.copytree(src, dst, symlinks=True, copy_function=_link_or_copy)
+        roots.append(dst)
+
+    summaries = summarize_all(roots)
     assert len(summaries) == 4
     assert {s.title for s in summaries} == set(_FIXTURES)
     # All four should report at least one rendered shot (the experiments shipped).
     assert sum(s.rendered_shot_count for s in summaries) >= 4
+
+    for src, raw in before.items():
+        assert (src / "project.json").read_bytes() == raw, f"{src.name} was mutated"
+        assert not (src / ".nw").exists(), f"{src.name} was migrated in place"
