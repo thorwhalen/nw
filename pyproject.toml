@@ -20,7 +20,12 @@ authors = [
 ]
 dependencies = [
     "pydantic>=2.6",
-    "falaw>=0.0.22",
+    # >=0.0.24 for content-addressed artifacts: below it `Artifact.asset_id` is
+    # `sha256(url)`, so a byte-identical upstream regeneration misses the cache
+    # downstream — which defeats the freshness work nw exists to make cheap. It
+    # is also the floor at which `falaw.content` exists, the seam nw's test
+    # suite injects a fake asset transport into to stay offline (nw#35).
+    "falaw>=0.0.24",
     # >=0.0.25 for `lacing.digest.annotation_value_digest` — the content digest
     # `nw.freshness` compares to cut off early. 0.0.24 does NOT have it, so a
     # lower floor resolves to a lacing without the symbol and fails at import
@@ -100,6 +105,9 @@ testpaths = [
 doctest_optionflags = [
     "NORMALIZE_WHITESPACE",
     "ELLIPSIS",
+]
+markers = [
+    "live_api: calls a real (paid) API — run it deliberately, never in CI, and exclude it with `-m \"not live_api\"`. Such a test opts out of the fake asset transport and the no-outbound-network guard in tests/conftest.py; nw has none today.",
 ]
 
 [tool.wads.ci]

@@ -236,13 +236,20 @@ def test_plan_includes_style_and_framing_in_prompt(tmp_path):
 # --- execute_render_panel_images -------------------------------------------
 
 
-def test_execute_attaches_seed_images_and_downloads(tmp_path, monkeypatch):
+def test_execute_attaches_seed_images_and_downloads(tmp_path, monkeypatch, fake_assets):
     """End-to-end: plan + execute → updated storyboard with attached images."""
     # Patch fal_client subscribe to return a known URL, and patch URL download.
-    captured = _patch_fal(monkeypatch, image_url="https://example.invalid/panel.png")
+    image_url = "https://example.invalid/panel.png"
+    captured = _patch_fal(monkeypatch, image_url=image_url)
 
-    # Patch urlretrieve so we don't actually hit the network.
+    # Two transports stand between the stubbed fal response and this test, and
+    # both are stubbed: falaw reads the bytes to content-address the artifact
+    # (`fake_assets`, tests/conftest.py), and nw then downloads them to
+    # storyboard/ via urlretrieve. Serving the same bytes through both keeps
+    # the two views of the asset consistent — and nothing reaches the network.
     fake_image = b"\x89PNG\r\n\x1a\n" + b"\x00" * 100  # minimal "PNG-shaped" bytes
+    fake_assets.serve(image_url, fake_image)
+
     def fake_urlretrieve(url, dst):
         Path(dst).write_bytes(fake_image)
         return (dst, None)
@@ -272,6 +279,11 @@ def test_execute_attaches_seed_images_and_downloads(tmp_path, monkeypatch):
         for img in panel.images:
             if img.role == "seed":
                 assert img.artifact_id == expected
+
+    # falaw content-addressed the asset off the injected transport — i.e. this
+    # test exercises the content-addressing path, not the URL-only fallback it
+    # silently got while the fetch was failing against the real network (nw#35).
+    assert image_url in fake_assets.fetched
 
 
 def test_execute_mismatched_panel_ids_raises():
