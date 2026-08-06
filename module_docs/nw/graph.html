@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.graph &mdash; nw 0.0.16 documentation</title>
+  <title>nw.graph &mdash; nw 0.0.17 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=c7cdf6fe"></script>
+      <script src="../../_static/documentation_options.js?v=63b572e7"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -63,6 +63,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#nw.graph.ProjectGraph"><code class="docutils literal notranslate"><span class="pre">ProjectGraph</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#nw.graph.ProjectGraph.add_annotation"><code class="docutils literal notranslate"><span class="pre">ProjectGraph.add_annotation()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.graph.ProjectGraph.append_decision"><code class="docutils literal notranslate"><span class="pre">ProjectGraph.append_decision()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.graph.ProjectGraph.upsert_character_ref"><code class="docutils literal notranslate"><span class="pre">ProjectGraph.upsert_character_ref()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.graph.ProjectGraph.upsert_environment_ref"><code class="docutils literal notranslate"><span class="pre">ProjectGraph.upsert_environment_ref()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.graph.ProjectGraph.upsert_section"><code class="docutils literal notranslate"><span class="pre">ProjectGraph.upsert_section()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.graph.ProjectGraph.upsert_shot"><code class="docutils literal notranslate"><span class="pre">ProjectGraph.upsert_shot()</span></code></a></li>
 </ul>
@@ -172,15 +174,31 @@ idempotent, so this is a no-op for the built-in project tiers.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="nw.graph.ProjectGraph.upsert_character_ref">
+<span class="sig-name descname"><span class="pre">upsert_character_ref</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">body</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="bodies/character_ref.html#nw.bodies.character_ref.CharacterRefBodyV1" title="nw.bodies.character_ref.CharacterRefBodyV1"><span class="pre">CharacterRefBodyV1</span></a></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">was_attributed_to</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'user:nw'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">UUID</span></span></span><a class="reference internal" href="../../_modules/nw/graph.html#ProjectGraph.upsert_character_ref"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.graph.ProjectGraph.upsert_character_ref" title="Link to this definition"></a></dt>
+<dd><p>Insert-or-update the character ref with this <code class="docutils literal notranslate"><span class="pre">name</span></code>; return its id.</p>
+<p>The id is <em>stable</em> across edits — see <code class="xref py py-func docutils literal notranslate"><span class="pre">_upsert()</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.graph.ProjectGraph.upsert_environment_ref">
+<span class="sig-name descname"><span class="pre">upsert_environment_ref</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">body</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="bodies/environment_ref.html#nw.bodies.environment_ref.EnvironmentRefBodyV1" title="nw.bodies.environment_ref.EnvironmentRefBodyV1"><span class="pre">EnvironmentRefBodyV1</span></a></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">was_attributed_to</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'user:nw'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">UUID</span></span></span><a class="reference internal" href="../../_modules/nw/graph.html#ProjectGraph.upsert_environment_ref"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.graph.ProjectGraph.upsert_environment_ref" title="Link to this definition"></a></dt>
+<dd><p>Insert-or-update the environment ref with this <code class="docutils literal notranslate"><span class="pre">name</span></code>; return its id.</p>
+<p>The id is <em>stable</em> across edits — see <code class="xref py py-func docutils literal notranslate"><span class="pre">_upsert()</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="nw.graph.ProjectGraph.upsert_section">
 <span class="sig-name descname"><span class="pre">upsert_section</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">body</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="bodies/section.html#nw.bodies.section.SectionBodyV1" title="nw.bodies.section.SectionBodyV1"><span class="pre">SectionBodyV1</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TimeInterval</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">was_attributed_to</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'user:nw'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">UUID</span></span></span><a class="reference internal" href="../../_modules/nw/graph.html#ProjectGraph.upsert_section"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.graph.ProjectGraph.upsert_section" title="Link to this definition"></a></dt>
-<dd><p>Replace any existing section with the same <code class="docutils literal notranslate"><span class="pre">section_id</span></code>; return new uuid.</p>
+<dd><p>Insert-or-update the section with this <code class="docutils literal notranslate"><span class="pre">section_id</span></code>; return its id.</p>
+<p>The id is <em>stable</em> across edits — see <code class="xref py py-func docutils literal notranslate"><span class="pre">_upsert()</span></code>.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="nw.graph.ProjectGraph.upsert_shot">
 <span class="sig-name descname"><span class="pre">upsert_shot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">body</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="bodies/shot.html#nw.bodies.shot.ShotBodyV1" title="nw.bodies.shot.ShotBodyV1"><span class="pre">ShotBodyV1</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TimeInterval</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">was_attributed_to</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'user:nw'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">UUID</span></span></span><a class="reference internal" href="../../_modules/nw/graph.html#ProjectGraph.upsert_shot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.graph.ProjectGraph.upsert_shot" title="Link to this definition"></a></dt>
-<dd><p>Replace any existing shot with the same <code class="docutils literal notranslate"><span class="pre">shot_id</span></code>; return new uuid.</p>
+<dd><p>Insert-or-update the shot with this <code class="docutils literal notranslate"><span class="pre">shot_id</span></code>; return its id.</p>
+<p>The id is <em>stable</em> across edits — see <code class="xref py py-func docutils literal notranslate"><span class="pre">_upsert()</span></code>.</p>
 </dd></dl>
 
 </dd></dl>

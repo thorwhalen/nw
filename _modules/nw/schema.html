@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.schema &mdash; nw 0.0.16 documentation</title>
+  <title>nw.schema &mdash; nw 0.0.17 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=c7cdf6fe"></script>
+      <script src="../../_static/documentation_options.js?v=63b572e7"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -214,24 +214,48 @@
 <div class="viewcode-block" id="CharacterRef">
 <a class="viewcode-back" href="../../module_docs/nw/schema.html#nw.CharacterRef">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">CharacterRef</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pointer to a character folder under ``characters/&lt;name&gt;/``.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pointer to a character folder under ``characters/&lt;name&gt;/``.</span>
+
+<span class="sd">    The stable-attribute fields mirror</span>
+<span class="sd">    :class:`nw.bodies.CharacterRefBodyV1` field-for-field, and that is</span>
+<span class="sd">    load-bearing rather than cosmetic: :meth:`nw.Project.read_spec` builds</span>
+<span class="sd">    a ``CharacterRef`` from the graph body and</span>
+<span class="sd">    :meth:`nw.Project.write_spec` writes the body back from the</span>
+<span class="sd">    ``CharacterRef``. Any field present on the body but missing here is</span>
+<span class="sd">    **silently erased** by the next ``update_spec`` — which is what used to</span>
+<span class="sd">    happen to ``reference_image_urls``. Add a field to one, add it to both.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;extra&quot;</span><span class="p">:</span> <span class="s2">&quot;ignore&quot;</span><span class="p">}</span>
 
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span></div>
+    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">reference_image_urls</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
+    <span class="n">costume</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">age</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">default_setting</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">distinguishing_features</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
+    <span class="n">palette_anchors</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
+    <span class="n">do_not_do</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span></div>
 
 
 
 <div class="viewcode-block" id="EnvironmentRef">
 <a class="viewcode-back" href="../../module_docs/nw/schema.html#nw.EnvironmentRef">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">EnvironmentRef</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pointer to an environment folder under ``environments/&lt;name&gt;/``.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pointer to an environment folder under ``environments/&lt;name&gt;/``.</span>
+
+<span class="sd">    Mirrors :class:`nw.bodies.EnvironmentRefBodyV1` field-for-field, for the</span>
+<span class="sd">    same load-bearing reason as :class:`CharacterRef` — see that docstring.</span>
+<span class="sd">    ``reference_image_urls`` (the lookbook the FE curates for a *location*)</span>
+<span class="sd">    was erased by every ``update_spec`` until this mirror was completed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;extra&quot;</span><span class="p">:</span> <span class="s2">&quot;ignore&quot;</span><span class="p">}</span>
 
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span></div>
+    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">reference_image_urls</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span></div>
 
 
 
@@ -344,6 +368,125 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_final_compose</span><span class="p">:</span>
             <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;compose&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">out</span></div>
+
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Session resumption — &quot;where we left off&quot;</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="DecisionEntry">
+<a class="viewcode-back" href="../../module_docs/nw/schema.html#nw.DecisionEntry">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DecisionEntry</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;One entry of a project&#39;s decision log, flattened for display.&quot;&quot;&quot;</span>
+
+    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;extra&quot;</span><span class="p">:</span> <span class="s2">&quot;ignore&quot;</span><span class="p">}</span>
+
+    <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">at</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;ISO-8601 UTC timestamp from the annotation&#39;s &quot;</span>
+            <span class="s2">&quot;``provenance.generated_at_time``. ``None`` when the decision &quot;</span>
+            <span class="s2">&quot;predates provenance timestamps.&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">payload</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="ResumptionBrief">
+<a class="viewcode-back" href="../../module_docs/nw/schema.html#nw.ResumptionBrief">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ResumptionBrief</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A &quot;where we left off&quot; snapshot, returned by :meth:`nw.Project.resumption_brief`.</span>
+
+<span class="sd">    Pure data: no fal calls, no LLM, no network. reelee renders it as prose</span>
+<span class="sd">    and injects it as the first tool-result of a session.</span>
+
+<span class="sd">    **The field names are chosen to be honest about what nw can currently</span>
+<span class="sd">    measure**, because a confidently wrong number is worse than no number:</span>
+
+<span class="sd">    - :attr:`downstream_of_last_authored_change` is *not* &quot;stale&quot;.</span>
+<span class="sd">      ``nw.stale_after`` is pure provenance reachability — it never compares</span>
+<span class="sd">      content or timestamps — so this set includes everything already</span>
+<span class="sd">      regenerated since the change. It is an **upper bound** on what needs</span>
+<span class="sd">      attention, and it is named for what it measures. When early-cutoff</span>
+<span class="sd">      freshness lands, the same call returns a smaller and correct set with</span>
+<span class="sd">      no change to this API.</span>
+<span class="sd">    - The walk starts at the last **authored** change — the most recent</span>
+<span class="sd">      annotation the user wrote (a shot, a section, a character or</span>
+<span class="sd">      environment ref), never one a Transform derived. Walking from &quot;the</span>
+<span class="sd">      newest annotation&quot; instead would be inverted: the newest node in a</span>
+<span class="sd">      provenance graph is by construction a *leaf*, so its descendant set is</span>
+<span class="sd">      empty in exactly the case the field exists for.</span>
+<span class="sd">    - :attr:`total_spend_usd` sums *every* recorded render decision across</span>
+<span class="sd">      every store scope. Nothing records per-branch outcomes yet, so a render</span>
+<span class="sd">      that failed after being billed is counted here exactly like one that</span>
+<span class="sd">      succeeded. Also an upper bound.</span>
+
+<span class="sd">    :attr:`caveats` carries those qualifications as data — so a consumer</span>
+<span class="sd">    renders them next to the numbers instead of rediscovering them.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;extra&quot;</span><span class="p">:</span> <span class="s2">&quot;ignore&quot;</span><span class="p">}</span>
+
+    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">root</span><span class="p">:</span> <span class="nb">str</span>
+
+    <span class="n">last_session_at</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;ISO-8601 UTC time of the most recent graph write.&quot;</span>
+    <span class="p">)</span>
+    <span class="n">gap_seconds</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Seconds between ``last_session_at`` and now.&quot;</span>
+    <span class="p">)</span>
+
+    <span class="n">recent_decisions</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">DecisionEntry</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
+
+    <span class="n">downstream_of_last_authored_change</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="nb">tuple</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Annotation ids reachable from :attr:`last_authored_change_id` &quot;</span>
+            <span class="s2">&quot;via ``was_derived_from``, excluding decision-log rows (an audit &quot;</span>
+            <span class="s2">&quot;entry is never something to regenerate). Reachability, not &quot;</span>
+            <span class="s2">&quot;staleness — an upper bound. See the class docstring.&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">last_authored_change_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;The annotation the walk started from: the most recent one the &quot;</span>
+            <span class="s2">&quot;user authored — no ``was_derived_from`` parents and not a &quot;</span>
+            <span class="s2">&quot;decision — i.e. the last edit whose consequences are downstream.&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">total_spend_usd</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Sum over recorded render-decision cost payloads, across every &quot;</span>
+            <span class="s2">&quot;store scope. Includes renders that were billed and then failed &quot;</span>
+            <span class="s2">&quot;— an upper bound.&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">unrendered_shot_ids</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
+
+    <span class="n">suggested_next</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="nb">tuple</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Deterministic next-action hints, most actionable first.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">caveats</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="nb">tuple</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Known imprecisions in *this* brief, emitted only when the &quot;</span>
+            <span class="s2">&quot;number they qualify is non-zero.&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">downstream_count</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">downstream_of_last_authored_change</span><span class="p">)</span></div>
 
 </pre></div>
 

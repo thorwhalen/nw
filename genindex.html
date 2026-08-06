@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; nw 0.0.16 documentation</title>
+  <title>Index &mdash; nw 0.0.17 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=c7cdf6fe"></script>
+      <script src="_static/documentation_options.js?v=63b572e7"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -309,6 +309,12 @@
         <li><a href="module_docs/nw/bodies/decision.html#nw.bodies.decision.DecisionBodyV1">(class in nw.bodies.decision)</a>
 </li>
       </ul></li>
+      <li><a href="module_docs/nw.html#nw.DecisionEntry">DecisionEntry (class in nw)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/schema.html#nw.schema.DecisionEntry">(class in nw.schema)</a>
+</li>
+      </ul></li>
       <li><a href="module_docs/nw/jobs.html#nw.jobs.JobsConfig.default_prior_total_s">default_prior_total_s (nw.jobs.JobsConfig attribute)</a>
 </li>
       <li><a href="module_docs/nw.html#nw.Genre.defaults">defaults (nw.Genre attribute)</a>
@@ -319,14 +325,14 @@
       </ul></li>
       <li><a href="module_docs/nw/transforms/_provenance.html#nw.transforms._provenance.derive_provenance">derive_provenance() (in module nw.transforms._provenance)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module_docs/nw.html#nw.derived_from">derived_from() (in module nw)</a>
 
       <ul>
         <li><a href="module_docs/nw/graph.html#nw.graph.derived_from">(in module nw.graph)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module_docs/nw.html#nw.descendants_of">descendants_of() (in module nw)</a>
 
       <ul>
@@ -694,6 +700,8 @@
 </li>
         <li><a href="module_docs/nw.html#nw.ComposeReport.model_config">(nw.ComposeReport attribute)</a>
 </li>
+        <li><a href="module_docs/nw.html#nw.DecisionEntry.model_config">(nw.DecisionEntry attribute)</a>
+</li>
         <li><a href="module_docs/nw.html#nw.EnvironmentRef.model_config">(nw.EnvironmentRef attribute)</a>
 </li>
         <li><a href="module_docs/nw.html#nw.FrozenSegment.model_config">(nw.FrozenSegment attribute)</a>
@@ -712,13 +720,19 @@
 </li>
         <li><a href="module_docs/nw.html#nw.ProjectSummary.model_config">(nw.ProjectSummary attribute)</a>
 </li>
+        <li><a href="module_docs/nw.html#nw.ResumptionBrief.model_config">(nw.ResumptionBrief attribute)</a>
+</li>
         <li><a href="module_docs/nw/schema.html#nw.schema.CharacterRef.model_config">(nw.schema.CharacterRef attribute)</a>
+</li>
+        <li><a href="module_docs/nw/schema.html#nw.schema.DecisionEntry.model_config">(nw.schema.DecisionEntry attribute)</a>
 </li>
         <li><a href="module_docs/nw/schema.html#nw.schema.EnvironmentRef.model_config">(nw.schema.EnvironmentRef attribute)</a>
 </li>
         <li><a href="module_docs/nw/schema.html#nw.schema.ProjectSpec.model_config">(nw.schema.ProjectSpec attribute)</a>
 </li>
         <li><a href="module_docs/nw/schema.html#nw.schema.ProjectSummary.model_config">(nw.schema.ProjectSummary attribute)</a>
+</li>
+        <li><a href="module_docs/nw/schema.html#nw.schema.ResumptionBrief.model_config">(nw.schema.ResumptionBrief attribute)</a>
 </li>
         <li><a href="module_docs/nw/schema.html#nw.schema.SectionSpec.model_config">(nw.schema.SectionSpec attribute)</a>
 </li>
@@ -1207,14 +1221,14 @@
         <li><a href="module_docs/nw/genres.html#nw.genres.register_genre_resolver">(in module nw.genres)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module_docs/nw.html#nw.register_strategy">register_strategy() (in module nw)</a>
 
       <ul>
         <li><a href="module_docs/nw/renderers.html#nw.renderers.register_strategy">(in module nw.renderers)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module_docs/nw.html#nw.register_transform">register_transform() (in module nw)</a>
 
       <ul>
@@ -1241,6 +1255,18 @@
 
       <ul>
         <li><a href="module_docs/nw/genres.html#nw.genres.resolve_genre">(in module nw.genres)</a>
+</li>
+      </ul></li>
+      <li><a href="module_docs/nw.html#nw.Project.resumption_brief">resumption_brief() (nw.Project method)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/project.html#nw.project.Project.resumption_brief">(nw.project.Project method)</a>
+</li>
+      </ul></li>
+      <li><a href="module_docs/nw.html#nw.ResumptionBrief">ResumptionBrief (class in nw)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/schema.html#nw.schema.ResumptionBrief">(class in nw.schema)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -1435,6 +1461,12 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="module_docs/nw.html#nw.Project.total_spend_usd">total_spend_usd() (nw.Project method)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/project.html#nw.project.Project.total_spend_usd">(nw.project.Project method)</a>
+</li>
+      </ul></li>
       <li><a href="module_docs/nw.html#nw.Transform">Transform (class in nw)</a>
 
       <ul>
@@ -1471,8 +1503,20 @@
       </ul></li>
       <li><a href="module_docs/nw/renderers/_common.html#nw.renderers._common.upload_local_file">upload_local_file() (in module nw.renderers._common)</a>
 </li>
+      <li><a href="module_docs/nw/graph.html#nw.graph.ProjectGraph.upsert_character_ref">upsert_character_ref() (nw.graph.ProjectGraph method)</a>
+
+      <ul>
+        <li><a href="module_docs/nw.html#nw.ProjectGraph.upsert_character_ref">(nw.ProjectGraph method)</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="module_docs/nw/graph.html#nw.graph.ProjectGraph.upsert_environment_ref">upsert_environment_ref() (nw.graph.ProjectGraph method)</a>
+
+      <ul>
+        <li><a href="module_docs/nw.html#nw.ProjectGraph.upsert_environment_ref">(nw.ProjectGraph method)</a>
+</li>
+      </ul></li>
       <li><a href="module_docs/nw/graph.html#nw.graph.ProjectGraph.upsert_section">upsert_section() (nw.graph.ProjectGraph method)</a>
 
       <ul>

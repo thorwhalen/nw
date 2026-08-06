@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.bodies.character_ref &mdash; nw 0.0.16 documentation</title>
+  <title>nw.bodies.character_ref &mdash; nw 0.0.17 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=c7cdf6fe"></script>
+      <script src="../../../_static/documentation_options.js?v=63b572e7"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -110,13 +110,27 @@
 
 <span class="sd">A character-ref is the project-level *pointer* at a character folder</span>
 <span class="sd">(``characters/&lt;name&gt;/``). The folder holds the canonical card.json,</span>
-<span class="sd">reference images, voice samples. The annotation&#39;s body is intentionally</span>
-<span class="sd">small: a name and a description. Anything richer lives in the folder.</span>
+<span class="sd">reference images, voice samples. The annotation&#39;s body carries the</span>
+<span class="sd">*identity-stable* description of the character — the facts that have to be</span>
+<span class="sd">re-asserted in every prompt that depicts them (costume, palette,</span>
+<span class="sd">distinguishing features) — while anything bulkier lives in the folder.</span>
 
 <span class="sd">Why a body schema rather than just a project.json field: with this</span>
 <span class="sd">annotation, reelee can answer &quot;what&#39;s downstream of this character&quot;</span>
 <span class="sd">across the whole graph without parsing project.json — the character-ref</span>
 <span class="sd">annotation is the parent node in the provenance graph.</span>
+
+<span class="sd">**One vocabulary across the ecosystem.** The stable-attribute fields below</span>
+<span class="sd">are named to match ``artful.schema.ModelSheet``, which already models the</span>
+<span class="sd">same concepts for a *rendered* model sheet. A character-ref is the</span>
+<span class="sd">textual/authorial side and a model sheet is the rendered side of the same</span>
+<span class="sd">character, so ``palette_anchors``, ``distinguishing_features`` and</span>
+<span class="sd">``do_not_do`` are deliberately identical in name *and* type. The one</span>
+<span class="sd">concept that does **not** overlap is costume: ``ModelSheet.costume_set``</span>
+<span class="sd">maps a costume label to a *render-result annotation id*, whereas a</span>
+<span class="sd">character-ref needs the costume as prose a prompt builder can inject —</span>
+<span class="sd">hence :attr:`CharacterRefBodyV1.costume` (a ``str``), not ``costume_set``.</span>
+<span class="sd">That is a difference of kind, not a naming drift.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
@@ -132,7 +146,13 @@
 <div class="viewcode-block" id="CharacterRefBodyV1">
 <a class="viewcode-back" href="../../../module_docs/nw/bodies/character_ref.html#nw.bodies.CharacterRefBodyV1">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">CharacterRefBodyV1</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Body of a character-ref annotation.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Body of a character-ref annotation.</span>
+
+<span class="sd">    Every field beyond ``name`` is optional with a benign default, so dumps</span>
+<span class="sd">    written by any earlier version of this schema load unchanged — this is</span>
+<span class="sd">    an **additive** enrichment of v1, not a new version, and needs no</span>
+<span class="sd">    lacing migration.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;frozen&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;extra&quot;</span><span class="p">:</span> <span class="s2">&quot;forbid&quot;</span><span class="p">}</span>
 
@@ -140,14 +160,74 @@
     <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Short description; canonical card lives in card.json.&quot;</span>
     <span class="p">)</span>
-    <span class="n">reference_image_urls</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">,</span>
+    <span class="n">reference_image_urls</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="nb">tuple</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="p">(</span>
             <span class="s2">&quot;URLs of reference images for this character — the lookbook &quot;</span>
             <span class="s2">&quot;the FE curates and a future ``panel_to_image.composite.*`` &quot;</span>
             <span class="s2">&quot;transform passes to the image-gen model as visual anchors &quot;</span>
             <span class="s2">&quot;for style consistency. Backwards-compatible (defaults to &quot;</span>
             <span class="s2">&quot;empty); v0.4-era dumps without this field load cleanly.&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="c1"># -- stable attributes (aligned to artful.ModelSheet) --------------------</span>
+
+    <span class="n">costume</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;The character&#39;s default wardrobe, as prose a prompt builder &quot;</span>
+            <span class="s1">&#39;can inject verbatim — &quot;grey tweed jacket, green flat cap&quot;. &#39;</span>
+            <span class="s2">&quot;Deliberately a string, not ``ModelSheet.costume_set`` (which &quot;</span>
+            <span class="s2">&quot;maps a costume label to a render-result annotation id): this &quot;</span>
+            <span class="s2">&quot;is the authorial description, that one is the rendered sheet.&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">age</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s1">&#39;Free-text age or life-stage — &quot;late 50s&quot;, &quot;child&quot;, &quot;elder&quot;. &#39;</span>
+            <span class="s2">&quot;Free text rather than an int because it is a prompt slot, and &quot;</span>
+            <span class="s1">&#39;because &quot;weathered late 50s&quot; carries more than a number does.&#39;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">default_setting</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Environment affinity — where this character is normally found. &quot;</span>
+            <span class="s2">&quot;A prompt-slot fallback for panels that name no environment; it &quot;</span>
+            <span class="s2">&quot;does not override an explicit environment-ref.&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">distinguishing_features</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="nb">tuple</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s1">&#39;Free-text feature notes — &quot;left eye scar&quot;, &quot;red bandana&quot;. &#39;</span>
+            <span class="s2">&quot;Same name, type and meaning as &quot;</span>
+            <span class="s2">&quot;``artful.ModelSheet.distinguishing_features``.&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">palette_anchors</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="nb">tuple</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Colour anchors for this character (hex or named). Same name, &quot;</span>
+            <span class="s2">&quot;type and meaning as ``artful.ModelSheet.palette_anchors``.&quot;</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">do_not_do</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="nb">tuple</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Negative directives scoped to this character — things a &quot;</span>
+            <span class="s2">&quot;depiction of them must never contain. Same name and type as &quot;</span>
+            <span class="s2">&quot;``artful.ModelSheet.do_not_do``. &quot;</span>
+            <span class="s2">&quot;**Scope is deliberately unspecified here.** nw types the field &quot;</span>
+            <span class="s2">&quot;and persists it; it does not prescribe how a consumer applies &quot;</span>
+            <span class="s2">&quot;it. Whether a negation is re-asserted on every prompt that &quot;</span>
+            <span class="s2">&quot;references the character, or only on prompts touching the &quot;</span>
+            <span class="s2">&quot;attribute it negates, is an open owner decision — and the two &quot;</span>
+            <span class="s2">&quot;readings differ in cost and in drift behaviour. Until it is &quot;</span>
+            <span class="s2">&quot;settled a consumer picking a policy owns that choice; nw does &quot;</span>
+            <span class="s2">&quot;not imply one.&quot;</span>
         <span class="p">),</span>
     <span class="p">)</span></div>
 

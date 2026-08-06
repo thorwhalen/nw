@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.bodies.character_ref &mdash; nw 0.0.16 documentation</title>
+  <title>nw.bodies.character_ref &mdash; nw 0.0.17 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=c7cdf6fe"></script>
+      <script src="../../../_static/documentation_options.js?v=63b572e7"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -118,16 +118,33 @@
 <p>URI: <code class="docutils literal notranslate"><span class="pre">annot://schema/character-ref/v1</span></code></p>
 <p>A character-ref is the project-level <em>pointer</em> at a character folder
 (<code class="docutils literal notranslate"><span class="pre">characters/&lt;name&gt;/</span></code>). The folder holds the canonical card.json,
-reference images, voice samples. The annotation’s body is intentionally
-small: a name and a description. Anything richer lives in the folder.</p>
+reference images, voice samples. The annotation’s body carries the
+<em>identity-stable</em> description of the character — the facts that have to be
+re-asserted in every prompt that depicts them (costume, palette,
+distinguishing features) — while anything bulkier lives in the folder.</p>
 <p>Why a body schema rather than just a project.json field: with this
 annotation, reelee can answer “what’s downstream of this character”
 across the whole graph without parsing project.json — the character-ref
 annotation is the parent node in the provenance graph.</p>
+<p><strong>One vocabulary across the ecosystem.</strong> The stable-attribute fields below
+are named to match <code class="docutils literal notranslate"><span class="pre">artful.schema.ModelSheet</span></code>, which already models the
+same concepts for a <em>rendered</em> model sheet. A character-ref is the
+textual/authorial side and a model sheet is the rendered side of the same
+character, so <code class="docutils literal notranslate"><span class="pre">palette_anchors</span></code>, <code class="docutils literal notranslate"><span class="pre">distinguishing_features</span></code> and
+<code class="docutils literal notranslate"><span class="pre">do_not_do</span></code> are deliberately identical in name <em>and</em> type. The one
+concept that does <strong>not</strong> overlap is costume: <code class="docutils literal notranslate"><span class="pre">ModelSheet.costume_set</span></code>
+maps a costume label to a <em>render-result annotation id</em>, whereas a
+character-ref needs the costume as prose a prompt builder can inject —
+hence <code class="xref py py-attr docutils literal notranslate"><span class="pre">CharacterRefBodyV1.costume</span></code> (a <code class="docutils literal notranslate"><span class="pre">str</span></code>), not <code class="docutils literal notranslate"><span class="pre">costume_set</span></code>.
+That is a difference of kind, not a naming drift.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="nw.bodies.character_ref.CharacterRefBodyV1">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.bodies.character_ref.</span></span><span class="sig-name descname"><span class="pre">CharacterRefBodyV1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference_image_urls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/nw/bodies/character_ref.html#CharacterRefBodyV1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.bodies.character_ref.CharacterRefBodyV1" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.bodies.character_ref.</span></span><span class="sig-name descname"><span class="pre">CharacterRefBodyV1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference_image_urls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">...]</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">costume</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">age</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_setting</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distinguishing_features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">...]</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">palette_anchors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">...]</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">do_not_do</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">...]</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/nw/bodies/character_ref.html#CharacterRefBodyV1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.bodies.character_ref.CharacterRefBodyV1" title="Link to this definition"></a></dt>
 <dd><p>Body of a character-ref annotation.</p>
+<p>Every field beyond <code class="docutils literal notranslate"><span class="pre">name</span></code> is optional with a benign default, so dumps
+written by any earlier version of this schema load unchanged — this is
+an <strong>additive</strong> enrichment of v1, not a new version, and needs no
+lacing migration.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nw.bodies.character_ref.CharacterRefBodyV1.model_config">
 <span class="sig-name descname"><span class="pre">model_config</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'extra':</span> <span class="pre">'forbid',</span> <span class="pre">'frozen':</span> <span class="pre">True}</span></span><a class="headerlink" href="#nw.bodies.character_ref.CharacterRefBodyV1.model_config" title="Link to this definition"></a></dt>

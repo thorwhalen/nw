@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.transforms &mdash; nw 0.0.16 documentation</title>
+  <title>nw.transforms &mdash; nw 0.0.17 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=c7cdf6fe"></script>
+      <script src="../../_static/documentation_options.js?v=63b572e7"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -175,6 +175,13 @@ The default <code class="xref py py-meth docutils literal notranslate"><span cla
 1:1 via <code class="xref py py-meth docutils literal notranslate"><span class="pre">_complete_annotation()</span></code>, writes to the project graph, and
 reports cost. Transforms whose artifact→annotation mapping is not 1:1
 (e.g. <code class="docutils literal notranslate"><span class="pre">clips_to_animatic</span></code>: N inputs → 1 output) override <code class="xref py py-meth docutils literal notranslate"><span class="pre">execute()</span></code>.</p>
+<p>That 1:1 mapping is an <strong>invariant, checked before anything is spent</strong>:
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">execute()</span></code> raises when <code class="docutils literal notranslate"><span class="pre">len(skeleton)</span> <span class="pre">!=</span> <span class="pre">len(plan.calls)</span></code>, the
+same guard <code class="docutils literal notranslate"><span class="pre">nw.storyboard.execute_render_panel_images</span></code> already applies
+to its own plan/id pairing. The zip below would otherwise stop at the
+shorter sequence and drop the surplus with no error and no record —
+harmless only for as long as the executor returns exactly one artifact
+per call, which is precisely what per-call failure isolation changes.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nw.transforms.BaseTransform.is_batch">
 <span class="sig-name descname"><span class="pre">is_batch</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#nw.transforms.BaseTransform.is_batch" title="Link to this definition"></a></dt>

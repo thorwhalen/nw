@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.transforms &mdash; nw 0.0.16 documentation</title>
+  <title>nw.transforms &mdash; nw 0.0.17 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=c7cdf6fe"></script>
+      <script src="../../_static/documentation_options.js?v=63b572e7"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -294,6 +294,14 @@
 <span class="sd">    1:1 via :meth:`_complete_annotation`, writes to the project graph, and</span>
 <span class="sd">    reports cost. Transforms whose artifact→annotation mapping is not 1:1</span>
 <span class="sd">    (e.g. ``clips_to_animatic``: N inputs → 1 output) override :meth:`execute`.</span>
+
+<span class="sd">    That 1:1 mapping is an **invariant, checked before anything is spent**:</span>
+<span class="sd">    :meth:`execute` raises when ``len(skeleton) != len(plan.calls)``, the</span>
+<span class="sd">    same guard ``nw.storyboard.execute_render_panel_images`` already applies</span>
+<span class="sd">    to its own plan/id pairing. The zip below would otherwise stop at the</span>
+<span class="sd">    shorter sequence and drop the surplus with no error and no record —</span>
+<span class="sd">    harmless only for as long as the executor returns exactly one artifact</span>
+<span class="sd">    per call, which is precisely what per-call failure isolation changes.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
@@ -326,6 +334,15 @@
         <span class="n">use_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TransformResult</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">skeleton</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">plan</span><span class="o">.</span><span class="n">calls</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.execute: plan has </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">plan</span><span class="o">.</span><span class="n">calls</span><span class="p">)</span><span class="si">}</span><span class="s2"> &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;calls but skeleton has </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">skeleton</span><span class="p">)</span><span class="si">}</span><span class="s2"> annotations. The &quot;</span>
+                <span class="s2">&quot;default execute maps artifacts onto skeletons 1:1 and zips &quot;</span>
+                <span class="s2">&quot;them, so a mismatch would silently drop the surplus — pass &quot;</span>
+                <span class="s2">&quot;the plan and skeleton that plan() returned together, or &quot;</span>
+                <span class="s2">&quot;override execute() if this Transform&#39;s mapping is not 1:1.&quot;</span>
+            <span class="p">)</span>
         <span class="n">artifacts</span> <span class="o">=</span> <span class="n">execute_plan</span><span class="p">(</span><span class="n">plan</span><span class="p">,</span> <span class="n">use_cache</span><span class="o">=</span><span class="n">use_cache</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">force</span><span class="p">)</span>
         <span class="n">completed</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_complete_annotation</span><span class="p">(</span><span class="n">skel</span><span class="p">,</span> <span class="n">art</span><span class="p">)</span>
