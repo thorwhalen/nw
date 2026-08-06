@@ -275,13 +275,19 @@ class ResumptionBrief(BaseModel):
     **The field names are chosen to be honest about what nw can currently
     measure**, because a confidently wrong number is worse than no number:
 
-    - :attr:`downstream_of_last_authored_change` is *not* "stale".
-      ``nw.stale_after`` is pure provenance reachability — it never compares
-      content or timestamps — so this set includes everything already
+    - :attr:`downstream_of_last_authored_change` is *not* "stale". It is
+      ``nw.descendants_of`` — pure provenance reachability, comparing no
+      content and no timestamp — so this set includes everything already
       regenerated since the change. It is an **upper bound** on what needs
-      attention, and it is named for what it measures. When early-cutoff
-      freshness lands, the same call returns a smaller and correct set with
-      no change to this API.
+      attention, and it is named for what it measures.
+
+      ``nw.stale_after`` is the narrower answer and it now cuts off early
+      (nw#24), so switching this field to it would return a smaller and
+      correct set. That is deliberately **not** done here: the field would
+      then be named for the wrong measurement, and which of the two a
+      resumption brief should show is nw#7's call, not nw#24's. Callers who
+      want the exact set can call ``nw.stale_after`` with
+      :attr:`last_authored_change_id`.
     - The walk starts at the last **authored** change — the most recent
       annotation the user wrote (a shot, a section, a character or
       environment ref), never one a Transform derived. Walking from "the

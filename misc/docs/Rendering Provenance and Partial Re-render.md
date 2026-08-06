@@ -39,8 +39,8 @@ parameters that produced it.
    descendants**. `stale_after(changed_id)` returns exactly the set to
    recompute. Re-rendering becomes a **memoized build DAG** (Make/Bazel for
    media): edit one beat's text or swap one shot's strategy, and you recompute
-   only that node and re-stitch — never the whole piece (see "Status check"
-   below — not true today).
+   only that node and re-stitch — never the whole piece (shipped at the
+   annotation tier — see "Status check" below for the four exclusions).
 
 4. **Localized editing.** The graph is the *index* for "find the thing to
    change." The unit you want to fix (a shot, a narration turn, a clip) is a
@@ -60,9 +60,12 @@ parameters that produced it.
   phase). `execute` records a `render-result/v1` annotation whose
   `was_derived_from` includes the shot's id, and whose heavy output (the mp4) is
   a referenced `Artifact`, not inline.
-- **nw.graph** exposes the freshness queries — `derived_from` (one hop),
-  `descendants_of` / `stale_after` (transitive closure). `stale_after(changed_id)`
-  *is* the partial-re-render frontier: everything downstream of a change.
+- **nw.graph** exposes the reachability queries — `derived_from` (one hop),
+  `descendants_of` (transitive closure) — and records the verifying trace on
+  every derived write. **nw.freshness** exposes `stale_after` / `stale_verdicts`:
+  the same walk, with each node checked against the upstream digests it
+  recorded. `stale_after(changed_id)` *is* the partial-re-render frontier —
+  everything downstream of a change **that the change actually invalidated**.
 - The **plan/execute** separation means a skeleton `render-result` (no artifact
   yet, with a cost estimate) exists before any money is spent; `execute` fills
   in the artifact. Cache keys are derived from *stable* inputs (uploaded URLs,
@@ -77,23 +80,51 @@ currently shaped around **video shots** (`ShotSpec`, `render-strategy` → mp4).
 Two claims above are aspirational rather than descriptive. They are corrected
 here rather than deleted, because the design they describe is still the target.
 
-**"`stale_after(changed_id)` returns exactly the set to recompute" — not yet.**
-`nw.stale_after` (`nw/graph.py:451`) is a one-line alias for `descendants_of`:
-its whole body is `return descendants_of(project_root, changed_id)`
-(`nw/graph.py:464`). It is pure reachability over `provenance.was_derived_from`
-and it compares nothing. `Provenance.generated_at_time` is written on every
-annotation (`nw/graph.py:508`, `nw/transforms/_provenance.py:53`) and is read by
-no freshness function in the package. So the set returned is *everything
-downstream of the change* — whether or not it is actually out of date, and
+**"`stale_after(changed_id)` returns exactly the set to recompute" — ~~not
+yet~~ shipped at the annotation tier (nw#24, 2026-08-06), with the four
+exclusions listed at the end of this section.**
+
+*What was wrong.* `nw.stale_after` was a one-line alias for `descendants_of`:
+its whole body was `return descendants_of(project_root, changed_id)`. It was
+pure reachability over `provenance.was_derived_from` and it compared nothing.
+`Provenance.generated_at_time` was written on every annotation and read by no
+freshness function in the package. So the set returned was *everything
+downstream of the change* — whether or not it was actually out of date, and
 whether or not regenerating it would produce identical content.
 
 In *Build Systems à la Carte* terms that is a **dirty-bit rebuilder**: the
 *Make* cell of the scheduler × rebuilder grid, which the paper marks "early
-cutoff: **No**". Not Bazel. The target is a **verifying-trace** rebuilder
-(Ninja, Shake, rustc/Salsa): record, per output, the value digests of the inputs
-it was built from; on invalidation, re-run the frontier and stop propagating
-wherever the *output* digest is unchanged. Salsa's name for that last step —
-*backdating* — is the clearest term in the literature.
+cutoff: **No**". Not Bazel. The target — now implemented — is a
+**verifying-trace** rebuilder (Ninja, Shake, rustc/Salsa): record, per output,
+the value digests of the inputs it was built from; stop propagating wherever
+those digests still agree. Salsa's name for that step, *backdating*, is the
+clearest term in the literature.
+
+*How it works now.* Every derived write records a **verifying trace** —
+`nw/bodies/verifying_trace.py`, an nw-owned sidecar annotation, *not* a field
+on `lacing.Provenance` (which is frozen/`extra="forbid"` behind a
+`SCHEMA_VERSION` with no envelope migration ladder; see reelee#253 decision
+D6). `nw/freshness.py` walks the reachable set and compares each recorded
+upstream digest against `lacing.annotation_value_digest` of that upstream
+today.
+
+Two properties are load-bearing and easy to get backwards:
+
+- **The comparison is on the edge, not the node.** Classifying a node as fresh
+  and pruning the walk there is wrong: fresh *inputs* say nothing about whether
+  the node's own *value* still equals what its children recorded. Rewriting a
+  node in place makes it fresh and its children stale in the same instant.
+- **Unverifiable means stale.** No trace, a deleted input, a trace that no
+  longer covers the current parents, a different digest scheme — all resolve to
+  stale. Over-reporting costs a recompute; under-reporting serves a stale
+  artifact. This is also why the change needed **no data migration**:
+  pre-existing annotations have no trace and behave exactly as before.
+
+*What it still does not catch*, stated so the claim above is not read too
+widely: a changed **Transform** (the trace records upstream values, not the
+producing code); a **hand-edited** output (fresh relative to its inputs, which
+is the intended reading); an upstream mutated inside the **plan → execute
+window**; and the **artifact tier**, which needs step 3 below.
 
 **"Cache keys are derived from *stable* inputs (uploaded URLs, content hashes)
 so a cache hit is honest" — the opposite is true today.** `falaw`'s per-call key
@@ -114,13 +145,14 @@ freshness work is sequenced *before* any fan-out primitive.
 
 ### The dependency chain, shortest path first
 
-1. **`lacing`: an annotation *value* digest** (thorwhalen/lacing#16). A pure
-   function over an annotation's value, excluding `id` and `provenance` — both
-   of which change on every regeneration even when the content does not. No
-   schema change, no migration; it can land immediately.
-2. **`nw`: `stale_after` stops being an alias** and compares recorded upstream
-   value digests against current ones. This is the *annotation* tier and needs
-   only step 1.
+1. ~~**`lacing`: an annotation *value* digest**~~ **shipped** —
+   `lacing.annotation_value_digest`, lacing 0.0.25 (thorwhalen/lacing#16). A
+   pure function over an annotation's value, excluding `id` and `provenance` —
+   both of which change on every regeneration even when the content does not.
+   No schema change, no migration.
+2. ~~**`nw`: `stale_after` stops being an alias**~~ **shipped** —
+   `nw.freshness` (nw#24). Compares recorded upstream value digests against
+   current ones. The *annotation* tier, needing only step 1.
 3. **`lacing`: widen `Provenance.was_derived_from`** (thorwhalen/lacing#14). It
    is typed `list[UUID]` (`lacing/model.py:86`), so it cannot hold a 64-char hex
    `asset_id`, and artifact-to-artifact lineage is therefore structurally
@@ -134,12 +166,13 @@ artifact tier — which is precisely the tier where the expensive things live.
 
 ### Two verbs, not one
 
-Keep `descendants_of` exactly as it is: "what is downstream of this?" is a
-legitimate reachability query and it is part of the public API
-(`nw/__init__.py:47`). `stale_after` must become a different answer to a
-different question — "what is downstream of this *and actually out of date*?".
-The README already presents them as distinct verbs (`README.md:136`, `:239-240`);
-the code must catch up.
+`descendants_of` is unchanged: "what is downstream of this?" is a legitimate
+reachability query and part of the public API. `stale_after` is now a different
+answer to a different question — "what is downstream of this *and actually out
+of date*?" — so the two are no longer synonyms, which is what the README
+already claimed. `nw.stale_verdicts` returns the same walk with a `reason` per
+annotation, because a freshness number nobody can interrogate is a number
+nobody trusts.
 
 ## Generalizing beyond shots (audio weaving, and any render)
 

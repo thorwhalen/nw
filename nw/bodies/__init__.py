@@ -9,6 +9,7 @@ with a matching ``body_schema_uri`` validates correctly. The schemas are:
 - ``annot://schema/environment-ref/v1`` — pointer to an environment folder
 - ``annot://schema/decision/v1``       — provenance-rich decision log entry
 - ``annot://schema/render-result/v1``  — output of a render Transform
+- ``annot://schema/verifying-trace/v1`` — upstream value digests, for early cutoff
 
 These are deliberately small and project-agnostic. Reelee will be able to
 walk the same graph for freshness analysis ("what's downstream of this
@@ -25,6 +26,13 @@ from .render_result import (
 )
 from .section import SECTION_BODY_SCHEMA_URI, SectionBodyV1
 from .shot import SHOT_BODY_SCHEMA_URI, ShotBodyV1
+from .verifying_trace import (
+    VERIFYING_TRACE_BODY_SCHEMA_URI,
+    VERIFYING_TRACE_TIER,
+    UpstreamDigestV1,
+    VerifyingTraceBodyV1,
+    build_verifying_trace,
+)
 
 
 __all__ = [
@@ -41,4 +49,9 @@ __all__ = [
     "SectionBodyV1",
     "SHOT_BODY_SCHEMA_URI",
     "ShotBodyV1",
+    "VERIFYING_TRACE_BODY_SCHEMA_URI",
+    "VERIFYING_TRACE_TIER",
+    "UpstreamDigestV1",
+    "VerifyingTraceBodyV1",
+    "build_verifying_trace",
 ]

@@ -68,6 +68,7 @@ from .bodies import (
     ShotBodyV1,
 )
 from .graph import ProjectGraph, descendants_of, iter_all_annotations
+from .bodies import VERIFYING_TRACE_TIER
 from .migrate import _TIER_DECISION, is_migrated, migrate_to_graph
 from .schema import (
     SCHEMA_VERSION,
@@ -81,6 +82,14 @@ from .schema import (
     ShotSpec,
     SongInfo,
 )
+
+
+_BOOKKEEPING_TIERS = frozenset({_TIER_DECISION, VERIFYING_TRACE_TIER})
+"""Tiers that record *what nw did*, not *what the project is*.
+
+The resumption brief is a statement about project content, so these are
+excluded from both halves of it: they are neither an authored change nor a
+downstream consequence of one."""
 
 
 # ---------------------------------------------------------------------------
@@ -770,7 +779,7 @@ class Project:
             downstream = tuple(
                 str(a.id)
                 for a in descendants_of(self.root, last_change.id)
-                if a.tier != _TIER_DECISION
+                if a.tier not in _BOOKKEEPING_TIERS
             )
 
         unrendered = tuple(
@@ -877,9 +886,14 @@ def _last_touched(indexed) -> tuple[Optional[str], Optional[float]]:
 def _last_authored_change(indexed):
     """The most recent annotation the *user* authored, or ``None``.
 
-    "Authored" means it has no ``was_derived_from`` parents and is not a
-    decision-log row — a shot, a section, a character or environment ref the
-    user wrote. That is what makes the downstream walk meaningful.
+    "Authored" means it has no ``was_derived_from`` parents and is not on a
+    **bookkeeping** tier — a shot, a section, a character or environment ref
+    the user wrote. That is what makes the downstream walk meaningful.
+
+    Both bookkeeping tiers would otherwise qualify, and both are written
+    *after* the edit they describe, so either would shadow the real answer:
+    a decision-log row, and a verifying trace (which by design carries no
+    provenance parents — :mod:`nw.bodies.verifying_trace`).
 
     Walking from "the most recently generated annotation" instead is
     **inverted**: a descendant is by construction generated *after* its
@@ -892,7 +906,8 @@ def _last_authored_change(indexed):
         (
             ann
             for _, ann in reversed(indexed)
-            if ann.tier != _TIER_DECISION and not ann.provenance.was_derived_from
+            if ann.tier not in _BOOKKEEPING_TIERS
+            and not ann.provenance.was_derived_from
         ),
         None,
     )

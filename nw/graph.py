@@ -15,9 +15,12 @@ Usage from inside the package:
     ...     ...
 
 For reelee's freshness analysis (planned in §7 of the system overview),
-:func:`derived_from`, :func:`descendants_of`, and :func:`stale_after`
-walk the ``provenance.was_derived_from`` edges across **all** stores in
-a project (project graph + storyboard + alignment).
+:func:`derived_from` and :func:`descendants_of` walk the
+``provenance.was_derived_from`` edges across **all** stores in a project
+(project graph + storyboard + alignment). Those are *reachability* queries.
+The freshness query that compares content — ``nw.stale_after`` — lives in
+:mod:`nw.freshness`; this module is where its input, the verifying trace, is
+written (see :meth:`ProjectGraph.add_annotation`).
 """
 
 from __future__ import annotations
@@ -26,7 +29,7 @@ from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable, Iterator, Optional
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from lacing import (
     Annotation,
@@ -43,11 +46,13 @@ from .bodies import (
     ENVIRONMENT_REF_BODY_SCHEMA_URI,
     SECTION_BODY_SCHEMA_URI,
     SHOT_BODY_SCHEMA_URI,
+    VERIFYING_TRACE_TIER,
     CharacterRefBodyV1,
     DecisionBodyV1,
     EnvironmentRefBodyV1,
     SectionBodyV1,
     ShotBodyV1,
+    build_verifying_trace,
 )
 from .graph_backend import (
     SCOPE_ALIGNMENT,
@@ -310,8 +315,12 @@ class ProjectGraph:
         was_derived_from: tuple[UUID, ...] = (),
     ) -> UUID:
         """Append a decision; never replaces an existing one (the log is append-only)."""
+        new_id = uuid4()
+        # Resolve upstream digests *before* opening the store — the lookup
+        # walks every scope and must not nest inside this store's context.
+        trace = self._verifying_trace_for(new_id, was_derived_from)
         with self._open() as store:
-            return _put(
+            _put(
                 store,
                 tier=_TIER_DECISION,
                 schema_uri=DECISION_BODY_SCHEMA_URI,
@@ -320,23 +329,79 @@ class ProjectGraph:
                 asset_id=self.asset_id,
                 was_attributed_to=was_attributed_to,
                 was_derived_from=was_derived_from,
+                annotation_id=new_id,
             )
+            _add_trace(store, trace)
+        return new_id
 
     # -- arbitrary annotations (for things that don't fit a typed bucket) ----
 
     def add_annotation(self, ann: Annotation) -> None:
-        """Write one annotation to the project graph.
+        """Write one annotation to the project graph, plus its verifying trace.
 
         Registers ``ann.tier`` if it isn't a known tier yet — ``SqliteStore``
         enforces a foreign key on ``tier``, so writing under a fresh tier
         (e.g. a Transform output kind) would otherwise fail. ``add_tier`` is
         idempotent, so this is a no-op for the built-in project tiers.
+
+        This is the single choke point every *derived* annotation in nw and
+        reelee passes through, which is why the verifying trace
+        (:mod:`nw.bodies.verifying_trace`) is recorded here rather than in
+        ``derive_provenance``: that helper returns a ``Provenance`` and has
+        no store to write to, and threading one in would change a signature
+        with production callsites in three repos. Writing at persist time
+        also covers the paths that build a ``Provenance`` by hand.
+
+        Annotations with no ``was_derived_from`` parents get no trace — there
+        is nothing to verify, and they are nobody's descendant.
         """
         from lacing import Tier, TierStereotype
 
+        trace = self._verifying_trace_for(ann.id, ann.provenance.was_derived_from)
         with self._open() as store:
             store.add_tier(Tier(name=ann.tier, stereotype=TierStereotype.NONE))
             store.add(ann)
+            _add_trace(store, trace)
+
+    # -- verifying traces ----------------------------------------------------
+
+    def _verifying_trace_for(
+        self, annotation_id: UUID, parent_ids: Iterable[UUID]
+    ) -> Optional[Annotation]:
+        """Build the verifying trace for a derived annotation, or ``None``.
+
+        ``None`` whenever the trace would be incomplete — no parents, or a
+        parent that cannot be resolved. :mod:`nw.freshness` reads a missing
+        trace as *unverifiable*, i.e. stale, so an incomplete record is never
+        preferable to none.
+        """
+        wanted = tuple(dict.fromkeys(parent_ids))
+        if not wanted:
+            return None
+        return build_verifying_trace(
+            for_annotation_id=annotation_id,
+            parent_ids=wanted,
+            upstream=self._resolve_annotations(wanted),
+            asset_id=self.asset_id,
+        )
+
+    def _resolve_annotations(self, ids: tuple[UUID, ...]) -> list[Annotation]:
+        """Fetch ``ids`` from the project's stores, stopping once all are found.
+
+        lacing's store protocol has no point lookup by annotation id (its
+        ``__getitem__`` is keyed by :class:`~lacing.TimeInterval`), so this is
+        a scan. It runs once per *derived* write and short-circuits on the
+        last hit; entity upserts and other parentless writes never reach it.
+        """
+        wanted = set(ids)
+        found: list[Annotation] = []
+        for ann in iter_all_annotations(self.project_root):
+            if ann.id in wanted:
+                found.append(ann)
+                wanted.discard(ann.id)
+                if not wanted:
+                    break
+        return found
 
 
 # ---------------------------------------------------------------------------
@@ -441,22 +506,6 @@ def derived_from(project_root: str | Path, annotation_id: UUID) -> list[Annotati
     return [by_id[i] for i in target.provenance.was_derived_from if i in by_id]
 
 
-def stale_after(project_root: str | Path, changed_id: UUID) -> list[Annotation]:
-    """Return every annotation that is downstream of ``changed_id``.
-
-    Reelee's freshness operation (system overview §7): when a node changes
-    (a character description, a screenplay scene, a model parameter), the
-    set of annotations now potentially out of date is the transitive closure
-    of ``was_derived_from`` edges leading to ``changed_id``. This is just
-    :func:`descendants_of` under a more user-facing name; both names are
-    exposed because reelee's UI surfaces use both verbs.
-
-    The returned list does NOT include ``changed_id`` itself (it's the source
-    of the change, not a stale derivative).
-    """
-    return descendants_of(project_root, changed_id)
-
-
 def annotations_at_tier(project_root: str | Path, tier: str) -> list[Annotation]:
     """Return every annotation at the given tier across all of the project's stores.
 
@@ -471,6 +520,16 @@ def annotations_at_tier(project_root: str | Path, tier: str) -> list[Annotation]
 # ---------------------------------------------------------------------------
 # Internals
 # ---------------------------------------------------------------------------
+
+
+def _add_trace(store: IntervalAnnotationStore, trace: Optional[Annotation]) -> None:
+    """Write a verifying trace (registering its tier), or do nothing for ``None``."""
+    if trace is None:
+        return
+    from lacing import Tier, TierStereotype
+
+    store.add_tier(Tier(name=VERIFYING_TRACE_TIER, stereotype=TierStereotype.NONE))
+    store.add(trace)
 
 
 def _upsert(
@@ -556,9 +615,7 @@ def _put(
     ``annotation_id`` reuses an existing id (see :func:`_upsert`); omit it to
     mint a fresh one.
     """
-    import uuid as _uuid
-
-    new_id = annotation_id if annotation_id is not None else _uuid.uuid4()
+    new_id = annotation_id if annotation_id is not None else uuid4()
     ann = Annotation(
         id=new_id,
         tier=tier,

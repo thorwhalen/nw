@@ -229,7 +229,30 @@ upstream = nw.derived_from(proj.root, render_annotation_id)
 shots = nw.annotations_at_tier(proj.root, "shot")
 ```
 
-See [Known limits](#known-limits) for what `stale_after` does and does not do today.
+**`descendants_of` and `stale_after` are different questions.** The first is
+reachability — *what is downstream of this?* The second is freshness — *what
+did this change actually invalidate?* — and it **cuts off early**: every
+derived annotation records the content digests of its inputs at write time (a
+*verifying trace*), so a change that leaves a value untouched stops
+propagating there instead of invalidating the whole subtree. Edit a character
+and revert it, or regenerate a panel to identical content, and the stale set
+goes back to empty without anything downstream being recomputed.
+
+```python
+for v in nw.stale_verdicts(proj.root, character_annotation_id):
+    print(v.annotation.id, v.is_stale, v.reason)   # e.g. "upstream-changed"
+```
+
+The rule is asymmetric on purpose: anything unverifiable — no trace, a deleted
+input, a trace that no longer covers the current parents — counts as **stale**.
+Over-reporting costs a recompute; under-reporting serves a stale artifact. That
+also means **no migration**: annotations written before traces existed behave
+exactly as they did under pure reachability.
+
+Scope: the **annotation** tier. Artifact-to-artifact lineage is still
+unrepresentable upstream ([lacing#14](https://github.com/thorwhalen/lacing/issues/14)).
+`nw.stale_after` compares upstream *values*, not the producing Transform, so
+bumping a Transform's implementation does not move a digest.
 
 ## Async jobs
 
@@ -423,6 +446,8 @@ nw.FrozenSegment, nw.Gap
     nw.derived_from,
     nw.descendants_of,
     nw.stale_after,
+    nw.stale_verdicts,
+    nw.FreshnessVerdict,
 )
 nw.annotations_at_tier, nw.iter_all_annotations, nw.open_project_stores
 
@@ -454,15 +479,23 @@ Re-render* and *Execution Semantics and Fan-out*.
 
 ## Known limits
 
-Two places where the substrate currently promises less than it looks like it does:
+Places where the substrate currently promises less than it looks like it does:
 
-- **`stale_after` has no early cutoff** — it is `descendants_of` under another
-  name, pure reachability over `was_derived_from`, comparing no timestamp and no
-  content digest. A regeneration that changes nothing still reports everything
-  downstream as stale
-  ([#24](https://github.com/thorwhalen/nw/issues/24)). `descendants_of` — "what
-  is downstream of this?" — is exactly right as it stands; it is `stale_after`
-  that owes you a comparison.
+- **Early cutoff stops at the annotation tier.** `stale_after` compares
+  annotation *value* digests; artifact→artifact lineage is unrepresentable
+  upstream, because `lacing.Provenance.was_derived_from` is `list[UUID]` and an
+  `asset_id` is 64 hex chars
+  ([lacing#14](https://github.com/thorwhalen/lacing/issues/14)). It also does
+  not notice a changed **Transform** — a re-implemented or re-prompted
+  Transform moves no upstream digest — and reads a hand-edited output as fresh,
+  because relative to its inputs it is.
+- **`resumption_brief` still reports reachability, deliberately.**
+  `downstream_of_last_authored_change` is `descendants_of`, an explicit upper
+  bound named for what it measures; `nw.stale_after` is the narrower answer if
+  you want it ([#7](https://github.com/thorwhalen/nw/issues/7)).
+- **A removed annotation leaves its verifying trace behind.** Orphan traces are
+  inert — they are indexed by a target id that no longer resolves — but nothing
+  collects them yet ([#36](https://github.com/thorwhalen/nw/issues/36)).
 - **`BaseTransform.execute` has no failure isolation** — one failing call in a
   fan-out Plan raises, and no annotations reach the graph for the calls that did
   succeed ([#25](https://github.com/thorwhalen/nw/issues/25)).
