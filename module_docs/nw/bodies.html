@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.bodies &mdash; nw 0.0.17 documentation</title>
+  <title>nw.bodies &mdash; nw 0.0.18 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=63b572e7"></script>
+      <script src="../../_static/documentation_options.js?v=8bafd125"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -75,6 +75,15 @@
 <li class="toctree-l3"><a class="reference internal" href="#nw.bodies.ShotBodyV1.model_config"><code class="docutils literal notranslate"><span class="pre">ShotBodyV1.model_config</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.bodies.UpstreamDigestV1"><code class="docutils literal notranslate"><span class="pre">UpstreamDigestV1</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#nw.bodies.UpstreamDigestV1.model_config"><code class="docutils literal notranslate"><span class="pre">UpstreamDigestV1.model_config</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.bodies.VerifyingTraceBodyV1"><code class="docutils literal notranslate"><span class="pre">VerifyingTraceBodyV1</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#nw.bodies.VerifyingTraceBodyV1.model_config"><code class="docutils literal notranslate"><span class="pre">VerifyingTraceBodyV1.model_config</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.bodies.build_verifying_trace"><code class="docutils literal notranslate"><span class="pre">build_verifying_trace()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="bodies/character_ref.html">nw.bodies.character_ref</a></li>
@@ -83,7 +92,9 @@
 <li class="toctree-l1"><a class="reference internal" href="bodies/render_result.html">nw.bodies.render_result</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bodies/section.html">nw.bodies.section</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bodies/shot.html">nw.bodies.shot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/verifying_trace.html">nw.bodies.verifying_trace</a></li>
 <li class="toctree-l1"><a class="reference internal" href="experiment.html">nw.experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="freshness.html">nw.freshness</a></li>
 <li class="toctree-l1"><a class="reference internal" href="genres.html">nw.genres</a></li>
 <li class="toctree-l1"><a class="reference internal" href="graph.html">nw.graph</a></li>
 <li class="toctree-l1"><a class="reference internal" href="graph_backend.html">nw.graph_backend</a></li>
@@ -144,6 +155,7 @@ with a matching <code class="docutils literal notranslate"><span class="pre">bod
 <li><p><code class="docutils literal notranslate"><span class="pre">annot://schema/environment-ref/v1</span></code> — pointer to an environment folder</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">annot://schema/decision/v1</span></code>       — provenance-rich decision log entry</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">annot://schema/render-result/v1</span></code>  — output of a render Transform</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">annot://schema/verifying-trace/v1</span></code> — upstream value digests, for early cutoff</p></li>
 </ul>
 <p>These are deliberately small and project-agnostic. Reelee will be able to
 walk the same graph for freshness analysis (“what’s downstream of this
@@ -226,6 +238,63 @@ later, it can graduate into its own body URI without disturbing this one.</p>
 <dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.bodies.UpstreamDigestV1">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.bodies.</span></span><span class="sig-name descname"><span class="pre">UpstreamDigestV1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotation_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value_digest</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nw/bodies/verifying_trace.html#UpstreamDigestV1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.bodies.UpstreamDigestV1" title="Link to this definition"></a></dt>
+<dd><p>One <code class="docutils literal notranslate"><span class="pre">(upstream</span> <span class="pre">annotation,</span> <span class="pre">its</span> <span class="pre">value</span> <span class="pre">digest)</span></code> pair.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.bodies.UpstreamDigestV1.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'extra':</span> <span class="pre">'forbid',</span> <span class="pre">'frozen':</span> <span class="pre">True}</span></span><a class="headerlink" href="#nw.bodies.UpstreamDigestV1.model_config" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.bodies.VerifyingTraceBodyV1">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.bodies.</span></span><span class="sig-name descname"><span class="pre">VerifyingTraceBodyV1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">for_annotation_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">digest_scheme</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upstream</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="bodies/verifying_trace.html#nw.bodies.verifying_trace.UpstreamDigestV1" title="nw.bodies.verifying_trace.UpstreamDigestV1"><span class="pre">UpstreamDigestV1</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">()</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nw/bodies/verifying_trace.html#VerifyingTraceBodyV1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.bodies.VerifyingTraceBodyV1" title="Link to this definition"></a></dt>
+<dd><p>Body of a verifying-trace annotation.</p>
+<p><code class="docutils literal notranslate"><span class="pre">digest_scheme</span></code> is recorded rather than assumed: lacing documents that
+changing <code class="docutils literal notranslate"><span class="pre">VALUE_FIELDS</span></code> or the canonicalisation is a breaking
+cache-invalidation event and bumps the scheme string. A trace written
+under an older scheme is not comparable, so <a class="reference internal" href="freshness.html#module-nw.freshness" title="nw.freshness"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nw.freshness</span></code></a> treats
+the mismatch as <em>unverifiable</em> (therefore stale) instead of comparing
+digests that mean different things.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.bodies.VerifyingTraceBodyV1.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'extra':</span> <span class="pre">'forbid',</span> <span class="pre">'frozen':</span> <span class="pre">True}</span></span><a class="headerlink" href="#nw.bodies.VerifyingTraceBodyV1.model_config" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.bodies.build_verifying_trace">
+<span class="sig-prename descclassname"><span class="pre">nw.bodies.</span></span><span class="sig-name descname"><span class="pre">build_verifying_trace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">for_annotation_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">UUID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_ids</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">UUID</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upstream</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Annotation</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asset_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Annotation</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/nw/bodies/verifying_trace.html#build_verifying_trace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.bodies.build_verifying_trace" title="Link to this definition"></a></dt>
+<dd><p>Build the trace annotation for one derived annotation, or <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>for_annotation_id</strong> – Id of the annotation being described.</p></li>
+<li><p><strong>parent_ids</strong> – Its <code class="docutils literal notranslate"><span class="pre">provenance.was_derived_from</span></code>. Duplicates are
+collapsed, order preserved.</p></li>
+<li><p><strong>upstream</strong> – The resolved parent annotations. <strong>Must cover every id in
+``parent_ids``</strong> — a trace that omits a parent would let that
+parent change unnoticed.</p></li>
+<li><p><strong>asset_id</strong> – The project’s asset id, for the sentinel reference.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The trace annotation, or <code class="docutils literal notranslate"><span class="pre">None</span></code> when there is nothing to verify
+(no parents) or the trace would be incomplete (a parent could not be
+resolved, or its value could not be digested). <code class="docutils literal notranslate"><span class="pre">None</span></code> is the safe
+answer in both cases: <a class="reference internal" href="freshness.html#module-nw.freshness" title="nw.freshness"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nw.freshness</span></code></a> reads <em>no trace</em> as
+<em>unverifiable</em>, so the annotation keeps today’s conservative
+reachability behaviour instead of being silently declared fresh.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>

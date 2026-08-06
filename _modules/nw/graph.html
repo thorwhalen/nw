@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.graph &mdash; nw 0.0.17 documentation</title>
+  <title>nw.graph &mdash; nw 0.0.18 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=63b572e7"></script>
+      <script src="../../_static/documentation_options.js?v=8bafd125"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -54,7 +54,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/render_result.html">nw.bodies.render_result</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/section.html">nw.bodies.section</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/shot.html">nw.bodies.shot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/verifying_trace.html">nw.bodies.verifying_trace</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/experiment.html">nw.experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/freshness.html">nw.freshness</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/genres.html">nw.genres</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/graph.html">nw.graph</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/graph_backend.html">nw.graph_backend</a></li>
@@ -121,9 +123,12 @@
 <span class="sd">    ...     ...</span>
 
 <span class="sd">For reelee&#39;s freshness analysis (planned in §7 of the system overview),</span>
-<span class="sd">:func:`derived_from`, :func:`descendants_of`, and :func:`stale_after`</span>
-<span class="sd">walk the ``provenance.was_derived_from`` edges across **all** stores in</span>
-<span class="sd">a project (project graph + storyboard + alignment).</span>
+<span class="sd">:func:`derived_from` and :func:`descendants_of` walk the</span>
+<span class="sd">``provenance.was_derived_from`` edges across **all** stores in a project</span>
+<span class="sd">(project graph + storyboard + alignment). Those are *reachability* queries.</span>
+<span class="sd">The freshness query that compares content — ``nw.stale_after`` — lives in</span>
+<span class="sd">:mod:`nw.freshness`; this module is where its input, the verifying trace, is</span>
+<span class="sd">written (see :meth:`ProjectGraph.add_annotation`).</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
@@ -132,7 +137,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">Optional</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">uuid</span><span class="w"> </span><span class="kn">import</span> <span class="n">UUID</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">uuid</span><span class="w"> </span><span class="kn">import</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">uuid4</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">lacing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">Annotation</span><span class="p">,</span>
@@ -149,11 +154,13 @@
     <span class="n">ENVIRONMENT_REF_BODY_SCHEMA_URI</span><span class="p">,</span>
     <span class="n">SECTION_BODY_SCHEMA_URI</span><span class="p">,</span>
     <span class="n">SHOT_BODY_SCHEMA_URI</span><span class="p">,</span>
+    <span class="n">VERIFYING_TRACE_TIER</span><span class="p">,</span>
     <span class="n">CharacterRefBodyV1</span><span class="p">,</span>
     <span class="n">DecisionBodyV1</span><span class="p">,</span>
     <span class="n">EnvironmentRefBodyV1</span><span class="p">,</span>
     <span class="n">SectionBodyV1</span><span class="p">,</span>
     <span class="n">ShotBodyV1</span><span class="p">,</span>
+    <span class="n">build_verifying_trace</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.graph_backend</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">SCOPE_ALIGNMENT</span><span class="p">,</span>
@@ -447,8 +454,12 @@
         <span class="n">was_derived_from</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">UUID</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UUID</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Append a decision; never replaces an existing one (the log is append-only).&quot;&quot;&quot;</span>
+        <span class="n">new_id</span> <span class="o">=</span> <span class="n">uuid4</span><span class="p">()</span>
+        <span class="c1"># Resolve upstream digests *before* opening the store — the lookup</span>
+        <span class="c1"># walks every scope and must not nest inside this store&#39;s context.</span>
+        <span class="n">trace</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_verifying_trace_for</span><span class="p">(</span><span class="n">new_id</span><span class="p">,</span> <span class="n">was_derived_from</span><span class="p">)</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open</span><span class="p">()</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">_put</span><span class="p">(</span>
+            <span class="n">_put</span><span class="p">(</span>
                 <span class="n">store</span><span class="p">,</span>
                 <span class="n">tier</span><span class="o">=</span><span class="n">_TIER_DECISION</span><span class="p">,</span>
                 <span class="n">schema_uri</span><span class="o">=</span><span class="n">DECISION_BODY_SCHEMA_URI</span><span class="p">,</span>
@@ -457,7 +468,10 @@
                 <span class="n">asset_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asset_id</span><span class="p">,</span>
                 <span class="n">was_attributed_to</span><span class="o">=</span><span class="n">was_attributed_to</span><span class="p">,</span>
                 <span class="n">was_derived_from</span><span class="o">=</span><span class="n">was_derived_from</span><span class="p">,</span>
-            <span class="p">)</span></div>
+                <span class="n">annotation_id</span><span class="o">=</span><span class="n">new_id</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">_add_trace</span><span class="p">(</span><span class="n">store</span><span class="p">,</span> <span class="n">trace</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_id</span></div>
 
 
     <span class="c1"># -- arbitrary annotations (for things that don&#39;t fit a typed bucket) ----</span>
@@ -465,19 +479,72 @@
 <div class="viewcode-block" id="ProjectGraph.add_annotation">
 <a class="viewcode-back" href="../../module_docs/nw/graph.html#nw.ProjectGraph.add_annotation">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_annotation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ann</span><span class="p">:</span> <span class="n">Annotation</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Write one annotation to the project graph.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Write one annotation to the project graph, plus its verifying trace.</span>
 
 <span class="sd">        Registers ``ann.tier`` if it isn&#39;t a known tier yet — ``SqliteStore``</span>
 <span class="sd">        enforces a foreign key on ``tier``, so writing under a fresh tier</span>
 <span class="sd">        (e.g. a Transform output kind) would otherwise fail. ``add_tier`` is</span>
 <span class="sd">        idempotent, so this is a no-op for the built-in project tiers.</span>
+
+<span class="sd">        This is the single choke point every *derived* annotation in nw and</span>
+<span class="sd">        reelee passes through, which is why the verifying trace</span>
+<span class="sd">        (:mod:`nw.bodies.verifying_trace`) is recorded here rather than in</span>
+<span class="sd">        ``derive_provenance``: that helper returns a ``Provenance`` and has</span>
+<span class="sd">        no store to write to, and threading one in would change a signature</span>
+<span class="sd">        with production callsites in three repos. Writing at persist time</span>
+<span class="sd">        also covers the paths that build a ``Provenance`` by hand.</span>
+
+<span class="sd">        Annotations with no ``was_derived_from`` parents get no trace — there</span>
+<span class="sd">        is nothing to verify, and they are nobody&#39;s descendant.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">lacing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tier</span><span class="p">,</span> <span class="n">TierStereotype</span>
 
+        <span class="n">trace</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_verifying_trace_for</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">ann</span><span class="o">.</span><span class="n">provenance</span><span class="o">.</span><span class="n">was_derived_from</span><span class="p">)</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open</span><span class="p">()</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
             <span class="n">store</span><span class="o">.</span><span class="n">add_tier</span><span class="p">(</span><span class="n">Tier</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">ann</span><span class="o">.</span><span class="n">tier</span><span class="p">,</span> <span class="n">stereotype</span><span class="o">=</span><span class="n">TierStereotype</span><span class="o">.</span><span class="n">NONE</span><span class="p">))</span>
-            <span class="n">store</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ann</span><span class="p">)</span></div>
-</div>
+            <span class="n">store</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ann</span><span class="p">)</span>
+            <span class="n">_add_trace</span><span class="p">(</span><span class="n">store</span><span class="p">,</span> <span class="n">trace</span><span class="p">)</span></div>
+
+
+    <span class="c1"># -- verifying traces ----------------------------------------------------</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_verifying_trace_for</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">annotation_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">parent_ids</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">UUID</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build the verifying trace for a derived annotation, or ``None``.</span>
+
+<span class="sd">        ``None`` whenever the trace would be incomplete — no parents, or a</span>
+<span class="sd">        parent that cannot be resolved. :mod:`nw.freshness` reads a missing</span>
+<span class="sd">        trace as *unverifiable*, i.e. stale, so an incomplete record is never</span>
+<span class="sd">        preferable to none.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">wanted</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">parent_ids</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">wanted</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">build_verifying_trace</span><span class="p">(</span>
+            <span class="n">for_annotation_id</span><span class="o">=</span><span class="n">annotation_id</span><span class="p">,</span>
+            <span class="n">parent_ids</span><span class="o">=</span><span class="n">wanted</span><span class="p">,</span>
+            <span class="n">upstream</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_resolve_annotations</span><span class="p">(</span><span class="n">wanted</span><span class="p">),</span>
+            <span class="n">asset_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asset_id</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_resolve_annotations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ids</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">UUID</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fetch ``ids`` from the project&#39;s stores, stopping once all are found.</span>
+
+<span class="sd">        lacing&#39;s store protocol has no point lookup by annotation id (its</span>
+<span class="sd">        ``__getitem__`` is keyed by :class:`~lacing.TimeInterval`), so this is</span>
+<span class="sd">        a scan. It runs once per *derived* write and short-circuits on the</span>
+<span class="sd">        last hit; entity upserts and other parentless writes never reach it.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">wanted</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">ids</span><span class="p">)</span>
+        <span class="n">found</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">iter_all_annotations</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_root</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">ann</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="n">wanted</span><span class="p">:</span>
+                <span class="n">found</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ann</span><span class="p">)</span>
+                <span class="n">wanted</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">wanted</span><span class="p">:</span>
+                    <span class="k">break</span>
+        <span class="k">return</span> <span class="n">found</span></div>
 
 
 
@@ -598,25 +665,6 @@
 
 
 
-<div class="viewcode-block" id="stale_after">
-<a class="viewcode-back" href="../../module_docs/nw/graph.html#nw.stale_after">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">stale_after</span><span class="p">(</span><span class="n">project_root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span> <span class="n">changed_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return every annotation that is downstream of ``changed_id``.</span>
-
-<span class="sd">    Reelee&#39;s freshness operation (system overview §7): when a node changes</span>
-<span class="sd">    (a character description, a screenplay scene, a model parameter), the</span>
-<span class="sd">    set of annotations now potentially out of date is the transitive closure</span>
-<span class="sd">    of ``was_derived_from`` edges leading to ``changed_id``. This is just</span>
-<span class="sd">    :func:`descendants_of` under a more user-facing name; both names are</span>
-<span class="sd">    exposed because reelee&#39;s UI surfaces use both verbs.</span>
-
-<span class="sd">    The returned list does NOT include ``changed_id`` itself (it&#39;s the source</span>
-<span class="sd">    of the change, not a stale derivative).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">descendants_of</span><span class="p">(</span><span class="n">project_root</span><span class="p">,</span> <span class="n">changed_id</span><span class="p">)</span></div>
-
-
-
 <div class="viewcode-block" id="annotations_at_tier">
 <a class="viewcode-back" href="../../module_docs/nw/graph.html#nw.annotations_at_tier">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">annotations_at_tier</span><span class="p">(</span><span class="n">project_root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span> <span class="n">tier</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]:</span>
@@ -634,6 +682,16 @@
 <span class="c1"># ---------------------------------------------------------------------------</span>
 <span class="c1"># Internals</span>
 <span class="c1"># ---------------------------------------------------------------------------</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_add_trace</span><span class="p">(</span><span class="n">store</span><span class="p">:</span> <span class="n">IntervalAnnotationStore</span><span class="p">,</span> <span class="n">trace</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Annotation</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Write a verifying trace (registering its tier), or do nothing for ``None``.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">trace</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">lacing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tier</span><span class="p">,</span> <span class="n">TierStereotype</span>
+
+    <span class="n">store</span><span class="o">.</span><span class="n">add_tier</span><span class="p">(</span><span class="n">Tier</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">VERIFYING_TRACE_TIER</span><span class="p">,</span> <span class="n">stereotype</span><span class="o">=</span><span class="n">TierStereotype</span><span class="o">.</span><span class="n">NONE</span><span class="p">))</span>
+    <span class="n">store</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">trace</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_upsert</span><span class="p">(</span>
@@ -719,9 +777,7 @@
 <span class="sd">    ``annotation_id`` reuses an existing id (see :func:`_upsert`); omit it to</span>
 <span class="sd">    mint a fresh one.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">_uuid</span>
-
-    <span class="n">new_id</span> <span class="o">=</span> <span class="n">annotation_id</span> <span class="k">if</span> <span class="n">annotation_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">_uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span>
+    <span class="n">new_id</span> <span class="o">=</span> <span class="n">annotation_id</span> <span class="k">if</span> <span class="n">annotation_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">uuid4</span><span class="p">()</span>
     <span class="n">ann</span> <span class="o">=</span> <span class="n">Annotation</span><span class="p">(</span>
         <span class="nb">id</span><span class="o">=</span><span class="n">new_id</span><span class="p">,</span>
         <span class="n">tier</span><span class="o">=</span><span class="n">tier</span><span class="p">,</span>

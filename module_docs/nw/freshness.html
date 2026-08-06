@@ -1,0 +1,264 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>nw.freshness &mdash; nw 0.0.18 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=8bafd125"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="nw.genres" href="genres.html" />
+    <link rel="prev" title="nw.experiment" href="experiment.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            nw
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../nw.html">nw</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies.html">nw.bodies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/character_ref.html">nw.bodies.character_ref</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/decision.html">nw.bodies.decision</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/environment_ref.html">nw.bodies.environment_ref</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/render_result.html">nw.bodies.render_result</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/section.html">nw.bodies.section</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/shot.html">nw.bodies.shot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/verifying_trace.html">nw.bodies.verifying_trace</a></li>
+<li class="toctree-l1"><a class="reference internal" href="experiment.html">nw.experiment</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">nw.freshness</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#the-rule-stated-exactly">The rule, stated exactly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#what-this-does-not-catch">What this does <strong>not</strong> catch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.freshness.FreshnessVerdict"><code class="docutils literal notranslate"><span class="pre">FreshnessVerdict</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.freshness.STALE_REASONS"><code class="docutils literal notranslate"><span class="pre">STALE_REASONS</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.freshness.stale_after"><code class="docutils literal notranslate"><span class="pre">stale_after()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.freshness.stale_verdicts"><code class="docutils literal notranslate"><span class="pre">stale_verdicts()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="genres.html">nw.genres</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graph.html">nw.graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graph_backend.html">nw.graph_backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="inspect.html">nw.inspect</a></li>
+<li class="toctree-l1"><a class="reference internal" href="jobs.html">nw.jobs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrate.html">nw.migrate</a></li>
+<li class="toctree-l1"><a class="reference internal" href="project.html">nw.project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers.html">nw.renderers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/_common.html">nw.renderers._common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/composite_lipsync.html">nw.renderers.composite_lipsync</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/image_to_video.html">nw.renderers.image_to_video</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/lipsync.html">nw.renderers.lipsync</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/still.html">nw.renderers.still</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/text_to_video.html">nw.renderers.text_to_video</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema.html">nw.schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="script_segmentation.html">nw.script_segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="storyboard.html">nw.storyboard</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms.html">nw.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms/_adapters.html">nw.transforms._adapters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms/_adapters/render_strategy.html">nw.transforms._adapters.render_strategy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms/_provenance.html">nw.transforms._provenance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow.html">nw.workflow</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">nw</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">nw.freshness</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/module_docs/nw/freshness.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-nw.freshness">
+<span id="nw-freshness"></span><h1>nw.freshness<a class="headerlink" href="#module-nw.freshness" title="Link to this heading"></a></h1>
+<p>Freshness with <strong>early cutoff</strong> — what is <em>actually</em> out of date.</p>
+<p><code class="docutils literal notranslate"><span class="pre">descendants_of</span></code> answers a reachability question: “what is downstream of
+this?”. <a class="reference internal" href="#nw.freshness.stale_after" title="nw.freshness.stale_after"><code class="xref py py-func docutils literal notranslate"><span class="pre">stale_after()</span></code></a> answers a freshness question: “what did this
+change actually invalidate?”. Those are different questions, and until this
+module existed nw answered the second with the first — a one-line alias, so
+editing one beat in a 200-shot project reported every descendant stale
+whether or not anything about it had changed.</p>
+<p>In <em>Build Systems à la Carte</em> terms that is the <strong>Make</strong> cell: a dirty-bit
+rebuilder, “early cutoff: no”. This module upgrades it to a <strong>verifying
+trace</strong> rebuilder (Ninja, Shake, rustc/Salsa) using Salsa’s <em>backdating</em>
+idea: compare the value you have against the value the consumer recorded,
+and stop when they agree. One 32-byte digest comparison replaces loading a
+40 MB video, which is what makes cutoff free rather than pointless.</p>
+<section id="the-rule-stated-exactly">
+<h2>The rule, stated exactly<a class="headerlink" href="#the-rule-stated-exactly" title="Link to this heading"></a></h2>
+<p>An annotation <code class="docutils literal notranslate"><span class="pre">X</span></code> reachable from <code class="docutils literal notranslate"><span class="pre">changed_id</span></code> is <strong>stale</strong> when any of
+these holds, and <strong>fresh</strong> only when none does:</p>
+<ul class="simple">
+<li><p>no verifying trace was recorded for <code class="docutils literal notranslate"><span class="pre">X</span></code> (<a class="reference internal" href="bodies/verifying_trace.html#module-nw.bodies.verifying_trace" title="nw.bodies.verifying_trace"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nw.bodies.verifying_trace</span></code></a>),</p></li>
+<li><p>the trace was written under a different digest scheme,</p></li>
+<li><p>the trace’s upstream set is not exactly <code class="docutils literal notranslate"><span class="pre">X.provenance.was_derived_from</span></code>,</p></li>
+<li><p>a recorded upstream annotation no longer exists,</p></li>
+<li><p>a recorded upstream is <strong>itself stale</strong> — its value is about to change,</p></li>
+<li><p>a recorded upstream’s <em>current</em> value digest differs from the recorded one.</p></li>
+</ul>
+<p>Two consequences worth stating, because both are easy to get backwards:</p>
+<p><strong>The comparison lives on the edge, not on the node.</strong> It is tempting to
+classify <code class="docutils literal notranslate"><span class="pre">X</span></code> as fresh and then prune the walk there. That is wrong: <code class="docutils literal notranslate"><span class="pre">X</span></code>
+having up-to-date <em>inputs</em> says nothing about whether <code class="docutils literal notranslate"><span class="pre">X</span></code>’s own <em>value</em>
+still equals what its children recorded. Rewriting <code class="docutils literal notranslate"><span class="pre">X</span></code> in place makes
+<code class="docutils literal notranslate"><span class="pre">X</span></code> fresh and its children stale at the same instant. So every reachable
+node is classified against <strong>its own</strong> recorded digests; the walk prunes
+nothing.</p>
+<p><strong>Unverifiable means stale.</strong> Every branch above defaults to stale, which is
+why this change needs no data migration: an annotation written before traces
+existed reads as <code class="docutils literal notranslate"><span class="pre">no-trace</span></code> and behaves exactly as it did under pure
+reachability. Over-reporting wastes a recompute — which the content-addressed
+<code class="docutils literal notranslate"><span class="pre">falaw</span></code> cache makes close to free. Under-reporting serves a stale artifact
+as if it were current, so every ambiguous case resolves the other way.</p>
+</section>
+<section id="what-this-does-not-catch">
+<h2>What this does <strong>not</strong> catch<a class="headerlink" href="#what-this-does-not-catch" title="Link to this heading"></a></h2>
+<p>Stated so nobody reads more into the number than is there:</p>
+<ul class="simple">
+<li><p><strong>A changed Transform.</strong> The trace records upstream <em>values</em>, not the
+producing code. Bumping a Transform’s implementation or prompt does not
+move any digest. <code class="docutils literal notranslate"><span class="pre">stale_after</span></code> answers “what did this <em>annotation</em> change
+invalidate”, not “what did this <em>code</em> change invalidate”.</p></li>
+<li><p><strong>A hand-edited output.</strong> Editing <code class="docutils literal notranslate"><span class="pre">X</span></code>’s body directly leaves its trace
+matching its parents, so <code class="docutils literal notranslate"><span class="pre">X</span></code> reads fresh. That is the intended reading —
+a deliberate override is not stale relative to its inputs — but it does
+mean “fresh” is not “would regenerate identically”.</p></li>
+<li><p><strong>The plan → execute window.</strong> The trace is written when the output is
+<em>persisted</em>, so an upstream mutated between planning and writing is
+recorded at its newer value. That needs a concurrent edit during a render.</p></li>
+<li><p><strong>The artifact tier.</strong> Deliberately out of scope: <code class="docutils literal notranslate"><span class="pre">lacing.Provenance.was_derived_from</span></code>
+is <code class="docutils literal notranslate"><span class="pre">list[UUID]</span></code> and cannot hold a 64-hex <code class="docutils literal notranslate"><span class="pre">asset_id</span></code>, so artifact →
+artifact lineage is unrepresentable (thorwhalen/lacing#14). This module is
+the <strong>annotation</strong> tier only.</p></li>
+</ul>
+</section>
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.freshness.FreshnessVerdict">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.freshness.</span></span><span class="sig-name descname"><span class="pre">FreshnessVerdict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">annotation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Annotation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_stale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reason</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upstream_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">UUID</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nw/freshness.html#FreshnessVerdict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.freshness.FreshnessVerdict" title="Link to this definition"></a></dt>
+<dd><p>Why one reachable annotation was judged stale (or not).</p>
+<p>Emitted by <a class="reference internal" href="#nw.freshness.stale_verdicts" title="nw.freshness.stale_verdicts"><code class="xref py py-func docutils literal notranslate"><span class="pre">stale_verdicts()</span></code></a>. <code class="docutils literal notranslate"><span class="pre">reason</span></code> is one of the
+<code class="docutils literal notranslate"><span class="pre">REASON_*</span></code> constants; <code class="docutils literal notranslate"><span class="pre">upstream_id</span></code> names the parent that decided it
+when a single parent did, so “why is this stale?” has an answer that does
+not require re-deriving the walk by hand.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="nw.freshness.STALE_REASONS">
+<span class="sig-prename descclassname"><span class="pre">nw.freshness.</span></span><span class="sig-name descname"><span class="pre">STALE_REASONS</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('no-trace',</span> <span class="pre">'digest-scheme-changed',</span> <span class="pre">'trace-parents-differ',</span> <span class="pre">'trace-unreadable',</span> <span class="pre">'upstream-missing',</span> <span class="pre">'upstream-stale',</span> <span class="pre">'upstream-changed',</span> <span class="pre">'provenance-cycle')</span></span><a class="headerlink" href="#nw.freshness.STALE_REASONS" title="Link to this definition"></a></dt>
+<dd><p>Every reason that resolves to <em>stale</em>. <code class="xref py py-data docutils literal notranslate"><span class="pre">REASON_FRESH</span></code> is the only
+verdict that does not, which is the invariant that keeps “unverifiable means
+stale” true by construction rather than by review.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.freshness.stale_after">
+<span class="sig-prename descclassname"><span class="pre">nw.freshness.</span></span><span class="sig-name descname"><span class="pre">stale_after</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">changed_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">UUID</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Annotation</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nw/freshness.html#stale_after"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.freshness.stale_after" title="Link to this definition"></a></dt>
+<dd><p>Return every annotation that <code class="docutils literal notranslate"><span class="pre">changed_id</span></code> actually invalidated.</p>
+<p>The freshness operation. <code class="docutils literal notranslate"><span class="pre">changed_id</span></code>’s descendants are walked and each
+is checked against the upstream value digests it recorded when it was
+written (<a class="reference internal" href="bodies/verifying_trace.html#module-nw.bodies.verifying_trace" title="nw.bodies.verifying_trace"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nw.bodies.verifying_trace</span></code></a>). A descendant whose recorded
+inputs still match the current ones is <strong>not</strong> returned — that is the
+early cutoff, and it is why this is not <code class="docutils literal notranslate"><span class="pre">descendants_of</span></code> under another
+name. The full rule, and the four things it deliberately does not catch,
+are in this module’s docstring.</p>
+<p>The returned list does NOT include <code class="docutils literal notranslate"><span class="pre">changed_id</span></code> itself (it is the source
+of the change, not a stale derivative).</p>
+<p><code class="docutils literal notranslate"><span class="pre">descendants_of</span></code> is unchanged and still answers the reachability
+question — “what is downstream of this?” is legitimate and the two verbs
+are no longer synonyms. Use <a class="reference internal" href="#nw.freshness.stale_verdicts" title="nw.freshness.stale_verdicts"><code class="xref py py-func docutils literal notranslate"><span class="pre">stale_verdicts()</span></code></a> when you need the
+<em>reason</em> a given annotation is in (or out of) this set.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.freshness.stale_verdicts">
+<span class="sig-prename descclassname"><span class="pre">nw.freshness.</span></span><span class="sig-name descname"><span class="pre">stale_verdicts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">changed_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">UUID</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#nw.freshness.FreshnessVerdict" title="nw.freshness.FreshnessVerdict"><span class="pre">FreshnessVerdict</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nw/freshness.html#stale_verdicts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.freshness.stale_verdicts" title="Link to this definition"></a></dt>
+<dd><p>Classify every annotation downstream of <code class="docutils literal notranslate"><span class="pre">changed_id</span></code>.</p>
+<p>The explained form of <a class="reference internal" href="#nw.freshness.stale_after" title="nw.freshness.stale_after"><code class="xref py py-func docutils literal notranslate"><span class="pre">stale_after()</span></code></a>: one verdict per reachable
+annotation, stale or not, in a deterministic order (generation time, then
+id). <code class="docutils literal notranslate"><span class="pre">changed_id</span></code> itself is never included — it is the source of the
+change, not a derivative of it.</p>
+<p>Use this when the <em>number</em> is being questioned. <code class="docutils literal notranslate"><span class="pre">stale_after</span></code> is the
+same walk with the fresh verdicts dropped.</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="experiment.html" class="btn btn-neutral float-left" title="nw.experiment" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="genres.html" class="btn btn-neutral float-right" title="nw.genres" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

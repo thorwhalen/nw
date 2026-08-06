@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; nw 0.0.17 documentation</title>
+  <title>Index &mdash; nw 0.0.18 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=63b572e7"></script>
+      <script src="_static/documentation_options.js?v=8bafd125"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -54,7 +54,9 @@
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/render_result.html">nw.bodies.render_result</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/section.html">nw.bodies.section</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/shot.html">nw.bodies.shot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/verifying_trace.html">nw.bodies.verifying_trace</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/experiment.html">nw.experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/freshness.html">nw.freshness</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/genres.html">nw.genres</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/graph.html">nw.graph</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/graph_backend.html">nw.graph_backend</a></li>
@@ -125,6 +127,7 @@
  | <a href="#S"><strong>S</strong></a>
  | <a href="#T"><strong>T</strong></a>
  | <a href="#U"><strong>U</strong></a>
+ | <a href="#V"><strong>V</strong></a>
  | <a href="#W"><strong>W</strong></a>
  
 </div>
@@ -205,12 +208,18 @@
         <li><a href="module_docs/nw/transforms.html#nw.transforms.BaseTransform">(class in nw.transforms)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module_docs/nw/jobs.html#nw.jobs.DurationLearningMiddleware.before_compute">before_compute() (nw.jobs.DurationLearningMiddleware method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module_docs/nw/script_segmentation.html#nw.script_segmentation.build_prompt">build_prompt() (in module nw.script_segmentation)</a>
 </li>
+      <li><a href="module_docs/nw/bodies.html#nw.bodies.build_verifying_trace">build_verifying_trace() (in module nw.bodies)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/bodies/verifying_trace.html#nw.bodies.verifying_trace.build_verifying_trace">(in module nw.bodies.verifying_trace)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -410,6 +419,14 @@
 
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="module_docs/nw.html#nw.FreshnessVerdict">FreshnessVerdict (class in nw)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/freshness.html#nw.freshness.FreshnessVerdict">(class in nw.freshness)</a>
+</li>
+      </ul></li>
+  </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module_docs/nw.html#nw.FrozenSegment">FrozenSegment (class in nw)</a>
 
@@ -696,6 +713,14 @@
 </li>
         <li><a href="module_docs/nw/bodies.html#nw.bodies.ShotBodyV1.model_config">(nw.bodies.ShotBodyV1 attribute)</a>
 </li>
+        <li><a href="module_docs/nw/bodies.html#nw.bodies.UpstreamDigestV1.model_config">(nw.bodies.UpstreamDigestV1 attribute)</a>
+</li>
+        <li><a href="module_docs/nw/bodies/verifying_trace.html#nw.bodies.verifying_trace.UpstreamDigestV1.model_config">(nw.bodies.verifying_trace.UpstreamDigestV1 attribute)</a>
+</li>
+        <li><a href="module_docs/nw/bodies/verifying_trace.html#nw.bodies.verifying_trace.VerifyingTraceBodyV1.model_config">(nw.bodies.verifying_trace.VerifyingTraceBodyV1 attribute)</a>
+</li>
+        <li><a href="module_docs/nw/bodies.html#nw.bodies.VerifyingTraceBodyV1.model_config">(nw.bodies.VerifyingTraceBodyV1 attribute)</a>
+</li>
         <li><a href="module_docs/nw.html#nw.CharacterRef.model_config">(nw.CharacterRef attribute)</a>
 </li>
         <li><a href="module_docs/nw.html#nw.ComposeReport.model_config">(nw.ComposeReport attribute)</a>
@@ -775,7 +800,11 @@
 </li>
         <li><a href="module_docs/nw/bodies/shot.html#module-nw.bodies.shot">nw.bodies.shot</a>
 </li>
+        <li><a href="module_docs/nw/bodies/verifying_trace.html#module-nw.bodies.verifying_trace">nw.bodies.verifying_trace</a>
+</li>
         <li><a href="module_docs/nw/experiment.html#module-nw.experiment">nw.experiment</a>
+</li>
+        <li><a href="module_docs/nw/freshness.html#module-nw.freshness">nw.freshness</a>
 </li>
         <li><a href="module_docs/nw/genres.html#module-nw.genres">nw.genres</a>
 </li>
@@ -893,10 +922,24 @@
 </li>
       </ul></li>
       <li>
+    nw.bodies.verifying_trace
+
+      <ul>
+        <li><a href="module_docs/nw/bodies/verifying_trace.html#module-nw.bodies.verifying_trace">module</a>
+</li>
+      </ul></li>
+      <li>
     nw.experiment
 
       <ul>
         <li><a href="module_docs/nw/experiment.html#module-nw.experiment">module</a>
+</li>
+      </ul></li>
+      <li>
+    nw.freshness
+
+      <ul>
+        <li><a href="module_docs/nw/freshness.html#module-nw.freshness">module</a>
 </li>
       </ul></li>
       <li>
@@ -934,6 +977,8 @@
         <li><a href="module_docs/nw/jobs.html#module-nw.jobs">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     nw.migrate
 
@@ -941,8 +986,6 @@
         <li><a href="module_docs/nw/migrate.html#module-nw.migrate">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     nw.project
 
@@ -1349,14 +1392,14 @@
         <li><a href="module_docs/nw/inspect.html#nw.inspect.ShotReport">(class in nw.inspect)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module_docs/nw.html#nw.ShotSpec">ShotSpec (class in nw)</a>
 
       <ul>
         <li><a href="module_docs/nw/schema.html#nw.schema.ShotSpec">(class in nw.schema)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module_docs/nw.html#nw.SongInfo">SongInfo (class in nw)</a>
 
       <ul>
@@ -1372,11 +1415,19 @@
       <li><a href="module_docs/nw.html#nw.stale_after">stale_after() (in module nw)</a>
 
       <ul>
-        <li><a href="module_docs/nw/graph.html#nw.graph.stale_after">(in module nw.graph)</a>
+        <li><a href="module_docs/nw/freshness.html#nw.freshness.stale_after">(in module nw.freshness)</a>
 </li>
       </ul></li>
+      <li><a href="module_docs/nw/freshness.html#nw.freshness.STALE_REASONS">STALE_REASONS (in module nw.freshness)</a>
+</li>
       <li><a href="module_docs/nw/jobs.html#nw.jobs.JobsConfig.stale_running_s">stale_running_s (nw.jobs.JobsConfig attribute)</a>
 </li>
+      <li><a href="module_docs/nw.html#nw.stale_verdicts">stale_verdicts() (in module nw)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/freshness.html#nw.freshness.stale_verdicts">(in module nw.freshness)</a>
+</li>
+      </ul></li>
       <li><a href="module_docs/nw/renderers/still.html#nw.renderers.still.StillStrategy">StillStrategy (class in nw.renderers.still)</a>
 </li>
       <li><a href="module_docs/nw/graph.html#nw.graph.StoredCharacterRef">StoredCharacterRef (class in nw.graph)</a>
@@ -1509,14 +1560,14 @@
         <li><a href="module_docs/nw.html#nw.ProjectGraph.upsert_character_ref">(nw.ProjectGraph method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module_docs/nw/graph.html#nw.graph.ProjectGraph.upsert_environment_ref">upsert_environment_ref() (nw.graph.ProjectGraph method)</a>
 
       <ul>
         <li><a href="module_docs/nw.html#nw.ProjectGraph.upsert_environment_ref">(nw.ProjectGraph method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module_docs/nw/graph.html#nw.graph.ProjectGraph.upsert_section">upsert_section() (nw.graph.ProjectGraph method)</a>
 
       <ul>
@@ -1527,6 +1578,24 @@
 
       <ul>
         <li><a href="module_docs/nw.html#nw.ProjectGraph.upsert_shot">(nw.ProjectGraph method)</a>
+</li>
+      </ul></li>
+      <li><a href="module_docs/nw/bodies.html#nw.bodies.UpstreamDigestV1">UpstreamDigestV1 (class in nw.bodies)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/bodies/verifying_trace.html#nw.bodies.verifying_trace.UpstreamDigestV1">(class in nw.bodies.verifying_trace)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="V">V</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="module_docs/nw/bodies.html#nw.bodies.VerifyingTraceBodyV1">VerifyingTraceBodyV1 (class in nw.bodies)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/bodies/verifying_trace.html#nw.bodies.verifying_trace.VerifyingTraceBodyV1">(class in nw.bodies.verifying_trace)</a>
 </li>
       </ul></li>
   </ul></td>

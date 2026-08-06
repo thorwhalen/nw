@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.schema &mdash; nw 0.0.17 documentation</title>
+  <title>nw.schema &mdash; nw 0.0.18 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=63b572e7"></script>
+      <script src="../../_static/documentation_options.js?v=8bafd125"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -54,7 +54,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/render_result.html">nw.bodies.render_result</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/section.html">nw.bodies.section</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/shot.html">nw.bodies.shot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/verifying_trace.html">nw.bodies.verifying_trace</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/experiment.html">nw.experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/freshness.html">nw.freshness</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/genres.html">nw.genres</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/graph.html">nw.graph</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/graph_backend.html">nw.graph_backend</a></li>
@@ -407,13 +409,19 @@
 <span class="sd">    **The field names are chosen to be honest about what nw can currently</span>
 <span class="sd">    measure**, because a confidently wrong number is worse than no number:</span>
 
-<span class="sd">    - :attr:`downstream_of_last_authored_change` is *not* &quot;stale&quot;.</span>
-<span class="sd">      ``nw.stale_after`` is pure provenance reachability — it never compares</span>
-<span class="sd">      content or timestamps — so this set includes everything already</span>
+<span class="sd">    - :attr:`downstream_of_last_authored_change` is *not* &quot;stale&quot;. It is</span>
+<span class="sd">      ``nw.descendants_of`` — pure provenance reachability, comparing no</span>
+<span class="sd">      content and no timestamp — so this set includes everything already</span>
 <span class="sd">      regenerated since the change. It is an **upper bound** on what needs</span>
-<span class="sd">      attention, and it is named for what it measures. When early-cutoff</span>
-<span class="sd">      freshness lands, the same call returns a smaller and correct set with</span>
-<span class="sd">      no change to this API.</span>
+<span class="sd">      attention, and it is named for what it measures.</span>
+
+<span class="sd">      ``nw.stale_after`` is the narrower answer and it now cuts off early</span>
+<span class="sd">      (nw#24), so switching this field to it would return a smaller and</span>
+<span class="sd">      correct set. That is deliberately **not** done here: the field would</span>
+<span class="sd">      then be named for the wrong measurement, and which of the two a</span>
+<span class="sd">      resumption brief should show is nw#7&#39;s call, not nw#24&#39;s. Callers who</span>
+<span class="sd">      want the exact set can call ``nw.stale_after`` with</span>
+<span class="sd">      :attr:`last_authored_change_id`.</span>
 <span class="sd">    - The walk starts at the last **authored** change — the most recent</span>
 <span class="sd">      annotation the user wrote (a shot, a section, a character or</span>
 <span class="sd">      environment ref), never one a Transform derived. Walking from &quot;the</span>

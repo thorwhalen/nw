@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.project &mdash; nw 0.0.17 documentation</title>
+  <title>nw.project &mdash; nw 0.0.18 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=63b572e7"></script>
+      <script src="../../_static/documentation_options.js?v=8bafd125"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -54,7 +54,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/render_result.html">nw.bodies.render_result</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/section.html">nw.bodies.section</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/shot.html">nw.bodies.shot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/verifying_trace.html">nw.bodies.verifying_trace</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/experiment.html">nw.experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/freshness.html">nw.freshness</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/genres.html">nw.genres</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/graph.html">nw.graph</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/graph_backend.html">nw.graph_backend</a></li>
@@ -174,6 +176,7 @@
     <span class="n">ShotBodyV1</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.graph</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProjectGraph</span><span class="p">,</span> <span class="n">descendants_of</span><span class="p">,</span> <span class="n">iter_all_annotations</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.bodies</span><span class="w"> </span><span class="kn">import</span> <span class="n">VERIFYING_TRACE_TIER</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.migrate</span><span class="w"> </span><span class="kn">import</span> <span class="n">_TIER_DECISION</span><span class="p">,</span> <span class="n">is_migrated</span><span class="p">,</span> <span class="n">migrate_to_graph</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.schema</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">SCHEMA_VERSION</span><span class="p">,</span>
@@ -187,6 +190,14 @@
     <span class="n">ShotSpec</span><span class="p">,</span>
     <span class="n">SongInfo</span><span class="p">,</span>
 <span class="p">)</span>
+
+
+<span class="n">_BOOKKEEPING_TIERS</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">({</span><span class="n">_TIER_DECISION</span><span class="p">,</span> <span class="n">VERIFYING_TRACE_TIER</span><span class="p">})</span>
+<span class="sd">&quot;&quot;&quot;Tiers that record *what nw did*, not *what the project is*.</span>
+
+<span class="sd">The resumption brief is a statement about project content, so these are</span>
+<span class="sd">excluded from both halves of it: they are neither an authored change nor a</span>
+<span class="sd">downstream consequence of one.&quot;&quot;&quot;</span>
 
 
 <span class="c1"># ---------------------------------------------------------------------------</span>
@@ -922,7 +933,7 @@
             <span class="n">downstream</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
                 <span class="nb">str</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">descendants_of</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">last_change</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">tier</span> <span class="o">!=</span> <span class="n">_TIER_DECISION</span>
+                <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">tier</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_BOOKKEEPING_TIERS</span>
             <span class="p">)</span>
 
         <span class="n">unrendered</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
@@ -1031,9 +1042,14 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">_last_authored_change</span><span class="p">(</span><span class="n">indexed</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;The most recent annotation the *user* authored, or ``None``.</span>
 
-<span class="sd">    &quot;Authored&quot; means it has no ``was_derived_from`` parents and is not a</span>
-<span class="sd">    decision-log row — a shot, a section, a character or environment ref the</span>
-<span class="sd">    user wrote. That is what makes the downstream walk meaningful.</span>
+<span class="sd">    &quot;Authored&quot; means it has no ``was_derived_from`` parents and is not on a</span>
+<span class="sd">    **bookkeeping** tier — a shot, a section, a character or environment ref</span>
+<span class="sd">    the user wrote. That is what makes the downstream walk meaningful.</span>
+
+<span class="sd">    Both bookkeeping tiers would otherwise qualify, and both are written</span>
+<span class="sd">    *after* the edit they describe, so either would shadow the real answer:</span>
+<span class="sd">    a decision-log row, and a verifying trace (which by design carries no</span>
+<span class="sd">    provenance parents — :mod:`nw.bodies.verifying_trace`).</span>
 
 <span class="sd">    Walking from &quot;the most recently generated annotation&quot; instead is</span>
 <span class="sd">    **inverted**: a descendant is by construction generated *after* its</span>
@@ -1046,7 +1062,8 @@
         <span class="p">(</span>
             <span class="n">ann</span>
             <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">ann</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">indexed</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">ann</span><span class="o">.</span><span class="n">tier</span> <span class="o">!=</span> <span class="n">_TIER_DECISION</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">ann</span><span class="o">.</span><span class="n">provenance</span><span class="o">.</span><span class="n">was_derived_from</span>
+            <span class="k">if</span> <span class="n">ann</span><span class="o">.</span><span class="n">tier</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_BOOKKEEPING_TIERS</span>
+            <span class="ow">and</span> <span class="ow">not</span> <span class="n">ann</span><span class="o">.</span><span class="n">provenance</span><span class="o">.</span><span class="n">was_derived_from</span>
         <span class="p">),</span>
         <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span>

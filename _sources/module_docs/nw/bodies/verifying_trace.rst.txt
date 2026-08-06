@@ -1,0 +1,4 @@
+nw.bodies.verifying_trace
+=========================
+.. automodule:: nw.bodies.verifying_trace
+   :members:

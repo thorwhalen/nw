@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Welcome to nw’s documentation! &mdash; nw 0.0.17 documentation</title>
+  <title>Welcome to nw’s documentation! &mdash; nw 0.0.18 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=63b572e7"></script>
+      <script src="_static/documentation_options.js?v=8bafd125"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -56,7 +56,9 @@
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/render_result.html">nw.bodies.render_result</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/section.html">nw.bodies.section</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/shot.html">nw.bodies.shot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/verifying_trace.html">nw.bodies.verifying_trace</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/experiment.html">nw.experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/freshness.html">nw.freshness</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/genres.html">nw.genres</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/graph.html">nw.graph</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/graph_backend.html">nw.graph_backend</a></li>
@@ -117,6 +119,7 @@
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.ComposeReport"><code class="docutils literal notranslate"><span class="pre">ComposeReport</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.DecisionEntry"><code class="docutils literal notranslate"><span class="pre">DecisionEntry</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.EnvironmentRef"><code class="docutils literal notranslate"><span class="pre">EnvironmentRef</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.FreshnessVerdict"><code class="docutils literal notranslate"><span class="pre">FreshnessVerdict</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.FrozenSegment"><code class="docutils literal notranslate"><span class="pre">FrozenSegment</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.Gap"><code class="docutils literal notranslate"><span class="pre">Gap</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.Genre"><code class="docutils literal notranslate"><span class="pre">Genre</span></code></a></li>
@@ -175,6 +178,7 @@
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.save_storyboard"><code class="docutils literal notranslate"><span class="pre">save_storyboard()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.shot_report"><code class="docutils literal notranslate"><span class="pre">shot_report()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.stale_after"><code class="docutils literal notranslate"><span class="pre">stale_after()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.stale_verdicts"><code class="docutils literal notranslate"><span class="pre">stale_verdicts()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.storyboard_db_path"><code class="docutils literal notranslate"><span class="pre">storyboard_db_path()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.storyboard_from_shots"><code class="docutils literal notranslate"><span class="pre">storyboard_from_shots()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.summarize_all"><code class="docutils literal notranslate"><span class="pre">summarize_all()</span></code></a></li>
@@ -187,6 +191,9 @@
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies.html#nw.bodies.RenderResultBodyV1"><code class="docutils literal notranslate"><span class="pre">RenderResultBodyV1</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies.html#nw.bodies.SectionBodyV1"><code class="docutils literal notranslate"><span class="pre">SectionBodyV1</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies.html#nw.bodies.ShotBodyV1"><code class="docutils literal notranslate"><span class="pre">ShotBodyV1</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies.html#nw.bodies.UpstreamDigestV1"><code class="docutils literal notranslate"><span class="pre">UpstreamDigestV1</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies.html#nw.bodies.VerifyingTraceBodyV1"><code class="docutils literal notranslate"><span class="pre">VerifyingTraceBodyV1</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies.html#nw.bodies.build_verifying_trace"><code class="docutils literal notranslate"><span class="pre">build_verifying_trace()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/character_ref.html">nw.bodies.character_ref</a><ul>
@@ -213,10 +220,27 @@
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies/shot.html#nw.bodies.shot.ShotBodyV1"><code class="docutils literal notranslate"><span class="pre">ShotBodyV1</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/verifying_trace.html">nw.bodies.verifying_trace</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies/verifying_trace.html#why-a-sidecar-annotation-rather-than-a-field-on-lacing-provenance">Why a sidecar annotation rather than a field on <code class="docutils literal notranslate"><span class="pre">lacing.Provenance</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies/verifying_trace.html#two-properties-this-schema-deliberately-has">Two properties this schema deliberately has</a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies/verifying_trace.html#nw.bodies.verifying_trace.UpstreamDigestV1"><code class="docutils literal notranslate"><span class="pre">UpstreamDigestV1</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies/verifying_trace.html#nw.bodies.verifying_trace.VerifyingTraceBodyV1"><code class="docutils literal notranslate"><span class="pre">VerifyingTraceBodyV1</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies/verifying_trace.html#nw.bodies.verifying_trace.build_verifying_trace"><code class="docutils literal notranslate"><span class="pre">build_verifying_trace()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/experiment.html">nw.experiment</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/experiment.html#nw.experiment.apply_to_projects"><code class="docutils literal notranslate"><span class="pre">apply_to_projects()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/experiment.html#nw.experiment.clone_project"><code class="docutils literal notranslate"><span class="pre">clone_project()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/experiment.html#nw.experiment.summarize_all"><code class="docutils literal notranslate"><span class="pre">summarize_all()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/freshness.html">nw.freshness</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/freshness.html#the-rule-stated-exactly">The rule, stated exactly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/freshness.html#what-this-does-not-catch">What this does <strong>not</strong> catch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/freshness.html#nw.freshness.FreshnessVerdict"><code class="docutils literal notranslate"><span class="pre">FreshnessVerdict</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/freshness.html#nw.freshness.STALE_REASONS"><code class="docutils literal notranslate"><span class="pre">STALE_REASONS</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/freshness.html#nw.freshness.stale_after"><code class="docutils literal notranslate"><span class="pre">stale_after()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/freshness.html#nw.freshness.stale_verdicts"><code class="docutils literal notranslate"><span class="pre">stale_verdicts()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/genres.html">nw.genres</a><ul>
@@ -259,7 +283,6 @@
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/graph.html#nw.graph.descendants_of"><code class="docutils literal notranslate"><span class="pre">descendants_of()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/graph.html#nw.graph.iter_all_annotations"><code class="docutils literal notranslate"><span class="pre">iter_all_annotations()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/graph.html#nw.graph.open_project_stores"><code class="docutils literal notranslate"><span class="pre">open_project_stores()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/graph.html#nw.graph.stale_after"><code class="docutils literal notranslate"><span class="pre">stale_after()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/graph_backend.html">nw.graph_backend</a><ul>
@@ -411,7 +434,7 @@
 <li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
 <li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
 </ul>
-<p>Release: 0.0.17</p>
+<p>Release: 0.0.18</p>
 <p>Last change: Aug 06, 2026</p>
 </section>
 

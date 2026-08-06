@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.graph &mdash; nw 0.0.17 documentation</title>
+  <title>nw.graph &mdash; nw 0.0.18 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=63b572e7"></script>
+      <script src="../../_static/documentation_options.js?v=8bafd125"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -57,7 +57,9 @@
 <li class="toctree-l1"><a class="reference internal" href="bodies/render_result.html">nw.bodies.render_result</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bodies/section.html">nw.bodies.section</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bodies/shot.html">nw.bodies.shot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/verifying_trace.html">nw.bodies.verifying_trace</a></li>
 <li class="toctree-l1"><a class="reference internal" href="experiment.html">nw.experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="freshness.html">nw.freshness</a></li>
 <li class="toctree-l1"><a class="reference internal" href="genres.html">nw.genres</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">nw.graph</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#nw.graph.ProjectGraph"><code class="docutils literal notranslate"><span class="pre">ProjectGraph</span></code></a><ul>
@@ -80,7 +82,6 @@
 <li class="toctree-l2"><a class="reference internal" href="#nw.graph.descendants_of"><code class="docutils literal notranslate"><span class="pre">descendants_of()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.graph.iter_all_annotations"><code class="docutils literal notranslate"><span class="pre">iter_all_annotations()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.graph.open_project_stores"><code class="docutils literal notranslate"><span class="pre">open_project_stores()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#nw.graph.stale_after"><code class="docutils literal notranslate"><span class="pre">stale_after()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="graph_backend.html">nw.graph_backend</a></li>
@@ -146,9 +147,12 @@ construction, or annotation envelopes.</p>
 </pre></div>
 </div>
 <p>For reelee’s freshness analysis (planned in §7 of the system overview),
-<a class="reference internal" href="#nw.graph.derived_from" title="nw.graph.derived_from"><code class="xref py py-func docutils literal notranslate"><span class="pre">derived_from()</span></code></a>, <a class="reference internal" href="#nw.graph.descendants_of" title="nw.graph.descendants_of"><code class="xref py py-func docutils literal notranslate"><span class="pre">descendants_of()</span></code></a>, and <a class="reference internal" href="#nw.graph.stale_after" title="nw.graph.stale_after"><code class="xref py py-func docutils literal notranslate"><span class="pre">stale_after()</span></code></a>
-walk the <code class="docutils literal notranslate"><span class="pre">provenance.was_derived_from</span></code> edges across <strong>all</strong> stores in
-a project (project graph + storyboard + alignment).</p>
+<a class="reference internal" href="#nw.graph.derived_from" title="nw.graph.derived_from"><code class="xref py py-func docutils literal notranslate"><span class="pre">derived_from()</span></code></a> and <a class="reference internal" href="#nw.graph.descendants_of" title="nw.graph.descendants_of"><code class="xref py py-func docutils literal notranslate"><span class="pre">descendants_of()</span></code></a> walk the
+<code class="docutils literal notranslate"><span class="pre">provenance.was_derived_from</span></code> edges across <strong>all</strong> stores in a project
+(project graph + storyboard + alignment). Those are <em>reachability</em> queries.
+The freshness query that compares content — <code class="docutils literal notranslate"><span class="pre">nw.stale_after</span></code> — lives in
+<a class="reference internal" href="freshness.html#module-nw.freshness" title="nw.freshness"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nw.freshness</span></code></a>; this module is where its input, the verifying trace, is
+written (see <a class="reference internal" href="#nw.graph.ProjectGraph.add_annotation" title="nw.graph.ProjectGraph.add_annotation"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ProjectGraph.add_annotation()</span></code></a>).</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="nw.graph.ProjectGraph">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.graph.</span></span><span class="sig-name descname"><span class="pre">ProjectGraph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nw/graph.html#ProjectGraph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.graph.ProjectGraph" title="Link to this definition"></a></dt>
@@ -160,11 +164,20 @@ file-locked).</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="nw.graph.ProjectGraph.add_annotation">
 <span class="sig-name descname"><span class="pre">add_annotation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ann</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Annotation</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/nw/graph.html#ProjectGraph.add_annotation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.graph.ProjectGraph.add_annotation" title="Link to this definition"></a></dt>
-<dd><p>Write one annotation to the project graph.</p>
+<dd><p>Write one annotation to the project graph, plus its verifying trace.</p>
 <p>Registers <code class="docutils literal notranslate"><span class="pre">ann.tier</span></code> if it isn’t a known tier yet — <code class="docutils literal notranslate"><span class="pre">SqliteStore</span></code>
 enforces a foreign key on <code class="docutils literal notranslate"><span class="pre">tier</span></code>, so writing under a fresh tier
 (e.g. a Transform output kind) would otherwise fail. <code class="docutils literal notranslate"><span class="pre">add_tier</span></code> is
 idempotent, so this is a no-op for the built-in project tiers.</p>
+<p>This is the single choke point every <em>derived</em> annotation in nw and
+reelee passes through, which is why the verifying trace
+(<a class="reference internal" href="bodies/verifying_trace.html#module-nw.bodies.verifying_trace" title="nw.bodies.verifying_trace"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nw.bodies.verifying_trace</span></code></a>) is recorded here rather than in
+<code class="docutils literal notranslate"><span class="pre">derive_provenance</span></code>: that helper returns a <code class="docutils literal notranslate"><span class="pre">Provenance</span></code> and has
+no store to write to, and threading one in would change a signature
+with production callsites in three repos. Writing at persist time
+also covers the paths that build a <code class="docutils literal notranslate"><span class="pre">Provenance</span></code> by hand.</p>
+<p>Annotations with no <code class="docutils literal notranslate"><span class="pre">was_derived_from</span></code> parents get no trace — there
+is nothing to verify, and they are nobody’s descendant.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -282,20 +295,6 @@ under Postgres it visits each scope’s tenant in the shared DB. Use it for
 both reads (walk <code class="docutils literal notranslate"><span class="pre">.all()</span></code>) and writes (<code class="docutils literal notranslate"><span class="pre">.remove</span></code> / <code class="docutils literal notranslate"><span class="pre">.add</span></code>).</p>
 <p>Each store is closed before the next opens, so consume each store’s
 annotations before advancing.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="nw.graph.stale_after">
-<span class="sig-prename descclassname"><span class="pre">nw.graph.</span></span><span class="sig-name descname"><span class="pre">stale_after</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">changed_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">UUID</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Annotation</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nw/graph.html#stale_after"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.graph.stale_after" title="Link to this definition"></a></dt>
-<dd><p>Return every annotation that is downstream of <code class="docutils literal notranslate"><span class="pre">changed_id</span></code>.</p>
-<p>Reelee’s freshness operation (system overview §7): when a node changes
-(a character description, a screenplay scene, a model parameter), the
-set of annotations now potentially out of date is the transitive closure
-of <code class="docutils literal notranslate"><span class="pre">was_derived_from</span></code> edges leading to <code class="docutils literal notranslate"><span class="pre">changed_id</span></code>. This is just
-<a class="reference internal" href="#nw.graph.descendants_of" title="nw.graph.descendants_of"><code class="xref py py-func docutils literal notranslate"><span class="pre">descendants_of()</span></code></a> under a more user-facing name; both names are
-exposed because reelee’s UI surfaces use both verbs.</p>
-<p>The returned list does NOT include <code class="docutils literal notranslate"><span class="pre">changed_id</span></code> itself (it’s the source
-of the change, not a stale derivative).</p>
 </dd></dl>
 
 </section>
