@@ -69,8 +69,9 @@ parameters that produced it.
 - The **plan/execute** separation means a skeleton `render-result` (no artifact
   yet, with a cost estimate) exists before any money is spent; `execute` fills
   in the artifact. Cache keys are derived from *stable* inputs (uploaded URLs,
-  content hashes) so a cache hit is honest (see "Status check" below — not true
-  today).
+  content hashes) so a cache hit is honest (see "Status check" below — true of
+  execution since falaw 0.0.24; the plan-time cost preview still keys
+  differently).
 
 This is already a rendering-provenance + partial-re-render engine. It is just
 currently shaped around **video shots** (`ShotSpec`, `render-strategy` → mp4).
@@ -127,17 +128,40 @@ is the intended reading); an upstream mutated inside the **plan → execute
 window**; and the **artifact tier**, which needs step 3 below.
 
 **"Cache keys are derived from *stable* inputs (uploaded URLs, content hashes)
-so a cache hit is honest" — the opposite is true today.** `falaw`'s per-call key
-is `sha256({app, args})` (`falaw/cache.py:56`) over the *resolved* arguments,
-and resolution rewrites `"<from N>"` to `artifacts[N].url` (`falaw/plan.py:432`
-→ `_lookup_artifact_url`, `falaw/plan.py:482`) — a fresh URL per generation. A
-byte-identical upstream regeneration therefore produces a downstream cache
-**miss**. Separately, the plan-time cache peek keys on *unresolved* arguments
+so a cache hit is honest" — ~~the opposite is true today~~ true of *execution*
+since falaw 0.0.24 (thorwhalen/falaw#14); the plan-time preview still keys
+differently.**
+
+*What was wrong.* `falaw`'s per-call key is `sha256({app, args})`
+(`falaw/cache.py::_key`) over the **resolved** arguments, and resolution
+rewrote `"<from N>"` to `artifacts[N].url` via a single `_lookup_artifact_url`
+— a fresh URL per generation. A byte-identical upstream regeneration therefore
+produced a downstream cache **miss**, and re-billed a $0.35–$1.50 clip for work
+that had not changed.
+
+*How it works now.* `_lookup_artifact_url` is gone. A `"<from N>"` placeholder
+is resolved **twice**, against two different needs (`falaw/plan.py`):
+
+- `_wire_ref` → the upstream's **URL**, which is what the fal payload must
+  carry;
+- `_key_ref` → `sha256:<upstream asset_id>`, which is what the **cache key**
+  carries whenever the upstream's bytes were materialized (`bytes_size > 0`).
+  The `sha256:` prefix is deliberate: a reader of a cache manifest can tell at
+  a glance that an argument was keyed on *what* the upstream produced rather
+  than *where* it was served from.
+
+With no materialized bytes, `_key_ref` falls back to the URL — sound but
+unreusable (a guaranteed miss), which beats inventing an id that could produce
+a *wrong* hit. Materializing those bytes is also what makes `Artifact.asset_id`
+the SHA-256 of the media, honouring lacing's contract, instead of the SHA-256
+of a URL.
+
+*What is still open.* The plan-time cache peek keys on *unresolved* arguments
 while execution keys on *resolved* ones, so `cache_status`,
-`cache_hit_savings_usd` and the cost gate are all computed against a key that is
-never used. Both are tracked in `falaw`: content-addressed artifacts
-(thorwhalen/falaw#14), the plan-time peek (thorwhalen/falaw#15), fail-loud key
-composition (thorwhalen/falaw#17).
+`cache_hit_savings_usd` and the cost gate are computed against a key that is
+never used (thorwhalen/falaw#15). Key composition still goes through
+`json.dumps(..., default=str)` and can silently collide
+(thorwhalen/falaw#17).
 
 **What this costs.** For a 200-shot fan-out, a re-run without early cutoff is
 the difference between free and several hundred dollars. That is why the

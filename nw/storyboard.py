@@ -311,9 +311,12 @@ def execute_render_panel_images(
         _download_to(artifact.url, local)
 
         panel = new_panels[panel_id]
-        # The artifact's asset_id was content-hashed from the URL; we re-hash
-        # the downloaded bytes for a true content-hash so future references
-        # to the local file resolve consistently.
+        # Hash the file we just wrote, rather than trusting `artifact.asset_id`.
+        # Since falaw 0.0.24 that id *is* the SHA-256 of the media bytes — but
+        # only when falaw could materialize them (`bytes_size > 0`); a fetch it
+        # could not complete degrades to a URL-only artifact whose id is a
+        # digest of the response. Hashing the local bytes is the identity of the
+        # thing on disk either way, which is what a PanelImage path refers to.
         from lacing import hash_file
 
         true_artifact_id = hash_file(local)
