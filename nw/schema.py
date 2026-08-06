@@ -97,21 +97,45 @@ class ShotSpec(BaseModel):
 
 
 class CharacterRef(BaseModel):
-    """Pointer to a character folder under ``characters/<name>/``."""
+    """Pointer to a character folder under ``characters/<name>/``.
+
+    The stable-attribute fields mirror
+    :class:`nw.bodies.CharacterRefBodyV1` field-for-field, and that is
+    load-bearing rather than cosmetic: :meth:`nw.Project.read_spec` builds
+    a ``CharacterRef`` from the graph body and
+    :meth:`nw.Project.write_spec` writes the body back from the
+    ``CharacterRef``. Any field present on the body but missing here is
+    **silently erased** by the next ``update_spec`` — which is what used to
+    happen to ``reference_image_urls``. Add a field to one, add it to both.
+    """
 
     model_config = {"extra": "ignore"}
 
     name: str
     description: str = ""
+    reference_image_urls: tuple[str, ...] = ()
+    costume: str = ""
+    age: str = ""
+    default_setting: str = ""
+    distinguishing_features: tuple[str, ...] = ()
+    palette_anchors: tuple[str, ...] = ()
+    do_not_do: tuple[str, ...] = ()
 
 
 class EnvironmentRef(BaseModel):
-    """Pointer to an environment folder under ``environments/<name>/``."""
+    """Pointer to an environment folder under ``environments/<name>/``.
+
+    Mirrors :class:`nw.bodies.EnvironmentRefBodyV1` field-for-field, for the
+    same load-bearing reason as :class:`CharacterRef` — see that docstring.
+    ``reference_image_urls`` (the lookbook the FE curates for a *location*)
+    was erased by every ``update_spec`` until this mirror was completed.
+    """
 
     model_config = {"extra": "ignore"}
 
     name: str
     description: str = ""
+    reference_image_urls: tuple[str, ...] = ()
 
 
 class ProjectSpec(BaseModel):
@@ -218,3 +242,116 @@ class ProjectSummary(BaseModel):
         if self.has_final_compose:
             out.append("compose")
         return out
+
+
+# ---------------------------------------------------------------------------
+# Session resumption — "where we left off"
+# ---------------------------------------------------------------------------
+
+
+class DecisionEntry(BaseModel):
+    """One entry of a project's decision log, flattened for display."""
+
+    model_config = {"extra": "ignore"}
+
+    kind: str
+    at: Optional[str] = Field(
+        None,
+        description=(
+            "ISO-8601 UTC timestamp from the annotation's "
+            "``provenance.generated_at_time``. ``None`` when the decision "
+            "predates provenance timestamps."
+        ),
+    )
+    payload: dict = Field(default_factory=dict)
+
+
+class ResumptionBrief(BaseModel):
+    """A "where we left off" snapshot, returned by :meth:`nw.Project.resumption_brief`.
+
+    Pure data: no fal calls, no LLM, no network. reelee renders it as prose
+    and injects it as the first tool-result of a session.
+
+    **The field names are chosen to be honest about what nw can currently
+    measure**, because a confidently wrong number is worse than no number:
+
+    - :attr:`downstream_of_last_authored_change` is *not* "stale".
+      ``nw.stale_after`` is pure provenance reachability — it never compares
+      content or timestamps — so this set includes everything already
+      regenerated since the change. It is an **upper bound** on what needs
+      attention, and it is named for what it measures. When early-cutoff
+      freshness lands, the same call returns a smaller and correct set with
+      no change to this API.
+    - The walk starts at the last **authored** change — the most recent
+      annotation the user wrote (a shot, a section, a character or
+      environment ref), never one a Transform derived. Walking from "the
+      newest annotation" instead would be inverted: the newest node in a
+      provenance graph is by construction a *leaf*, so its descendant set is
+      empty in exactly the case the field exists for.
+    - :attr:`total_spend_usd` sums *every* recorded render decision across
+      every store scope. Nothing records per-branch outcomes yet, so a render
+      that failed after being billed is counted here exactly like one that
+      succeeded. Also an upper bound.
+
+    :attr:`caveats` carries those qualifications as data — so a consumer
+    renders them next to the numbers instead of rediscovering them.
+    """
+
+    model_config = {"extra": "ignore"}
+
+    title: str
+    root: str
+
+    last_session_at: Optional[str] = Field(
+        None, description="ISO-8601 UTC time of the most recent graph write."
+    )
+    gap_seconds: Optional[float] = Field(
+        None, description="Seconds between ``last_session_at`` and now."
+    )
+
+    recent_decisions: tuple[DecisionEntry, ...] = ()
+
+    downstream_of_last_authored_change: tuple[str, ...] = Field(
+        default_factory=tuple,
+        description=(
+            "Annotation ids reachable from :attr:`last_authored_change_id` "
+            "via ``was_derived_from``, excluding decision-log rows (an audit "
+            "entry is never something to regenerate). Reachability, not "
+            "staleness — an upper bound. See the class docstring."
+        ),
+    )
+    last_authored_change_id: Optional[str] = Field(
+        None,
+        description=(
+            "The annotation the walk started from: the most recent one the "
+            "user authored — no ``was_derived_from`` parents and not a "
+            "decision — i.e. the last edit whose consequences are downstream."
+        ),
+    )
+
+    total_spend_usd: float = Field(
+        0.0,
+        description=(
+            "Sum over recorded render-decision cost payloads, across every "
+            "store scope. Includes renders that were billed and then failed "
+            "— an upper bound."
+        ),
+    )
+
+    unrendered_shot_ids: tuple[str, ...] = ()
+
+    suggested_next: tuple[str, ...] = Field(
+        default_factory=tuple,
+        description="Deterministic next-action hints, most actionable first.",
+    )
+    caveats: tuple[str, ...] = Field(
+        default_factory=tuple,
+        description=(
+            "Known imprecisions in *this* brief, emitted only when the "
+            "number they qualify is non-zero."
+        ),
+    )
+
+    @property
+    def downstream_count(self) -> int:
+        return len(self.downstream_of_last_authored_change)

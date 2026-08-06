@@ -67,14 +67,16 @@ from .bodies import (
     SectionBodyV1,
     ShotBodyV1,
 )
-from .graph import ProjectGraph
-from .migrate import is_migrated, migrate_to_graph
+from .graph import ProjectGraph, descendants_of, iter_all_annotations
+from .migrate import _TIER_DECISION, is_migrated, migrate_to_graph
 from .schema import (
     SCHEMA_VERSION,
     CharacterRef,
+    DecisionEntry,
     EnvironmentRef,
     ProjectSpec,
     ProjectSummary,
+    ResumptionBrief,
     SectionSpec,
     ShotSpec,
     SongInfo,
@@ -277,12 +279,10 @@ class Project:
             for s in self.graph.shots()
         )
         characters = tuple(
-            CharacterRef(name=c.body.name, description=c.body.description)
-            for c in self.graph.character_refs()
+            _character_ref_of_body(c.body) for c in self.graph.character_refs()
         )
         environments = tuple(
-            EnvironmentRef(name=e.body.name, description=e.body.description)
-            for e in self.graph.environment_refs()
+            _environment_ref_of_body(e.body) for e in self.graph.environment_refs()
         )
 
         song = meta.get("song")
@@ -334,9 +334,7 @@ class Project:
                     if isinstance(ann.body, dict) and ann.body.get("name") not in names:
                         store.remove(ann.id)
         for ch in refs:
-            self.graph.upsert_character_ref(
-                CharacterRefBodyV1(name=ch.name, description=ch.description)
-            )
+            self.graph.upsert_character_ref(_character_ref_body_of(ch))
 
     def _sync_environment_refs(self, refs: tuple[EnvironmentRef, ...]) -> None:
         names = {r.name for r in refs}
@@ -348,9 +346,7 @@ class Project:
                     if isinstance(ann.body, dict) and ann.body.get("name") not in names:
                         store.remove(ann.id)
         for env in refs:
-            self.graph.upsert_environment_ref(
-                EnvironmentRefBodyV1(name=env.name, description=env.description)
-            )
+            self.graph.upsert_environment_ref(_environment_ref_body_of(env))
 
     def _sync_sections(self, sections: tuple[SectionSpec, ...]) -> None:
         ids = {s.id for s in sections}
@@ -470,13 +466,24 @@ class Project:
         return self.root / "characters" / name
 
     def add_character(self, name: str, *, description: str = "") -> CharacterRef:
-        """Add a character (idempotent: re-adds update the description)."""
+        """Add a character (idempotent: re-adds update the description).
+
+        Re-adding updates *only* the description: any stable attributes
+        already recorded on the character (costume, palette anchors,
+        ``do_not_do`` …) are carried over, so calling this again is not a
+        way to lose them.
+        """
         d = self.character_dir(name)
         d.mkdir(parents=True, exist_ok=True)
         (d / "refs").mkdir(exist_ok=True)
         (d / "selected").mkdir(exist_ok=True)
-        ref = CharacterRef(name=name, description=description)
         spec = self.read_spec()
+        existing = next((c for c in spec.characters if c.name == name), None)
+        ref = (
+            existing.model_copy(update={"description": description})
+            if existing is not None
+            else CharacterRef(name=name, description=description)
+        )
         chars = tuple(c for c in spec.characters if c.name != name) + (ref,)
         self.update_spec(characters=chars)
         # Initialize a card.json so set_character_anchor / list_character_images
@@ -692,6 +699,103 @@ class Project:
             has_final_compose=(self.root / "output" / "final.mp4").exists(),
         )
 
+    # -- session resumption -------------------------------------------------
+
+    def total_spend_usd(self) -> float:
+        """Sum the cost recorded on every decision in the project.
+
+        Prefers each decision's *actual* per-artifact ``cost_usd`` and falls
+        back to its ``total_estimated_cost_usd`` when no artifact costs were
+        recorded.
+
+        Walks **every store scope** (graph, storyboard, alignment), not just
+        the project graph: a decision written to the storyboard scope is money
+        that was spent, and counting only one scope would silently *under*-report
+        while :attr:`~nw.schema.ResumptionBrief.caveats` claims an upper bound.
+
+        **This is an upper bound on money usefully spent.** A render that was
+        billed and then failed is recorded exactly like one that succeeded,
+        because nothing in the execution layer records a per-branch outcome
+        yet. When failure isolation lands, this should sum over the *produced*
+        branches only — and this method is the one place that changes.
+        """
+        return sum(
+            _decision_spend_usd(ann.body.get("payload") or {})
+            for ann in iter_all_annotations(self.root)
+            if ann.tier == _TIER_DECISION and isinstance(ann.body, dict)
+        )
+
+    def resumption_brief(self, *, recent: int = 10) -> ResumptionBrief:
+        """Return a "where we left off" snapshot for the start of a session.
+
+        Pure data, fully offline: a decision-log tail, what is reachable
+        downstream of the last change, recorded spend, and a deterministic
+        list of suggested next actions. reelee renders it as prose and
+        injects it as the opening context of a session.
+
+        Read :class:`~nw.schema.ResumptionBrief` before trusting the numbers —
+        two of them are upper bounds, and the brief says so in
+        :attr:`~nw.schema.ResumptionBrief.caveats` rather than only in a
+        docstring.
+
+        Args:
+            recent: How many decision-log entries to include, most recent last.
+        """
+        spec = self.read_spec()
+        annotations = list(iter_all_annotations(self.root))
+
+        # Stable ordering: sort by generation time, ties broken by write order.
+        indexed = sorted(
+            enumerate(annotations),
+            key=lambda pair: (
+                pair[1].provenance.generated_at_time.to_seconds(),
+                pair[0],
+            ),
+        )
+
+        last_session_at, gap_seconds = _last_touched(indexed)
+        decisions = tuple(
+            DecisionEntry(
+                kind=ann.body.get("kind", ""),
+                at=_iso_utc(ann.provenance.generated_at_time),
+                payload=ann.body.get("payload") or {},
+            )
+            for _, ann in indexed
+            if ann.tier == _TIER_DECISION and isinstance(ann.body, dict)
+        )[-recent:]
+
+        last_change = _last_authored_change(indexed)
+        downstream: tuple[str, ...] = ()
+        if last_change is not None:
+            downstream = tuple(
+                str(a.id)
+                for a in descendants_of(self.root, last_change.id)
+                if a.tier != _TIER_DECISION
+            )
+
+        unrendered = tuple(
+            shot.id
+            for shot in spec.shots
+            if not (self.shot_dir(shot.id) / "output.mp4").exists()
+        )
+        spend = self.total_spend_usd()
+
+        return ResumptionBrief(
+            title=spec.title,
+            root=str(self.root),
+            last_session_at=last_session_at,
+            gap_seconds=gap_seconds,
+            recent_decisions=decisions,
+            downstream_of_last_authored_change=downstream,
+            last_authored_change_id=(
+                str(last_change.id) if last_change is not None else None
+            ),
+            total_spend_usd=spend,
+            unrendered_shot_ids=unrendered,
+            suggested_next=_suggested_next(self, spec, unrendered, downstream),
+            caveats=_brief_caveats(downstream=downstream, spend=spend),
+        )
+
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -723,6 +827,178 @@ def _json_docs(root: str | Path):
 
 def _write_spec(root: Path, spec: ProjectSpec) -> None:
     _json_docs(root)[_PROJECT_FILE_NAME] = json.loads(spec.model_dump_json())
+
+
+# -- entity refs: the one mapping between the spec types and the graph bodies --
+#
+# ``CharacterRef``/``EnvironmentRef`` (nw.schema) and their ``*BodyV1``
+# counterparts (nw.bodies) carry the same fields; read_spec/write_spec convert
+# between them on every spec update, so **a field present on one side and
+# missing on the other is silently erased by the next update_spec** — the
+# failure ``reference_image_urls`` had on both tiers.
+#
+# ``tests/test_project.py`` asserts these tuples equal both models' field sets,
+# so adding a field to a body and forgetting the spec type fails the suite
+# instead of losing user data.
+
+_CHARACTER_REF_FIELDS = (
+    "name",
+    "description",
+    "reference_image_urls",
+    "costume",
+    "age",
+    "default_setting",
+    "distinguishing_features",
+    "palette_anchors",
+    "do_not_do",
+)
+
+_ENVIRONMENT_REF_FIELDS = (
+    "name",
+    "description",
+    "reference_image_urls",
+)
+
+
+def _iso_utc(rt) -> str:
+    """A lacing ``RationalTime`` wall clock → an ISO-8601 UTC string."""
+    return datetime.fromtimestamp(rt.to_seconds(), tz=timezone.utc).isoformat()
+
+
+def _last_touched(indexed) -> tuple[Optional[str], Optional[float]]:
+    """``(iso_timestamp, seconds_since)`` of the most recent graph write."""
+    if not indexed:
+        return None, None
+    newest = indexed[-1][1].provenance.generated_at_time
+    at = datetime.fromtimestamp(newest.to_seconds(), tz=timezone.utc)
+    return at.isoformat(), max(0.0, (datetime.now(timezone.utc) - at).total_seconds())
+
+
+def _last_authored_change(indexed):
+    """The most recent annotation the *user* authored, or ``None``.
+
+    "Authored" means it has no ``was_derived_from`` parents and is not a
+    decision-log row — a shot, a section, a character or environment ref the
+    user wrote. That is what makes the downstream walk meaningful.
+
+    Walking from "the most recently generated annotation" instead is
+    **inverted**: a descendant is by construction generated *after* its
+    ancestor, so the newest node in a provenance graph is a leaf. Its
+    descendant set is empty in exactly the case the brief exists for ("I
+    edited the costume — what did that invalidate?"), and non-empty only for
+    audit rows appended after the edit.
+    """
+    return next(
+        (
+            ann
+            for _, ann in reversed(indexed)
+            if ann.tier != _TIER_DECISION and not ann.provenance.was_derived_from
+        ),
+        None,
+    )
+
+
+def _decision_spend_usd(payload: dict[str, Any]) -> float:
+    """Money recorded on one decision payload, actual costs preferred."""
+    artifacts = payload.get("artifacts")
+    if isinstance(artifacts, list):
+        costs = [
+            a["cost_usd"]
+            for a in artifacts
+            if isinstance(a, dict) and isinstance(a.get("cost_usd"), (int, float))
+        ]
+        if costs:
+            return float(sum(costs))
+    estimated = payload.get("total_estimated_cost_usd")
+    return float(estimated) if isinstance(estimated, (int, float)) else 0.0
+
+
+def _brief_caveats(*, downstream: tuple[str, ...], spend: float) -> tuple[str, ...]:
+    """The qualifications that apply to *this* brief, as renderable data.
+
+    Emitted only when the number they qualify is non-zero, so a fresh project
+    carries none — and each string is deleted by the change that makes it
+    false, rather than living on in a docstring nobody renders.
+    """
+    out: list[str] = []
+    if downstream:
+        out.append(
+            f"{len(downstream)} items are downstream of the last authored "
+            "change by provenance reachability. That is an upper bound on "
+            "what needs attention: nothing is compared, so anything already "
+            "regenerated since is still counted."
+        )
+    if spend:
+        out.append(
+            f"${spend:.2f} is every render decision ever recorded, including "
+            "any that were billed and then failed — no per-branch outcome is "
+            "recorded yet."
+        )
+    return tuple(out)
+
+
+def _suggested_next(
+    project: "Project",
+    spec: ProjectSpec,
+    unrendered: tuple[str, ...],
+    downstream: tuple[str, ...],
+) -> tuple[str, ...]:
+    """Deterministic next-action hints, most actionable first.
+
+    Deliberately a pure function of project state — same project, same
+    suggestions — so a consumer can diff two briefs and an LLM never has to
+    be asked what to do next.
+    """
+    out: list[str] = []
+    if not spec.shots and not spec.characters and spec.song is None:
+        return ("Empty project — register a song or import a script to start.",)
+    if unrendered:
+        out.append(
+            f"{len(unrendered)} of {len(spec.shots)} shots have never been "
+            f"rendered: {', '.join(unrendered[:5])}"
+            + ("…" if len(unrendered) > 5 else "")
+        )
+    if downstream:
+        out.append(
+            f"Up to {len(downstream)} items are downstream of the last "
+            "authored change — review or regenerate them."
+        )
+    anchorless = tuple(
+        c.name for c in spec.characters if not _character_has_anchor(project, c.name)
+    )
+    if anchorless:
+        out.append("No reference image locked for: " + ", ".join(sorted(anchorless)))
+    return tuple(out)
+
+
+def _character_has_anchor(project: "Project", name: str) -> bool:
+    """True when the character's card names an anchor image that exists."""
+    try:
+        card = project.read_character_card(name)
+    except FileNotFoundError:
+        return False
+    rel = card.get("reference_image_path") or ""
+    return bool(rel) and (project.root / rel).exists()
+
+
+def _character_ref_of_body(body: CharacterRefBodyV1) -> CharacterRef:
+    """Graph body → the spec-level :class:`CharacterRef` (lossless)."""
+    return CharacterRef(**{f: getattr(body, f) for f in _CHARACTER_REF_FIELDS})
+
+
+def _character_ref_body_of(ref: CharacterRef) -> CharacterRefBodyV1:
+    """Spec-level :class:`CharacterRef` → the graph body (lossless)."""
+    return CharacterRefBodyV1(**{f: getattr(ref, f) for f in _CHARACTER_REF_FIELDS})
+
+
+def _environment_ref_of_body(body: EnvironmentRefBodyV1) -> EnvironmentRef:
+    """Graph body → the spec-level :class:`EnvironmentRef` (lossless)."""
+    return EnvironmentRef(**{f: getattr(body, f) for f in _ENVIRONMENT_REF_FIELDS})
+
+
+def _environment_ref_body_of(ref: EnvironmentRef) -> EnvironmentRefBodyV1:
+    """Spec-level :class:`EnvironmentRef` → the graph body (lossless)."""
+    return EnvironmentRefBodyV1(**{f: getattr(ref, f) for f in _ENVIRONMENT_REF_FIELDS})
 
 
 def _probe_audio(path: Path) -> dict:

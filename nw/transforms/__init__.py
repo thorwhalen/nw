@@ -171,6 +171,14 @@ class BaseTransform:
     1:1 via :meth:`_complete_annotation`, writes to the project graph, and
     reports cost. Transforms whose artifact→annotation mapping is not 1:1
     (e.g. ``clips_to_animatic``: N inputs → 1 output) override :meth:`execute`.
+
+    That 1:1 mapping is an **invariant, checked before anything is spent**:
+    :meth:`execute` raises when ``len(skeleton) != len(plan.calls)``, the
+    same guard ``nw.storyboard.execute_render_panel_images`` already applies
+    to its own plan/id pairing. The zip below would otherwise stop at the
+    shorter sequence and drop the surplus with no error and no record —
+    harmless only for as long as the executor returns exactly one artifact
+    per call, which is precisely what per-call failure isolation changes.
     """
 
     name: str = ""
@@ -203,6 +211,15 @@ class BaseTransform:
         use_cache: bool = True,
         force: bool = False,
     ) -> TransformResult:
+        if len(skeleton) != len(plan.calls):
+            raise ValueError(
+                f"{type(self).__name__}.execute: plan has {len(plan.calls)} "
+                f"calls but skeleton has {len(skeleton)} annotations. The "
+                "default execute maps artifacts onto skeletons 1:1 and zips "
+                "them, so a mismatch would silently drop the surplus — pass "
+                "the plan and skeleton that plan() returned together, or "
+                "override execute() if this Transform's mapping is not 1:1."
+            )
         artifacts = execute_plan(plan, use_cache=use_cache and not force)
         completed = tuple(
             self._complete_annotation(skel, art)

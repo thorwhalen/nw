@@ -159,16 +159,12 @@ class ProjectGraph:
         *,
         was_attributed_to: str = "user:nw",
     ) -> UUID:
-        """Replace any existing section with the same ``section_id``; return new uuid."""
+        """Insert-or-update the section with this ``section_id``; return its id.
+
+        The id is *stable* across edits — see :func:`_upsert`.
+        """
         with self._open() as store:
-            for ann in list(store.all()):
-                if (
-                    ann.tier == _TIER_SECTION
-                    and isinstance(ann.body, dict)
-                    and ann.body.get("section_id") == body.section_id
-                ):
-                    store.remove(ann.id)
-            new_id = _put(
+            return _upsert(
                 store,
                 tier=_TIER_SECTION,
                 schema_uri=SECTION_BODY_SCHEMA_URI,
@@ -176,8 +172,9 @@ class ProjectGraph:
                 interval=interval,
                 asset_id=self.asset_id,
                 was_attributed_to=was_attributed_to,
+                identity_key="section_id",
+                identity_value=body.section_id,
             )
-            return new_id
 
     # -- shots ---------------------------------------------------------------
 
@@ -201,16 +198,12 @@ class ProjectGraph:
         *,
         was_attributed_to: str = "user:nw",
     ) -> UUID:
-        """Replace any existing shot with the same ``shot_id``; return new uuid."""
+        """Insert-or-update the shot with this ``shot_id``; return its id.
+
+        The id is *stable* across edits — see :func:`_upsert`.
+        """
         with self._open() as store:
-            for ann in list(store.all()):
-                if (
-                    ann.tier == _TIER_SHOT
-                    and isinstance(ann.body, dict)
-                    and ann.body.get("shot_id") == body.shot_id
-                ):
-                    store.remove(ann.id)
-            return _put(
+            return _upsert(
                 store,
                 tier=_TIER_SHOT,
                 schema_uri=SHOT_BODY_SCHEMA_URI,
@@ -218,6 +211,8 @@ class ProjectGraph:
                 interval=interval,
                 asset_id=self.asset_id,
                 was_attributed_to=was_attributed_to,
+                identity_key="shot_id",
+                identity_value=body.shot_id,
             )
 
     # -- character / environment refs ---------------------------------------
@@ -241,15 +236,12 @@ class ProjectGraph:
         *,
         was_attributed_to: str = "user:nw",
     ) -> UUID:
+        """Insert-or-update the character ref with this ``name``; return its id.
+
+        The id is *stable* across edits — see :func:`_upsert`.
+        """
         with self._open() as store:
-            for ann in list(store.all()):
-                if (
-                    ann.tier == _TIER_CHARACTER_REF
-                    and isinstance(ann.body, dict)
-                    and ann.body.get("name") == body.name
-                ):
-                    store.remove(ann.id)
-            return _put(
+            return _upsert(
                 store,
                 tier=_TIER_CHARACTER_REF,
                 schema_uri=CHARACTER_REF_BODY_SCHEMA_URI,
@@ -257,6 +249,8 @@ class ProjectGraph:
                 interval=TimeInterval.from_seconds(0, 0),
                 asset_id=self.asset_id,
                 was_attributed_to=was_attributed_to,
+                identity_key="name",
+                identity_value=body.name,
             )
 
     def environment_refs(self) -> list[StoredEnvironmentRef]:
@@ -278,15 +272,12 @@ class ProjectGraph:
         *,
         was_attributed_to: str = "user:nw",
     ) -> UUID:
+        """Insert-or-update the environment ref with this ``name``; return its id.
+
+        The id is *stable* across edits — see :func:`_upsert`.
+        """
         with self._open() as store:
-            for ann in list(store.all()):
-                if (
-                    ann.tier == _TIER_ENVIRONMENT_REF
-                    and isinstance(ann.body, dict)
-                    and ann.body.get("name") == body.name
-                ):
-                    store.remove(ann.id)
-            return _put(
+            return _upsert(
                 store,
                 tier=_TIER_ENVIRONMENT_REF,
                 schema_uri=ENVIRONMENT_REF_BODY_SCHEMA_URI,
@@ -294,6 +285,8 @@ class ProjectGraph:
                 interval=TimeInterval.from_seconds(0, 0),
                 asset_id=self.asset_id,
                 was_attributed_to=was_attributed_to,
+                identity_key="name",
+                identity_value=body.name,
             )
 
     # -- decisions -----------------------------------------------------------
@@ -480,6 +473,72 @@ def annotations_at_tier(project_root: str | Path, tier: str) -> list[Annotation]
 # ---------------------------------------------------------------------------
 
 
+def _upsert(
+    store: IntervalAnnotationStore,
+    *,
+    tier: str,
+    schema_uri: str,
+    body,
+    interval: TimeInterval,
+    asset_id: str,
+    was_attributed_to: str,
+    identity_key: str,
+    identity_value,
+) -> UUID:
+    """Insert-or-update one *entity* annotation, preserving its identity.
+
+    An entity (a shot, a section, a character/environment ref) is identified
+    by a natural key in its body — ``shot_id``, ``section_id``, ``name``.
+    The annotation id is that entity's identity **in the provenance graph**,
+    so it must survive an edit:
+
+    - Minting a fresh ``uuid4`` on every edit orphans every
+      ``was_derived_from`` edge pointing at the entity. Because
+      :func:`descendants_of` walks those edges, the freshness walk then
+      returns *nothing* for the single most common edit ("change the
+      costume, re-render everything showing them") — under-reporting to
+      zero, silently. This is the bug that made every freshness-derived
+      number in :meth:`nw.Project.resumption_brief` structurally dead.
+    - ``write_spec`` re-upserts every entity on *any* spec write, so under
+      the old behaviour even ``set_title()`` was enough to sever the whole
+      graph.
+
+    An edit that changes nothing writes nothing, so ``generated_at_time``
+    marks a *real* change and "the last thing the user edited" is a
+    meaningful question.
+    """
+    # ``mode="json"`` is what round-trips through the store: a tuple field
+    # dumps to a tuple in python mode but reads back as a list, so comparing
+    # python-mode dumps would report every no-op edit as a change.
+    body_dict = (
+        body.model_dump(mode="json") if hasattr(body, "model_dump") else dict(body)
+    )
+    existing = next(
+        (
+            ann
+            for ann in store.all()
+            if ann.tier == tier
+            and isinstance(ann.body, dict)
+            and ann.body.get(identity_key) == identity_value
+        ),
+        None,
+    )
+    if existing is not None:
+        if existing.body == body_dict and existing.reference.interval == interval:
+            return existing.id  # no-op edit: do not touch generated_at_time
+        store.remove(existing.id)
+    return _put(
+        store,
+        tier=tier,
+        schema_uri=schema_uri,
+        body=body_dict,
+        interval=interval,
+        asset_id=asset_id,
+        was_attributed_to=was_attributed_to,
+        annotation_id=existing.id if existing is not None else None,
+    )
+
+
 def _put(
     store: IntervalAnnotationStore,
     *,
@@ -490,11 +549,16 @@ def _put(
     asset_id: str,
     was_attributed_to: str,
     was_derived_from: tuple[UUID, ...] = (),
+    annotation_id: Optional[UUID] = None,
 ) -> UUID:
-    """Insert one annotation; return its UUID."""
+    """Insert one annotation; return its UUID.
+
+    ``annotation_id`` reuses an existing id (see :func:`_upsert`); omit it to
+    mint a fresh one.
+    """
     import uuid as _uuid
 
-    new_id = _uuid.uuid4()
+    new_id = annotation_id if annotation_id is not None else _uuid.uuid4()
     ann = Annotation(
         id=new_id,
         tier=tier,

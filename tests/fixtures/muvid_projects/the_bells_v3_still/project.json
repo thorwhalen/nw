@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "title": "the_bells_v3_still",
+  "song": {
+    "audio_path": "song/the_bells_sample.wav",
+    "duration_s": 8.021333,
+    "sample_rate": 48000,
+    "bitrate": 1536171,
+    "bpm": null
+  },
+  "characters": [
+    {
+      "name": "thor",
+      "description": "Thor \u2014 the singer/narrator. Adult man, contemplative gaze, present and grounded. Aesthetic: wintry/poetic/noir palette (cool silvers, deep blues, candlelight warmth). Mood: introspective, listening to bells in the frozen night."
+    }
+  ],
+  "environments": [],
+  "sections": [
+    {
+      "id": "verse",
+      "start_s": 0.0,
+      "end_s": 8.0,
+      "label": "verse",
+      "energy": "",
+      "mood": ""
+    }
+  ],
+  "shots": [
+    {
+      "id": "s01",
+      "start_s": 0.0,
+      "end_s": 8.0,
+      "section_id": "verse",
+      "render_strategy": "image_to_video",
+      "environment": "",
+      "characters": [
+        "thor"
+      ],
+      "description": "Thor in profile against a near-black backdrop, looking upward \u2014 as if listening for bells he cannot quite see. Subtle motion only: a faint breath, the smallest tilt of the head, light shifting on his face. Cinematic, painterly, Poe-esque. Maintain the photographic stillness; this is portrait-with-pulse, not action.",
+      "camera": "very slow push-in, almost still",
+      "framing": "medium close-up, profile",
+      "notes": ""
+    }
+  ],
+  "global_style": "",
+  "notes": ""
+}

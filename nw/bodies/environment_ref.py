@@ -23,8 +23,8 @@ class EnvironmentRefBodyV1(BaseModel):
 
     name: str = Field(..., description="Folder name under environments/.")
     description: str = Field("", description="Short description.")
-    reference_image_urls: list[str] = Field(
-        default_factory=list,
+    reference_image_urls: tuple[str, ...] = Field(
+        default_factory=tuple,
         description=(
             "URLs of reference images for this environment — the lookbook "
             "the FE curates and a future ``panel_to_image.composite.*`` "

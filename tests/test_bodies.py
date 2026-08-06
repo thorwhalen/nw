@@ -91,3 +91,64 @@ def test_decision_payload_is_freeform():
     }
     result = validate_body(body, DECISION_BODY_SCHEMA_URI)
     assert result.payload["any_int"] == 42
+
+
+# ---------------------------------------------------------------------------
+# character-ref stable attributes (nw#5)
+# ---------------------------------------------------------------------------
+
+
+def test_character_ref_accepts_stable_attributes():
+    """The enriched fields are accepted and round-trip through validate_body."""
+    body = {
+        "name": "thor",
+        "description": "the narrator",
+        "costume": "grey tweed jacket, green flat cap",
+        "age": "late 50s",
+        "default_setting": "frozen_belltower",
+        "distinguishing_features": ("left eye scar",),
+        "palette_anchors": ("#8899aa", "#221100"),
+        "do_not_do": ("no shamrocks", "never a bowler hat"),
+    }
+    result = validate_body(body, CHARACTER_REF_BODY_SCHEMA_URI)
+    assert result.costume == "grey tweed jacket, green flat cap"
+    assert result.age == "late 50s"
+    assert result.default_setting == "frozen_belltower"
+    assert result.distinguishing_features == ("left eye scar",)
+    assert result.palette_anchors == ("#8899aa", "#221100")
+    assert result.do_not_do == ("no shamrocks", "never a bowler hat")
+
+
+def test_character_ref_old_dumps_still_load():
+    """Additive, not a new version: a pre-enrichment dump loads unchanged."""
+    result = validate_body(
+        {"name": "thor", "description": "the narrator"},
+        CHARACTER_REF_BODY_SCHEMA_URI,
+    )
+    assert result.costume == ""
+    assert result.age == ""
+    assert result.default_setting == ""
+    assert result.distinguishing_features == ()
+    assert result.palette_anchors == ()
+    assert result.do_not_do == ()
+
+
+def test_character_ref_field_names_match_artful_model_sheet():
+    """One ecosystem vocabulary: the overlapping concepts share a name AND a type.
+
+    Guards against the drift the issue was filed to prevent — someone adding
+    ``negative_prompts`` here while artful says ``do_not_do``.
+    """
+    artful_schema = pytest.importorskip("artful.schema")
+
+    from nw.bodies import CharacterRefBodyV1
+
+    shared = ("palette_anchors", "distinguishing_features", "do_not_do")
+    sheet_fields = artful_schema.ModelSheet.model_fields
+    ref_fields = CharacterRefBodyV1.model_fields
+    for field in shared:
+        assert field in sheet_fields, f"artful.ModelSheet lost {field!r}"
+        assert field in ref_fields, f"CharacterRefBodyV1 lost {field!r}"
+        assert (
+            ref_fields[field].annotation == sheet_fields[field].annotation
+        ), f"{field!r} types drifted between nw and artful"
