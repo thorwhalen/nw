@@ -30,6 +30,7 @@ are recorded as linked artifacts), see
 
 from . import bodies  # noqa: F401  — registers lacing body schemas at import
 from . import graph  # noqa: F401  — `nw.graph.descendants_of(...)`
+from . import freshness  # noqa: F401  — `nw.freshness.stale_verdicts(...)`
 from . import inspect  # noqa: F401  — `nw.inspect.shot_report(...)`
 from . import migrate  # noqa: F401  — `nw.migrate.migrate_to_graph(...)`
 from . import storyboard as _storyboard_module  # noqa: F401
@@ -51,8 +52,8 @@ from .graph import (
     descendants_of,
     iter_all_annotations,
     open_project_stores,
-    stale_after,
 )
+from .freshness import FreshnessVerdict, stale_after, stale_verdicts
 from .migrate import migrate_to_graph, is_migrated
 from .script_segmentation import (
     PanelProposal,
@@ -136,6 +137,7 @@ __all__ = [
     "CharacterImage",
     "CharacterRef",
     "ComposeReport",
+    "FreshnessVerdict",
     "DecisionEntry",
     "EnvironmentRef",
     "FrozenSegment",
@@ -180,6 +182,7 @@ __all__ = [
     "compose_report",
     "derived_from",
     "descendants_of",
+    "freshness",
     "execute_render",
     "execute_render_panel_images",
     "genres",
@@ -205,6 +208,7 @@ __all__ = [
     "save_storyboard",
     "shot_report",
     "stale_after",
+    "stale_verdicts",
     "storyboard_db_path",
     "storyboard_from_shots",
     "strategies",

@@ -17,7 +17,12 @@ from nw import (
     SongInfo,
     descendants_of,
 )
-from nw.bodies import CharacterRefBodyV1, DecisionBodyV1, EnvironmentRefBodyV1
+from nw.bodies import (
+    VERIFYING_TRACE_TIER,
+    CharacterRefBodyV1,
+    DecisionBodyV1,
+    EnvironmentRefBodyV1,
+)
 from nw.graph import iter_all_annotations
 from nw.project import _CHARACTER_REF_FIELDS, _ENVIRONMENT_REF_FIELDS
 
@@ -568,7 +573,7 @@ def test_brief_walks_from_the_last_authored_change_not_the_newest_annotation(tmp
     brief = proj.resumption_brief()
 
     newest = max(
-        iter_all_annotations(proj.root),
+        (a for a in iter_all_annotations(proj.root) if a.tier != VERIFYING_TRACE_TIER),
         key=lambda a: a.provenance.generated_at_time.to_seconds(),
     )
     assert newest.id == render_id, "the derived annotation must be the newest one"
@@ -599,6 +604,41 @@ def test_brief_never_asks_the_user_to_regenerate_an_audit_row(tmp_path):
     )
 
     brief = proj.resumption_brief()
+    assert brief.downstream_of_last_authored_change == (str(render_id),)
+
+
+def test_brief_ignores_verifying_traces(tmp_path):
+    """A verifying trace must never be mistaken for an authored change.
+
+    Both properties that make it a hazard hold at once: it carries **no**
+    ``was_derived_from`` parents (deliberately — see
+    :mod:`nw.bodies.verifying_trace`) and it is written *after* the
+    annotation it describes. So under the un-guarded "no parents and not a
+    decision" rule it would win ``_last_authored_change`` outright, and the
+    brief would walk downstream of a bookkeeping row and report nothing.
+
+    The derived write is **last** on purpose: that is what puts a trace at
+    the top of the store and makes the guard non-vacuous.
+    """
+    proj = _seeded(tmp_path)
+    shot_id = proj.graph.shots()[-1].annotation_id
+    render_id = _derive(proj, shot_id)
+
+    traces = [
+        a for a in iter_all_annotations(proj.root) if a.tier == VERIFYING_TRACE_TIER
+    ]
+    assert traces, "guard is vacuous unless a trace was actually written"
+    assert all(not t.provenance.was_derived_from for t in traces)
+    newest = max(
+        iter_all_annotations(proj.root),
+        key=lambda a: a.provenance.generated_at_time.to_seconds(),
+    )
+    assert newest.tier == VERIFYING_TRACE_TIER, (
+        "guard is vacuous unless a trace is the newest annotation in the store"
+    )
+
+    brief = proj.resumption_brief()
+    assert brief.last_authored_change_id == str(shot_id)
     assert brief.downstream_of_last_authored_change == (str(render_id),)
 
 

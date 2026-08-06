@@ -27,7 +27,16 @@ def _seed_pre_graph_project(tmp_path: Path, name: str = "p") -> Path:
     """Build a project.json by hand in the pre-graph format (no sentinel)."""
     root = tmp_path / name
     root.mkdir()
-    for sub in ("characters", "environments", "shots", "output", "lyrics", "script", "song", ".nw"):
+    for sub in (
+        "characters",
+        "environments",
+        "shots",
+        "output",
+        "lyrics",
+        "script",
+        "song",
+        ".nw",
+    ):
         (root / sub).mkdir(exist_ok=True)
     spec = {
         "schema_version": 1,
@@ -35,12 +44,31 @@ def _seed_pre_graph_project(tmp_path: Path, name: str = "p") -> Path:
         "song": None,
         "characters": [{"name": "thor", "description": "the singer"}],
         "environments": [{"name": "tower", "description": "Gothic"}],
-        "sections": [{"id": "verse", "start_s": 0.0, "end_s": 8.0, "label": "verse",
-                       "energy": "low", "mood": "noir"}],
-        "shots": [{"id": "s01", "start_s": 0.0, "end_s": 8.0, "section_id": "verse",
-                    "render_strategy": "lipsync", "environment": "tower",
-                    "characters": ["thor"], "description": "Thor singing", "camera": "static",
-                    "framing": "medium", "notes": ""}],
+        "sections": [
+            {
+                "id": "verse",
+                "start_s": 0.0,
+                "end_s": 8.0,
+                "label": "verse",
+                "energy": "low",
+                "mood": "noir",
+            }
+        ],
+        "shots": [
+            {
+                "id": "s01",
+                "start_s": 0.0,
+                "end_s": 8.0,
+                "section_id": "verse",
+                "render_strategy": "lipsync",
+                "environment": "tower",
+                "characters": ["thor"],
+                "description": "Thor singing",
+                "camera": "static",
+                "framing": "medium",
+                "notes": "",
+            }
+        ],
         "global_style": "noir",
         "notes": "",
     }
@@ -129,8 +157,12 @@ def test_init_then_upsert_then_read_round_trip(tmp_path):
     proj = nw.Project.init(tmp_path / "p", title="rt")
     proj.add_character("thor", description="x")
     proj.add_environment("tower", description="y")
-    proj.upsert_section(nw.SectionSpec(id="verse", start_s=0.0, end_s=4.0, label="verse"))
-    proj.upsert_shot(nw.ShotSpec(id="s01", start_s=0.0, end_s=4.0, render_strategy="lipsync"))
+    proj.upsert_section(
+        nw.SectionSpec(id="verse", start_s=0.0, end_s=4.0, label="verse")
+    )
+    proj.upsert_shot(
+        nw.ShotSpec(id="s01", start_s=0.0, end_s=4.0, render_strategy="lipsync")
+    )
 
     spec = proj.read_spec()
     assert {c.name for c in spec.characters} == {"thor"}
@@ -145,7 +177,9 @@ def test_remove_shot_via_write_spec_clears_graph(tmp_path):
     proj.upsert_shot(nw.ShotSpec(id="s01", start_s=0.0, end_s=4.0))
     proj.upsert_shot(nw.ShotSpec(id="s02", start_s=4.0, end_s=8.0))
     spec = proj.read_spec()
-    new_spec = spec.model_copy(update={"shots": tuple(s for s in spec.shots if s.id != "s01")})
+    new_spec = spec.model_copy(
+        update={"shots": tuple(s for s in spec.shots if s.id != "s01")}
+    )
     proj.write_spec(new_spec)
     after = proj.read_spec()
     assert {s.id for s in after.shots} == {"s02"}
@@ -205,7 +239,16 @@ def test_descendants_of_walks_provenance_graph(tmp_path):
     assert a_id not in desc_ids  # source itself is not in its own descendants
 
 
-def test_stale_after_is_alias_for_descendants_of(tmp_path):
+def test_stale_after_is_not_an_alias_for_descendants_of(tmp_path):
+    """The two verbs answer different questions and must be able to disagree.
+
+    Replaces ``test_stale_after_is_alias_for_descendants_of`` (nw#24). The
+    alias is the defect: reachability reports everything downstream of a
+    change whether or not anything about it is out of date.
+
+    Kept here, next to the ``descendants_of`` test it used to mirror, so the
+    contrast is visible; the full behaviour lives in ``test_freshness.py``.
+    """
     proj = nw.Project.init(tmp_path / "p")
     g = proj.graph
     a_id = g.upsert_section(
@@ -216,9 +259,11 @@ def test_stale_after_is_alias_for_descendants_of(tmp_path):
         nw.bodies.DecisionBodyV1(kind="step_b", payload={}),
         was_derived_from=(a_id,),
     )
-    desc = nw.descendants_of(proj.root, a_id)
-    stale = nw.stale_after(proj.root, a_id)
-    assert {a.id for a in desc} == {a.id for a in stale}
+
+    # B is reachable from A — that has not changed and must not.
+    assert {a.id for a in nw.descendants_of(proj.root, a_id)} == {b_id}
+    # …but nothing about A has changed since B was written, so B is not stale.
+    assert nw.stale_after(proj.root, a_id) == []
 
 
 def test_derived_from_returns_one_hop(tmp_path):
@@ -255,10 +300,12 @@ def _iv(start_s: float, end_s: float):
     """Helper to build a TimeInterval."""
     from fractions import Fraction
     from lacing import RationalTime, TimeInterval, DEFAULT_RATE
+
     def to_rt(s):
         return RationalTime.from_fraction(
             Fraction(round(s * DEFAULT_RATE), DEFAULT_RATE), rate=DEFAULT_RATE
         )
+
     return TimeInterval(start=to_rt(start_s), end=to_rt(end_s))
 
 
@@ -268,15 +315,25 @@ def _iv(start_s: float, end_s: float):
 def test_execute_render_with_project_writes_render_decision(tmp_path, monkeypatch):
     """When a Project is passed, execute_render appends a decision derived from the shot."""
     import sys, types, struct
+
     # Stub fal_client.upload_file + fal_client.subscribe.
     counter = [0]
+
     def upload_file(path):
         counter[0] += 1
         return f"https://fal.storage/test/u-{counter[0]}.bin"
+
     def subscribe(application, *, arguments, with_logs, on_queue_update):
         if "image_to_video" in application or "hailuo" in application:
-            return {"video": {"url": "http://x/v.mp4", "duration": 4.0, "content_type": "video/mp4"}}
+            return {
+                "video": {
+                    "url": "http://x/v.mp4",
+                    "duration": 4.0,
+                    "content_type": "video/mp4",
+                }
+            }
         return {"images": [{"url": "http://x/img.png", "content_type": "image/png"}]}
+
     fake = types.SimpleNamespace(
         InProgress=type("IP", (), {"__init__": lambda s, l: None}),
         upload_file=upload_file,
@@ -288,34 +345,53 @@ def test_execute_render_with_project_writes_render_decision(tmp_path, monkeypatc
     sr = 8000
     n = sr * 4
     wav = (
-        b"RIFF" + struct.pack("<I", 36 + n) + b"WAVEfmt "
+        b"RIFF"
+        + struct.pack("<I", 36 + n)
+        + b"WAVEfmt "
         + struct.pack("<IHHIIHH", 16, 1, 1, sr, sr, 1, 8)
-        + b"data" + struct.pack("<I", n) + (b"\x80" * n)
+        + b"data"
+        + struct.pack("<I", n)
+        + (b"\x80" * n)
     )
 
     proj = nw.Project.init(tmp_path / "p", title="t")
     (proj.root / "song" / "song.wav").write_bytes(wav)
     from nw.schema import SongInfo
+
     proj.update_spec(song=SongInfo(audio_path="song/song.wav", duration_s=4.0))
 
     proj.upsert_section(nw.SectionSpec(id="v", start_s=0.0, end_s=4.0))
-    proj.upsert_shot(nw.ShotSpec(id="s01", start_s=0.0, end_s=4.0,
-                                 render_strategy="text_to_video",
-                                 description="something visible"))
+    proj.upsert_shot(
+        nw.ShotSpec(
+            id="s01",
+            start_s=0.0,
+            end_s=4.0,
+            render_strategy="text_to_video",
+            description="something visible",
+        )
+    )
 
     prep = nw.prepare_shot(proj, "s01", upload=True)
     plan = nw.plan_render_shot(prep)
 
     # Patch urlretrieve so download in materialize() doesn't hit the network.
     import urllib.request
-    monkeypatch.setattr(urllib.request, "urlretrieve",
-                        lambda url, dst: (Path(dst).write_bytes(b"\x00" * 16), None))
+
+    monkeypatch.setattr(
+        urllib.request,
+        "urlretrieve",
+        lambda url, dst: (Path(dst).write_bytes(b"\x00" * 16), None),
+    )
 
     # Patch ffmpeg trim/pad to be a no-op copy via shutil — we only care about the
     # render-decision side effect.
     import nw.renderers._common as rcom
-    monkeypatch.setattr(rcom, "trim_or_pad_video",
-                        lambda src, target_s, dst: (shutil.copy2(src, dst), dst)[1])
+
+    monkeypatch.setattr(
+        rcom,
+        "trim_or_pad_video",
+        lambda src, target_s, dst: (shutil.copy2(src, dst), dst)[1],
+    )
 
     out = nw.execute_render(prep, plan, project=proj, use_cache=False)
     assert out.exists()
@@ -333,3 +409,20 @@ def test_execute_render_with_project_writes_render_decision(tmp_path, monkeypatc
     shot_ann = proj.graph.shots()[0]
     desc_ids = {a.id for a in nw.descendants_of(proj.root, shot_ann.annotation_id)}
     assert render_decisions[0].annotation_id in desc_ids
+
+    # nw#24, on the real production write path rather than a hand-built graph:
+    # reachable is not the same as stale. Nothing has changed since the render,
+    # so there is nothing to redo…
+    assert nw.stale_after(proj.root, shot_ann.annotation_id) == []
+    # …and editing the shot brings it straight back.
+    proj.upsert_shot(
+        nw.ShotSpec(
+            id="s01",
+            start_s=0.0,
+            end_s=4.0,
+            render_strategy="text_to_video",
+            description="something else entirely",
+        )
+    )
+    stale_ids = {a.id for a in nw.stale_after(proj.root, shot_ann.annotation_id)}
+    assert render_decisions[0].annotation_id in stale_ids
