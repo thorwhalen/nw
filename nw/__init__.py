@@ -11,8 +11,9 @@ Public surface:
   shot upserts, decision log, typed summary, session-resumption brief.
 - :class:`ProjectSummary` — typed read view of a project.
 - :class:`ResumptionBrief` — "where we left off": decision tail, what the
-  last change reaches, recorded spend, deterministic next actions. Its
-  ``caveats`` field carries what those numbers do *not* know.
+  last *authored* change reaches downstream, recorded spend, deterministic
+  next actions. Its ``caveats`` field carries what those numbers do *not*
+  know.
 - :func:`clone_project` — replaces ``cp -r`` for sibling experiments.
 - :func:`apply_to_projects` — replaces shell for-loops across roots.
 - Schema types: :class:`ProjectSpec`, :class:`SectionSpec`, :class:`ShotSpec`,

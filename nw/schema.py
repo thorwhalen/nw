@@ -123,12 +123,19 @@ class CharacterRef(BaseModel):
 
 
 class EnvironmentRef(BaseModel):
-    """Pointer to an environment folder under ``environments/<name>/``."""
+    """Pointer to an environment folder under ``environments/<name>/``.
+
+    Mirrors :class:`nw.bodies.EnvironmentRefBodyV1` field-for-field, for the
+    same load-bearing reason as :class:`CharacterRef` — see that docstring.
+    ``reference_image_urls`` (the lookbook the FE curates for a *location*)
+    was erased by every ``update_spec`` until this mirror was completed.
+    """
 
     model_config = {"extra": "ignore"}
 
     name: str
     description: str = ""
+    reference_image_urls: tuple[str, ...] = ()
 
 
 class ProjectSpec(BaseModel):
@@ -268,17 +275,23 @@ class ResumptionBrief(BaseModel):
     **The field names are chosen to be honest about what nw can currently
     measure**, because a confidently wrong number is worse than no number:
 
-    - :attr:`downstream_of_last_change` is *not* "stale". ``nw.stale_after``
-      is pure provenance reachability — it never compares content or
-      timestamps — so this set includes everything already regenerated
-      since the change. It is an **upper bound** on what needs attention,
-      and it is named for what it measures. When early-cutoff freshness
-      lands, the same call returns a smaller and correct set with no change
-      to this API.
-    - :attr:`total_spend_usd` sums *every* recorded render decision. Nothing
-      records per-branch outcomes yet, so a render that failed after being
-      billed is counted here exactly like one that succeeded. Also an upper
-      bound.
+    - :attr:`downstream_of_last_authored_change` is *not* "stale".
+      ``nw.stale_after`` is pure provenance reachability — it never compares
+      content or timestamps — so this set includes everything already
+      regenerated since the change. It is an **upper bound** on what needs
+      attention, and it is named for what it measures. When early-cutoff
+      freshness lands, the same call returns a smaller and correct set with
+      no change to this API.
+    - The walk starts at the last **authored** change — the most recent
+      annotation the user wrote (a shot, a section, a character or
+      environment ref), never one a Transform derived. Walking from "the
+      newest annotation" instead would be inverted: the newest node in a
+      provenance graph is by construction a *leaf*, so its descendant set is
+      empty in exactly the case the field exists for.
+    - :attr:`total_spend_usd` sums *every* recorded render decision across
+      every store scope. Nothing records per-branch outcomes yet, so a render
+      that failed after being billed is counted here exactly like one that
+      succeeded. Also an upper bound.
 
     :attr:`caveats` carries those qualifications as data — so a consumer
     renders them next to the numbers instead of rediscovering them.
@@ -298,27 +311,30 @@ class ResumptionBrief(BaseModel):
 
     recent_decisions: tuple[DecisionEntry, ...] = ()
 
-    downstream_of_last_change: tuple[str, ...] = Field(
+    downstream_of_last_authored_change: tuple[str, ...] = Field(
         default_factory=tuple,
         description=(
-            "Annotation ids reachable from the most recent content change "
-            "via ``was_derived_from``. Reachability, not staleness — an "
-            "upper bound. See the class docstring."
+            "Annotation ids reachable from :attr:`last_authored_change_id` "
+            "via ``was_derived_from``, excluding decision-log rows (an audit "
+            "entry is never something to regenerate). Reachability, not "
+            "staleness — an upper bound. See the class docstring."
         ),
     )
-    last_change_id: Optional[str] = Field(
+    last_authored_change_id: Optional[str] = Field(
         None,
         description=(
-            "The annotation ``downstream_of_last_change`` was walked from — "
-            "the most recently generated non-decision annotation."
+            "The annotation the walk started from: the most recent one the "
+            "user authored — no ``was_derived_from`` parents and not a "
+            "decision — i.e. the last edit whose consequences are downstream."
         ),
     )
 
     total_spend_usd: float = Field(
         0.0,
         description=(
-            "Sum over recorded render-decision cost payloads. Includes "
-            "renders that were billed and then failed — an upper bound."
+            "Sum over recorded render-decision cost payloads, across every "
+            "store scope. Includes renders that were billed and then failed "
+            "— an upper bound."
         ),
     )
 
@@ -338,4 +354,4 @@ class ResumptionBrief(BaseModel):
 
     @property
     def downstream_count(self) -> int:
-        return len(self.downstream_of_last_change)
+        return len(self.downstream_of_last_authored_change)

@@ -180,8 +180,9 @@ proj.read_summary()  # typed ProjectSummary: title, counts, lifecycle stages
 proj.read_spec()  # typed ProjectSpec
 proj.log_decision("retry_shot", shot_id="shot_03", reason="lipsync drift")
 
-# "Where did we leave off?" — decision tail, what the last change reaches,
-# recorded spend, unrendered shots, deterministic next actions. Offline.
+# "Where did we leave off?" — decision tail, what the last *authored*
+# change reaches downstream, recorded spend, unrendered shots, deterministic
+# next actions. Offline.
 brief = proj.resumption_brief()
 brief.suggested_next
 brief.caveats  # what the numbers above do NOT know — rendered next to them
