@@ -240,7 +240,7 @@ goes back to empty without anything downstream being recomputed.
 
 ```python
 for v in nw.stale_verdicts(proj.root, character_annotation_id):
-    print(v.annotation.id, v.is_stale, v.reason)   # e.g. "upstream-changed"
+    print(v.annotation.id, v.is_stale, v.reason)  # e.g. "upstream-changed"
 ```
 
 The rule is asymmetric on purpose: anything unverifiable — no trace, a deleted
