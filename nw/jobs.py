@@ -1028,17 +1028,28 @@ def _index_update_locked(rt, job_id, **fields) -> None:
 
 def _default_idempotency_key(project, kind, params) -> str:
     """``sha256(project:kind:basis)`` where basis is ``falaw.plan_hash`` of a
-    supplied ``params["plan"]`` (plan-scoped dedup) or a stable hash of params."""
-    basis = None
+    supplied ``params["plan"]`` (plan-scoped dedup) or a stable hash of params.
+
+    A plan that cannot be hashed is **not** silently deduped under a weaker,
+    plan-blind fallback (nw#41) — that used to swallow *any* ``plan_hash``
+    failure into ``json.dumps(_jsonable(params), default=str)``, a key that
+    ignores the plan entirely. Two structurally different plans sharing the
+    same other ``params`` then collapsed onto one key, and the second
+    ``enqueue`` silently returned the first job instead of submitting its
+    own — a dropped submission with no error anywhere. Since falaw 0.0.30
+    (falaw#17) ``plan_hash`` raises ``FalNonCanonicalArgument`` for a
+    genuinely non-canonicalisable argument, which made this reachable from
+    ordinary caller input rather than only from malformed test data. The fix
+    is the same "refuse loudly" contract falaw adopted: when a plan is
+    supplied, its hash IS the basis, unconditionally — a plan that cannot be
+    identified is not submittable, and the caller sees why.
+    """
     plan = params.get("plan") if isinstance(params, Mapping) else None
     if plan is not None:
-        try:
-            from falaw import plan_hash
+        from falaw import plan_hash
 
-            basis = plan_hash(plan)
-        except Exception:
-            basis = None
-    if basis is None:
+        basis = plan_hash(plan)
+    else:
         basis = json.dumps(_jsonable(params), sort_keys=True, default=str)
     blob = f"{Path(project.root).resolve()}:{kind}:{basis}".encode("utf-8")
     return hashlib.sha256(blob).hexdigest()
