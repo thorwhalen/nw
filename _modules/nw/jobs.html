@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.jobs &mdash; nw 0.0.20 documentation</title>
+  <title>nw.jobs &mdash; nw 0.0.21 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=056c92e6"></script>
+      <script src="../../_static/documentation_options.js?v=a11416ff"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -1181,17 +1181,28 @@
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_default_idempotency_key</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;``sha256(project:kind:basis)`` where basis is ``falaw.plan_hash`` of a</span>
-<span class="sd">    supplied ``params[&quot;plan&quot;]`` (plan-scoped dedup) or a stable hash of params.&quot;&quot;&quot;</span>
-    <span class="n">basis</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="sd">    supplied ``params[&quot;plan&quot;]`` (plan-scoped dedup) or a stable hash of params.</span>
+
+<span class="sd">    A plan that cannot be hashed is **not** silently deduped under a weaker,</span>
+<span class="sd">    plan-blind fallback (nw#41) — that used to swallow *any* ``plan_hash``</span>
+<span class="sd">    failure into ``json.dumps(_jsonable(params), default=str)``, a key that</span>
+<span class="sd">    ignores the plan entirely. Two structurally different plans sharing the</span>
+<span class="sd">    same other ``params`` then collapsed onto one key, and the second</span>
+<span class="sd">    ``enqueue`` silently returned the first job instead of submitting its</span>
+<span class="sd">    own — a dropped submission with no error anywhere. Since falaw 0.0.30</span>
+<span class="sd">    (falaw#17) ``plan_hash`` raises ``FalNonCanonicalArgument`` for a</span>
+<span class="sd">    genuinely non-canonicalisable argument, which made this reachable from</span>
+<span class="sd">    ordinary caller input rather than only from malformed test data. The fix</span>
+<span class="sd">    is the same &quot;refuse loudly&quot; contract falaw adopted: when a plan is</span>
+<span class="sd">    supplied, its hash IS the basis, unconditionally — a plan that cannot be</span>
+<span class="sd">    identified is not submittable, and the caller sees why.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">plan</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;plan&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="n">plan</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="kn">from</span><span class="w"> </span><span class="nn">falaw</span><span class="w"> </span><span class="kn">import</span> <span class="n">plan_hash</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">falaw</span><span class="w"> </span><span class="kn">import</span> <span class="n">plan_hash</span>
 
-            <span class="n">basis</span> <span class="o">=</span> <span class="n">plan_hash</span><span class="p">(</span><span class="n">plan</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-            <span class="n">basis</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="k">if</span> <span class="n">basis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">basis</span> <span class="o">=</span> <span class="n">plan_hash</span><span class="p">(</span><span class="n">plan</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
         <span class="n">basis</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">_jsonable</span><span class="p">(</span><span class="n">params</span><span class="p">),</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
     <span class="n">blob</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">Path</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">root</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">basis</span><span class="si">}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">(</span><span class="n">blob</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
