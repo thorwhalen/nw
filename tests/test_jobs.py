@@ -253,6 +253,87 @@ def test_explicit_idempotency_key_dedups(project):
     assert calls == ["fixed-key"]
 
 
+def test_plan_present_dedup_key_is_plan_derived_not_params_blind(project):
+    """nw#41: a ``params["plan"]`` must actually drive the dedup key — the
+    branch existed but nothing exercised it before this fix (no production
+    caller passes a live ``Plan`` through ``enqueue`` yet, which is exactly
+    how the silent-fallback bug went unnoticed). Tested directly against
+    ``_default_idempotency_key`` rather than through a full ``enqueue()``:
+    a raw ``Plan`` object in ``params`` isn't itself JSON-persistable by the
+    job record store, a separate, pre-existing gap outside this issue's
+    scope (flagged, not fixed, here).
+
+    Two calls with the SAME other params but STRUCTURALLY DIFFERENT plans
+    must get different keys — the plan is what makes them different, not
+    the params.
+    """
+    from falaw import CallPlan, Plan
+
+    plan_a = Plan(
+        calls=(
+            CallPlan(
+                tool="generate_image",
+                application="fal-ai/flux/dev",
+                arguments={"prompt": "a tiger"},
+                output_kind="image",
+            ),
+        )
+    )
+    plan_b = Plan(
+        calls=(
+            CallPlan(
+                tool="generate_image",
+                application="fal-ai/flux/dev",
+                arguments={"prompt": "a different tiger"},
+                output_kind="image",
+            ),
+        )
+    )
+    same_params = {"model": "fal-ai/flux/dev"}  # identical for both
+
+    key_a = jobs._default_idempotency_key(project, "op", {**same_params, "plan": plan_a})
+    key_b = jobs._default_idempotency_key(project, "op", {**same_params, "plan": plan_b})
+    assert key_a != key_b, (
+        "two structurally different plans must not collapse onto one "
+        "dedup key just because their other params match"
+    )
+    # Stable: re-deriving the same plan's key must be deterministic.
+    assert key_a == jobs._default_idempotency_key(
+        project, "op", {**same_params, "plan": plan_a}
+    )
+
+
+def test_a_plan_that_cannot_be_hashed_is_refused_not_silently_deduped(project):
+    """nw#41's failure mode, reproduced directly: before the fix, ANY
+    `plan_hash` exception (now routinely `FalNonCanonicalArgument` since
+    falaw#17) degraded the key to a plan-blind fallback — collapsing two
+    different unhashable plans, or an unhashable plan and a coincidentally
+    params-matching different job, onto one key with no error raised
+    anywhere. Computing the key must now raise instead of silently
+    returning a garbage, plan-blind basis — which is what protects
+    `enqueue` (its only caller) from accepting the submission under a key
+    that does not actually identify the plan.
+    """
+    from falaw import CallPlan, FalNonCanonicalArgument, Plan
+
+    class _Unhashable:
+        def __str__(self):
+            return "looks-fine-but-isnt"
+
+    junk_plan = Plan(
+        calls=(
+            CallPlan(
+                tool="generate_image",
+                application="fal-ai/flux/dev",
+                arguments={"ref": _Unhashable()},
+                output_kind="image",
+            ),
+        )
+    )
+    with pytest.raises(FalNonCanonicalArgument):
+        jobs._default_idempotency_key(project, "op", {"plan": junk_plan})
+
+
 def test_terminal_key_reruns(project):
     """Dedup only holds while a job is live; a completed key re-runs."""
     release = threading.Event()
