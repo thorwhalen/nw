@@ -78,6 +78,8 @@ from .renderers import (
 )
 from .transforms import (
     BaseTransform,
+    FailedOutput,
+    OnFailure,
     Transform,
     TransformInputs,
     TransformResult,
@@ -134,6 +136,8 @@ from .workflow import (
 __all__ = [
     "SCHEMA_VERSION",
     "BaseTransform",
+    "FailedOutput",
+    "OnFailure",
     "CharacterImage",
     "CharacterRef",
     "ComposeReport",

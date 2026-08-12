@@ -130,21 +130,40 @@ ComfyUI breaks the run on the first node failure. For a graph of GPU ops taking
 seconds that is defensible. For a 200-shot fan-out where shot 47 trips a content
 filter it is not — the other 199 are independent and 46 are already paid for.
 
-**nw inherits the same shape today**: `BaseTransform.execute`
-(`nw/transforms/__init__.py:197`) calls `falaw.execute_plan` at `:206`, and that
-is a sequential `for call in plan.calls:` loop (`falaw/plan.py:431-443`) with no
-exception handling, so one failure discards the whole run.
+nw inherited the same shape until nw#25. **This is now built** — falaw#20 landed
+`execute_plan_isolated` + `ExecutionReport` (falaw ≥ 0.0.25), and
+`BaseTransform.execute` runs both policies through it:
 
-The design:
-
-- A run-level `on_failure` policy: `"halt" | "isolate"`.
+- A run-level `on_failure` policy: `"halt" | "isolate"`. `"halt"` is the default
+  and is byte-for-byte the old behaviour — falaw defines `execute_plan` as
+  exactly this call plus `artifacts_or_raise()`, so the *original* typed
+  exception still propagates unwrapped.
 - **Three outcomes, not two.** A branch is *produced*, *blocked*, or *failed*.
   "Blocked" is ComfyUI's `ExecutionBlocker` idea with its worst property
   removed — a silently-blocked branch there is indistinguishable from one that
-  never ran. Ours must carry a reason, visible in the graph, so the UI renders
-  "skipped: no dialogue in this panel" rather than an unexplained hole.
-- The run report carries three counts, and **the cost report attributes spend to
-  the produced set only**.
+  never ran. `TransformResult.blocked` carries a `reason` and `blocked_by`, so
+  the UI renders "skipped: no dialogue in this panel" rather than an
+  unexplained hole.
+- `TransformResult` carries `annotations` / `failed` / `blocked` (+
+  `is_complete`), and **the cost report attributes spend to the produced set
+  only** — `ExecutionReport.estimated_spend_usd`, which excludes cache hits and
+  failed calls, rather than summing `Artifact.cost_usd` (a plan-time prediction
+  that over-reports every cached run — thorwhalen/falaw#26).
+- Successes are written to the graph **before** failures are reported. They are
+  paid for; discarding them because a sibling failed is the waste falaw#20
+  removed one layer down.
+
+One thing the original design note did not anticipate: the iteration must zip
+skeletons against `report.outcomes`, never against the artifact list. Outcomes
+is full-length in plan order by construction; the artifact list is short exactly
+when something failed, so zipping it pairs shot 48's artifact onto shot 47's
+skeleton the moment one call drops out — silently.
+
+Not yet built: a Transform that composes N calls into one output
+(`RenderStrategyTransform`) can only isolate at *its own* boundary — it reports
+the whole shot as failed rather than half-materializing it. That is the honest
+granularity, not a gap, but a caller fanning out over shots needs to know which
+level it is getting.
 
 Without this, a set-level verdict ("is this set of shots coherent?") has nothing
 to act on — which is why the decisions doc calls per-branch failure isolation

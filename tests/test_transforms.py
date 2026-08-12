@@ -430,6 +430,43 @@ def _plan(n: int):
     )
 
 
+def _report(calls, artifacts, *, failures=()):
+    """A real ``falaw.ExecutionReport`` over ``calls``.
+
+    Built rather than faked: the whole point of nw#25 is that ``outcomes`` is
+    full-length in plan order **by construction**, so a stub that returns a
+    convenient shape would test nw against a contract falaw does not have.
+    ``failures`` maps index -> (status, reason).
+    """
+    from falaw.outcomes import CallOutcome, ExecutionReport
+
+    failures = dict(failures)
+    outcomes = []
+    produced = list(artifacts)
+    for i, call in enumerate(calls):
+        if i in failures:
+            status, reason = failures[i]
+            outcomes.append(
+                CallOutcome(
+                    index=i,
+                    call=call,
+                    status=status,
+                    error=RuntimeError(reason) if status == "failed" else None,
+                    reason=reason,
+                )
+            )
+        else:
+            outcomes.append(
+                CallOutcome(
+                    index=i,
+                    call=call,
+                    status="succeeded",
+                    artifact=produced.pop(0),
+                )
+            )
+    return ExecutionReport(outcomes=tuple(outcomes))
+
+
 def test_execute_refuses_a_skeleton_plan_length_mismatch():
     """The zip would drop the surplus skeleton silently; refuse instead.
 
@@ -451,7 +488,9 @@ def test_execute_length_check_precedes_any_spending(monkeypatch):
     _t = importlib.import_module("nw.transforms")
 
     called = []
-    monkeypatch.setattr(_t, "execute_plan", lambda *a, **k: called.append(1) or [])
+    monkeypatch.setattr(
+        _t, "execute_plan_isolated", lambda *a, **k: called.append(1) or _report([], [])
+    )
     with pytest.raises(ValueError):
         BaseTransform().execute(None, _plan(1), _skel(2))
     assert called == []
@@ -474,7 +513,10 @@ def test_execute_accepts_a_matching_skeleton_and_plan(monkeypatch):
         )
         for i in range(2)
     ]
-    monkeypatch.setattr(_t, "execute_plan", lambda *a, **k: artifacts)
+    plan = _plan(2)
+    monkeypatch.setattr(
+        _t, "execute_plan_isolated", lambda *a, **k: _report(plan.calls, artifacts)
+    )
 
     class _Graph:
         def __init__(self):

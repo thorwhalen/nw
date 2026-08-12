@@ -32,10 +32,17 @@ import uuid
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from falaw import Plan, execute_plan
+from falaw import Plan, execute_plan_isolated
 from lacing import Annotation
 
-from .. import BaseTransform, TransformInputs, TransformResult, register_transform
+from .. import (
+    BaseTransform,
+    FailedOutput,
+    OnFailure,
+    TransformInputs,
+    TransformResult,
+    register_transform,
+)
 from .._provenance import derive_provenance
 from ...bodies import (
     RENDER_RESULT_BODY_SCHEMA_URI,
@@ -134,13 +141,47 @@ class RenderStrategyTransform(BaseTransform):
         *,
         use_cache: bool = True,
         force: bool = False,
+        on_failure: OnFailure = "halt",
     ) -> TransformResult:
+        """Render one shot. ``on_failure`` isolates at the *shot* boundary.
+
+        This Transform composes N calls into **one** output, so there is no
+        partial output to hand back: a strategy cannot materialize a shot from
+        some of its clips. ``"isolate"`` therefore means "report this shot as
+        failed instead of raising", which is what lets a caller rendering 40
+        shots keep the other 39 — the same guarantee as the 1:1 case, at the
+        granularity this Transform actually has.
+        """
         from ...workflow import prepare_shot
 
         shot_id = skeleton[0].body["shot_id"]
         # materialize() needs only local paths — no upload required.
         prep = prepare_shot(project, shot_id, upload=False)
-        artifacts = execute_plan(plan, use_cache=use_cache and not force)
+        report = execute_plan_isolated(
+            plan, use_cache=use_cache and not force, halt_on_failure=True
+        )
+        if not report.is_complete:
+            if on_failure == "halt":
+                report.artifacts_or_raise()
+            first = next(iter(report.failed + report.blocked))
+            return TransformResult(
+                annotations=(),
+                artifacts=tuple(report.produced),
+                cost_usd_actual=report.estimated_spend_usd,
+                cache_hit_savings_usd=report.cache_hit_savings_usd,
+                has_unknown_costs=report.has_unknown_costs,
+                failed=(
+                    FailedOutput(
+                        skeleton=skeleton[0],
+                        status=first.status,
+                        reason=first.reason
+                        or f"{self._strategy.name}: a call in the shot's plan failed",
+                        error=first.error,
+                        blocked_by=tuple(first.blocked_by),
+                    ),
+                ),
+            )
+        artifacts = list(report.produced)
         output = self._strategy.materialize(prep, plan, list(artifacts))
 
         video_artifact = next((a for a in artifacts if a.kind == "video"), None)
@@ -162,8 +203,9 @@ class RenderStrategyTransform(BaseTransform):
         return TransformResult(
             annotations=(completed,),
             artifacts=tuple(artifacts),
-            cost_usd_actual=sum((a.cost_usd or 0.0) for a in artifacts),
-            cache_hit_savings_usd=plan.cache_hit_savings_usd,
+            cost_usd_actual=report.estimated_spend_usd,
+            cache_hit_savings_usd=report.cache_hit_savings_usd,
+            has_unknown_costs=report.has_unknown_costs,
         )
 
 
