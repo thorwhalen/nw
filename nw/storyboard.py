@@ -41,7 +41,7 @@ from artful import (
     save_storyboard as _save_storyboard,
 )
 from artful.exports import to_html, to_markdown, from_markdown  # re-exported
-from falaw import Plan, plan_generate_image
+from falaw import Plan, execute_plan_isolated, plan_generate_image
 from lacing import (
     Artifact,
     MemoryStore,
@@ -52,6 +52,7 @@ from lacing import (
 
 from .graph_backend import SCOPE_STORYBOARD, open_graph_store, selected_backend
 from .project import Project
+from .transforms import OnFailure
 
 
 _STORYBOARD_DB_NAME = "storyboard.annot.sqlite"
@@ -277,6 +278,7 @@ def execute_render_panel_images(
     *,
     on_event=None,
     use_cache: bool = True,
+    on_failure: OnFailure = "halt",
 ) -> Storyboard:
     """Execute ``plan``, download each artifact, attach a PanelImage.
 
@@ -287,16 +289,37 @@ def execute_render_panel_images(
     PanelImage record stores both the project-relative path and the
     artifact_id (content hash via lacing.Artifact), so downstream consumers
     can prefer one or the other.
+
+    ``on_failure`` is nw#25's policy, and this is the function the issue names
+    as **nw's real fan-out shape** — one ``generate_image`` per panel. Under
+    ``"isolate"`` a panel whose call failed is simply left without a seed image;
+    every panel that rendered keeps its own, instead of one content-filtered
+    panel discarding the whole batch. ``"halt"`` is the default and unchanged.
+
+    Panels are matched to outcomes **by index into the plan**, never by position
+    in a shortened artifact list — the latter attaches panel 48's image to panel
+    47 the moment one call drops out.
     """
     if len(plan.calls) != len(panel_ids):
         raise ValueError(
             f"plan has {len(plan.calls)} calls but panel_ids has {len(panel_ids)} "
             "ids; pass the same panel_ids returned by plan_render_panel_images."
         )
+    if on_failure not in ("halt", "isolate"):
+        raise ValueError(
+            f"execute_render_panel_images: on_failure must be 'halt' or "
+            f"'isolate', got {on_failure!r}."
+        )
 
-    from falaw import execute_plan
-
-    artifacts = execute_plan(plan, on_event=on_event, use_cache=use_cache)
+    report = execute_plan_isolated(
+        plan,
+        on_event=on_event,
+        use_cache=use_cache,
+        halt_on_failure=on_failure == "halt",
+    )
+    if on_failure == "halt":
+        report.artifacts_or_raise()
+    artifacts = [o.artifact if o.ok else None for o in report.outcomes]
 
     storyboard_dir = project.root / "storyboard"
     storyboard_dir.mkdir(exist_ok=True)
@@ -304,7 +327,9 @@ def execute_render_panel_images(
     # Build a mutable map panel_id -> updated PanelBody.
     new_panels: dict[str, PanelBody] = {p.panel_id: p for p in storyboard.panels}
 
-    for panel_id, artifact in zip(panel_ids, artifacts):
+    for panel_id, artifact in zip(panel_ids, artifacts, strict=True):
+        if artifact is None:
+            continue  # this call failed or was blocked; the panel keeps no seed
         if not artifact.url:
             continue  # silently skip; rare but safer than failing the batch
         local = storyboard_dir / f"{panel_id}.png"

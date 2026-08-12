@@ -78,6 +78,8 @@ from .renderers import (
 )
 from .transforms import (
     BaseTransform,
+    FailedOutput,
+    OnFailure,
     Transform,
     TransformInputs,
     TransformResult,
@@ -176,6 +178,8 @@ __all__ = [
     "Transform",
     "TransformInputs",
     "TransformResult",
+    "FailedOutput",
+    "OnFailure",
     "annotations_at_tier",
     "apply_to_projects",
     "clone_project",

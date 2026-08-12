@@ -301,3 +301,117 @@ def test_execute_mismatched_panel_ids_raises():
             return proj_root
     with pytest.raises(ValueError, match="panel_ids"):
         nw.execute_render_panel_images(FakeProject(), sb, plan, ["a", "b"])
+
+
+def test_execute_isolates_a_failed_panel_and_keeps_the_rest(
+    tmp_path, monkeypatch, fake_assets
+):
+    """nw#25 at the fan-out the issue actually names.
+
+    `execute_render_panel_images` is one `generate_image` per panel — the issue
+    calls it "nw's real fan-out shape today, not a hypothetical". Under
+    `isolate`, a panel whose call fails simply keeps no seed image; every panel
+    that rendered keeps its own, instead of one content-filtered panel
+    discarding the whole batch.
+    """
+    image_url = "https://example.invalid/panel.png"
+    _patch_fal(monkeypatch, image_url=image_url)
+    fake_image = b"\x89PNG\r\n\x1a\n" + b"\x00" * 100
+    fake_assets.serve(image_url, fake_image)
+
+    def fake_urlretrieve(url, dst):
+        Path(dst).write_bytes(fake_image)
+        return (dst, None)
+
+    import urllib.request
+
+    monkeypatch.setattr(urllib.request, "urlretrieve", fake_urlretrieve)
+
+    proj = _seed_project_with_shots(tmp_path)
+    sb, _ = nw.storyboard_from_shots(proj)
+    plan, panel_ids = nw.plan_render_panel_images(sb)
+    assert len(panel_ids) >= 2, "need a fan-out to isolate within"
+
+    # Fail exactly one call, mid-plan, the way a content filter would.
+    import falaw
+    from falaw.outcomes import CallOutcome, ExecutionReport
+
+    real = falaw.execute_plan_isolated
+    doomed = 1
+
+    def one_bad(p, **kwargs):
+        report = real(p, **{**kwargs, "halt_on_failure": False})
+        outcomes = list(report.outcomes)
+        outcomes[doomed] = CallOutcome(
+            index=doomed,
+            call=outcomes[doomed].call,
+            status="failed",
+            error=RuntimeError("content filter"),
+            reason="content filter",
+        )
+        return ExecutionReport(outcomes=tuple(outcomes))
+
+    import nw.storyboard as sbmod
+
+    monkeypatch.setattr(sbmod, "execute_plan_isolated", one_bad)
+
+    updated = nw.execute_render_panel_images(
+        proj, sb, plan, panel_ids, use_cache=False, on_failure="isolate"
+    )
+
+    seeds = {
+        p.panel_id: [i for i in p.images if i.role == "seed"] for p in updated.panels
+    }
+    assert seeds[panel_ids[doomed]] == [], "the failed panel keeps no seed"
+    for i, pid in enumerate(panel_ids):
+        if i != doomed:
+            assert len(seeds[pid]) == 1, f"{pid} was paid for and must be kept"
+
+
+def test_execute_refuses_an_unknown_failure_policy(tmp_path):
+    proj = _seed_project_with_shots(tmp_path)
+    sb, _ = nw.storyboard_from_shots(proj)
+    plan, panel_ids = nw.plan_render_panel_images(sb)
+
+    with pytest.raises(ValueError, match="on_failure must be"):
+        nw.execute_render_panel_images(
+            proj, sb, plan, panel_ids, on_failure="ignore"
+        )
+
+
+def test_execute_halt_raises_instead_of_quietly_skipping_the_panel(
+    tmp_path, monkeypatch, fake_assets
+):
+    """`halt` is the default; without the re-raise it degrades to `isolate`.
+
+    The failed panel would simply keep no seed image and the caller would never
+    learn a billed batch came back short.
+    """
+    image_url = "https://example.invalid/panel.png"
+    _patch_fal(monkeypatch, image_url=image_url)
+    fake_assets.serve(image_url, b"\x89PNG\r\n\x1a\n" + b"\x00" * 100)
+
+    proj = _seed_project_with_shots(tmp_path)
+    sb, _ = nw.storyboard_from_shots(proj)
+    plan, panel_ids = nw.plan_render_panel_images(sb)
+
+    from falaw.outcomes import CallOutcome, ExecutionReport
+
+    boom = RuntimeError("content filter")
+
+    def all_bad(p, **kwargs):
+        return ExecutionReport(
+            outcomes=tuple(
+                CallOutcome(index=i, call=c, status="failed", error=boom)
+                for i, c in enumerate(p.calls)
+            )
+        )
+
+    import nw.storyboard as sbmod
+
+    monkeypatch.setattr(sbmod, "execute_plan_isolated", all_bad)
+
+    with pytest.raises(RuntimeError) as caught:
+        nw.execute_render_panel_images(proj, sb, plan, panel_ids, use_cache=False)
+
+    assert caught.value is boom

@@ -37,12 +37,12 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Callable, Optional, Protocol, runtime_checkable
+from typing import Callable, Literal, Optional, Protocol, runtime_checkable
 
 from pydantic import BaseModel
 from xdol import Registry
 
-from falaw import Plan, execute_plan
+from falaw import Plan, execute_plan_isolated
 from lacing import Annotation, Artifact
 
 
@@ -67,6 +67,46 @@ class TransformInputs:
     context: dict[str, tuple[Annotation, ...]] = field(default_factory=dict)
 
 
+OnFailure = Literal["halt", "isolate"]
+"""What a Transform does when one of its calls fails.
+
+``"halt"`` — the default and the historical behaviour: stop at the first
+failure and re-raise it, writing nothing to the graph.
+
+``"isolate"`` — run what can be run, write every success to the graph, and
+report the rest. The policy to use for a **fan-out**: with 200 panels, one
+rate-limited call discarding 199 paid renders is the failure mode this exists
+to prevent.
+"""
+
+
+@dataclass(frozen=True, slots=True)
+class FailedOutput:
+    """An output annotation that was planned but never produced.
+
+    Carries the *skeleton* rather than an id because the skeleton is what the
+    caller planned and what a retry would re-submit — and because a UI needs its
+    body to say which panel is missing, not just that something is.
+    """
+
+    skeleton: Annotation
+    """The annotation that would have been completed."""
+
+    status: str
+    """``"failed"`` (its own call failed) or ``"blocked"`` (an upstream one did)."""
+
+    reason: str = ""
+    """Human-readable cause, from falaw. Renders as *"skipped: upstream panel 47
+    was filtered"* rather than an unexplained hole."""
+
+    error: Optional[BaseException] = None
+    """The original exception, for a caller that classifies on falaw's typed
+    hierarchy (``FalRateLimited`` is worth retrying; ``FalAccountLocked`` is not)."""
+
+    blocked_by: tuple[int, ...] = ()
+    """Indices of the calls whose failure blocked this one."""
+
+
 @dataclass(frozen=True, slots=True)
 class TransformResult:
     """The outputs of a Transform's :meth:`~Transform.execute`."""
@@ -79,10 +119,43 @@ class TransformResult:
     Annotations reference these by ``artifact_id`` in their bodies."""
 
     cost_usd_actual: float = 0.0
-    """Actual USD billed during execution (cache hits cost nothing)."""
+    """USD billed during execution, over the calls that **succeeded and were not
+    cache hits** — falaw's observed :attr:`ExecutionReport.estimated_spend_usd`,
+    not the plan-time prediction stamped on each ``Artifact``. The difference is
+    not cosmetic: a call planned as a miss that came back from cache carries a
+    ``cost_usd`` it never cost (thorwhalen/falaw#26), so summing artifacts
+    over-reports every run that benefited from the cache.
+
+    **A lower bound, despite the name.** falaw runs its converter *inside* the
+    unit of work, after the billed call, so a call fal charged for can still end
+    as ``status="failed"`` — and a failed call is excluded here, because falaw
+    cannot know whether the vendor billed it and inventing a number would be
+    worse. Under ``"halt"`` the run aborted anyway; under ``"isolate"`` it
+    continues, so a caller accumulating this across a fan-out with failures will
+    under-count. Read ``failed`` alongside it."""
 
     cache_hit_savings_usd: float = 0.0
-    """USD that would have been spent had nothing been cached."""
+    """USD not spent because a call was served from cache.
+
+    Also observed rather than predicted — this changed source at the same time
+    as ``cost_usd_actual``, from ``Plan.cache_hit_savings_usd`` (what planning
+    guessed would hit) to what actually hit."""
+
+    has_unknown_costs: bool = False
+    """Whether any executed call had no price. Carried so ``$0.00`` stays
+    distinguishable from "we do not know", which is the distinction every cost
+    gate in the federation is required to read."""
+
+    failed: tuple[FailedOutput, ...] = ()
+    """Outputs whose own call failed. Empty unless ``on_failure="isolate"``."""
+
+    blocked: tuple[FailedOutput, ...] = ()
+    """Outputs never attempted because an upstream call failed."""
+
+    @property
+    def is_complete(self) -> bool:
+        """Whether every planned output was produced."""
+        return not self.failed and not self.blocked
 
 
 # ---------------------------------------------------------------------------
@@ -149,10 +222,29 @@ class Transform(Protocol):
         *,
         use_cache: bool = True,
         force: bool = False,
+        on_failure: OnFailure = "halt",
     ) -> TransformResult:
         """Run ``plan``, complete ``skeleton``, write to the graph, return result.
 
         ``force=True`` bypasses the cache (the "regenerate this" affordance).
+
+        ``on_failure`` selects the failure policy — see :data:`OnFailure`.
+        ``"halt"`` is the default so no existing caller changes behaviour.
+
+        .. warning::
+
+           ``on_failure`` is **newer than some implementations**. A Transform
+           that overrides :meth:`execute` and predates nw#25 does not accept the
+           keyword, and this Protocol is ``runtime_checkable``, which compares
+           *method names* and not signatures — so ``isinstance`` still passes
+           and the ``TypeError`` arrives at call time. reelee has ~18 such
+           overrides (thorwhalen/reelee#299 tracks the migration).
+
+           Until they are migrated, a caller iterating over arbitrary registered
+           Transforms should pass ``on_failure`` only to ones it knows accept
+           it, or catch ``TypeError``. Everything inheriting
+           :class:`BaseTransform`'s ``execute`` — the common case — already
+           does.
         """
         ...
 
@@ -210,6 +302,7 @@ class BaseTransform:
         *,
         use_cache: bool = True,
         force: bool = False,
+        on_failure: OnFailure = "halt",
     ) -> TransformResult:
         if len(skeleton) != len(plan.calls):
             raise ValueError(
@@ -220,18 +313,82 @@ class BaseTransform:
                 "the plan and skeleton that plan() returned together, or "
                 "override execute() if this Transform's mapping is not 1:1."
             )
-        artifacts = execute_plan(plan, use_cache=use_cache and not force)
-        completed = tuple(
-            self._complete_annotation(skel, art)
-            for skel, art in zip(skeleton, artifacts)
+        if on_failure not in ("halt", "isolate"):
+            raise ValueError(
+                f"{type(self).__name__}.execute: on_failure must be 'halt' or "
+                f"'isolate', got {on_failure!r}."
+            )
+        # One engine, two policies. `halt` is `execute_plan` — falaw defines the
+        # latter as exactly this call plus `artifacts_or_raise()` — so it keeps
+        # re-raising the *original* typed exception, unwrapped, which is what
+        # every existing caller classifies on.
+        report = execute_plan_isolated(
+            plan,
+            use_cache=use_cache and not force,
+            halt_on_failure=on_failure == "halt",
         )
+        if on_failure == "halt":
+            report.artifacts_or_raise()
+
+        # Zip against `report.outcomes`, never against the artifacts: outcomes
+        # is full-length in plan order **by construction**, while the artifact
+        # list is short exactly when something failed — so zipping that would
+        # pair panel 48's artifact onto panel 47's skeleton the moment one call
+        # dropped out, silently, which is the defect this issue named.
+        completed: list[Annotation] = []
+        failed: list[FailedOutput] = []
+        blocked: list[FailedOutput] = []
+        for skel, outcome in zip(skeleton, report.outcomes, strict=True):
+            if outcome.ok:
+                try:
+                    completed.append(self._complete_annotation(skel, outcome.artifact))
+                except Exception as e:  # noqa: BLE001 — see below
+                    # A call that **succeeded and was billed** can still fail to
+                    # become an annotation: falaw degrades an unreadable asset to
+                    # a `json` artifact with `path=None`, a `text` artifact has no
+                    # obvious target field, and an LLM that prefaces its JSON with
+                    # prose makes `json.loads` raise. Letting that propagate is
+                    # this issue's own defect one layer up — it would discard
+                    # every paid sibling in the run. So a completion failure is
+                    # an *unproduced output*, exactly like an execution failure.
+                    if on_failure == "halt":
+                        raise
+                    failed.append(
+                        FailedOutput(
+                            skeleton=skel,
+                            status="failed",
+                            reason=(
+                                f"the call succeeded but its result could not be "
+                                f"turned into a {self.output_kind or 'output'} "
+                                f"annotation: {type(e).__name__}: {e}"
+                            ),
+                            error=e,
+                        )
+                    )
+                continue
+            unproduced = FailedOutput(
+                skeleton=skel,
+                status=outcome.status,
+                reason=outcome.reason,
+                error=outcome.error,
+                blocked_by=tuple(outcome.blocked_by),
+            )
+            (blocked if outcome.status == "blocked" else failed).append(unproduced)
+
+        # Successes reach the graph before the failure is reported. They are
+        # paid for; discarding them because a sibling call failed is the waste
+        # falaw#20 removed one layer down, and it would be reintroduced here by
+        # returning early.
         for ann in completed:
             project.graph.add_annotation(ann)
         return TransformResult(
-            annotations=completed,
-            artifacts=tuple(artifacts),
-            cost_usd_actual=sum((a.cost_usd or 0.0) for a in artifacts),
-            cache_hit_savings_usd=plan.cache_hit_savings_usd,
+            annotations=tuple(completed),
+            artifacts=tuple(report.produced),
+            cost_usd_actual=report.estimated_spend_usd,
+            cache_hit_savings_usd=report.cache_hit_savings_usd,
+            has_unknown_costs=report.has_unknown_costs,
+            failed=tuple(failed),
+            blocked=tuple(blocked),
         )
 
     def _complete_annotation(
