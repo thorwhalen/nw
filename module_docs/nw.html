@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw &mdash; nw 0.0.21 documentation</title>
+  <title>nw &mdash; nw 0.0.22 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=a11416ff"></script>
+      <script src="../_static/documentation_options.js?v=96ec9c95"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -70,6 +70,14 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.EnvironmentRef"><code class="docutils literal notranslate"><span class="pre">EnvironmentRef</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#nw.EnvironmentRef.model_config"><code class="docutils literal notranslate"><span class="pre">EnvironmentRef.model_config</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.FailedOutput"><code class="docutils literal notranslate"><span class="pre">FailedOutput</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#nw.FailedOutput.blocked_by"><code class="docutils literal notranslate"><span class="pre">FailedOutput.blocked_by</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.FailedOutput.error"><code class="docutils literal notranslate"><span class="pre">FailedOutput.error</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.FailedOutput.reason"><code class="docutils literal notranslate"><span class="pre">FailedOutput.reason</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.FailedOutput.skeleton"><code class="docutils literal notranslate"><span class="pre">FailedOutput.skeleton</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.FailedOutput.status"><code class="docutils literal notranslate"><span class="pre">FailedOutput.status</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.FreshnessVerdict"><code class="docutils literal notranslate"><span class="pre">FreshnessVerdict</span></code></a></li>
@@ -183,8 +191,12 @@
 <li class="toctree-l2"><a class="reference internal" href="#nw.TransformResult"><code class="docutils literal notranslate"><span class="pre">TransformResult</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#nw.TransformResult.annotations"><code class="docutils literal notranslate"><span class="pre">TransformResult.annotations</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.TransformResult.artifacts"><code class="docutils literal notranslate"><span class="pre">TransformResult.artifacts</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.TransformResult.blocked"><code class="docutils literal notranslate"><span class="pre">TransformResult.blocked</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.TransformResult.cache_hit_savings_usd"><code class="docutils literal notranslate"><span class="pre">TransformResult.cache_hit_savings_usd</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.TransformResult.cost_usd_actual"><code class="docutils literal notranslate"><span class="pre">TransformResult.cost_usd_actual</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.TransformResult.failed"><code class="docutils literal notranslate"><span class="pre">TransformResult.failed</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.TransformResult.has_unknown_costs"><code class="docutils literal notranslate"><span class="pre">TransformResult.has_unknown_costs</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.TransformResult.is_complete"><code class="docutils literal notranslate"><span class="pre">TransformResult.is_complete</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.annotations_at_tier"><code class="docutils literal notranslate"><span class="pre">annotations_at_tier()</span></code></a></li>
@@ -423,6 +435,52 @@ was erased by every <code class="docutils literal notranslate"><span class="pre"
 <dt class="sig sig-object py" id="nw.EnvironmentRef.model_config">
 <span class="sig-name descname"><span class="pre">model_config</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'extra':</span> <span class="pre">'ignore'}</span></span><a class="headerlink" href="#nw.EnvironmentRef.model_config" title="Link to this definition"></a></dt>
 <dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.FailedOutput">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.</span></span><span class="sig-name descname"><span class="pre">FailedOutput</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">skeleton</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Annotation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reason</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">BaseException</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blocked_by</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">()</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/transforms.html#FailedOutput"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.FailedOutput" title="Link to this definition"></a></dt>
+<dd><p>An output annotation that was planned but never produced.</p>
+<p>Carries the <em>skeleton</em> rather than an id because the skeleton is what the
+caller planned and what a retry would re-submit — and because a UI needs its
+body to say which panel is missing, not just that something is.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.FailedOutput.blocked_by">
+<span class="sig-name descname"><span class="pre">blocked_by</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#nw.FailedOutput.blocked_by" title="Link to this definition"></a></dt>
+<dd><p>Indices of the calls whose failure blocked this one.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.FailedOutput.error">
+<span class="sig-name descname"><span class="pre">error</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BaseException</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#nw.FailedOutput.error" title="Link to this definition"></a></dt>
+<dd><p>The original exception, for a caller that classifies on falaw’s typed
+hierarchy (<code class="docutils literal notranslate"><span class="pre">FalRateLimited</span></code> is worth retrying; <code class="docutils literal notranslate"><span class="pre">FalAccountLocked</span></code> is not).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.FailedOutput.reason">
+<span class="sig-name descname"><span class="pre">reason</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#nw.FailedOutput.reason" title="Link to this definition"></a></dt>
+<dd><p>upstream panel 47
+was filtered”* rather than an unexplained hole.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Human-readable cause, from falaw. Renders as <a href="#id1"><span class="problematic" id="id2">*</span></a>”skipped</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.FailedOutput.skeleton">
+<span class="sig-name descname"><span class="pre">skeleton</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Annotation</span></span><a class="headerlink" href="#nw.FailedOutput.skeleton" title="Link to this definition"></a></dt>
+<dd><p>The annotation that would have been completed.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.FailedOutput.status">
+<span class="sig-name descname"><span class="pre">status</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#nw.FailedOutput.status" title="Link to this definition"></a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">&quot;failed&quot;</span></code> (its own call failed) or <code class="docutils literal notranslate"><span class="pre">&quot;blocked&quot;</span></code> (an upstream one did).</p>
 </dd></dl>
 
 </dd></dl>
@@ -1054,9 +1112,25 @@ satisfying this Protocol directly, but the Protocol is the contract the
 registry and orchestrator depend on.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="nw.Transform.execute">
-<span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plan</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Plan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skeleton</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Annotation</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="nw/transforms.html#nw.transforms.TransformResult" title="nw.transforms.TransformResult"><span class="pre">TransformResult</span></a></span></span><a class="reference internal" href="../_modules/nw/transforms.html#Transform.execute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.Transform.execute" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plan</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Plan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skeleton</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Annotation</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_failure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'halt'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'isolate'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'halt'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="nw/transforms.html#nw.transforms.TransformResult" title="nw.transforms.TransformResult"><span class="pre">TransformResult</span></a></span></span><a class="reference internal" href="../_modules/nw/transforms.html#Transform.execute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.Transform.execute" title="Link to this definition"></a></dt>
 <dd><p>Run <code class="docutils literal notranslate"><span class="pre">plan</span></code>, complete <code class="docutils literal notranslate"><span class="pre">skeleton</span></code>, write to the graph, return result.</p>
 <p><code class="docutils literal notranslate"><span class="pre">force=True</span></code> bypasses the cache (the “regenerate this” affordance).</p>
+<p><code class="docutils literal notranslate"><span class="pre">on_failure</span></code> selects the failure policy — see <code class="xref py py-data docutils literal notranslate"><span class="pre">OnFailure</span></code>.
+<code class="docutils literal notranslate"><span class="pre">&quot;halt&quot;</span></code> is the default so no existing caller changes behaviour.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><code class="docutils literal notranslate"><span class="pre">on_failure</span></code> is <strong>newer than some implementations</strong>. A Transform
+that overrides <a class="reference internal" href="#nw.Transform.execute" title="nw.Transform.execute"><code class="xref py py-meth docutils literal notranslate"><span class="pre">execute()</span></code></a> and predates nw#25 does not accept the
+keyword, and this Protocol is <code class="docutils literal notranslate"><span class="pre">runtime_checkable</span></code>, which compares
+<em>method names</em> and not signatures — so <code class="docutils literal notranslate"><span class="pre">isinstance</span></code> still passes
+and the <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> arrives at call time. reelee has ~18 such
+overrides (thorwhalen/reelee#299 tracks the migration).</p>
+<p>Until they are migrated, a caller iterating over arbitrary registered
+Transforms should pass <code class="docutils literal notranslate"><span class="pre">on_failure</span></code> only to ones it knows accept
+it, or catch <code class="docutils literal notranslate"><span class="pre">TypeError</span></code>. Everything inheriting
+<a class="reference internal" href="#nw.BaseTransform" title="nw.BaseTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseTransform</span></code></a>’s <code class="docutils literal notranslate"><span class="pre">execute</span></code> — the common case — already
+does.</p>
+</div>
 </dd></dl>
 
 <dl class="py attribute">
@@ -1119,7 +1193,7 @@ the Beat in <code class="docutils literal notranslate"><span class="pre">primary
 
 <dl class="py class">
 <dt class="sig sig-object py" id="nw.TransformResult">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.</span></span><span class="sig-name descname"><span class="pre">TransformResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">annotations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Annotation</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artifacts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Artifact</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cost_usd_actual</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_hit_savings_usd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/transforms.html#TransformResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.TransformResult" title="Link to this definition"></a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.</span></span><span class="sig-name descname"><span class="pre">TransformResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">annotations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Annotation</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artifacts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Artifact</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cost_usd_actual</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_hit_savings_usd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">has_unknown_costs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">failed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#nw.FailedOutput" title="nw.transforms.FailedOutput"><span class="pre">FailedOutput</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blocked</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#nw.FailedOutput" title="nw.transforms.FailedOutput"><span class="pre">FailedOutput</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">()</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/transforms.html#TransformResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.TransformResult" title="Link to this definition"></a></dt>
 <dd><p>The outputs of a Transform’s <a class="reference internal" href="#nw.Transform.execute" title="nw.Transform.execute"><code class="xref py py-meth docutils literal notranslate"><span class="pre">execute()</span></code></a>.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nw.TransformResult.annotations">
@@ -1135,15 +1209,56 @@ Annotations reference these by <code class="docutils literal notranslate"><span 
 </dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="nw.TransformResult.blocked">
+<span class="sig-name descname"><span class="pre">blocked</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#nw.FailedOutput" title="nw.transforms.FailedOutput"><span class="pre">FailedOutput</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#nw.TransformResult.blocked" title="Link to this definition"></a></dt>
+<dd><p>Outputs never attempted because an upstream call failed.</p>
+</dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="nw.TransformResult.cache_hit_savings_usd">
 <span class="sig-name descname"><span class="pre">cache_hit_savings_usd</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></span><a class="headerlink" href="#nw.TransformResult.cache_hit_savings_usd" title="Link to this definition"></a></dt>
-<dd><p>USD that would have been spent had nothing been cached.</p>
+<dd><p>USD not spent because a call was served from cache.</p>
+<p>Also observed rather than predicted — this changed source at the same time
+as <code class="docutils literal notranslate"><span class="pre">cost_usd_actual</span></code>, from <code class="docutils literal notranslate"><span class="pre">Plan.cache_hit_savings_usd</span></code> (what planning
+guessed would hit) to what actually hit.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nw.TransformResult.cost_usd_actual">
 <span class="sig-name descname"><span class="pre">cost_usd_actual</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></span><a class="headerlink" href="#nw.TransformResult.cost_usd_actual" title="Link to this definition"></a></dt>
-<dd><p>Actual USD billed during execution (cache hits cost nothing).</p>
+<dd><p>USD billed during execution, over the calls that <strong>succeeded and were not
+cache hits</strong> — falaw’s observed <code class="xref py py-attr docutils literal notranslate"><span class="pre">ExecutionReport.estimated_spend_usd</span></code>,
+not the plan-time prediction stamped on each <code class="docutils literal notranslate"><span class="pre">Artifact</span></code>. The difference is
+not cosmetic: a call planned as a miss that came back from cache carries a
+<code class="docutils literal notranslate"><span class="pre">cost_usd</span></code> it never cost (thorwhalen/falaw#26), so summing artifacts
+over-reports every run that benefited from the cache.</p>
+<p><strong>A lower bound, despite the name.</strong> falaw runs its converter <em>inside</em> the
+unit of work, after the billed call, so a call fal charged for can still end
+as <code class="docutils literal notranslate"><span class="pre">status=&quot;failed&quot;</span></code> — and a failed call is excluded here, because falaw
+cannot know whether the vendor billed it and inventing a number would be
+worse. Under <code class="docutils literal notranslate"><span class="pre">&quot;halt&quot;</span></code> the run aborted anyway; under <code class="docutils literal notranslate"><span class="pre">&quot;isolate&quot;</span></code> it
+continues, so a caller accumulating this across a fan-out with failures will
+under-count. Read <code class="docutils literal notranslate"><span class="pre">failed</span></code> alongside it.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.TransformResult.failed">
+<span class="sig-name descname"><span class="pre">failed</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#nw.FailedOutput" title="nw.transforms.FailedOutput"><span class="pre">FailedOutput</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#nw.TransformResult.failed" title="Link to this definition"></a></dt>
+<dd><p>Outputs whose own call failed. Empty unless <code class="docutils literal notranslate"><span class="pre">on_failure=&quot;isolate&quot;</span></code>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.TransformResult.has_unknown_costs">
+<span class="sig-name descname"><span class="pre">has_unknown_costs</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></span><a class="headerlink" href="#nw.TransformResult.has_unknown_costs" title="Link to this definition"></a></dt>
+<dd><p>Whether any executed call had no price. Carried so <code class="docutils literal notranslate"><span class="pre">$0.00</span></code> stays
+distinguishable from “we do not know”, which is the distinction every cost
+gate in the federation is required to read.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nw.TransformResult.is_complete">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">is_complete</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></span><a class="headerlink" href="#nw.TransformResult.is_complete" title="Link to this definition"></a></dt>
+<dd><p>Whether every planned output was produced.</p>
 </dd></dl>
 
 </dd></dl>
@@ -1289,7 +1404,7 @@ from the shot to its render output.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="nw.execute_render_panel_images">
-<span class="sig-prename descclassname"><span class="pre">nw.</span></span><span class="sig-name descname"><span class="pre">execute_render_panel_images</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nw/project.html#nw.project.Project" title="nw.project.Project"><span class="pre">Project</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">storyboard</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Storyboard</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plan</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Plan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">panel_ids</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_event</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Storyboard</span></span></span><a class="reference internal" href="../_modules/nw/storyboard.html#execute_render_panel_images"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.execute_render_panel_images" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">nw.</span></span><span class="sig-name descname"><span class="pre">execute_render_panel_images</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nw/project.html#nw.project.Project" title="nw.project.Project"><span class="pre">Project</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">storyboard</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Storyboard</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plan</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Plan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">panel_ids</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_event</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_failure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'halt'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'isolate'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'halt'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Storyboard</span></span></span><a class="reference internal" href="../_modules/nw/storyboard.html#execute_render_panel_images"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.execute_render_panel_images" title="Link to this definition"></a></dt>
 <dd><p>Execute <code class="docutils literal notranslate"><span class="pre">plan</span></code>, download each artifact, attach a PanelImage.</p>
 <p>Returns a NEW <code class="xref py py-class docutils literal notranslate"><span class="pre">Storyboard</span></code> (input <code class="docutils literal notranslate"><span class="pre">storyboard</span></code> is unchanged) with
 the materialized seed images attached as <code class="docutils literal notranslate"><span class="pre">role=&quot;seed&quot;</span></code> PanelImages.</p>
@@ -1297,6 +1412,14 @@ the materialized seed images attached as <code class="docutils literal notransla
 PanelImage record stores both the project-relative path and the
 artifact_id (content hash via lacing.Artifact), so downstream consumers
 can prefer one or the other.</p>
+<p><code class="docutils literal notranslate"><span class="pre">on_failure</span></code> is nw#25’s policy, and this is the function the issue names
+as <strong>nw’s real fan-out shape</strong> — one <code class="docutils literal notranslate"><span class="pre">generate_image</span></code> per panel. Under
+<code class="docutils literal notranslate"><span class="pre">&quot;isolate&quot;</span></code> a panel whose call failed is simply left without a seed image;
+every panel that rendered keeps its own, instead of one content-filtered
+panel discarding the whole batch. <code class="docutils literal notranslate"><span class="pre">&quot;halt&quot;</span></code> is the default and unchanged.</p>
+<p>Panels are matched to outcomes <strong>by index into the plan</strong>, never by position
+in a shortened artifact list — the latter attaches panel 48’s image to panel
+47 the moment one call drops out.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -1402,7 +1525,7 @@ annotations into <code class="docutils literal notranslate"><span class="pre">pr
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl class="simple">
-<dt><a href="#id1"><span class="problematic" id="id2">``</span></a>{“sections”: N, “shots”: N, “characters”: N, “environments”: N,</dt><dd><p>”decisions”: N}``.</p>
+<dt><a href="#id3"><span class="problematic" id="id4">``</span></a>{“sections”: N, “shots”: N, “characters”: N, “environments”: N,</dt><dd><p>”decisions”: N}``.</p>
 </dd>
 </dl>
 </p>

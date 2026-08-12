@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.transforms &mdash; nw 0.0.21 documentation</title>
+  <title>nw.transforms &mdash; nw 0.0.22 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=a11416ff"></script>
+      <script src="../../_static/documentation_options.js?v=96ec9c95"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -145,12 +145,12 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Protocol</span><span class="p">,</span> <span class="n">runtime_checkable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Protocol</span><span class="p">,</span> <span class="n">runtime_checkable</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">xdol</span><span class="w"> </span><span class="kn">import</span> <span class="n">Registry</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">falaw</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plan</span><span class="p">,</span> <span class="n">execute_plan</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">falaw</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plan</span><span class="p">,</span> <span class="n">execute_plan_isolated</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">lacing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotation</span><span class="p">,</span> <span class="n">Artifact</span>
 
 
@@ -178,6 +178,49 @@
 
 
 
+<span class="n">OnFailure</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;halt&quot;</span><span class="p">,</span> <span class="s2">&quot;isolate&quot;</span><span class="p">]</span>
+<span class="sd">&quot;&quot;&quot;What a Transform does when one of its calls fails.</span>
+
+<span class="sd">``&quot;halt&quot;`` — the default and the historical behaviour: stop at the first</span>
+<span class="sd">failure and re-raise it, writing nothing to the graph.</span>
+
+<span class="sd">``&quot;isolate&quot;`` — run what can be run, write every success to the graph, and</span>
+<span class="sd">report the rest. The policy to use for a **fan-out**: with 200 panels, one</span>
+<span class="sd">rate-limited call discarding 199 paid renders is the failure mode this exists</span>
+<span class="sd">to prevent.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="FailedOutput">
+<a class="viewcode-back" href="../../module_docs/nw.html#nw.FailedOutput">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FailedOutput</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;An output annotation that was planned but never produced.</span>
+
+<span class="sd">    Carries the *skeleton* rather than an id because the skeleton is what the</span>
+<span class="sd">    caller planned and what a retry would re-submit — and because a UI needs its</span>
+<span class="sd">    body to say which panel is missing, not just that something is.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">skeleton</span><span class="p">:</span> <span class="n">Annotation</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The annotation that would have been completed.&quot;&quot;&quot;</span>
+
+    <span class="n">status</span><span class="p">:</span> <span class="nb">str</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;``&quot;failed&quot;`` (its own call failed) or ``&quot;blocked&quot;`` (an upstream one did).&quot;&quot;&quot;</span>
+
+    <span class="n">reason</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Human-readable cause, from falaw. Renders as *&quot;skipped: upstream panel 47</span>
+<span class="sd">    was filtered&quot;* rather than an unexplained hole.&quot;&quot;&quot;</span>
+
+    <span class="n">error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="ne">BaseException</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The original exception, for a caller that classifies on falaw&#39;s typed</span>
+<span class="sd">    hierarchy (``FalRateLimited`` is worth retrying; ``FalAccountLocked`` is not).&quot;&quot;&quot;</span>
+
+    <span class="n">blocked_by</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Indices of the calls whose failure blocked this one.&quot;&quot;&quot;</span></div>
+
+
+
 <div class="viewcode-block" id="TransformResult">
 <a class="viewcode-back" href="../../module_docs/nw/transforms.html#nw.TransformResult">[docs]</a>
 <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -192,10 +235,43 @@
 <span class="sd">    Annotations reference these by ``artifact_id`` in their bodies.&quot;&quot;&quot;</span>
 
     <span class="n">cost_usd_actual</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Actual USD billed during execution (cache hits cost nothing).&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;USD billed during execution, over the calls that **succeeded and were not</span>
+<span class="sd">    cache hits** — falaw&#39;s observed :attr:`ExecutionReport.estimated_spend_usd`,</span>
+<span class="sd">    not the plan-time prediction stamped on each ``Artifact``. The difference is</span>
+<span class="sd">    not cosmetic: a call planned as a miss that came back from cache carries a</span>
+<span class="sd">    ``cost_usd`` it never cost (thorwhalen/falaw#26), so summing artifacts</span>
+<span class="sd">    over-reports every run that benefited from the cache.</span>
+
+<span class="sd">    **A lower bound, despite the name.** falaw runs its converter *inside* the</span>
+<span class="sd">    unit of work, after the billed call, so a call fal charged for can still end</span>
+<span class="sd">    as ``status=&quot;failed&quot;`` — and a failed call is excluded here, because falaw</span>
+<span class="sd">    cannot know whether the vendor billed it and inventing a number would be</span>
+<span class="sd">    worse. Under ``&quot;halt&quot;`` the run aborted anyway; under ``&quot;isolate&quot;`` it</span>
+<span class="sd">    continues, so a caller accumulating this across a fan-out with failures will</span>
+<span class="sd">    under-count. Read ``failed`` alongside it.&quot;&quot;&quot;</span>
 
     <span class="n">cache_hit_savings_usd</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;USD that would have been spent had nothing been cached.&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;USD not spent because a call was served from cache.</span>
+
+<span class="sd">    Also observed rather than predicted — this changed source at the same time</span>
+<span class="sd">    as ``cost_usd_actual``, from ``Plan.cache_hit_savings_usd`` (what planning</span>
+<span class="sd">    guessed would hit) to what actually hit.&quot;&quot;&quot;</span>
+
+    <span class="n">has_unknown_costs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Whether any executed call had no price. Carried so ``$0.00`` stays</span>
+<span class="sd">    distinguishable from &quot;we do not know&quot;, which is the distinction every cost</span>
+<span class="sd">    gate in the federation is required to read.&quot;&quot;&quot;</span>
+
+    <span class="n">failed</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">FailedOutput</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Outputs whose own call failed. Empty unless ``on_failure=&quot;isolate&quot;``.&quot;&quot;&quot;</span>
+
+    <span class="n">blocked</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">FailedOutput</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Outputs never attempted because an upstream call failed.&quot;&quot;&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_complete</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Whether every planned output was produced.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">failed</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">blocked</span></div>
 
 
 
@@ -270,10 +346,29 @@
         <span class="o">*</span><span class="p">,</span>
         <span class="n">use_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">on_failure</span><span class="p">:</span> <span class="n">OnFailure</span> <span class="o">=</span> <span class="s2">&quot;halt&quot;</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TransformResult</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Run ``plan``, complete ``skeleton``, write to the graph, return result.</span>
 
 <span class="sd">        ``force=True`` bypasses the cache (the &quot;regenerate this&quot; affordance).</span>
+
+<span class="sd">        ``on_failure`` selects the failure policy — see :data:`OnFailure`.</span>
+<span class="sd">        ``&quot;halt&quot;`` is the default so no existing caller changes behaviour.</span>
+
+<span class="sd">        .. warning::</span>
+
+<span class="sd">           ``on_failure`` is **newer than some implementations**. A Transform</span>
+<span class="sd">           that overrides :meth:`execute` and predates nw#25 does not accept the</span>
+<span class="sd">           keyword, and this Protocol is ``runtime_checkable``, which compares</span>
+<span class="sd">           *method names* and not signatures — so ``isinstance`` still passes</span>
+<span class="sd">           and the ``TypeError`` arrives at call time. reelee has ~18 such</span>
+<span class="sd">           overrides (thorwhalen/reelee#299 tracks the migration).</span>
+
+<span class="sd">           Until they are migrated, a caller iterating over arbitrary registered</span>
+<span class="sd">           Transforms should pass ``on_failure`` only to ones it knows accept</span>
+<span class="sd">           it, or catch ``TypeError``. Everything inheriting</span>
+<span class="sd">           :class:`BaseTransform`&#39;s ``execute`` — the common case — already</span>
+<span class="sd">           does.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="o">...</span></div>
 </div>
@@ -335,6 +430,7 @@
         <span class="o">*</span><span class="p">,</span>
         <span class="n">use_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">on_failure</span><span class="p">:</span> <span class="n">OnFailure</span> <span class="o">=</span> <span class="s2">&quot;halt&quot;</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TransformResult</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">skeleton</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">plan</span><span class="o">.</span><span class="n">calls</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
@@ -345,18 +441,82 @@
                 <span class="s2">&quot;the plan and skeleton that plan() returned together, or &quot;</span>
                 <span class="s2">&quot;override execute() if this Transform&#39;s mapping is not 1:1.&quot;</span>
             <span class="p">)</span>
-        <span class="n">artifacts</span> <span class="o">=</span> <span class="n">execute_plan</span><span class="p">(</span><span class="n">plan</span><span class="p">,</span> <span class="n">use_cache</span><span class="o">=</span><span class="n">use_cache</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">force</span><span class="p">)</span>
-        <span class="n">completed</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_complete_annotation</span><span class="p">(</span><span class="n">skel</span><span class="p">,</span> <span class="n">art</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">skel</span><span class="p">,</span> <span class="n">art</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">skeleton</span><span class="p">,</span> <span class="n">artifacts</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">on_failure</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;halt&quot;</span><span class="p">,</span> <span class="s2">&quot;isolate&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.execute: on_failure must be &#39;halt&#39; or &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;&#39;isolate&#39;, got </span><span class="si">{</span><span class="n">on_failure</span><span class="si">!r}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+        <span class="c1"># One engine, two policies. `halt` is `execute_plan` — falaw defines the</span>
+        <span class="c1"># latter as exactly this call plus `artifacts_or_raise()` — so it keeps</span>
+        <span class="c1"># re-raising the *original* typed exception, unwrapped, which is what</span>
+        <span class="c1"># every existing caller classifies on.</span>
+        <span class="n">report</span> <span class="o">=</span> <span class="n">execute_plan_isolated</span><span class="p">(</span>
+            <span class="n">plan</span><span class="p">,</span>
+            <span class="n">use_cache</span><span class="o">=</span><span class="n">use_cache</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">force</span><span class="p">,</span>
+            <span class="n">halt_on_failure</span><span class="o">=</span><span class="n">on_failure</span> <span class="o">==</span> <span class="s2">&quot;halt&quot;</span><span class="p">,</span>
         <span class="p">)</span>
+        <span class="k">if</span> <span class="n">on_failure</span> <span class="o">==</span> <span class="s2">&quot;halt&quot;</span><span class="p">:</span>
+            <span class="n">report</span><span class="o">.</span><span class="n">artifacts_or_raise</span><span class="p">()</span>
+
+        <span class="c1"># Zip against `report.outcomes`, never against the artifacts: outcomes</span>
+        <span class="c1"># is full-length in plan order **by construction**, while the artifact</span>
+        <span class="c1"># list is short exactly when something failed — so zipping that would</span>
+        <span class="c1"># pair panel 48&#39;s artifact onto panel 47&#39;s skeleton the moment one call</span>
+        <span class="c1"># dropped out, silently, which is the defect this issue named.</span>
+        <span class="n">completed</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">failed</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">FailedOutput</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">blocked</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">FailedOutput</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">skel</span><span class="p">,</span> <span class="n">outcome</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">skeleton</span><span class="p">,</span> <span class="n">report</span><span class="o">.</span><span class="n">outcomes</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">outcome</span><span class="o">.</span><span class="n">ok</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">completed</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_complete_annotation</span><span class="p">(</span><span class="n">skel</span><span class="p">,</span> <span class="n">outcome</span><span class="o">.</span><span class="n">artifact</span><span class="p">))</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># noqa: BLE001 — see below</span>
+                    <span class="c1"># A call that **succeeded and was billed** can still fail to</span>
+                    <span class="c1"># become an annotation: falaw degrades an unreadable asset to</span>
+                    <span class="c1"># a `json` artifact with `path=None`, a `text` artifact has no</span>
+                    <span class="c1"># obvious target field, and an LLM that prefaces its JSON with</span>
+                    <span class="c1"># prose makes `json.loads` raise. Letting that propagate is</span>
+                    <span class="c1"># this issue&#39;s own defect one layer up — it would discard</span>
+                    <span class="c1"># every paid sibling in the run. So a completion failure is</span>
+                    <span class="c1"># an *unproduced output*, exactly like an execution failure.</span>
+                    <span class="k">if</span> <span class="n">on_failure</span> <span class="o">==</span> <span class="s2">&quot;halt&quot;</span><span class="p">:</span>
+                        <span class="k">raise</span>
+                    <span class="n">failed</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="n">FailedOutput</span><span class="p">(</span>
+                            <span class="n">skeleton</span><span class="o">=</span><span class="n">skel</span><span class="p">,</span>
+                            <span class="n">status</span><span class="o">=</span><span class="s2">&quot;failed&quot;</span><span class="p">,</span>
+                            <span class="n">reason</span><span class="o">=</span><span class="p">(</span>
+                                <span class="sa">f</span><span class="s2">&quot;the call succeeded but its result could not be &quot;</span>
+                                <span class="sa">f</span><span class="s2">&quot;turned into a </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_kind</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s1">&#39;output&#39;</span><span class="si">}</span><span class="s2"> &quot;</span>
+                                <span class="sa">f</span><span class="s2">&quot;annotation: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+                            <span class="p">),</span>
+                            <span class="n">error</span><span class="o">=</span><span class="n">e</span><span class="p">,</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="n">unproduced</span> <span class="o">=</span> <span class="n">FailedOutput</span><span class="p">(</span>
+                <span class="n">skeleton</span><span class="o">=</span><span class="n">skel</span><span class="p">,</span>
+                <span class="n">status</span><span class="o">=</span><span class="n">outcome</span><span class="o">.</span><span class="n">status</span><span class="p">,</span>
+                <span class="n">reason</span><span class="o">=</span><span class="n">outcome</span><span class="o">.</span><span class="n">reason</span><span class="p">,</span>
+                <span class="n">error</span><span class="o">=</span><span class="n">outcome</span><span class="o">.</span><span class="n">error</span><span class="p">,</span>
+                <span class="n">blocked_by</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">outcome</span><span class="o">.</span><span class="n">blocked_by</span><span class="p">),</span>
+            <span class="p">)</span>
+            <span class="p">(</span><span class="n">blocked</span> <span class="k">if</span> <span class="n">outcome</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="s2">&quot;blocked&quot;</span> <span class="k">else</span> <span class="n">failed</span><span class="p">)</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">unproduced</span><span class="p">)</span>
+
+        <span class="c1"># Successes reach the graph before the failure is reported. They are</span>
+        <span class="c1"># paid for; discarding them because a sibling call failed is the waste</span>
+        <span class="c1"># falaw#20 removed one layer down, and it would be reintroduced here by</span>
+        <span class="c1"># returning early.</span>
         <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">completed</span><span class="p">:</span>
             <span class="n">project</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add_annotation</span><span class="p">(</span><span class="n">ann</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">TransformResult</span><span class="p">(</span>
-            <span class="n">annotations</span><span class="o">=</span><span class="n">completed</span><span class="p">,</span>
-            <span class="n">artifacts</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">artifacts</span><span class="p">),</span>
-            <span class="n">cost_usd_actual</span><span class="o">=</span><span class="nb">sum</span><span class="p">((</span><span class="n">a</span><span class="o">.</span><span class="n">cost_usd</span> <span class="ow">or</span> <span class="mf">0.0</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">artifacts</span><span class="p">),</span>
-            <span class="n">cache_hit_savings_usd</span><span class="o">=</span><span class="n">plan</span><span class="o">.</span><span class="n">cache_hit_savings_usd</span><span class="p">,</span>
+            <span class="n">annotations</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">completed</span><span class="p">),</span>
+            <span class="n">artifacts</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">report</span><span class="o">.</span><span class="n">produced</span><span class="p">),</span>
+            <span class="n">cost_usd_actual</span><span class="o">=</span><span class="n">report</span><span class="o">.</span><span class="n">estimated_spend_usd</span><span class="p">,</span>
+            <span class="n">cache_hit_savings_usd</span><span class="o">=</span><span class="n">report</span><span class="o">.</span><span class="n">cache_hit_savings_usd</span><span class="p">,</span>
+            <span class="n">has_unknown_costs</span><span class="o">=</span><span class="n">report</span><span class="o">.</span><span class="n">has_unknown_costs</span><span class="p">,</span>
+            <span class="n">failed</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">failed</span><span class="p">),</span>
+            <span class="n">blocked</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">blocked</span><span class="p">),</span>
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_complete_annotation</span><span class="p">(</span>
