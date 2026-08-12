@@ -136,8 +136,6 @@ from .workflow import (
 __all__ = [
     "SCHEMA_VERSION",
     "BaseTransform",
-    "FailedOutput",
-    "OnFailure",
     "CharacterImage",
     "CharacterRef",
     "ComposeReport",
@@ -180,6 +178,8 @@ __all__ = [
     "Transform",
     "TransformInputs",
     "TransformResult",
+    "FailedOutput",
+    "OnFailure",
     "annotations_at_tier",
     "apply_to_projects",
     "clone_project",

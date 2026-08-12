@@ -124,11 +124,22 @@ class TransformResult:
     not the plan-time prediction stamped on each ``Artifact``. The difference is
     not cosmetic: a call planned as a miss that came back from cache carries a
     ``cost_usd`` it never cost (thorwhalen/falaw#26), so summing artifacts
-    over-reports every run that benefited from the cache."""
+    over-reports every run that benefited from the cache.
+
+    **A lower bound, despite the name.** falaw runs its converter *inside* the
+    unit of work, after the billed call, so a call fal charged for can still end
+    as ``status="failed"`` — and a failed call is excluded here, because falaw
+    cannot know whether the vendor billed it and inventing a number would be
+    worse. Under ``"halt"`` the run aborted anyway; under ``"isolate"`` it
+    continues, so a caller accumulating this across a fan-out with failures will
+    under-count. Read ``failed`` alongside it."""
 
     cache_hit_savings_usd: float = 0.0
-    """USD not spent because a call was served from cache — again observed
-    rather than predicted."""
+    """USD not spent because a call was served from cache.
+
+    Also observed rather than predicted — this changed source at the same time
+    as ``cost_usd_actual``, from ``Plan.cache_hit_savings_usd`` (what planning
+    guessed would hit) to what actually hit."""
 
     has_unknown_costs: bool = False
     """Whether any executed call had no price. Carried so ``$0.00`` stays
@@ -219,6 +230,21 @@ class Transform(Protocol):
 
         ``on_failure`` selects the failure policy — see :data:`OnFailure`.
         ``"halt"`` is the default so no existing caller changes behaviour.
+
+        .. warning::
+
+           ``on_failure`` is **newer than some implementations**. A Transform
+           that overrides :meth:`execute` and predates nw#25 does not accept the
+           keyword, and this Protocol is ``runtime_checkable``, which compares
+           *method names* and not signatures — so ``isinstance`` still passes
+           and the ``TypeError`` arrives at call time. reelee has ~18 such
+           overrides (thorwhalen/reelee#299 tracks the migration).
+
+           Until they are migrated, a caller iterating over arbitrary registered
+           Transforms should pass ``on_failure`` only to ones it knows accept
+           it, or catch ``TypeError``. Everything inheriting
+           :class:`BaseTransform`'s ``execute`` — the common case — already
+           does.
         """
         ...
 
@@ -312,9 +338,33 @@ class BaseTransform:
         completed: list[Annotation] = []
         failed: list[FailedOutput] = []
         blocked: list[FailedOutput] = []
-        for skel, outcome in zip(skeleton, report.outcomes):
+        for skel, outcome in zip(skeleton, report.outcomes, strict=True):
             if outcome.ok:
-                completed.append(self._complete_annotation(skel, outcome.artifact))
+                try:
+                    completed.append(self._complete_annotation(skel, outcome.artifact))
+                except Exception as e:  # noqa: BLE001 — see below
+                    # A call that **succeeded and was billed** can still fail to
+                    # become an annotation: falaw degrades an unreadable asset to
+                    # a `json` artifact with `path=None`, a `text` artifact has no
+                    # obvious target field, and an LLM that prefaces its JSON with
+                    # prose makes `json.loads` raise. Letting that propagate is
+                    # this issue's own defect one layer up — it would discard
+                    # every paid sibling in the run. So a completion failure is
+                    # an *unproduced output*, exactly like an execution failure.
+                    if on_failure == "halt":
+                        raise
+                    failed.append(
+                        FailedOutput(
+                            skeleton=skel,
+                            status="failed",
+                            reason=(
+                                f"the call succeeded but its result could not be "
+                                f"turned into a {self.output_kind or 'output'} "
+                                f"annotation: {type(e).__name__}: {e}"
+                            ),
+                            error=e,
+                        )
+                    )
                 continue
             unproduced = FailedOutput(
                 skeleton=skel,

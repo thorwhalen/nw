@@ -154,6 +154,15 @@ class RenderStrategyTransform(BaseTransform):
         """
         from ...workflow import prepare_shot
 
+        if on_failure not in ("halt", "isolate"):
+            # The same refusal the base class makes, for the same reason: without
+            # it any typo silently selects `isolate`, so a caller that asked to
+            # raise gets `annotations=()` instead — and `result.annotations[0]`,
+            # the reelee idiom, becomes an IndexError far from the mistake.
+            raise ValueError(
+                f"{type(self).__name__}.execute: on_failure must be 'halt' or "
+                f"'isolate', got {on_failure!r}."
+            )
         shot_id = skeleton[0].body["shot_id"]
         # materialize() needs only local paths — no upload required.
         prep = prepare_shot(project, shot_id, upload=False)
@@ -163,23 +172,28 @@ class RenderStrategyTransform(BaseTransform):
         if not report.is_complete:
             if on_failure == "halt":
                 report.artifacts_or_raise()
+            # Report the shot under the status of the *first* non-succeeded call,
+            # and put it in the matching bucket. Filing a blocked outcome under
+            # `failed` would tell a caller to retry verbatim something falaw says
+            # must be re-planned.
             first = next(iter(report.failed + report.blocked))
+            unproduced = FailedOutput(
+                skeleton=skeleton[0],
+                status=first.status,
+                reason=first.reason
+                or f"{self._strategy.name}: a call in the shot's plan failed",
+                error=first.error,
+                blocked_by=tuple(first.blocked_by),
+            )
+            is_blocked = first.status == "blocked"
             return TransformResult(
                 annotations=(),
                 artifacts=tuple(report.produced),
                 cost_usd_actual=report.estimated_spend_usd,
                 cache_hit_savings_usd=report.cache_hit_savings_usd,
                 has_unknown_costs=report.has_unknown_costs,
-                failed=(
-                    FailedOutput(
-                        skeleton=skeleton[0],
-                        status=first.status,
-                        reason=first.reason
-                        or f"{self._strategy.name}: a call in the shot's plan failed",
-                        error=first.error,
-                        blocked_by=tuple(first.blocked_by),
-                    ),
-                ),
+                failed=() if is_blocked else (unproduced,),
+                blocked=(unproduced,) if is_blocked else (),
             )
         artifacts = list(report.produced)
         output = self._strategy.materialize(prep, plan, list(artifacts))
