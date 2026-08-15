@@ -29,7 +29,13 @@ dependencies = [
     # `BaseTransform.execute` now runs both of its failure policies through
     # (nw#25). Verified against the tags, not inferred: 0.0.25 is the first
     # release containing `falaw/outcomes.py`.
-    "falaw>=0.0.25",
+    # Raised to >=0.0.27 for `falaw.testing` — the shared fake asset transport
+    # nw's test suite now re-exports instead of hand-rolling (falaw#27).
+    # Verified against the published wheels, not inferred: 0.0.27 is the first
+    # release shipping `falaw/testing.py`, with everything nw imports
+    # (`make_fake_assets_fixture`, the two other fixtures,
+    # `OutboundNetworkAttempt`) present from the start.
+    "falaw>=0.0.27",
     # >=0.0.25 for `lacing.digest.annotation_value_digest` — the content digest
     # `nw.freshness` compares to cut off early. 0.0.24 does NOT have it, so a
     # lower floor resolves to a lacing without the symbol and fails at import
