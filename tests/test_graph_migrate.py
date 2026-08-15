@@ -426,3 +426,29 @@ def test_execute_render_with_project_writes_render_decision(tmp_path, monkeypatc
     )
     stale_ids = {a.id for a in nw.stale_after(proj.root, shot_ann.annotation_id)}
     assert render_decisions[0].annotation_id in stale_ids
+
+
+def test_a_pre_d5_v1_store_migrates_on_open(tmp_path):
+    """nw owns its project stores, so a file written under lacing's v1 store
+    schema upgrades on open (stamp-only ladder step) instead of refusing —
+    without this, every pre-D5 project dies under lacing>=0.0.31."""
+    import sqlite3
+
+    proj = nw.Project.init(tmp_path / "p")
+    from lacing import RationalTime, TimeInterval
+
+    section_id = proj.graph.upsert_section(
+        SectionBodyV1(section_id="s", label="seed"),
+        interval=TimeInterval(RationalTime(0), RationalTime(4)),
+    )
+    db_path = project_graph_db_path(proj.root)
+    with sqlite3.connect(db_path) as conn:
+        conn.execute("UPDATE meta SET value = '1' WHERE key = 'schema_version'")
+
+    # would raise SchemaMismatchError before graph_backend passed migrate=True
+    assert any(a.id == section_id for a in nw.iter_all_annotations(proj.root))
+    with sqlite3.connect(db_path) as conn:
+        stamped = conn.execute(
+            "SELECT value FROM meta WHERE key = 'schema_version'"
+        ).fetchone()[0]
+    assert int(stamped) >= 2
