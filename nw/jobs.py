@@ -606,9 +606,7 @@ class _AtomicJsonFiles(MutableMapping):
     def __setitem__(self, key: str, value) -> None:
         path = self._path(key)
         data = json.dumps(value).encode("utf-8")  # serialize BEFORE touching disk
-        fd, tmp = tempfile.mkstemp(
-            dir=self._rootdir, prefix=f".{key}.", suffix=".tmp"
-        )
+        fd, tmp = tempfile.mkstemp(dir=self._rootdir, prefix=f".{key}.", suffix=".tmp")
         try:
             with os.fdopen(fd, "wb") as f:
                 f.write(data)
