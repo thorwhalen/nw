@@ -128,11 +128,11 @@ class TransformResult:
 
     cost_usd_actual: float = 0.0
     """USD billed during execution, over the calls that **succeeded and were not
-    cache hits** — falaw's observed :attr:`ExecutionReport.estimated_spend_usd`,
-    not the plan-time prediction stamped on each ``Artifact``. The difference is
-    not cosmetic: a call planned as a miss that came back from cache carries a
-    ``cost_usd`` it never cost (thorwhalen/falaw#26), so summing artifacts
-    over-reports every run that benefited from the cache.
+    cache hits** — falaw's observed :attr:`ExecutionReport.estimated_spend_usd`.
+    Since falaw#26 the per-``Artifact`` ``cost_usd`` is *also* stamped from the
+    observed outcome, so the two now agree; the report stays the source here
+    because it is the run-level truth (and carries ``has_unknown_costs``),
+    not because the artifacts lie anymore.
 
     **A lower bound, despite the name.** falaw runs its converter *inside* the
     unit of work, after the billed call, so a call fal charged for can still end

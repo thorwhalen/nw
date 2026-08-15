@@ -304,10 +304,11 @@ def test_a_fully_successful_isolate_run_is_complete(patch_execute):
 
 
 def test_cost_counts_only_what_actually_ran(patch_execute):
-    """Not `sum(artifact.cost_usd)`: that is the plan-time prediction.
+    """The report, not `sum(artifact.cost_usd)`, is the spend source.
 
-    A call planned as a miss that came back from cache is stamped with a price
-    it never cost (falaw#26), and a failed call may not have been billed at all.
+    Since falaw#26 the artifacts are also stamped from the observed outcome,
+    so the sums agree — but the report is the run-level truth (it carries
+    has_unknown_costs, and a failed call may not have been billed at all).
     """
     plan, skeleton = _plan(4, cost=2.0), _skel(4)
     succeeded = {
