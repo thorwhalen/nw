@@ -247,8 +247,8 @@ There is also the snapshot form — *what is stale in this project right now?*,
 no `changed_id` needed — which is what a freshness indicator wants:
 
 ```python
-stale_now = nw.all_stale(proj.root)            # every currently-stale annotation
-verdicts = nw.stale_verdicts_all(proj.root)    # ... with reasons
+stale_now = nw.all_stale(proj.root)  # every currently-stale annotation
+verdicts = nw.stale_verdicts_all(proj.root)  # ... with reasons
 ```
 
 The rule is asymmetric on purpose: anything unverifiable — no trace, a deleted
