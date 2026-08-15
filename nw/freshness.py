@@ -16,8 +16,14 @@ and stop when they agree. One 32-byte digest comparison replaces loading a
 
 The rule, stated exactly
 ------------------------
-An annotation ``X`` reachable from ``changed_id`` is **stale** when any of
-these holds, and **fresh** only when none does:
+The walk has two frontiers over the same rule: :func:`stale_verdicts` /
+:func:`stale_after` classify everything reachable from a ``changed_id``;
+:func:`stale_verdicts_all` / :func:`all_stale` classify every annotation
+with at least one provenance parent — the whole-project snapshot a
+freshness indicator wants (parentless annotations are never stale, or an
+imported screenplay would read stale forever). An annotation ``X`` on the
+frontier is **stale** when any of these holds, and **fresh** only when none
+does:
 
 - no verifying trace was recorded for ``X`` (:mod:`nw.bodies.verifying_trace`),
 - the trace was written under a different digest scheme,
@@ -36,12 +42,15 @@ still equals what its children recorded. Rewriting ``X`` in place makes
 node is classified against **its own** recorded digests; the walk prunes
 nothing.
 
-**Unverifiable means stale.** Every branch above defaults to stale, which is
-why this change needs no data migration: an annotation written before traces
-existed reads as ``no-trace`` and behaves exactly as it did under pure
-reachability. Over-reporting wastes a recompute — which the content-addressed
-``falaw`` cache makes close to free. Under-reporting serves a stale artifact
-as if it were current, so every ambiguous case resolves the other way.
+**Unverifiable means stale.** Every branch above defaults to stale.
+Over-reporting wastes a recompute — which the content-addressed ``falaw``
+cache makes close to free. Under-reporting serves a stale artifact as if it
+were current, so every ambiguous case resolves the other way. For the
+*scoped* walk this also means no data migration: an annotation written
+before traces existed reads as ``no-trace`` and behaves exactly as it did
+under pure reachability. The *snapshot* walk has no such equivalence — on a
+pre-trace project it reports every derived annotation stale until each is
+rewritten through the trace-writing path; see :func:`stale_verdicts_all`.
 
 What this does **not** catch
 -----------------------------
@@ -136,13 +145,76 @@ def stale_verdicts(
     change, not a derivative of it.
 
     Use this when the *number* is being questioned. ``stale_after`` is the
-    same walk with the fresh verdicts dropped.
+    same walk with the fresh verdicts dropped;
+    :func:`stale_verdicts_all` is the same classification with no
+    ``changed_id`` — the whole-project snapshot.
     """
     annotations = list(iter_all_annotations(project_root))
-    by_id: dict[UUID, Annotation] = {a.id: a for a in annotations}
-    traces = _traces_by_target(annotations)
     children = _children_index(annotations)
     reachable = _reachable_from(changed_id, children)
+    return _verdicts_for(annotations, scope=reachable, recursion_scope=reachable)
+
+
+def stale_verdicts_all(project_root: str | Path) -> list[FreshnessVerdict]:
+    """Classify every derived annotation in the project — the snapshot form.
+
+    The question a freshness *indicator* asks: "what is stale in this
+    project right now?", with no ``changed_id`` to anchor on. Same
+    verifying-trace classification as :func:`stale_verdicts`, over a wider
+    frontier: every annotation with at least one provenance parent.
+
+    Two boundaries that are the point of this living here rather than each
+    consumer approximating it (nw#39):
+
+    - **Parentless annotations are never stale** and stay out of the walk —
+      an imported screenplay must not read as stale forever. (nw-written
+      verifying traces are parentless, so they stay out too.)
+    - **Upstream-stale recursion runs over the whole derived set.** The
+      scoped walk only recurses into parents inside ``reachable`` (outside
+      it a parent is by construction unaffected by the change); with no
+      change there is no such boundary. The cycle guard covers termination.
+
+    **Legacy projects read all-stale, by design.** A derived annotation
+    written before verifying traces existed classifies ``no-trace`` →
+    stale, and unlike the scoped walk (which only surfaces it downstream
+    of an actual change) the snapshot reports it *always*, until it is
+    rewritten through the trace-writing path. A consumer replacing its own
+    weaker snapshot with this one is making a behavior change on pre-trace
+    projects, not installing a pure wrapper.
+    """
+    annotations = list(iter_all_annotations(project_root))
+    derived = {a.id for a in annotations if a.provenance.was_derived_from}
+    return _verdicts_for(annotations, scope=derived, recursion_scope=derived)
+
+
+def all_stale(project_root: str | Path) -> list[Annotation]:
+    """Every annotation that is currently stale, regardless of cause.
+
+    :func:`stale_verdicts_all` with the fresh verdicts dropped — the
+    snapshot counterpart of :func:`stale_after`, and the primitive a
+    freshness indicator or a "regenerate everything stale" verb should sit
+    on instead of re-deriving its own definition of the word.
+    """
+    return [v.annotation for v in stale_verdicts_all(project_root) if v.is_stale]
+
+
+def _verdicts_for(
+    annotations: list[Annotation],
+    *,
+    scope: set[UUID],
+    recursion_scope: set[UUID],
+) -> list[FreshnessVerdict]:
+    """Classify every annotation in ``scope``, in deterministic order.
+
+    ``recursion_scope`` bounds the ``REASON_UPSTREAM_STALE`` recursion: a
+    parent inside it is itself classified before the digest comparison; a
+    parent outside it is only digest-compared. The scoped walk passes the
+    reachable set for both (outside it, a parent is unaffected by the
+    change); the whole-graph walk passes the derived set for both (a
+    parentless parent has no verdict to take — it is never stale).
+    """
+    by_id: dict[UUID, Annotation] = {a.id: a for a in annotations}
+    traces = _traces_by_target(annotations)
 
     digests: dict[UUID, Optional[str]] = {}
 
@@ -203,7 +275,7 @@ def stale_verdicts(
             parent = by_id.get(pid)
             if parent is None:
                 return FreshnessVerdict(ann, True, REASON_UPSTREAM_MISSING, pid)
-            if pid in reachable:
+            if pid in recursion_scope:
                 if pid in resolving:
                     # `pid` is an ancestor still being classified, so this edge
                     # closes a provenance cycle — malformed data. Reported on
@@ -223,7 +295,7 @@ def stale_verdicts(
         return FreshnessVerdict(ann, False, REASON_FRESH)
 
     ordered = sorted(
-        (by_id[i] for i in reachable),
+        (by_id[i] for i in scope if i in by_id),
         key=lambda a: (a.provenance.generated_at_time.to_seconds(), str(a.id)),
     )
     return [resolve(ann.id) for ann in ordered]

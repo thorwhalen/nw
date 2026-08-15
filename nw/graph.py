@@ -545,6 +545,11 @@ def descendants_of(project_root: str | Path, ancestor_id: UUID) -> list[Annotati
     project's lacing stores. This is the operation reelee's freshness
     analysis is built on (system overview §7): when a node changes, every
     annotation in the closure of this set is "downstream of the change."
+
+    Deterministic order: (generation time, id) — the same public ordering
+    contract as :func:`nw.freshness.stale_verdicts`. The closure used to be
+    returned in set-iteration (hash-derived) order, which leaked into every
+    consumer's output (nw#39).
     """
     # Collect once so we can do multi-hop closure without re-opening stores.
     all_anns = list(iter_all_annotations(project_root))
@@ -566,7 +571,10 @@ def descendants_of(project_root: str | Path, ancestor_id: UUID) -> list[Annotati
         seen.add(cur)
         frontier.extend(children.get(cur, ()))
 
-    return [by_id[i] for i in seen if i in by_id]
+    return sorted(
+        (by_id[i] for i in seen if i in by_id),
+        key=lambda a: (a.provenance.generated_at_time.to_seconds(), str(a.id)),
+    )
 
 
 def derived_from(project_root: str | Path, annotation_id: UUID) -> list[Annotation]:

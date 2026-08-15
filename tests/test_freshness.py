@@ -609,3 +609,105 @@ def _rewrite_trace(proj, target: UUID, mutate) -> None:
                 break
         return
     pytest.fail(f"no verifying trace for {target}")
+
+
+# --- the whole-graph snapshot (nw#39) ----------------------------------------
+
+
+def test_snapshot_of_a_clean_project_reports_every_derived_annotation_fresh(
+    tmp_path,
+):
+    """`stale_verdicts_all` covers exactly the derived set; `all_stale` is
+    empty when nothing changed. Authored (parentless) annotations and the
+    verifying traces themselves stay out of the walk."""
+    proj, a_id, b, c = _chain(tmp_path)
+
+    verdicts = nw.stale_verdicts_all(proj.root)
+
+    assert _ids(v.annotation for v in verdicts) == {b.id, c.id}
+    assert all(v.reason == REASON_FRESH for v in verdicts)
+    assert nw.all_stale(proj.root) == []
+
+
+def test_a_parentless_annotation_is_never_stale_even_without_a_trace(tmp_path):
+    """An imported screenplay must not read as stale forever — the
+    whole-graph frontier is 'has at least one parent', not 'everything'."""
+    proj = nw.Project.init(tmp_path / "p")
+    _authored(proj)  # parentless, and no verifying trace is written for it
+
+    assert nw.stale_verdicts_all(proj.root) == []
+    assert nw.all_stale(proj.root) == []
+
+
+def test_the_snapshot_detects_a_real_edit_with_no_changed_id(tmp_path):
+    """The question a freshness indicator asks: what is stale *right now*?"""
+    proj, a_id, b, c = _chain(tmp_path)
+    _authored(proj, label="rewritten")  # upsert: same id, new value
+
+    stale = nw.all_stale(proj.root)
+
+    assert _ids(stale) == {b.id, c.id}
+    verdicts = {v.annotation.id: v for v in nw.stale_verdicts_all(proj.root)}
+    assert verdicts[b.id].reason == REASON_UPSTREAM_CHANGED
+    assert verdicts[c.id].reason == REASON_UPSTREAM_STALE
+
+
+def test_a_no_op_save_does_not_inflate_the_snapshot(tmp_path):
+    """The cost bug the consumer's timestamp comparison had: a save that
+    changes no value must not invalidate the subtree (early cutoff holds on
+    the snapshot form too)."""
+    proj, a_id, b, c = _chain(tmp_path)
+    _authored(proj, label="seed")  # byte-identical re-save; timestamp moves
+
+    assert nw.all_stale(proj.root) == []
+
+
+def test_a_deleted_parent_surfaces_in_the_snapshot(tmp_path):
+    """The under-reporting direction the consumer's copy missed: a dangling
+    parent must read stale (`upstream-missing`), not vanish from the walk."""
+    proj, a_id, b, c = _chain(tmp_path)
+    _remove(proj, b.id)
+
+    verdicts = {v.annotation.id: v for v in nw.stale_verdicts_all(proj.root)}
+
+    assert set(verdicts) == {c.id}
+    assert verdicts[c.id].reason == REASON_UPSTREAM_MISSING
+    assert verdicts[c.id].upstream_id == b.id
+
+
+def test_the_snapshot_terminates_and_reports_on_a_provenance_cycle(tmp_path):
+    """Same malformed-data guarantee as the scoped walk, with no changed_id
+    to anchor the recursion."""
+    proj = nw.Project.init(tmp_path / "p")
+    a_id = _authored(proj)
+    x = _derived(proj, (a_id,), body={"shot_id": "s01", "url": "x"})
+    y = _derived(proj, (x.id,), body={"shot_id": "s01", "url": "y"})
+    _rewrite_in_place(
+        proj, x, body={"shot_id": "s01", "url": "x"}, parents=(a_id, y.id)
+    )
+
+    verdicts = {v.annotation.id: v for v in nw.stale_verdicts_all(proj.root)}
+
+    assert {i for i, v in verdicts.items() if v.is_stale} == {x.id, y.id}
+    assert {verdicts[x.id].reason, verdicts[y.id].reason} == {
+        REASON_PROVENANCE_CYCLE,
+        REASON_UPSTREAM_STALE,
+    }
+
+
+def test_snapshot_and_traversal_orders_are_deterministic(tmp_path):
+    """Both public orders are (generation time, id) — not set-iteration
+    order, which is hash-derived and differs across processes (nw#39)."""
+    proj, a_id, b, c = _chain(tmp_path)
+    extra = _derived(proj, (a_id,), body={"shot_id": "s02", "url": "d"})
+
+    def _key(ann):
+        return (ann.provenance.generated_at_time.to_seconds(), str(ann.id))
+
+    snapshot = [v.annotation for v in nw.stale_verdicts_all(proj.root)]
+    assert snapshot == sorted(snapshot, key=_key)
+    assert _ids(snapshot) == {b.id, c.id, extra.id}
+
+    descendants = nw.descendants_of(proj.root, a_id)
+    assert descendants == sorted(descendants, key=_key)
+    assert _ids(descendants) == {b.id, c.id, extra.id}

@@ -243,11 +243,21 @@ for v in nw.stale_verdicts(proj.root, character_annotation_id):
     print(v.annotation.id, v.is_stale, v.reason)  # e.g. "upstream-changed"
 ```
 
+There is also the snapshot form — *what is stale in this project right now?*,
+no `changed_id` needed — which is what a freshness indicator wants:
+
+```python
+stale_now = nw.all_stale(proj.root)            # every currently-stale annotation
+verdicts = nw.stale_verdicts_all(proj.root)    # ... with reasons
+```
+
 The rule is asymmetric on purpose: anything unverifiable — no trace, a deleted
 input, a trace that no longer covers the current parents — counts as **stale**.
-Over-reporting costs a recompute; under-reporting serves a stale artifact. That
-also means **no migration**: annotations written before traces existed behave
-exactly as they did under pure reachability.
+Over-reporting costs a recompute; under-reporting serves a stale artifact. For
+the scoped walk that also means **no migration**: annotations written before
+traces existed behave exactly as they did under pure reachability. The snapshot
+form is stricter: on a pre-trace project it reports every derived annotation
+stale until each is rewritten through the trace-writing path.
 
 Scope: the **annotation** tier. Artifact-to-artifact lineage is still
 unrepresentable upstream ([lacing#14](https://github.com/thorwhalen/lacing/issues/14)).
@@ -447,6 +457,8 @@ nw.FrozenSegment, nw.Gap
     nw.descendants_of,
     nw.stale_after,
     nw.stale_verdicts,
+    nw.stale_verdicts_all,
+    nw.all_stale,
     nw.FreshnessVerdict,
 )
 nw.annotations_at_tier, nw.iter_all_annotations, nw.open_project_stores
