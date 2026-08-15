@@ -147,8 +147,9 @@ nw inherited the same shape until nw#25. **This is now built** — falaw#20 land
 - `TransformResult` carries `annotations` / `failed` / `blocked` (+
   `is_complete`), and **the cost report attributes spend to the produced set
   only** — `ExecutionReport.estimated_spend_usd`, which excludes cache hits and
-  failed calls, rather than summing `Artifact.cost_usd` (a plan-time prediction
-  that over-reports every cached run — thorwhalen/falaw#26).
+  failed calls. (Since thorwhalen/falaw#26 landed, per-`Artifact` `cost_usd`
+  is also stamped from the observed outcome, so the sums agree; the report
+  stays the source because it is run-level and carries `has_unknown_costs`.)
 - Successes are written to the graph **before** failures are reported. They are
   paid for; discarding them because a sibling failed is the waste falaw#20
   removed one layer down.
