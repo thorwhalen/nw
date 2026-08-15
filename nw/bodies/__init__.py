@@ -10,6 +10,8 @@ with a matching ``body_schema_uri`` validates correctly. The schemas are:
 - ``annot://schema/decision/v1``       — provenance-rich decision log entry
 - ``annot://schema/render-result/v1``  — output of a render Transform
 - ``annot://schema/verifying-trace/v1`` — upstream value digests, for early cutoff
+- ``annot://schema/genre-envelope/v1`` — the resolved {genre, template, params}
+  the project was created as (singleton per project)
 
 These are deliberately small and project-agnostic. Reelee will be able to
 walk the same graph for freshness analysis ("what's downstream of this
@@ -19,6 +21,11 @@ character description?") without bespoke storage.
 from .character_ref import CHARACTER_REF_BODY_SCHEMA_URI, CharacterRefBodyV1
 from .decision import DECISION_BODY_SCHEMA_URI, DecisionBodyV1
 from .environment_ref import ENVIRONMENT_REF_BODY_SCHEMA_URI, EnvironmentRefBodyV1
+from .genre_envelope import (
+    GENRE_ENVELOPE_BODY_SCHEMA_URI,
+    GENRE_ENVELOPE_TIER,
+    GenreEnvelopeBodyV1,
+)
 from .render_result import (
     RENDER_RESULT_BODY_SCHEMA_URI,
     RENDER_RESULT_TIER,
@@ -42,6 +49,9 @@ __all__ = [
     "DecisionBodyV1",
     "ENVIRONMENT_REF_BODY_SCHEMA_URI",
     "EnvironmentRefBodyV1",
+    "GENRE_ENVELOPE_BODY_SCHEMA_URI",
+    "GENRE_ENVELOPE_TIER",
+    "GenreEnvelopeBodyV1",
     "RENDER_RESULT_BODY_SCHEMA_URI",
     "RENDER_RESULT_TIER",
     "RenderResultBodyV1",

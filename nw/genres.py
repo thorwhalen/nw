@@ -530,8 +530,18 @@ def initialize_genre(
     one call. Raises :class:`KeyError` on an unknown genre or — **uniformly** — an
     unknown ``template`` slug (matching :func:`resolve_genre`).
 
+    **The envelope is persisted** (nw#32): after the initializer succeeds (or
+    no-ops), the resolved ``{genre, template, params}`` is recorded on the
+    project's graph — so "what genre is this project?" stays answerable after
+    this call returns, on the host-creates path exactly as on
+    :func:`create_genre_project`'s. Written *after* the seed on purpose: a
+    recorded envelope certifies a completed initialization, never a failed
+    one. A ``project`` stand-in without a ``graph`` (a test double, a
+    factory that returns no live project) skips the recording; read it back
+    via :meth:`nw.Project.resolved_genre`.
+
     >>> _ = register_genre(Genre(slug="_noinit_demo", title="Demo"))
-    >>> initialize_genre("_noinit_demo", object())  # no initializer -> no-op
+    >>> initialize_genre("_noinit_demo", object())  # no initializer -> no seed
     >>> del genres["_noinit_demo"]
     """
     g = get_genre(genre)  # validates the genre slug (KeyError otherwise)
@@ -541,6 +551,33 @@ def initialize_genre(
         g.template(template)  # validate template uniformly even when params given
     if genre in genre_initializers:
         genre_initializers[genre](g, template, project, dict(params))
+    _persist_genre_envelope(project, genre=genre, template=template, params=params)
+
+
+def _persist_genre_envelope(
+    project,
+    *,
+    genre: str,
+    template: Optional[str],
+    params: Mapping[str, Any],
+) -> bool:
+    """Record the resolved envelope on ``project``'s graph; return whether it was.
+
+    Duck-typed on ``project.graph.set_genre_envelope`` because the genre
+    machinery legitimately runs against non-:class:`nw.Project` objects (a
+    factory that returns ``{"project": None}``, test doubles). A real nw
+    project always records; anything else is the caller's to record.
+    """
+    graph = getattr(project, "graph", None)
+    set_envelope = getattr(graph, "set_genre_envelope", None)
+    if not callable(set_envelope):
+        return False
+    from .bodies import GenreEnvelopeBodyV1
+
+    set_envelope(
+        GenreEnvelopeBodyV1(genre=genre, template=template, params=dict(params))
+    )
+    return True
 
 
 # ---------------------------------------------------------------------------
@@ -623,7 +660,11 @@ def create_genre_project(
     **All-or-nothing** — if seeding fails the just-created project is rolled back (its
     folder removed) and the error re-raised. Returns the factory's JSON-able info (minus
     the live ``project``) plus the resolved ``{genre, template, params}`` envelope, so the
-    caller can immediately address the new project (e.g. by ``project_id``).
+    caller can immediately address the new project (e.g. by ``project_id``). The same
+    envelope is **persisted on the project** by the initialize step (nw#32) — under the
+    all-or-nothing guarantee, since a failure there rolls the whole create back — so the
+    association survives this call returning; read it back via
+    :meth:`nw.Project.resolved_genre`.
 
     Raises :class:`KeyError` on an unknown genre/template, or a genre with no registered
     factory (a host's own genre is created by the host, not via this path).

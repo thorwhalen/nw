@@ -44,6 +44,9 @@ from .bodies import (
     CHARACTER_REF_BODY_SCHEMA_URI,
     DECISION_BODY_SCHEMA_URI,
     ENVIRONMENT_REF_BODY_SCHEMA_URI,
+    GENRE_ENVELOPE_BODY_SCHEMA_URI,
+    GENRE_ENVELOPE_TIER,
+    GenreEnvelopeBodyV1,
     SECTION_BODY_SCHEMA_URI,
     SHOT_BODY_SCHEMA_URI,
     VERIFYING_TRACE_BODY_SCHEMA_URI,
@@ -334,6 +337,56 @@ class ProjectGraph:
             )
             _add_trace(store, trace)
         return new_id
+
+    # -- genre envelope (singleton) ------------------------------------------
+
+    def set_genre_envelope(
+        self,
+        body: GenreEnvelopeBodyV1,
+        *,
+        was_attributed_to: str = "agent:nw.genres",
+    ) -> UUID:
+        """Record the resolved ``{genre, template, params}`` envelope; return its id.
+
+        Singleton per project (nw#32): the tier is the identity, so
+        re-initializing replaces the recorded envelope in place — the
+        annotation id is stable across replacements, like every entity
+        upsert. A no-op write (same envelope) writes nothing.
+        """
+        from lacing import Tier, TierStereotype
+
+        with self._open() as store:
+            store.add_tier(
+                Tier(name=GENRE_ENVELOPE_TIER, stereotype=TierStereotype.NONE)
+            )
+            return _upsert(
+                store,
+                tier=GENRE_ENVELOPE_TIER,
+                schema_uri=GENRE_ENVELOPE_BODY_SCHEMA_URI,
+                body=body,
+                interval=TimeInterval.from_seconds(0, 0),
+                asset_id=self.asset_id,
+                was_attributed_to=was_attributed_to,
+            )
+
+    def genre_envelope(self) -> Optional[GenreEnvelopeBodyV1]:
+        """The recorded genre envelope, or ``None`` for a genre-less project.
+
+        The read half of :meth:`set_genre_envelope`; consumers should reach
+        it through :meth:`nw.Project.resolved_genre`, which returns the
+        plain-dict envelope shape :func:`nw.genres.resolve_genre` produces.
+        """
+        with self._open() as store:
+            for ann in store.all():
+                if (
+                    ann.tier == GENRE_ENVELOPE_TIER
+                    and ann.body_schema_uri == GENRE_ENVELOPE_BODY_SCHEMA_URI
+                ):
+                    try:
+                        return GenreEnvelopeBodyV1.model_validate(ann.body)
+                    except Exception:
+                        continue
+        return None
 
     # -- arbitrary annotations (for things that don't fit a typed bucket) ----
 
@@ -664,13 +717,16 @@ def _upsert(
     interval: TimeInterval,
     asset_id: str,
     was_attributed_to: str,
-    identity_key: str,
-    identity_value,
+    identity_key: Optional[str] = None,
+    identity_value=None,
 ) -> UUID:
     """Insert-or-update one *entity* annotation, preserving its identity.
 
     An entity (a shot, a section, a character/environment ref) is identified
     by a natural key in its body — ``shot_id``, ``section_id``, ``name``.
+    ``identity_key=None`` means the **tier itself** is the identity: at most
+    one annotation lives at that tier (e.g. the genre envelope), and an
+    upsert replaces it whatever its body says.
     The annotation id is that entity's identity **in the provenance graph**,
     so it must survive an edit:
 
@@ -701,7 +757,7 @@ def _upsert(
             for ann in store.all()
             if ann.tier == tier
             and isinstance(ann.body, dict)
-            and ann.body.get(identity_key) == identity_value
+            and (identity_key is None or ann.body.get(identity_key) == identity_value)
         ),
         None,
     )

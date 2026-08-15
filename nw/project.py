@@ -73,7 +73,7 @@ from .graph import (
     iter_all_annotations,
     remove_annotations_with_traces,
 )
-from .bodies import VERIFYING_TRACE_TIER
+from .bodies import GENRE_ENVELOPE_TIER, VERIFYING_TRACE_TIER
 from .migrate import (
     _TIER_CHARACTER_REF,
     _TIER_DECISION,
@@ -97,12 +97,16 @@ from .schema import (
 )
 
 
-_BOOKKEEPING_TIERS = frozenset({_TIER_DECISION, VERIFYING_TRACE_TIER})
+_BOOKKEEPING_TIERS = frozenset(
+    {_TIER_DECISION, VERIFYING_TRACE_TIER, GENRE_ENVELOPE_TIER}
+)
 """Tiers that record *what nw did*, not *what the project is*.
 
 The resumption brief is a statement about project content, so these are
 excluded from both halves of it: they are neither an authored change nor a
-downstream consequence of one."""
+downstream consequence of one. The genre envelope qualifies on both counts:
+it is parentless and written at creation, so without this it would shadow
+the user's actual last authored change."""
 
 
 # ---------------------------------------------------------------------------
@@ -319,6 +323,25 @@ class Project:
             global_style=meta.get("global_style", ""),
             notes=meta.get("notes", ""),
         )
+
+    def resolved_genre(self) -> Optional[dict]:
+        """The ``{genre, template, params}`` envelope this project was created as.
+
+        The read accessor for the envelope :func:`nw.genres.initialize_genre`
+        persists at creation (nw#32) — same shape as
+        :func:`nw.genres.resolve_genre` returns, so consumers reuse or diff
+        the *effective* creation params without re-deriving them. ``None``
+        for a project with no recorded genre (created before nw#32, or not
+        through the genre machinery).
+        """
+        body = self.graph.genre_envelope()
+        if body is None:
+            return None
+        return {
+            "genre": body.genre,
+            "template": body.template,
+            "params": dict(body.params),
+        }
 
     def write_spec(self, spec: ProjectSpec) -> None:
         """Write the spec.
