@@ -46,6 +46,7 @@ from .bodies import (
     ENVIRONMENT_REF_BODY_SCHEMA_URI,
     SECTION_BODY_SCHEMA_URI,
     SHOT_BODY_SCHEMA_URI,
+    VERIFYING_TRACE_BODY_SCHEMA_URI,
     VERIFYING_TRACE_TIER,
     CharacterRefBodyV1,
     DecisionBodyV1,
@@ -363,6 +364,29 @@ class ProjectGraph:
             store.add(ann)
             _add_trace(store, trace)
 
+    def remove_annotation(self, annotation_id: UUID) -> bool:
+        """Remove one annotation from the project graph, with its verifying traces.
+
+        The delete counterpart of :meth:`add_annotation` (nw#36): every trace
+        whose ``for_annotation_id`` names ``annotation_id`` goes with it, so a
+        deletion never leaves a sidecar behind — an orphaned trace is inert
+        for freshness but grows the store without bound, and if the id is
+        later re-used it can even answer a freshness query from digests
+        recorded for content that is no longer there.
+
+        Only the project graph store is touched — the store
+        :meth:`add_annotation` writes to. Annotations living in the other
+        scopes (storyboard, alignment) are removed by their own facades;
+        :func:`collect_orphan_traces` is the project-wide backstop.
+
+        Returns:
+            Whether ``annotation_id`` itself was present (its traces are
+            removed either way).
+        """
+        with self._open() as store:
+            removed = remove_annotations_with_traces(store, (annotation_id,))
+        return annotation_id in removed
+
     # -- verifying traces ----------------------------------------------------
 
     def _verifying_trace_for(
@@ -518,8 +542,107 @@ def annotations_at_tier(project_root: str | Path, tier: str) -> list[Annotation]
 
 
 # ---------------------------------------------------------------------------
+# Deletion — an annotation travels with its verifying traces (nw#36)
+# ---------------------------------------------------------------------------
+
+
+def remove_annotations_with_traces(
+    store: IntervalAnnotationStore,
+    annotation_ids: Iterable[UUID],
+    *,
+    annotations: Optional[list[Annotation]] = None,
+) -> set[UUID]:
+    """Remove annotations from ``store``, plus every trace in it naming them.
+
+    The store-level primitive behind every nw deletion path
+    (:meth:`ProjectGraph.remove_annotation`, ``write_spec``'s entity
+    reconciliation, the storyboard wipe). A verifying trace is a sidecar of
+    the annotation it describes; removing one without the other leaks an
+    inert row per deletion, forever (nw#36).
+
+    Args:
+        store: An **open** store — the caller owns its lifecycle.
+        annotation_ids: Ids to remove. Missing ids are ignored.
+        annotations: The store's annotations, if the caller already
+            materialized ``list(store.all())`` — avoids a second scan.
+
+    Returns:
+        The subset of ``annotation_ids`` that was actually present. Trace
+        removals are not reported: they are bookkeeping, not content.
+    """
+    wanted = set(annotation_ids)
+    if not wanted:
+        return set()
+    if annotations is None:
+        annotations = list(store.all())
+    removed: set[UUID] = set()
+    trace_ids: list[UUID] = []
+    for ann in annotations:
+        if ann.id in wanted:
+            removed.add(ann.id)
+        else:
+            target = _trace_target(ann)
+            if target is not None and target in wanted:
+                trace_ids.append(ann.id)
+    for annotation_id in (*removed, *trace_ids):
+        store.remove(annotation_id)
+    return removed
+
+
+def collect_orphan_traces(project_root: str | Path) -> list[UUID]:
+    """Drop verifying traces whose target annotation no longer exists.
+
+    The backstop for deletion paths that do not (or cannot) go through
+    :func:`remove_annotations_with_traces` — a direct ``store.remove``, an
+    external tool, history from before deletions collected traces (nw#36).
+    Walks every store under the project; a trace is an orphan when its
+    ``for_annotation_id`` resolves in **none** of them. Idempotent, and safe
+    to run as routine maintenance: an orphaned trace is never consulted by
+    :mod:`nw.freshness`, so removing it changes no freshness answer.
+
+    A trace whose body cannot be read (not a dict, unparseable target id) is
+    left in place: it may be an orphan, but deleting what we cannot identify
+    is worse than carrying it.
+
+    Returns:
+        The ids of the trace annotations removed, in store order.
+    """
+    existing = {ann.id for ann in iter_all_annotations(project_root)}
+    removed: list[UUID] = []
+    with open_project_stores(project_root) as stores:
+        for store in stores:
+            orphans = [
+                ann.id
+                for ann in list(store.all())
+                if (target := _trace_target(ann)) is not None
+                and target not in existing
+            ]
+            for annotation_id in orphans:
+                store.remove(annotation_id)
+            removed.extend(orphans)
+    return removed
+
+
+# ---------------------------------------------------------------------------
 # Internals
 # ---------------------------------------------------------------------------
+
+
+def _trace_target(ann: Annotation) -> Optional[UUID]:
+    """The annotation id a verifying trace describes, or ``None``.
+
+    ``None`` for anything that is not a readable verifying trace — the same
+    "when in doubt, leave it alone" reading :func:`nw.freshness` applies on
+    the query side, applied to deletion.
+    """
+    if ann.body_schema_uri != VERIFYING_TRACE_BODY_SCHEMA_URI:
+        return None
+    if not isinstance(ann.body, dict):
+        return None
+    try:
+        return UUID(str(ann.body.get("for_annotation_id")))
+    except (ValueError, TypeError):
+        return None
 
 
 def _add_trace(store: IntervalAnnotationStore, trace: Optional[Annotation]) -> None:
