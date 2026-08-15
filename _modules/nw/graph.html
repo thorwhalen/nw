@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.graph &mdash; nw 0.0.22 documentation</title>
+  <title>nw.graph &mdash; nw 0.0.23 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=96ec9c95"></script>
+      <script src="../../_static/documentation_options.js?v=3294188c"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -154,6 +154,7 @@
     <span class="n">ENVIRONMENT_REF_BODY_SCHEMA_URI</span><span class="p">,</span>
     <span class="n">SECTION_BODY_SCHEMA_URI</span><span class="p">,</span>
     <span class="n">SHOT_BODY_SCHEMA_URI</span><span class="p">,</span>
+    <span class="n">VERIFYING_TRACE_BODY_SCHEMA_URI</span><span class="p">,</span>
     <span class="n">VERIFYING_TRACE_TIER</span><span class="p">,</span>
     <span class="n">CharacterRefBodyV1</span><span class="p">,</span>
     <span class="n">DecisionBodyV1</span><span class="p">,</span>
@@ -506,6 +507,32 @@
             <span class="n">_add_trace</span><span class="p">(</span><span class="n">store</span><span class="p">,</span> <span class="n">trace</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="ProjectGraph.remove_annotation">
+<a class="viewcode-back" href="../../module_docs/nw/graph.html#nw.ProjectGraph.remove_annotation">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">remove_annotation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">annotation_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove one annotation from the project graph, with its verifying traces.</span>
+
+<span class="sd">        The delete counterpart of :meth:`add_annotation` (nw#36): every trace</span>
+<span class="sd">        whose ``for_annotation_id`` names ``annotation_id`` goes with it, so a</span>
+<span class="sd">        deletion never leaves a sidecar behind — an orphaned trace is inert</span>
+<span class="sd">        for freshness but grows the store without bound, and if the id is</span>
+<span class="sd">        later re-used it can even answer a freshness query from digests</span>
+<span class="sd">        recorded for content that is no longer there.</span>
+
+<span class="sd">        Only the project graph store is touched — the store</span>
+<span class="sd">        :meth:`add_annotation` writes to. Annotations living in the other</span>
+<span class="sd">        scopes (storyboard, alignment) are removed by their own facades;</span>
+<span class="sd">        :func:`collect_orphan_traces` is the project-wide backstop.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Whether ``annotation_id`` itself was present (its traces are</span>
+<span class="sd">            removed either way).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open</span><span class="p">()</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
+            <span class="n">removed</span> <span class="o">=</span> <span class="n">remove_annotations_with_traces</span><span class="p">(</span><span class="n">store</span><span class="p">,</span> <span class="p">(</span><span class="n">annotation_id</span><span class="p">,))</span>
+        <span class="k">return</span> <span class="n">annotation_id</span> <span class="ow">in</span> <span class="n">removed</span></div>
+
+
     <span class="c1"># -- verifying traces ----------------------------------------------------</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_verifying_trace_for</span><span class="p">(</span>
@@ -680,8 +707,113 @@
 
 
 <span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Deletion — an annotation travels with its verifying traces (nw#36)</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="remove_annotations_with_traces">
+<a class="viewcode-back" href="../../module_docs/nw/graph.html#nw.remove_annotations_with_traces">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">remove_annotations_with_traces</span><span class="p">(</span>
+    <span class="n">store</span><span class="p">:</span> <span class="n">IntervalAnnotationStore</span><span class="p">,</span>
+    <span class="n">annotation_ids</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">UUID</span><span class="p">],</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">annotations</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="n">UUID</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove annotations from ``store``, plus every trace in it naming them.</span>
+
+<span class="sd">    The store-level primitive behind every nw deletion path</span>
+<span class="sd">    (:meth:`ProjectGraph.remove_annotation`, ``write_spec``&#39;s entity</span>
+<span class="sd">    reconciliation, the storyboard wipe). A verifying trace is a sidecar of</span>
+<span class="sd">    the annotation it describes; removing one without the other leaks an</span>
+<span class="sd">    inert row per deletion, forever (nw#36).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        store: An **open** store — the caller owns its lifecycle.</span>
+<span class="sd">        annotation_ids: Ids to remove. Missing ids are ignored.</span>
+<span class="sd">        annotations: The store&#39;s annotations, if the caller already</span>
+<span class="sd">            materialized ``list(store.all())`` — avoids a second scan.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The subset of ``annotation_ids`` that was actually present. Trace</span>
+<span class="sd">        removals are not reported: they are bookkeeping, not content.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">wanted</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">annotation_ids</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">wanted</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">annotations</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">annotations</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">store</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
+    <span class="n">removed</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="n">UUID</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="n">trace_ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">UUID</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">annotations</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ann</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="n">wanted</span><span class="p">:</span>
+            <span class="n">removed</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">target</span> <span class="o">=</span> <span class="n">_trace_target</span><span class="p">(</span><span class="n">ann</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">target</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">wanted</span><span class="p">:</span>
+                <span class="n">trace_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">annotation_id</span> <span class="ow">in</span> <span class="p">(</span><span class="o">*</span><span class="n">removed</span><span class="p">,</span> <span class="o">*</span><span class="n">trace_ids</span><span class="p">):</span>
+        <span class="n">store</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">annotation_id</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">removed</span></div>
+
+
+
+<div class="viewcode-block" id="collect_orphan_traces">
+<a class="viewcode-back" href="../../module_docs/nw/graph.html#nw.collect_orphan_traces">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">collect_orphan_traces</span><span class="p">(</span><span class="n">project_root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">UUID</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Drop verifying traces whose target annotation no longer exists.</span>
+
+<span class="sd">    The backstop for deletion paths that do not (or cannot) go through</span>
+<span class="sd">    :func:`remove_annotations_with_traces` — a direct ``store.remove``, an</span>
+<span class="sd">    external tool, history from before deletions collected traces (nw#36).</span>
+<span class="sd">    Walks every store under the project; a trace is an orphan when its</span>
+<span class="sd">    ``for_annotation_id`` resolves in **none** of them. Idempotent, and safe</span>
+<span class="sd">    to run as routine maintenance: an orphaned trace is never consulted by</span>
+<span class="sd">    :mod:`nw.freshness`, so removing it changes no freshness answer.</span>
+
+<span class="sd">    A trace whose body cannot be read (not a dict, unparseable target id) is</span>
+<span class="sd">    left in place: it may be an orphan, but deleting what we cannot identify</span>
+<span class="sd">    is worse than carrying it.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The ids of the trace annotations removed, in store order.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">existing</span> <span class="o">=</span> <span class="p">{</span><span class="n">ann</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">iter_all_annotations</span><span class="p">(</span><span class="n">project_root</span><span class="p">)}</span>
+    <span class="n">removed</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">UUID</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">with</span> <span class="n">open_project_stores</span><span class="p">(</span><span class="n">project_root</span><span class="p">)</span> <span class="k">as</span> <span class="n">stores</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">store</span> <span class="ow">in</span> <span class="n">stores</span><span class="p">:</span>
+            <span class="n">orphans</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">ann</span><span class="o">.</span><span class="n">id</span>
+                <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">store</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">target</span> <span class="o">:=</span> <span class="n">_trace_target</span><span class="p">(</span><span class="n">ann</span><span class="p">))</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="ow">and</span> <span class="n">target</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">existing</span>
+            <span class="p">]</span>
+            <span class="k">for</span> <span class="n">annotation_id</span> <span class="ow">in</span> <span class="n">orphans</span><span class="p">:</span>
+                <span class="n">store</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">annotation_id</span><span class="p">)</span>
+            <span class="n">removed</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">orphans</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">removed</span></div>
+
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
 <span class="c1"># Internals</span>
 <span class="c1"># ---------------------------------------------------------------------------</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_trace_target</span><span class="p">(</span><span class="n">ann</span><span class="p">:</span> <span class="n">Annotation</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UUID</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The annotation id a verifying trace describes, or ``None``.</span>
+
+<span class="sd">    ``None`` for anything that is not a readable verifying trace — the same</span>
+<span class="sd">    &quot;when in doubt, leave it alone&quot; reading :func:`nw.freshness` applies on</span>
+<span class="sd">    the query side, applied to deletion.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">ann</span><span class="o">.</span><span class="n">body_schema_uri</span> <span class="o">!=</span> <span class="n">VERIFYING_TRACE_BODY_SCHEMA_URI</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">body</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">UUID</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;for_annotation_id&quot;</span><span class="p">)))</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">None</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_add_trace</span><span class="p">(</span><span class="n">store</span><span class="p">:</span> <span class="n">IntervalAnnotationStore</span><span class="p">,</span> <span class="n">trace</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Annotation</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>

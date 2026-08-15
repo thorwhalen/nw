@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw &mdash; nw 0.0.22 documentation</title>
+  <title>nw &mdash; nw 0.0.23 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=96ec9c95"></script>
+      <script src="../_static/documentation_options.js?v=3294188c"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -122,6 +122,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#nw.ProjectGraph"><code class="docutils literal notranslate"><span class="pre">ProjectGraph</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#nw.ProjectGraph.add_annotation"><code class="docutils literal notranslate"><span class="pre">ProjectGraph.add_annotation()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.ProjectGraph.append_decision"><code class="docutils literal notranslate"><span class="pre">ProjectGraph.append_decision()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.ProjectGraph.remove_annotation"><code class="docutils literal notranslate"><span class="pre">ProjectGraph.remove_annotation()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.ProjectGraph.upsert_character_ref"><code class="docutils literal notranslate"><span class="pre">ProjectGraph.upsert_character_ref()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.ProjectGraph.upsert_environment_ref"><code class="docutils literal notranslate"><span class="pre">ProjectGraph.upsert_environment_ref()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.ProjectGraph.upsert_section"><code class="docutils literal notranslate"><span class="pre">ProjectGraph.upsert_section()</span></code></a></li>
@@ -202,6 +203,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#nw.annotations_at_tier"><code class="docutils literal notranslate"><span class="pre">annotations_at_tier()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.apply_to_projects"><code class="docutils literal notranslate"><span class="pre">apply_to_projects()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.clone_project"><code class="docutils literal notranslate"><span class="pre">clone_project()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.collect_orphan_traces"><code class="docutils literal notranslate"><span class="pre">collect_orphan_traces()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.compose_report"><code class="docutils literal notranslate"><span class="pre">compose_report()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.create_genre_project"><code class="docutils literal notranslate"><span class="pre">create_genre_project()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.derived_from"><code class="docutils literal notranslate"><span class="pre">derived_from()</span></code></a></li>
@@ -818,6 +820,28 @@ is nothing to verify, and they are nobody’s descendant.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="nw.ProjectGraph.remove_annotation">
+<span class="sig-name descname"><span class="pre">remove_annotation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">annotation_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">UUID</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/nw/graph.html#ProjectGraph.remove_annotation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.ProjectGraph.remove_annotation" title="Link to this definition"></a></dt>
+<dd><p>Remove one annotation from the project graph, with its verifying traces.</p>
+<p>The delete counterpart of <a class="reference internal" href="#nw.ProjectGraph.add_annotation" title="nw.ProjectGraph.add_annotation"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_annotation()</span></code></a> (nw#36): every trace
+whose <code class="docutils literal notranslate"><span class="pre">for_annotation_id</span></code> names <code class="docutils literal notranslate"><span class="pre">annotation_id</span></code> goes with it, so a
+deletion never leaves a sidecar behind — an orphaned trace is inert
+for freshness but grows the store without bound, and if the id is
+later re-used it can even answer a freshness query from digests
+recorded for content that is no longer there.</p>
+<p>Only the project graph store is touched — the store
+<a class="reference internal" href="#nw.ProjectGraph.add_annotation" title="nw.ProjectGraph.add_annotation"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_annotation()</span></code></a> writes to. Annotations living in the other
+scopes (storyboard, alignment) are removed by their own facades;
+<a class="reference internal" href="#nw.collect_orphan_traces" title="nw.collect_orphan_traces"><code class="xref py py-func docutils literal notranslate"><span class="pre">collect_orphan_traces()</span></code></a> is the project-wide backstop.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Whether <code class="docutils literal notranslate"><span class="pre">annotation_id</span></code> itself was present (its traces are
+removed either way).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="nw.ProjectGraph.upsert_character_ref">
 <span class="sig-name descname"><span class="pre">upsert_character_ref</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">body</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nw/bodies/character_ref.html#nw.bodies.character_ref.CharacterRefBodyV1" title="nw.bodies.character_ref.CharacterRefBodyV1"><span class="pre">CharacterRefBodyV1</span></a></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">was_attributed_to</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'user:nw'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">UUID</span></span></span><a class="reference internal" href="../_modules/nw/graph.html#ProjectGraph.upsert_character_ref"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.ProjectGraph.upsert_character_ref" title="Link to this definition"></a></dt>
 <dd><p>Insert-or-update the character ref with this <code class="docutils literal notranslate"><span class="pre">name</span></code>; return its id.</p>
@@ -1325,6 +1349,27 @@ to avoid clobbering work).</p></li>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#nw.ProjectSummary" title="nw.ProjectSummary"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProjectSummary</span></code></a> of the cloned project.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.collect_orphan_traces">
+<span class="sig-prename descclassname"><span class="pre">nw.</span></span><span class="sig-name descname"><span class="pre">collect_orphan_traces</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">UUID</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/nw/graph.html#collect_orphan_traces"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.collect_orphan_traces" title="Link to this definition"></a></dt>
+<dd><p>Drop verifying traces whose target annotation no longer exists.</p>
+<p>The backstop for deletion paths that do not (or cannot) go through
+<code class="xref py py-func docutils literal notranslate"><span class="pre">remove_annotations_with_traces()</span></code> — a direct <code class="docutils literal notranslate"><span class="pre">store.remove</span></code>, an
+external tool, history from before deletions collected traces (nw#36).
+Walks every store under the project; a trace is an orphan when its
+<code class="docutils literal notranslate"><span class="pre">for_annotation_id</span></code> resolves in <strong>none</strong> of them. Idempotent, and safe
+to run as routine maintenance: an orphaned trace is never consulted by
+<a class="reference internal" href="nw/freshness.html#module-nw.freshness" title="nw.freshness"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nw.freshness</span></code></a>, so removing it changes no freshness answer.</p>
+<p>A trace whose body cannot be read (not a dict, unparseable target id) is
+left in place: it may be an orphan, but deleting what we cannot identify
+is worse than carrying it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The ids of the trace annotations removed, in store order.</p>
 </dd>
 </dl>
 </dd></dl>
