@@ -50,6 +50,7 @@ from lacing import (
     TimeInterval,
 )
 
+from .graph import remove_annotations_with_traces
 from .graph_backend import SCOPE_STORYBOARD, open_graph_store, selected_backend
 from .project import Project
 from .transforms import OnFailure
@@ -126,12 +127,17 @@ def save_storyboard(
         # save is not rejected. Idempotent — re-registering is a no-op in lacing.
         store.add_tier(Tier(name="storyboard", stereotype=TierStereotype.NONE))
         # Drop any existing panels for this asset+tier so save is idempotent.
-        for ann in list(store.all()):
-            if (
-                ann.tier == "storyboard"
-                and getattr(ann.reference, "asset_id", None) == storyboard.asset_id
-            ):
-                store.remove(ann.id)
+        # Their verifying traces go with them (nw#36): a re-saved panel is a
+        # new row, and a trace describing the old one must not survive to
+        # answer a freshness query for its successor.
+        annotations = list(store.all())
+        panel_ids = {
+            ann.id
+            for ann in annotations
+            if ann.tier == "storyboard"
+            and getattr(ann.reference, "asset_id", None) == storyboard.asset_id
+        }
+        remove_annotations_with_traces(store, panel_ids, annotations=annotations)
 
         _save_storyboard(
             storyboard,

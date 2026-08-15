@@ -67,9 +67,22 @@ from .bodies import (
     SectionBodyV1,
     ShotBodyV1,
 )
-from .graph import ProjectGraph, descendants_of, iter_all_annotations
+from .graph import (
+    ProjectGraph,
+    descendants_of,
+    iter_all_annotations,
+    remove_annotations_with_traces,
+)
 from .bodies import VERIFYING_TRACE_TIER
-from .migrate import _TIER_DECISION, is_migrated, migrate_to_graph
+from .migrate import (
+    _TIER_CHARACTER_REF,
+    _TIER_DECISION,
+    _TIER_ENVIRONMENT_REF,
+    _TIER_SECTION,
+    _TIER_SHOT,
+    is_migrated,
+    migrate_to_graph,
+)
 from .schema import (
     SCHEMA_VERSION,
     CharacterRef,
@@ -333,42 +346,52 @@ class Project:
         self._sync_sections(spec.sections)
         self._sync_shots(spec.shots)
 
-    def _sync_character_refs(self, refs: tuple[CharacterRef, ...]) -> None:
-        names = {r.name for r in refs}
-        with self.graph._open() as store:
-            from .migrate import _TIER_CHARACTER_REF
+    def _drop_entities_not_in(
+        self, *, tier: str, identity_key: str, keep: set
+    ) -> None:
+        """Remove ``tier`` entities whose ``identity_key`` is not in ``keep``.
 
-            for ann in list(store.all()):
-                if ann.tier == _TIER_CHARACTER_REF:
-                    if isinstance(ann.body, dict) and ann.body.get("name") not in names:
-                        store.remove(ann.id)
+        The removal half of ``write_spec``'s reconciliation. Routes through
+        :func:`nw.graph.remove_annotations_with_traces` so a removed entity's
+        verifying traces go with it (nw#36) — an annotation at an entity tier
+        can be a *derived* write (a reelee agent proposing a shot), and those
+        carry traces.
+        """
+        with self.graph._open() as store:
+            annotations = list(store.all())
+            victims = {
+                ann.id
+                for ann in annotations
+                if ann.tier == tier
+                and isinstance(ann.body, dict)
+                and ann.body.get(identity_key) not in keep
+            }
+            remove_annotations_with_traces(store, victims, annotations=annotations)
+
+    def _sync_character_refs(self, refs: tuple[CharacterRef, ...]) -> None:
+        self._drop_entities_not_in(
+            tier=_TIER_CHARACTER_REF,
+            identity_key="name",
+            keep={r.name for r in refs},
+        )
         for ch in refs:
             self.graph.upsert_character_ref(_character_ref_body_of(ch))
 
     def _sync_environment_refs(self, refs: tuple[EnvironmentRef, ...]) -> None:
-        names = {r.name for r in refs}
-        with self.graph._open() as store:
-            from .migrate import _TIER_ENVIRONMENT_REF
-
-            for ann in list(store.all()):
-                if ann.tier == _TIER_ENVIRONMENT_REF:
-                    if isinstance(ann.body, dict) and ann.body.get("name") not in names:
-                        store.remove(ann.id)
+        self._drop_entities_not_in(
+            tier=_TIER_ENVIRONMENT_REF,
+            identity_key="name",
+            keep={r.name for r in refs},
+        )
         for env in refs:
             self.graph.upsert_environment_ref(_environment_ref_body_of(env))
 
     def _sync_sections(self, sections: tuple[SectionSpec, ...]) -> None:
-        ids = {s.id for s in sections}
-        with self.graph._open() as store:
-            from .migrate import _TIER_SECTION
-
-            for ann in list(store.all()):
-                if ann.tier == _TIER_SECTION:
-                    if (
-                        isinstance(ann.body, dict)
-                        and ann.body.get("section_id") not in ids
-                    ):
-                        store.remove(ann.id)
+        self._drop_entities_not_in(
+            tier=_TIER_SECTION,
+            identity_key="section_id",
+            keep={s.id for s in sections},
+        )
         for sec in sections:
             self.graph.upsert_section(
                 SectionBodyV1(
@@ -381,17 +404,11 @@ class Project:
             )
 
     def _sync_shots(self, shots: tuple[ShotSpec, ...]) -> None:
-        ids = {s.id for s in shots}
-        with self.graph._open() as store:
-            from .migrate import _TIER_SHOT
-
-            for ann in list(store.all()):
-                if ann.tier == _TIER_SHOT:
-                    if (
-                        isinstance(ann.body, dict)
-                        and ann.body.get("shot_id") not in ids
-                    ):
-                        store.remove(ann.id)
+        self._drop_entities_not_in(
+            tier=_TIER_SHOT,
+            identity_key="shot_id",
+            keep={s.id for s in shots},
+        )
         for shot in shots:
             self.graph.upsert_shot(
                 ShotBodyV1(
