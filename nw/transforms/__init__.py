@@ -618,9 +618,7 @@ def transform_catalog() -> list[dict]:
                 "input_kinds": list(transform.input_kinds),
                 "output_kind": transform.output_kind,
                 "is_batch": transform.is_batch,
-                "impl_version": getattr(
-                    transform, "impl_version", DFLT_IMPL_VERSION
-                ),
+                "impl_version": getattr(transform, "impl_version", DFLT_IMPL_VERSION),
                 "params_schema": (
                     {}
                     if params_model is type(None)
