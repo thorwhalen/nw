@@ -12,11 +12,11 @@ from uuid import UUID
 
 from lacing import Provenance, RationalTime
 
-from . import TransformInputs
+from . import Transform, TransformInputs
 
 
 def derive_provenance(
-    transform,
+    transform: "Transform",
     inputs: TransformInputs,
     *,
     activity: str = "derive",

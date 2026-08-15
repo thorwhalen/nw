@@ -641,3 +641,44 @@ def test_derive_provenance_reads_the_version_off_the_transform():
 
     assert prov.was_generated_by == "transform:x_to_y.test.v3@3"
     assert prov.was_attributed_to == "agent:x_to_y.test.v3"
+
+
+def test_stamping_voids_the_stale_cache_prediction():
+    """The plan-time peek keyed without the salt, so a 'hit' prediction on a
+    stamped plan would make cost gates quote $0.00 for a full re-bill. The
+    stamp resets it to 'unknown', which prices at the full estimate."""
+    from falaw import CallPlan, Plan
+
+    class _V2(BaseTransform):
+        name = "x_to_y.test.v2b"
+        output_kind = "annot://schema/test-output/v1"
+        impl_version = "2"
+
+    plan = Plan(
+        calls=(
+            CallPlan(
+                tool="t", application="m/a", arguments={"p": 1},
+                output_kind="image", estimated_cost_usd=0.25, cache_status="hit",
+            ),
+        )
+    )
+    assert plan.total_cost_usd == 0.0  # the stale belief
+
+    stamped = stamp_transform_identity(plan, _V2())
+
+    assert stamped.calls[0].cache_status == "unknown"
+    assert stamped.total_cost_usd == 0.25  # the honest, conservative quote
+
+
+def test_a_non_str_impl_version_is_refused_at_registration():
+    """An int version defeats the omit-if-default sentinel while rendering
+    identically in provenance — refused where the Transform enters."""
+
+    class _IntVersion(BaseTransform):
+        name = "x_to_y.test.intver"
+        output_kind = "annot://schema/test-output/v1"
+        impl_version = 2  # the muscle-memory mistake the old API invited
+
+    with pytest.raises(ValueError, match="impl_version must be a str"):
+        register_transform("x_to_y.test.intver", _IntVersion())
+    assert "x_to_y.test.intver" not in transforms

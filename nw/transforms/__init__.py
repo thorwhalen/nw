@@ -215,9 +215,12 @@ class Transform(Protocol):
     key** (the name denotes the capability; a different capability gets a
     different name). It is a lock, not a receipt: it enters provenance
     (``transform:<name>@<impl_version>``) and, when it is not
-    :data:`DFLT_IMPL_VERSION`, the falaw cache identity of every call the
-    Transform executes — so a behaviour change cannot keep serving results
-    minted by the old behaviour. See :func:`stamp_transform_identity`."""
+    :data:`DFLT_IMPL_VERSION`, the falaw cache identity of every call
+    executed through :meth:`BaseTransform.execute` — so a behaviour change
+    cannot keep serving results minted by the old behaviour. A Transform
+    that overrides ``execute`` must apply
+    :func:`stamp_transform_identity` itself; the lock only locks what
+    passes through it."""
 
     params_model: type
     """Pydantic model class for this Transform's per-call params;
@@ -484,18 +487,36 @@ def stamp_transform_identity(plan: Plan, transform: Transform) -> Plan:
     :data:`DFLT_IMPL_VERSION` nothing is stamped — every key ever issued
     stays byte-identical, and the first real bump is the first salt.
 
-    :meth:`BaseTransform.execute` applies this automatically; an
-    orchestrator that hashes or caches plans *before* execution (e.g. a job
-    idempotency key over ``falaw.plan_hash``) should apply it at plan time
-    so those keys see the version too. Idempotent — stamping twice writes
-    the same value.
+    Each stamped call's ``cache_status`` is reset to ``"unknown"``: the
+    plan-time peek keyed without the salt, so its prediction (typically
+    "hit" — the old-behaviour result is cached, invalidating it is the
+    point) would make cost gates quote $0.00 for a full re-bill.
+
+    :meth:`BaseTransform.execute` applies this automatically. **A Transform
+    that overrides** :meth:`~BaseTransform.execute` **must apply it
+    itself** — the lock only locks calls that pass through it (a
+    registry-wide conformance test is the honest guard). An orchestrator
+    that hashes or caches plans *before* execution (e.g. a job idempotency
+    key over ``falaw.plan_hash``) should apply it at plan time so those
+    keys see the version too. Idempotent — stamping twice writes the same
+    value.
     """
-    version = getattr(transform, "impl_version", DFLT_IMPL_VERSION)
+    version = str(getattr(transform, "impl_version", DFLT_IMPL_VERSION))
     if version == DFLT_IMPL_VERSION:
         return plan
     return Plan(
         calls=tuple(
-            replace(call, key_extra={**call.key_extra, "transform_impl": version})
+            replace(
+                call,
+                key_extra={**call.key_extra, "transform_impl": version},
+                # The plan-time cache peek keyed WITHOUT the salt, so its
+                # prediction is void: a "hit" here would make the gates
+                # quote $0.00 for what the salted execution re-bills in
+                # full. "unknown" makes the quote the full price - the
+                # honest, conservative number for a deliberate
+                # invalidation.
+                cache_status="unknown",
+            )
             for call in plan.calls
         )
     )
@@ -527,6 +548,15 @@ def register_transform(
     """
 
     def _checked(instance: Transform) -> Transform:
+        version = getattr(instance, "impl_version", DFLT_IMPL_VERSION)
+        if not isinstance(version, str):
+            raise ValueError(
+                f"register_transform({name!r}): {type(instance).__name__}."
+                f"impl_version must be a str, got {version!r} "
+                f"({type(version).__name__}). A non-str version defeats the "
+                "omit-if-default cache sentinel while rendering identically "
+                "in provenance."
+            )
         if not getattr(instance, "output_kind", ""):
             raise ValueError(
                 f"register_transform({name!r}): {type(instance).__name__} "
@@ -572,8 +602,10 @@ __all__ = [
     "TransformInputs",
     "TransformResult",
     "BaseTransform",
+    "DFLT_IMPL_VERSION",
     "transforms",
     "register_transform",
     "get_transform",
     "list_transforms",
+    "stamp_transform_identity",
 ]
