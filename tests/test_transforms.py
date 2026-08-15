@@ -18,6 +18,7 @@ from shutil import which
 import pytest
 
 from nw import (
+    DFLT_IMPL_VERSION,
     BaseTransform,
     Project,
     SectionSpec,
@@ -30,6 +31,7 @@ from nw import (
     plan_render_shot,
     prepare_shot,
     register_transform,
+    stamp_transform_identity,
     transforms,
 )
 from nw.bodies import RENDER_RESULT_BODY_SCHEMA_URI, SHOT_BODY_SCHEMA_URI
@@ -158,6 +160,7 @@ def test_get_transform_unknown_raises():
 def test_register_transform_direct_form():
     class _Direct(BaseTransform):
         name = "x_to_y.test.direct"
+        output_kind = "annot://schema/test-output/v1"
 
     impl = _Direct()
     try:
@@ -172,6 +175,7 @@ def test_register_transform_decorator_form():
     @register_transform("x_to_y.test.deco")
     class _Deco(BaseTransform):
         name = "x_to_y.test.deco"
+        output_kind = "annot://schema/test-output/v1"
 
     try:
         # The class is returned unchanged; an *instance* is registered.
@@ -291,7 +295,12 @@ def test_derive_provenance_unions_input_ids_and_stamps_transform():
 
     primary, ctx_a, ctx_b = _ann(), _ann(), _ann()
     inputs = TransformInputs(primary=(primary,), context={"character-ref": (ctx_a, ctx_b)})
-    prov = derive_provenance("beat_to_panel.llm.default", 3, inputs)
+    class _BeatToPanel(BaseTransform):
+        name = "beat_to_panel.llm.default"
+        output_kind = "annot://schema/panel/v1"
+        impl_version = "3"
+
+    prov = derive_provenance(_BeatToPanel(), inputs)
 
     assert prov.was_generated_by == "transform:beat_to_panel.llm.default@3"
     assert prov.was_attributed_to == "agent:beat_to_panel.llm.default"
@@ -301,7 +310,11 @@ def test_derive_provenance_unions_input_ids_and_stamps_transform():
 
 def test_derive_provenance_respects_explicit_attribution():
     inputs = TransformInputs(primary=())
-    prov = derive_provenance("t", "1", inputs, attributed_to="agent:claude-sonnet-4-6@abc")
+    class _T(BaseTransform):
+        name = "t"
+        output_kind = "annot://schema/panel/v1"
+
+    prov = derive_provenance(_T(), inputs, attributed_to="agent:claude-sonnet-4-6@abc")
     assert prov.was_attributed_to == "agent:claude-sonnet-4-6@abc"
     assert prov.was_derived_from == []
 
@@ -334,8 +347,10 @@ def test_adapter_plan_matches_strategy_and_builds_render_result_skeleton(tmp_pat
     assert skel.body["shot_id"] == "s01"
     assert skel.body["strategy"] == strategy
     assert skel.body["artifact_id"] is None  # filled by execute
+    # @1: the version now comes off the Transform (impl_version), not a
+    # per-callsite label (nw#27).
     assert skel.provenance.was_generated_by == (
-        f"transform:shot_to_render_result.fal.{strategy}@nw.renderers"
+        f"transform:shot_to_render_result.fal.{strategy}@1"
     )
     assert inputs.primary[0].id in skel.provenance.was_derived_from
 
@@ -532,3 +547,97 @@ def test_execute_accepts_a_matching_skeleton_and_plan(monkeypatch):
     result = BaseTransform().execute(project, _plan(2), skeleton)
     assert len(result.annotations) == 2
     assert len(project.graph.written) == 2
+
+
+# ---------------------------------------------------------------------------
+# The hardened contract (nw#27)
+# ---------------------------------------------------------------------------
+
+
+def test_registering_without_an_output_kind_is_refused_loudly():
+    """An agent's unit of work must have a declared output type — otherwise
+    'the job runs successfully but produces nothing retrievable' is
+    invisible to every layer that reports success."""
+
+    class _Kindless(BaseTransform):
+        name = "x_to_y.test.kindless"
+
+    with pytest.raises(ValueError, match="_Kindless.*output_kind"):
+        register_transform("x_to_y.test.kindless", _Kindless())
+    assert "x_to_y.test.kindless" not in transforms
+
+    with pytest.raises(ValueError, match="output_kind"):
+
+        @register_transform("x_to_y.test.kindless.deco")
+        class _KindlessDeco(BaseTransform):
+            name = "x_to_y.test.kindless.deco"
+
+    assert "x_to_y.test.kindless.deco" not in transforms
+
+
+def test_the_protocol_carries_impl_version_and_params_model():
+    """Anything reading a Transform through the Protocol can rely on both
+    (the capability catalogue, MCP builders, the CLI)."""
+    t = BaseTransform()
+    assert isinstance(t, Transform)
+    assert t.impl_version == DFLT_IMPL_VERSION == "1"
+    assert t.params_model is type(None)
+
+
+def test_default_impl_version_stamps_nothing():
+    """Omit-if-default: every falaw cache key and cassette ever issued
+    stays byte-identical until the first real version bump."""
+    from falaw import CallPlan, Plan, plan_hash
+
+    plan = Plan(
+        calls=(
+            CallPlan(
+                tool="t", application="m/a", arguments={"p": 1}, output_kind="image"
+            ),
+        )
+    )
+
+    stamped = stamp_transform_identity(plan, BaseTransform())
+
+    assert stamped is plan  # not even a copy: nothing to stamp
+    assert plan_hash(stamped) == plan_hash(plan)
+
+
+def test_a_bumped_impl_version_changes_the_cache_identity_not_the_name():
+    from falaw import CallPlan, Plan, plan_hash
+
+    class _V2(BaseTransform):
+        name = "x_to_y.test.v2"
+        output_kind = "annot://schema/test-output/v1"
+        impl_version = "2"
+
+    plan = Plan(
+        calls=(
+            CallPlan(
+                tool="t", application="m/a", arguments={"p": 1}, output_kind="image"
+            ),
+        )
+    )
+
+    stamped = stamp_transform_identity(plan, _V2())
+
+    assert stamped.calls[0].key_extra == {"transform_impl": "2"}
+    assert plan_hash(stamped) != plan_hash(plan)
+    assert _V2.name == "x_to_y.test.v2"  # the registry key does not change
+    # Idempotent: stamping twice writes the same value.
+    twice = stamp_transform_identity(stamped, _V2())
+    assert plan_hash(twice) == plan_hash(stamped)
+
+
+def test_derive_provenance_reads_the_version_off_the_transform():
+    from nw.transforms._provenance import derive_provenance
+
+    class _V3(BaseTransform):
+        name = "x_to_y.test.v3"
+        output_kind = "annot://schema/test-output/v1"
+        impl_version = "3"
+
+    prov = derive_provenance(_V3(), TransformInputs(primary=()))
+
+    assert prov.was_generated_by == "transform:x_to_y.test.v3@3"
+    assert prov.was_attributed_to == "agent:x_to_y.test.v3"

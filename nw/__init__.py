@@ -84,6 +84,7 @@ from .renderers import (
     strategies,
 )
 from .transforms import (
+    DFLT_IMPL_VERSION,
     BaseTransform,
     FailedOutput,
     OnFailure,
@@ -93,6 +94,7 @@ from .transforms import (
     get_transform,
     list_transforms,
     register_transform,
+    stamp_transform_identity,
     transforms,
 )
 from .genres import (
@@ -217,6 +219,8 @@ __all__ = [
     "register_genre",
     "register_strategy",
     "register_transform",
+    "stamp_transform_identity",
+    "DFLT_IMPL_VERSION",
     "save_storyboard",
     "shot_report",
     "all_stale",

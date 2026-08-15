@@ -35,7 +35,7 @@ plus the class-level ``name`` / ``input_kinds`` / ``output_kind`` /
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import Callable, Literal, Optional, Protocol, runtime_checkable
 
@@ -66,6 +66,14 @@ class TransformInputs:
     primary: tuple[Annotation, ...]
     context: dict[str, tuple[Annotation, ...]] = field(default_factory=dict)
 
+
+DFLT_IMPL_VERSION = "1"
+"""The ``impl_version`` every Transform starts at.
+
+Doubles as the omit-if-default sentinel for the cache salt: at this value
+:func:`stamp_transform_identity` stamps nothing, so every falaw cache key
+and cassette ever issued stays byte-identical. The first real bump is the
+first salt (nw#27)."""
 
 OnFailure = Literal["halt", "isolate"]
 """What a Transform does when one of its calls fails.
@@ -199,6 +207,25 @@ class Transform(Protocol):
     project's annotations correctly — it can't be inferred from
     ``input_kinds``."""
 
+    impl_version: str
+    """Behaviour version of this implementation (nw#27).
+
+    "Same interface, changed behaviour" — a prompt-template edit, a
+    post-processing change — bumps this **without renaming the registry
+    key** (the name denotes the capability; a different capability gets a
+    different name). It is a lock, not a receipt: it enters provenance
+    (``transform:<name>@<impl_version>``) and, when it is not
+    :data:`DFLT_IMPL_VERSION`, the falaw cache identity of every call the
+    Transform executes — so a behaviour change cannot keep serving results
+    minted by the old behaviour. See :func:`stamp_transform_identity`."""
+
+    params_model: type
+    """Pydantic model class for this Transform's per-call params;
+    ``type(None)`` means no params. On the Protocol — not just
+    :class:`BaseTransform` — so anything reading a Transform through the
+    contract (the capability catalogue, an MCP tool builder, the CLI
+    dispatcher) can rely on it (nw#27)."""
+
     def plan(
         self,
         project,  # nw.Project — annotated loosely to avoid an import cycle
@@ -279,6 +306,12 @@ class BaseTransform:
     params_model: type = type(None)
     """Pydantic model class for this Transform's per-call params. Exposed as
     JSON Schema to the MCP server and the CLI. ``type(None)`` means no params."""
+    impl_version: str = DFLT_IMPL_VERSION
+    """Behaviour version — bump on "same interface, changed behaviour", never
+    rename the registry key for it. See the :class:`Transform` Protocol for
+    the full contract. At the default, no cache salt is applied, so every
+    key ever issued stays byte-identical; the first real bump is the first
+    salt."""
     is_batch: bool = False
     """Whether :meth:`plan` consumes all of ``inputs.primary`` at once (batch)
     or a single primary annotation (one-to-one — the default). See the
@@ -318,6 +351,7 @@ class BaseTransform:
                 f"{type(self).__name__}.execute: on_failure must be 'halt' or "
                 f"'isolate', got {on_failure!r}."
             )
+        plan = stamp_transform_identity(plan, self)
         # One engine, two policies. `halt` is `execute_plan` — falaw defines the
         # latter as exactly this call plus `artifacts_or_raise()` — so it keeps
         # re-raising the *original* typed exception, unwrapped, which is what
@@ -441,6 +475,32 @@ transforms: Registry = Registry(name="nw.transforms", on_conflict="error")
 misconfigured plugin fails loudly instead of silently shadowing a built-in."""
 
 
+def stamp_transform_identity(plan: Plan, transform: Transform) -> Plan:
+    """Fold ``transform.impl_version`` into every call's cache identity.
+
+    The reader that makes ``impl_version`` a lock instead of a receipt
+    (nw#27): a bumped version lands in each call's falaw ``key_extra``, so
+    a cached result minted by the old behaviour cannot be reused. At
+    :data:`DFLT_IMPL_VERSION` nothing is stamped — every key ever issued
+    stays byte-identical, and the first real bump is the first salt.
+
+    :meth:`BaseTransform.execute` applies this automatically; an
+    orchestrator that hashes or caches plans *before* execution (e.g. a job
+    idempotency key over ``falaw.plan_hash``) should apply it at plan time
+    so those keys see the version too. Idempotent — stamping twice writes
+    the same value.
+    """
+    version = getattr(transform, "impl_version", DFLT_IMPL_VERSION)
+    if version == DFLT_IMPL_VERSION:
+        return plan
+    return Plan(
+        calls=tuple(
+            replace(call, key_extra={**call.key_extra, "transform_impl": version})
+            for call in plan.calls
+        )
+    )
+
+
 def register_transform(
     name: str, impl: Optional[Transform] = None
 ) -> Transform | Callable[[type], type]:
@@ -457,15 +517,33 @@ def register_transform(
         @register_transform("beat_to_panel.llm.default")
         class BeatToPanelLLM(BaseTransform):
             ...
+
+    Registration validates the contract the registry's consumers depend on:
+    an empty ``output_kind`` is refused loudly, in the same spirit as the
+    registry's ``on_conflict="error"`` — an agent's unit of work must have a
+    declared output type, or "the job runs successfully but produces
+    nothing retrievable" becomes invisible to every layer that reports
+    success (nw#27).
     """
+
+    def _checked(instance: Transform) -> Transform:
+        if not getattr(instance, "output_kind", ""):
+            raise ValueError(
+                f"register_transform({name!r}): {type(instance).__name__} "
+                "declares no output_kind. Every Transform must declare the "
+                "body-schema URI it produces — an undeclared output type is "
+                "a unit of work whose success is unverifiable."
+            )
+        return instance
+
     if impl is None:
 
         def _decorator(cls: type) -> type:
-            transforms.register(name, cls())
+            transforms.register(name, _checked(cls()))
             return cls
 
         return _decorator
-    return transforms.register(name, impl)
+    return transforms.register(name, _checked(impl))
 
 
 def get_transform(name: str) -> Transform:

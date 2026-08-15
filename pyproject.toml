@@ -35,7 +35,7 @@ dependencies = [
     # release shipping `falaw/testing.py`, with everything nw imports
     # (`make_fake_assets_fixture`, the two other fixtures,
     # `OutboundNetworkAttempt`) present from the start.
-    "falaw>=0.0.27",
+    "falaw>=0.0.36",
     # >=0.0.25 for `lacing.digest.annotation_value_digest` — the content digest
     # `nw.freshness` compares to cut off early. 0.0.24 does NOT have it, so a
     # lower floor resolves to a lacing without the symbol and fails at import
