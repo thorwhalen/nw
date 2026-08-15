@@ -54,7 +54,13 @@ from .graph import (
     iter_all_annotations,
     open_project_stores,
 )
-from .freshness import FreshnessVerdict, stale_after, stale_verdicts
+from .freshness import (
+    FreshnessVerdict,
+    all_stale,
+    stale_after,
+    stale_verdicts,
+    stale_verdicts_all,
+)
 from .migrate import migrate_to_graph, is_migrated
 from .script_segmentation import (
     PanelProposal,
@@ -215,6 +221,8 @@ __all__ = [
     "shot_report",
     "stale_after",
     "stale_verdicts",
+    "stale_verdicts_all",
+    "all_stale",
     "storyboard_db_path",
     "storyboard_from_shots",
     "strategies",
