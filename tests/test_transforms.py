@@ -32,6 +32,7 @@ from nw import (
     prepare_shot,
     register_transform,
     stamp_transform_identity,
+    transform_catalog,
     transforms,
 )
 from nw.bodies import RENDER_RESULT_BODY_SCHEMA_URI, SHOT_BODY_SCHEMA_URI
@@ -682,3 +683,50 @@ def test_a_non_str_impl_version_is_refused_at_registration():
     with pytest.raises(ValueError, match="impl_version must be a str"):
         register_transform("x_to_y.test.intver", _IntVersion())
     assert "x_to_y.test.intver" not in transforms
+
+
+def test_transform_catalog_is_the_json_able_capability_surface():
+    """nw#28 acceptance: one entry per registered Transform, sorted, fully
+    JSON-serializable, params-less Transforms emit {} not null."""
+    import json
+
+    from pydantic import BaseModel as _BM
+
+    class _Params(_BM):
+        strength: float = 1.0
+
+    class _Catalogued(BaseTransform):
+        name = "x_to_y.test.catalogued"
+        input_kinds = ("annot://schema/beat/v1",)
+        output_kind = "annot://schema/test-output/v1"
+        params_model = _Params
+        impl_version = "2"
+
+    try:
+        register_transform("x_to_y.test.catalogued", _Catalogued())
+        catalog = transform_catalog()
+
+        names = [e["name"] for e in catalog]
+        assert names == sorted(names)
+        assert set(names) == set(list_transforms())
+        json.dumps(catalog)  # JSON-able with no further processing
+
+        entry = next(e for e in catalog if e["name"] == "x_to_y.test.catalogued")
+        assert entry["input_kinds"] == ["annot://schema/beat/v1"]
+        assert entry["output_kind"] == "annot://schema/test-output/v1"
+        assert entry["is_batch"] is False
+        assert entry["impl_version"] == "2"
+        assert entry["params_schema"]["properties"]["strength"]["default"] == 1.0
+
+        class _Paramless(BaseTransform):
+            name = "x_to_y.test.paramless"
+            output_kind = "annot://schema/test-output/v1"
+
+        register_transform("x_to_y.test.paramless", _Paramless())
+        paramless = next(
+            e for e in transform_catalog() if e["name"] == "x_to_y.test.paramless"
+        )
+        assert paramless["params_schema"] == {}  # not null, not a crash
+    finally:
+        transforms.pop("x_to_y.test.catalogued", None)
+        transforms.pop("x_to_y.test.paramless", None)

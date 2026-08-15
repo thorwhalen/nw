@@ -95,6 +95,7 @@ from .transforms import (
     list_transforms,
     register_transform,
     stamp_transform_identity,
+    transform_catalog,
     transforms,
 )
 from .genres import (
@@ -219,6 +220,7 @@ __all__ = [
     "register_genre",
     "register_strategy",
     "register_transform",
+    "transform_catalog",
     "stamp_transform_identity",
     "DFLT_IMPL_VERSION",
     "save_storyboard",
