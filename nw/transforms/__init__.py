@@ -593,6 +593,44 @@ def list_transforms() -> list[str]:
     return sorted(transforms.keys())
 
 
+def transform_catalog() -> list[dict]:
+    """Every registered Transform as a JSON-able capability entry (sorted by name).
+
+    The typed-capability surface an HTTP route / MCP tool builder / agent
+    serves or selects from, mirroring :func:`nw.genre_catalog` (nw#28): a
+    consumer needs no registry-internal knowledge to render or compose.
+    Entry shape::
+
+        {name, input_kinds, output_kind, is_batch, impl_version, params_schema}
+
+    ``name`` is the registry key (the addressable name). ``params_schema``
+    is the params model's JSON Schema — ``{}`` for a Transform with no
+    params — and is what an MCP tool definition is built from. The whole
+    list is JSON-serializable as returned.
+    """
+    entries = []
+    for name in list_transforms():
+        transform = transforms[name]
+        params_model = getattr(transform, "params_model", type(None))
+        entries.append(
+            {
+                "name": name,
+                "input_kinds": list(transform.input_kinds),
+                "output_kind": transform.output_kind,
+                "is_batch": transform.is_batch,
+                "impl_version": getattr(
+                    transform, "impl_version", DFLT_IMPL_VERSION
+                ),
+                "params_schema": (
+                    {}
+                    if params_model is type(None)
+                    else params_model.model_json_schema()
+                ),
+            }
+        )
+    return entries
+
+
 # --- import adapters so the built-in render-strategy Transforms self-register
 from . import _adapters as _adapters  # noqa: E402,F401
 
@@ -607,5 +645,6 @@ __all__ = [
     "register_transform",
     "get_transform",
     "list_transforms",
+    "transform_catalog",
     "stamp_transform_identity",
 ]
