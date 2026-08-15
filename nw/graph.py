@@ -614,8 +614,7 @@ def collect_orphan_traces(project_root: str | Path) -> list[UUID]:
             orphans = [
                 ann.id
                 for ann in list(store.all())
-                if (target := _trace_target(ann)) is not None
-                and target not in existing
+                if (target := _trace_target(ann)) is not None and target not in existing
             ]
             for annotation_id in orphans:
                 store.remove(annotation_id)

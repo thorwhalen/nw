@@ -346,9 +346,7 @@ class Project:
         self._sync_sections(spec.sections)
         self._sync_shots(spec.shots)
 
-    def _drop_entities_not_in(
-        self, *, tier: str, identity_key: str, keep: set
-    ) -> None:
+    def _drop_entities_not_in(self, *, tier: str, identity_key: str, keep: set) -> None:
         """Remove ``tier`` entities whose ``identity_key`` is not in ``keep``.
 
         The removal half of ``write_spec``'s reconciliation. Routes through
