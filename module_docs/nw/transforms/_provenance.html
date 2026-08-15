@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.transforms._provenance &mdash; nw 0.0.27 documentation</title>
+  <title>nw.transforms._provenance &mdash; nw 0.0.28 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=cee5022b"></script>
+      <script src="../../../_static/documentation_options.js?v=26ffa1e9"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -121,28 +121,31 @@ what <code class="docutils literal notranslate"><span class="pre">nw.descendants
 This helper centralizes that so every Transform doesn’t reinvent it.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="nw.transforms._provenance.derive_provenance">
-<span class="sig-prename descclassname"><span class="pre">nw.transforms._provenance.</span></span><span class="sig-name descname"><span class="pre">derive_provenance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transform_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform_version</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../transforms.html#nw.transforms.TransformInputs" title="nw.transforms.TransformInputs"><span class="pre">TransformInputs</span></a></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">activity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'derive'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attributed_to</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Provenance</span></span></span><a class="reference internal" href="../../../_modules/nw/transforms/_provenance.html#derive_provenance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.transforms._provenance.derive_provenance" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">nw.transforms._provenance.</span></span><span class="sig-name descname"><span class="pre">derive_provenance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transform</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../transforms.html#nw.transforms.Transform" title="nw.transforms.Transform"><span class="pre">Transform</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../transforms.html#nw.transforms.TransformInputs" title="nw.transforms.TransformInputs"><span class="pre">TransformInputs</span></a></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">activity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'derive'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attributed_to</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Provenance</span></span></span><a class="reference internal" href="../../../_modules/nw/transforms/_provenance.html#derive_provenance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.transforms._provenance.derive_provenance" title="Link to this definition"></a></dt>
 <dd><p>Build the <code class="xref py py-class docutils literal notranslate"><span class="pre">lacing.Provenance</span></code> for a Transform-produced annotation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>transform_name</strong> – The Transform’s <code class="docutils literal notranslate"><span class="pre">name</span></code> (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;beat_to_panel.llm.default&quot;</span></code>).</p></li>
-<li><p><strong>transform_version</strong> – A version stamp — a prompt version for LLM
-Transforms, a model id, or the package version for deterministic
-ones. Recorded in <code class="docutils literal notranslate"><span class="pre">was_generated_by</span></code> so a replayed plan is
-traceable to exactly what produced it.</p></li>
+<li><p><strong>transform</strong> – The producing Transform — anything satisfying the
+<a class="reference internal" href="../transforms.html#nw.transforms.Transform" title="nw.transforms.Transform"><code class="xref py py-class docutils literal notranslate"><span class="pre">Transform</span></code></a> Protocol. Its <code class="docutils literal notranslate"><span class="pre">name</span></code> and
+<code class="docutils literal notranslate"><span class="pre">impl_version</span></code> are read <em>off the instance</em> rather than passed
+as per-callsite strings, so the version recorded in provenance
+is the same one the cache identity is salted with — one value,
+two readers, no drift (nw#27).</p></li>
 <li><p><strong>inputs</strong> – The <code class="xref py py-class docutils literal notranslate"><span class="pre">TransformInputs</span></code> the Transform consumed.
 <code class="docutils literal notranslate"><span class="pre">was_derived_from</span></code> is set to the ids of every annotation in
 <code class="docutils literal notranslate"><span class="pre">primary</span></code> plus every annotation in every <code class="docutils literal notranslate"><span class="pre">context</span></code> group.</p></li>
 <li><p><strong>activity</strong> – PROV-O activity — almost always <code class="docutils literal notranslate"><span class="pre">&quot;derive&quot;</span></code> for a Transform.</p></li>
 <li><p><strong>attributed_to</strong> – Who is responsible. Defaults to
-<code class="docutils literal notranslate"><span class="pre">f&quot;agent:{transform_name}&quot;</span></code> (a deterministic transformer);
+<code class="docutils literal notranslate"><span class="pre">f&quot;agent:{transform.name}&quot;</span></code> (a deterministic transformer);
 LLM-backed Transforms should pass <code class="docutils literal notranslate"><span class="pre">&quot;agent:claude-&lt;model&gt;&#64;&lt;hash&gt;&quot;</span></code>
 and human-in-the-loop ones <code class="docutils literal notranslate"><span class="pre">&quot;user:&lt;handle&gt;&quot;</span></code>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">lacing.Provenance</span></code> ready to attach to a skeleton annotation.</p>
+<dd class="field-even"><p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">lacing.Provenance</span></code> ready to attach to a skeleton annotation,
+with <code class="docutils literal notranslate"><span class="pre">was_generated_by</span></code> in the <code class="docutils literal notranslate"><span class="pre">transform:&lt;name&gt;&#64;&lt;impl_version&gt;</span></code>
+shape it has always had.</p>
 </dd>
 </dl>
 </dd></dl>

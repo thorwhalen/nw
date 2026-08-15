@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; nw 0.0.27 documentation</title>
+  <title>Index &mdash; nw 0.0.28 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=cee5022b"></script>
+      <script src="_static/documentation_options.js?v=26ffa1e9"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -355,14 +355,14 @@
       </ul></li>
       <li><a href="module_docs/nw/transforms/_provenance.html#nw.transforms._provenance.derive_provenance">derive_provenance() (in module nw.transforms._provenance)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module_docs/nw.html#nw.derived_from">derived_from() (in module nw)</a>
 
       <ul>
         <li><a href="module_docs/nw/graph.html#nw.graph.derived_from">(in module nw.graph)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module_docs/nw.html#nw.descendants_of">descendants_of() (in module nw)</a>
 
       <ul>
@@ -375,6 +375,8 @@
         <li><a href="module_docs/nw/genres.html#nw.genres.describe_genre">(in module nw.genres)</a>
 </li>
       </ul></li>
+      <li><a href="module_docs/nw/transforms.html#nw.transforms.DFLT_IMPL_VERSION">DFLT_IMPL_VERSION (in module nw.transforms)</a>
+</li>
       <li><a href="module_docs/nw/renderers/_common.html#nw.renderers._common.download_to">download_to() (in module nw.renderers._common)</a>
 </li>
       <li><a href="module_docs/nw/jobs.html#nw.jobs.JobsConfig.dur_buckets_s">dur_buckets_s (nw.jobs.JobsConfig attribute)</a>
@@ -577,6 +579,16 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module_docs/nw/renderers/image_to_video.html#nw.renderers.image_to_video.ImageToVideoStrategy">ImageToVideoStrategy (class in nw.renderers.image_to_video)</a>
 </li>
+      <li><a href="module_docs/nw.html#nw.BaseTransform.impl_version">impl_version (nw.BaseTransform attribute)</a>
+
+      <ul>
+        <li><a href="module_docs/nw.html#nw.Transform.impl_version">(nw.Transform attribute)</a>
+</li>
+        <li><a href="module_docs/nw/transforms.html#nw.transforms.BaseTransform.impl_version">(nw.transforms.BaseTransform attribute)</a>
+</li>
+        <li><a href="module_docs/nw/transforms.html#nw.transforms.Transform.impl_version">(nw.transforms.Transform attribute)</a>
+</li>
+      </ul></li>
       <li><a href="module_docs/nw.html#nw.Project.init">init() (nw.Project class method)</a>
 
       <ul>
@@ -601,6 +613,8 @@
         <li><a href="module_docs/nw/genres.html#nw.genres.Genre.intake_kinds">(nw.genres.Genre attribute)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module_docs/nw.html#nw.BaseTransform.is_batch">is_batch (nw.BaseTransform attribute)</a>
 
       <ul>
@@ -611,8 +625,6 @@
         <li><a href="module_docs/nw/transforms.html#nw.transforms.Transform.is_batch">(nw.transforms.Transform attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module_docs/nw.html#nw.TransformResult.is_complete">is_complete (nw.TransformResult property)</a>
 
       <ul>
@@ -1213,9 +1225,13 @@
       <li><a href="module_docs/nw.html#nw.BaseTransform.params_model">params_model (nw.BaseTransform attribute)</a>
 
       <ul>
+        <li><a href="module_docs/nw.html#nw.Transform.params_model">(nw.Transform attribute)</a>
+</li>
         <li><a href="module_docs/nw/transforms/_adapters/render_strategy.html#nw.transforms._adapters.render_strategy.RenderStrategyTransform.params_model">(nw.transforms._adapters.render_strategy.RenderStrategyTransform attribute)</a>
 </li>
         <li><a href="module_docs/nw/transforms.html#nw.transforms.BaseTransform.params_model">(nw.transforms.BaseTransform attribute)</a>
+</li>
+        <li><a href="module_docs/nw/transforms.html#nw.transforms.Transform.params_model">(nw.transforms.Transform attribute)</a>
 </li>
       </ul></li>
       <li><a href="module_docs/nw/jobs.html#nw.jobs.JobsConfig.pct_ceil">pct_ceil (nw.jobs.JobsConfig attribute)</a>
@@ -1242,10 +1258,10 @@
         <li><a href="module_docs/nw/workflow.html#nw.workflow.plan_render_shot">(in module nw.workflow)</a>
 </li>
       </ul></li>
-      <li><a href="module_docs/nw/jobs.html#nw.jobs.predict_total_s">predict_total_s() (in module nw.jobs)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="module_docs/nw/jobs.html#nw.jobs.predict_total_s">predict_total_s() (in module nw.jobs)</a>
+</li>
       <li><a href="module_docs/nw.html#nw.prepare_shot">prepare_shot() (in module nw)</a>
 
       <ul>
@@ -1490,10 +1506,10 @@
         <li><a href="module_docs/nw/schema.html#nw.schema.ShotSpec">(class in nw.schema)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module_docs/nw.html#nw.FailedOutput.skeleton">skeleton (nw.FailedOutput attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module_docs/nw.html#nw.SongInfo">SongInfo (class in nw)</a>
 
       <ul>
@@ -1526,6 +1542,12 @@
 
       <ul>
         <li><a href="module_docs/nw/freshness.html#nw.freshness.stale_verdicts_all">(in module nw.freshness)</a>
+</li>
+      </ul></li>
+      <li><a href="module_docs/nw.html#nw.stamp_transform_identity">stamp_transform_identity() (in module nw)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/transforms.html#nw.transforms.stamp_transform_identity">(in module nw.transforms)</a>
 </li>
       </ul></li>
       <li><a href="module_docs/nw.html#nw.FailedOutput.status">status (nw.FailedOutput attribute)</a>

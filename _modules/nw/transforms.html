@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.transforms &mdash; nw 0.0.27 documentation</title>
+  <title>nw.transforms &mdash; nw 0.0.28 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=cee5022b"></script>
+      <script src="../../_static/documentation_options.js?v=26ffa1e9"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -144,7 +144,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">replace</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Protocol</span><span class="p">,</span> <span class="n">runtime_checkable</span>
 
@@ -178,6 +178,14 @@
     <span class="n">context</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Annotation</span><span class="p">,</span> <span class="o">...</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span></div>
 
 
+
+<span class="n">DFLT_IMPL_VERSION</span> <span class="o">=</span> <span class="s2">&quot;1&quot;</span>
+<span class="sd">&quot;&quot;&quot;The ``impl_version`` every Transform starts at.</span>
+
+<span class="sd">Doubles as the omit-if-default sentinel for the cache salt: at this value</span>
+<span class="sd">:func:`stamp_transform_identity` stamps nothing, so every falaw cache key</span>
+<span class="sd">and cassette ever issued stays byte-identical. The first real bump is the</span>
+<span class="sd">first salt (nw#27).&quot;&quot;&quot;</span>
 
 <span class="n">OnFailure</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;halt&quot;</span><span class="p">,</span> <span class="s2">&quot;isolate&quot;</span><span class="p">]</span>
 <span class="sd">&quot;&quot;&quot;What a Transform does when one of its calls fails.</span>
@@ -319,6 +327,28 @@
 <span class="sd">    project&#39;s annotations correctly — it can&#39;t be inferred from</span>
 <span class="sd">    ``input_kinds``.&quot;&quot;&quot;</span>
 
+    <span class="n">impl_version</span><span class="p">:</span> <span class="nb">str</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Behaviour version of this implementation (nw#27).</span>
+
+<span class="sd">    &quot;Same interface, changed behaviour&quot; — a prompt-template edit, a</span>
+<span class="sd">    post-processing change — bumps this **without renaming the registry</span>
+<span class="sd">    key** (the name denotes the capability; a different capability gets a</span>
+<span class="sd">    different name). It is a lock, not a receipt: it enters provenance</span>
+<span class="sd">    (``transform:&lt;name&gt;@&lt;impl_version&gt;``) and, when it is not</span>
+<span class="sd">    :data:`DFLT_IMPL_VERSION`, the falaw cache identity of every call</span>
+<span class="sd">    executed through :meth:`BaseTransform.execute` — so a behaviour change</span>
+<span class="sd">    cannot keep serving results minted by the old behaviour. A Transform</span>
+<span class="sd">    that overrides ``execute`` must apply</span>
+<span class="sd">    :func:`stamp_transform_identity` itself; the lock only locks what</span>
+<span class="sd">    passes through it.&quot;&quot;&quot;</span>
+
+    <span class="n">params_model</span><span class="p">:</span> <span class="nb">type</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pydantic model class for this Transform&#39;s per-call params;</span>
+<span class="sd">    ``type(None)`` means no params. On the Protocol — not just</span>
+<span class="sd">    :class:`BaseTransform` — so anything reading a Transform through the</span>
+<span class="sd">    contract (the capability catalogue, an MCP tool builder, the CLI</span>
+<span class="sd">    dispatcher) can rely on it (nw#27).&quot;&quot;&quot;</span>
+
 <div class="viewcode-block" id="Transform.plan">
 <a class="viewcode-back" href="../../module_docs/nw/transforms.html#nw.Transform.plan">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">plan</span><span class="p">(</span>
@@ -408,6 +438,12 @@
     <span class="n">params_model</span><span class="p">:</span> <span class="nb">type</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Pydantic model class for this Transform&#39;s per-call params. Exposed as</span>
 <span class="sd">    JSON Schema to the MCP server and the CLI. ``type(None)`` means no params.&quot;&quot;&quot;</span>
+    <span class="n">impl_version</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">DFLT_IMPL_VERSION</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Behaviour version — bump on &quot;same interface, changed behaviour&quot;, never</span>
+<span class="sd">    rename the registry key for it. See the :class:`Transform` Protocol for</span>
+<span class="sd">    the full contract. At the default, no cache salt is applied, so every</span>
+<span class="sd">    key ever issued stays byte-identical; the first real bump is the first</span>
+<span class="sd">    salt.&quot;&quot;&quot;</span>
     <span class="n">is_batch</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Whether :meth:`plan` consumes all of ``inputs.primary`` at once (batch)</span>
 <span class="sd">    or a single primary annotation (one-to-one — the default). See the</span>
@@ -447,6 +483,7 @@
                 <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.execute: on_failure must be &#39;halt&#39; or &quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;&#39;isolate&#39;, got </span><span class="si">{</span><span class="n">on_failure</span><span class="si">!r}</span><span class="s2">.&quot;</span>
             <span class="p">)</span>
+        <span class="n">plan</span> <span class="o">=</span> <span class="n">stamp_transform_identity</span><span class="p">(</span><span class="n">plan</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
         <span class="c1"># One engine, two policies. `halt` is `execute_plan` — falaw defines the</span>
         <span class="c1"># latter as exactly this call plus `artifacts_or_raise()` — so it keeps</span>
         <span class="c1"># re-raising the *original* typed exception, unwrapped, which is what</span>
@@ -571,6 +608,53 @@
 <span class="sd">misconfigured plugin fails loudly instead of silently shadowing a built-in.&quot;&quot;&quot;</span>
 
 
+<div class="viewcode-block" id="stamp_transform_identity">
+<a class="viewcode-back" href="../../module_docs/nw/transforms.html#nw.stamp_transform_identity">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">stamp_transform_identity</span><span class="p">(</span><span class="n">plan</span><span class="p">:</span> <span class="n">Plan</span><span class="p">,</span> <span class="n">transform</span><span class="p">:</span> <span class="n">Transform</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Plan</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fold ``transform.impl_version`` into every call&#39;s cache identity.</span>
+
+<span class="sd">    The reader that makes ``impl_version`` a lock instead of a receipt</span>
+<span class="sd">    (nw#27): a bumped version lands in each call&#39;s falaw ``key_extra``, so</span>
+<span class="sd">    a cached result minted by the old behaviour cannot be reused. At</span>
+<span class="sd">    :data:`DFLT_IMPL_VERSION` nothing is stamped — every key ever issued</span>
+<span class="sd">    stays byte-identical, and the first real bump is the first salt.</span>
+
+<span class="sd">    Each stamped call&#39;s ``cache_status`` is reset to ``&quot;unknown&quot;``: the</span>
+<span class="sd">    plan-time peek keyed without the salt, so its prediction (typically</span>
+<span class="sd">    &quot;hit&quot; — the old-behaviour result is cached, invalidating it is the</span>
+<span class="sd">    point) would make cost gates quote $0.00 for a full re-bill.</span>
+
+<span class="sd">    :meth:`BaseTransform.execute` applies this automatically. **A Transform</span>
+<span class="sd">    that overrides** :meth:`~BaseTransform.execute` **must apply it</span>
+<span class="sd">    itself** — the lock only locks calls that pass through it (a</span>
+<span class="sd">    registry-wide conformance test is the honest guard). An orchestrator</span>
+<span class="sd">    that hashes or caches plans *before* execution (e.g. a job idempotency</span>
+<span class="sd">    key over ``falaw.plan_hash``) should apply it at plan time so those</span>
+<span class="sd">    keys see the version too. Idempotent — stamping twice writes the same</span>
+<span class="sd">    value.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">version</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">transform</span><span class="p">,</span> <span class="s2">&quot;impl_version&quot;</span><span class="p">,</span> <span class="n">DFLT_IMPL_VERSION</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">version</span> <span class="o">==</span> <span class="n">DFLT_IMPL_VERSION</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">plan</span>
+    <span class="k">return</span> <span class="n">Plan</span><span class="p">(</span>
+        <span class="n">calls</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span>
+            <span class="n">replace</span><span class="p">(</span>
+                <span class="n">call</span><span class="p">,</span>
+                <span class="n">key_extra</span><span class="o">=</span><span class="p">{</span><span class="o">**</span><span class="n">call</span><span class="o">.</span><span class="n">key_extra</span><span class="p">,</span> <span class="s2">&quot;transform_impl&quot;</span><span class="p">:</span> <span class="n">version</span><span class="p">},</span>
+                <span class="c1"># The plan-time cache peek keyed WITHOUT the salt, so its</span>
+                <span class="c1"># prediction is void: a &quot;hit&quot; here would make the gates</span>
+                <span class="c1"># quote $0.00 for what the salted execution re-bills in</span>
+                <span class="c1"># full. &quot;unknown&quot; makes the quote the full price - the</span>
+                <span class="c1"># honest, conservative number for a deliberate</span>
+                <span class="c1"># invalidation.</span>
+                <span class="n">cache_status</span><span class="o">=</span><span class="s2">&quot;unknown&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">call</span> <span class="ow">in</span> <span class="n">plan</span><span class="o">.</span><span class="n">calls</span>
+        <span class="p">)</span>
+    <span class="p">)</span></div>
+
+
+
 <div class="viewcode-block" id="register_transform">
 <a class="viewcode-back" href="../../module_docs/nw/transforms.html#nw.register_transform">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">register_transform</span><span class="p">(</span>
@@ -589,15 +673,42 @@
 <span class="sd">        @register_transform(&quot;beat_to_panel.llm.default&quot;)</span>
 <span class="sd">        class BeatToPanelLLM(BaseTransform):</span>
 <span class="sd">            ...</span>
+
+<span class="sd">    Registration validates the contract the registry&#39;s consumers depend on:</span>
+<span class="sd">    an empty ``output_kind`` is refused loudly, in the same spirit as the</span>
+<span class="sd">    registry&#39;s ``on_conflict=&quot;error&quot;`` — an agent&#39;s unit of work must have a</span>
+<span class="sd">    declared output type, or &quot;the job runs successfully but produces</span>
+<span class="sd">    nothing retrievable&quot; becomes invisible to every layer that reports</span>
+<span class="sd">    success (nw#27).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_checked</span><span class="p">(</span><span class="n">instance</span><span class="p">:</span> <span class="n">Transform</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Transform</span><span class="p">:</span>
+        <span class="n">version</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="s2">&quot;impl_version&quot;</span><span class="p">,</span> <span class="n">DFLT_IMPL_VERSION</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">version</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;register_transform(</span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2">): </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;impl_version must be a str, got </span><span class="si">{</span><span class="n">version</span><span class="si">!r}</span><span class="s2"> &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">version</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">). A non-str version defeats the &quot;</span>
+                <span class="s2">&quot;omit-if-default cache sentinel while rendering identically &quot;</span>
+                <span class="s2">&quot;in provenance.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="s2">&quot;output_kind&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;register_transform(</span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2">): </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> &quot;</span>
+                <span class="s2">&quot;declares no output_kind. Every Transform must declare the &quot;</span>
+                <span class="s2">&quot;body-schema URI it produces — an undeclared output type is &quot;</span>
+                <span class="s2">&quot;a unit of work whose success is unverifiable.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">instance</span>
+
     <span class="k">if</span> <span class="n">impl</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">_decorator</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">:</span>
-            <span class="n">transforms</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="bp">cls</span><span class="p">())</span>
+            <span class="n">transforms</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">_checked</span><span class="p">(</span><span class="bp">cls</span><span class="p">()))</span>
             <span class="k">return</span> <span class="bp">cls</span>
 
         <span class="k">return</span> <span class="n">_decorator</span>
-    <span class="k">return</span> <span class="n">transforms</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">impl</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">transforms</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">_checked</span><span class="p">(</span><span class="n">impl</span><span class="p">))</span></div>
 
 
 
@@ -633,10 +744,12 @@
     <span class="s2">&quot;TransformInputs&quot;</span><span class="p">,</span>
     <span class="s2">&quot;TransformResult&quot;</span><span class="p">,</span>
     <span class="s2">&quot;BaseTransform&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;DFLT_IMPL_VERSION&quot;</span><span class="p">,</span>
     <span class="s2">&quot;transforms&quot;</span><span class="p">,</span>
     <span class="s2">&quot;register_transform&quot;</span><span class="p">,</span>
     <span class="s2">&quot;get_transform&quot;</span><span class="p">,</span>
     <span class="s2">&quot;list_transforms&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;stamp_transform_identity&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 </pre></div>
 

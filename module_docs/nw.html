@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw &mdash; nw 0.0.27 documentation</title>
+  <title>nw &mdash; nw 0.0.28 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=cee5022b"></script>
+      <script src="../_static/documentation_options.js?v=26ffa1e9"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -51,6 +51,7 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">nw</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#nw.BaseTransform"><code class="docutils literal notranslate"><span class="pre">BaseTransform</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#nw.BaseTransform.impl_version"><code class="docutils literal notranslate"><span class="pre">BaseTransform.impl_version</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.BaseTransform.is_batch"><code class="docutils literal notranslate"><span class="pre">BaseTransform.is_batch</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.BaseTransform.params_model"><code class="docutils literal notranslate"><span class="pre">BaseTransform.params_model</span></code></a></li>
 </ul>
@@ -184,10 +185,12 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.Transform"><code class="docutils literal notranslate"><span class="pre">Transform</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#nw.Transform.execute"><code class="docutils literal notranslate"><span class="pre">Transform.execute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.Transform.impl_version"><code class="docutils literal notranslate"><span class="pre">Transform.impl_version</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.Transform.input_kinds"><code class="docutils literal notranslate"><span class="pre">Transform.input_kinds</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.Transform.is_batch"><code class="docutils literal notranslate"><span class="pre">Transform.is_batch</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.Transform.name"><code class="docutils literal notranslate"><span class="pre">Transform.name</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.Transform.output_kind"><code class="docutils literal notranslate"><span class="pre">Transform.output_kind</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.Transform.params_model"><code class="docutils literal notranslate"><span class="pre">Transform.params_model</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.Transform.plan"><code class="docutils literal notranslate"><span class="pre">Transform.plan()</span></code></a></li>
 </ul>
 </li>
@@ -247,6 +250,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#nw.stale_after"><code class="docutils literal notranslate"><span class="pre">stale_after()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.stale_verdicts"><code class="docutils literal notranslate"><span class="pre">stale_verdicts()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.stale_verdicts_all"><code class="docutils literal notranslate"><span class="pre">stale_verdicts_all()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.stamp_transform_identity"><code class="docutils literal notranslate"><span class="pre">stamp_transform_identity()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.storyboard_db_path"><code class="docutils literal notranslate"><span class="pre">storyboard_db_path()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.storyboard_from_shots"><code class="docutils literal notranslate"><span class="pre">storyboard_from_shots()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.summarize_all"><code class="docutils literal notranslate"><span class="pre">summarize_all()</span></code></a></li>
@@ -356,6 +360,16 @@ to its own plan/id pairing. The zip below would otherwise stop at the
 shorter sequence and drop the surplus with no error and no record —
 harmless only for as long as the executor returns exactly one artifact
 per call, which is precisely what per-call failure isolation changes.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.BaseTransform.impl_version">
+<span class="sig-name descname"><span class="pre">impl_version</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'1'</span></span><a class="headerlink" href="#nw.BaseTransform.impl_version" title="Link to this definition"></a></dt>
+<dd><p>Behaviour version — bump on “same interface, changed behaviour”, never
+rename the registry key for it. See the <a class="reference internal" href="#nw.Transform" title="nw.Transform"><code class="xref py py-class docutils literal notranslate"><span class="pre">Transform</span></code></a> Protocol for
+the full contract. At the default, no cache salt is applied, so every
+key ever issued stays byte-identical; the first real bump is the first
+salt.</p>
+</dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nw.BaseTransform.is_batch">
 <span class="sig-name descname"><span class="pre">is_batch</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></span><a class="headerlink" href="#nw.BaseTransform.is_batch" title="Link to this definition"></a></dt>
@@ -1195,6 +1209,23 @@ does.</p>
 </dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="nw.Transform.impl_version">
+<span class="sig-name descname"><span class="pre">impl_version</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#nw.Transform.impl_version" title="Link to this definition"></a></dt>
+<dd><p>Behaviour version of this implementation (nw#27).</p>
+<p>“Same interface, changed behaviour” — a prompt-template edit, a
+post-processing change — bumps this <strong>without renaming the registry
+key</strong> (the name denotes the capability; a different capability gets a
+different name). It is a lock, not a receipt: it enters provenance
+(<code class="docutils literal notranslate"><span class="pre">transform:&lt;name&gt;&#64;&lt;impl_version&gt;</span></code>) and, when it is not
+<code class="xref py py-data docutils literal notranslate"><span class="pre">DFLT_IMPL_VERSION</span></code>, the falaw cache identity of every call
+executed through <code class="xref py py-meth docutils literal notranslate"><span class="pre">BaseTransform.execute()</span></code> — so a behaviour change
+cannot keep serving results minted by the old behaviour. A Transform
+that overrides <code class="docutils literal notranslate"><span class="pre">execute</span></code> must apply
+<a class="reference internal" href="#nw.stamp_transform_identity" title="nw.stamp_transform_identity"><code class="xref py py-func docutils literal notranslate"><span class="pre">stamp_transform_identity()</span></code></a> itself; the lock only locks what
+passes through it.</p>
+</dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="nw.Transform.input_kinds">
 <span class="sig-name descname"><span class="pre">input_kinds</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#nw.Transform.input_kinds" title="Link to this definition"></a></dt>
 <dd><p>Body-schema URIs this Transform reads. The first is the <em>primary</em>
@@ -1228,6 +1259,16 @@ project’s annotations correctly — it can’t be inferred from
 <dt class="sig sig-object py" id="nw.Transform.output_kind">
 <span class="sig-name descname"><span class="pre">output_kind</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#nw.Transform.output_kind" title="Link to this definition"></a></dt>
 <dd><p>The body-schema URI this Transform produces.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.Transform.params_model">
+<span class="sig-name descname"><span class="pre">params_model</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">type</span></span><a class="headerlink" href="#nw.Transform.params_model" title="Link to this definition"></a></dt>
+<dd><p>Pydantic model class for this Transform’s per-call params;
+<code class="docutils literal notranslate"><span class="pre">type(None)</span></code> means no params. On the Protocol — not just
+<a class="reference internal" href="#nw.BaseTransform" title="nw.BaseTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseTransform</span></code></a> — so anything reading a Transform through the
+contract (the capability catalogue, an MCP tool builder, the CLI
+dispatcher) can rely on it (nw#27).</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1870,6 +1911,12 @@ and the class is returned unchanged:</p>
     <span class="o">...</span>
 </pre></div>
 </div>
+<p>Registration validates the contract the registry’s consumers depend on:
+an empty <code class="docutils literal notranslate"><span class="pre">output_kind</span></code> is refused loudly, in the same spirit as the
+registry’s <code class="docutils literal notranslate"><span class="pre">on_conflict=&quot;error&quot;</span></code> — an agent’s unit of work must have a
+declared output type, or “the job runs successfully but produces
+nothing retrievable” becomes invisible to every layer that reports
+success (nw#27).</p>
 </dd></dl>
 
 <dl class="py function">
@@ -1994,6 +2041,29 @@ of an actual change) the snapshot reports it <em>always</em>, until it is
 rewritten through the trace-writing path. A consumer replacing its own
 weaker snapshot with this one is making a behavior change on pre-trace
 projects, not installing a pure wrapper.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.stamp_transform_identity">
+<span class="sig-prename descclassname"><span class="pre">nw.</span></span><span class="sig-name descname"><span class="pre">stamp_transform_identity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plan</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Plan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nw/transforms.html#nw.transforms.Transform" title="nw.transforms.Transform"><span class="pre">Transform</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Plan</span></span></span><a class="reference internal" href="../_modules/nw/transforms.html#stamp_transform_identity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.stamp_transform_identity" title="Link to this definition"></a></dt>
+<dd><p>Fold <code class="docutils literal notranslate"><span class="pre">transform.impl_version</span></code> into every call’s cache identity.</p>
+<p>The reader that makes <code class="docutils literal notranslate"><span class="pre">impl_version</span></code> a lock instead of a receipt
+(nw#27): a bumped version lands in each call’s falaw <code class="docutils literal notranslate"><span class="pre">key_extra</span></code>, so
+a cached result minted by the old behaviour cannot be reused. At
+<code class="xref py py-data docutils literal notranslate"><span class="pre">DFLT_IMPL_VERSION</span></code> nothing is stamped — every key ever issued
+stays byte-identical, and the first real bump is the first salt.</p>
+<p>Each stamped call’s <code class="docutils literal notranslate"><span class="pre">cache_status</span></code> is reset to <code class="docutils literal notranslate"><span class="pre">&quot;unknown&quot;</span></code>: the
+plan-time peek keyed without the salt, so its prediction (typically
+“hit” — the old-behaviour result is cached, invalidating it is the
+point) would make cost gates quote $0.00 for a full re-bill.</p>
+<p><code class="xref py py-meth docutils literal notranslate"><span class="pre">BaseTransform.execute()</span></code> applies this automatically. <strong>A Transform
+that overrides</strong> <code class="xref py py-meth docutils literal notranslate"><span class="pre">execute()</span></code> <strong>must apply it
+itself</strong> — the lock only locks calls that pass through it (a
+registry-wide conformance test is the honest guard). An orchestrator
+that hashes or caches plans <em>before</em> execution (e.g. a job idempotency
+key over <code class="docutils literal notranslate"><span class="pre">falaw.plan_hash</span></code>) should apply it at plan time so those
+keys see the version too. Idempotent — stamping twice writes the same
+value.</p>
 </dd></dl>
 
 <dl class="py function">

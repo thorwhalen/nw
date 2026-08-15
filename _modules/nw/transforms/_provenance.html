@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.transforms._provenance &mdash; nw 0.0.27 documentation</title>
+  <title>nw.transforms._provenance &mdash; nw 0.0.28 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=cee5022b"></script>
+      <script src="../../../_static/documentation_options.js?v=26ffa1e9"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -122,14 +122,13 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">lacing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Provenance</span><span class="p">,</span> <span class="n">RationalTime</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">TransformInputs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">Transform</span><span class="p">,</span> <span class="n">TransformInputs</span>
 
 
 <div class="viewcode-block" id="derive_provenance">
 <a class="viewcode-back" href="../../../module_docs/nw/transforms/_provenance.html#nw.transforms._provenance.derive_provenance">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">derive_provenance</span><span class="p">(</span>
-    <span class="n">transform_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">transform_version</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">transform</span><span class="p">:</span> <span class="s2">&quot;Transform&quot;</span><span class="p">,</span>
     <span class="n">inputs</span><span class="p">:</span> <span class="n">TransformInputs</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">activity</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;derive&quot;</span><span class="p">,</span>
@@ -138,29 +137,32 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Build the :class:`lacing.Provenance` for a Transform-produced annotation.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        transform_name: The Transform&#39;s ``name`` (e.g. ``&quot;beat_to_panel.llm.default&quot;``).</span>
-<span class="sd">        transform_version: A version stamp — a prompt version for LLM</span>
-<span class="sd">            Transforms, a model id, or the package version for deterministic</span>
-<span class="sd">            ones. Recorded in ``was_generated_by`` so a replayed plan is</span>
-<span class="sd">            traceable to exactly what produced it.</span>
+<span class="sd">        transform: The producing Transform — anything satisfying the</span>
+<span class="sd">            :class:`~nw.transforms.Transform` Protocol. Its ``name`` and</span>
+<span class="sd">            ``impl_version`` are read *off the instance* rather than passed</span>
+<span class="sd">            as per-callsite strings, so the version recorded in provenance</span>
+<span class="sd">            is the same one the cache identity is salted with — one value,</span>
+<span class="sd">            two readers, no drift (nw#27).</span>
 <span class="sd">        inputs: The :class:`TransformInputs` the Transform consumed.</span>
 <span class="sd">            ``was_derived_from`` is set to the ids of every annotation in</span>
 <span class="sd">            ``primary`` plus every annotation in every ``context`` group.</span>
 <span class="sd">        activity: PROV-O activity — almost always ``&quot;derive&quot;`` for a Transform.</span>
 <span class="sd">        attributed_to: Who is responsible. Defaults to</span>
-<span class="sd">            ``f&quot;agent:{transform_name}&quot;`` (a deterministic transformer);</span>
+<span class="sd">            ``f&quot;agent:{transform.name}&quot;`` (a deterministic transformer);</span>
 <span class="sd">            LLM-backed Transforms should pass ``&quot;agent:claude-&lt;model&gt;@&lt;hash&gt;&quot;``</span>
 <span class="sd">            and human-in-the-loop ones ``&quot;user:&lt;handle&gt;&quot;``.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        A :class:`lacing.Provenance` ready to attach to a skeleton annotation.</span>
+<span class="sd">        A :class:`lacing.Provenance` ready to attach to a skeleton annotation,</span>
+<span class="sd">        with ``was_generated_by`` in the ``transform:&lt;name&gt;@&lt;impl_version&gt;``</span>
+<span class="sd">        shape it has always had.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">parent_ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">UUID</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">inputs</span><span class="o">.</span><span class="n">primary</span><span class="p">]</span>
     <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">inputs</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
         <span class="n">parent_ids</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">group</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">Provenance</span><span class="p">(</span>
-        <span class="n">was_generated_by</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;transform:</span><span class="si">{</span><span class="n">transform_name</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">transform_version</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-        <span class="n">was_attributed_to</span><span class="o">=</span><span class="n">attributed_to</span> <span class="ow">or</span> <span class="sa">f</span><span class="s2">&quot;agent:</span><span class="si">{</span><span class="n">transform_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">was_generated_by</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;transform:</span><span class="si">{</span><span class="n">transform</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">transform</span><span class="o">.</span><span class="n">impl_version</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">was_attributed_to</span><span class="o">=</span><span class="n">attributed_to</span> <span class="ow">or</span> <span class="sa">f</span><span class="s2">&quot;agent:</span><span class="si">{</span><span class="n">transform</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
         <span class="n">was_derived_from</span><span class="o">=</span><span class="n">parent_ids</span><span class="p">,</span>
         <span class="n">generated_at_time</span><span class="o">=</span><span class="n">RationalTime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
         <span class="n">activity</span><span class="o">=</span><span class="n">activity</span><span class="p">,</span>
