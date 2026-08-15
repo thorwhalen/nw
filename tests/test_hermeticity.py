@@ -3,8 +3,10 @@
 nw#35: falaw content-addresses every media result, so it reads the bytes behind
 each fal URL. nw's stubs fake the fal *response* and not the asset transport, so
 made-up URLs were being resolved for real. ``tests/conftest.py`` fixes that by
-injecting a fake transport; these tests exist because the fix is only worth
-anything if its guard actually fires.
+re-exporting :mod:`falaw.testing`'s fixtures (falaw#27); these tests exist
+because the fix is only worth anything if its guard actually fires — they pin
+the guard properties nw relies on, so a falaw bump that weakened them turns
+this suite red rather than silently networked.
 
 The failure mode worth naming: falaw **swallows** a failed asset fetch by design
 (it degrades to a URL-only artifact with a warning rather than turning
@@ -22,7 +24,7 @@ import urllib.request
 
 import pytest
 
-from tests.conftest import OutboundNetworkBlocked
+from falaw.testing import OutboundNetworkAttempt
 
 
 # --- the no-outbound-connection guard ---------------------------------------
@@ -30,9 +32,9 @@ from tests.conftest import OutboundNetworkBlocked
 
 def test_outbound_dns_and_connects_are_blocked(no_outbound_network):
     """A non-loopback lookup or connect raises instead of touching the network."""
-    with pytest.raises(OutboundNetworkBlocked):
+    with pytest.raises(OutboundNetworkAttempt):
         socket.getaddrinfo("example.invalid", 80)  # RFC 2606 reserved TLD
-    with socket.socket() as sock, pytest.raises(OutboundNetworkBlocked):
+    with socket.socket() as sock, pytest.raises(OutboundNetworkAttempt):
         # RFC 5737 TEST-NET-1 + a short timeout, so that if this guard is ever
         # removed the test fails in milliseconds against an address that is
         # guaranteed not to be routed, rather than stalling against a live host.
@@ -46,11 +48,18 @@ def test_outbound_dns_and_connects_are_blocked(no_outbound_network):
 
 
 def test_a_swallowed_connection_attempt_is_still_recorded(no_outbound_network):
-    """The guard survives a caller that swallows the error — as falaw does."""
+    """The guard survives a caller that swallows the refusal.
+
+    The shared guard's refusal is a ``BaseException`` precisely so falaw's own
+    ``except Exception`` funnels cannot absorb it — but a consumer's broad
+    ``except BaseException`` (or a subprocess) still can, which is why the
+    *record* is the half no swallow reaches. This test swallows as broadly as
+    Python allows and asserts the record survived.
+    """
     try:
         # Never leaves the process: the guard refuses before the resolver.
         urllib.request.urlopen("http://x/img.png")  # noqa: S310
-    except Exception:  # noqa: BLE001 — precisely what falaw's fetch does
+    except BaseException:  # noqa: BLE001 — the broadest swallow there is
         pass
 
     assert no_outbound_network, (
@@ -79,9 +88,10 @@ def test_loopback_stays_reachable(host, no_outbound_network):
 def test_falaw_asset_fetch_is_served_from_memory(fake_assets):
     """falaw's content addressing runs for real, over injected bytes.
 
-    This is the seam every nw path funnels through — ``execute_plan``,
-    ``materialize_asset`` and ``content_ref_for_url`` all fall back to
-    ``falaw.content._http_chunks``.
+    The fake installs through :func:`falaw.content.using_url_fetcher` — the
+    public seam every nw path funnels through: ``execute_plan``,
+    ``materialize_asset`` and ``content_ref_for_url`` all resolve the default
+    ``UrlFetcher`` at call time.
     """
     from lacing import ArtifactStore
     from falaw.content import content_ref_for_url
