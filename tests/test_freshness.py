@@ -481,8 +481,12 @@ def test_no_trace_is_written_when_a_parent_cannot_be_resolved(tmp_path):
 
 
 def test_build_verifying_trace_refuses_an_undigestible_parent():
-    """The same rule at the unit boundary, without a store in the way."""
-    parent = Annotation(
+    """The same rule at the unit boundary, without a store in the way.
+
+    model_construct: since lacing#24 the envelope refuses non-str body keys
+    at validation, so the bypass constructor is the only way such an
+    annotation can exist — which is exactly the case this guard covers."""
+    parent = Annotation.model_construct(
         id=uuid4(),
         tier="t",
         reference=MediaRef(asset_id="sha256:abc", interval=_iv(0, 1)),

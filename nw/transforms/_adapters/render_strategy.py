@@ -125,8 +125,7 @@ class RenderStrategyTransform(BaseTransform):
             ).model_dump(),
             body_schema_uri=RENDER_RESULT_BODY_SCHEMA_URI,
             provenance=derive_provenance(
-                self.name,
-                "nw.renderers",
+                self,
                 inputs,
                 attributed_to=f"agent:nw.renderers.{self._strategy.name}",
             ),
