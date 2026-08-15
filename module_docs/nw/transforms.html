@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.transforms &mdash; nw 0.0.28 documentation</title>
+  <title>nw.transforms &mdash; nw 0.0.29 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=26ffa1e9"></script>
+      <script src="../../_static/documentation_options.js?v=828725f0"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -113,6 +113,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#nw.transforms.list_transforms"><code class="docutils literal notranslate"><span class="pre">list_transforms()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.transforms.register_transform"><code class="docutils literal notranslate"><span class="pre">register_transform()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.transforms.stamp_transform_identity"><code class="docutils literal notranslate"><span class="pre">stamp_transform_identity()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.transforms.transform_catalog"><code class="docutils literal notranslate"><span class="pre">transform_catalog()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.transforms.transforms"><code class="docutils literal notranslate"><span class="pre">transforms</span></code></a></li>
 </ul>
 </li>
@@ -477,6 +478,23 @@ that hashes or caches plans <em>before</em> execution (e.g. a job idempotency
 key over <code class="docutils literal notranslate"><span class="pre">falaw.plan_hash</span></code>) should apply it at plan time so those
 keys see the version too. Idempotent — stamping twice writes the same
 value.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.transforms.transform_catalog">
+<span class="sig-prename descclassname"><span class="pre">nw.transforms.</span></span><span class="sig-name descname"><span class="pre">transform_catalog</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nw/transforms.html#transform_catalog"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.transforms.transform_catalog" title="Link to this definition"></a></dt>
+<dd><p>Every registered Transform as a JSON-able capability entry (sorted by name).</p>
+<p>The typed-capability surface an HTTP route / MCP tool builder / agent
+serves or selects from, mirroring <a class="reference internal" href="../nw.html#nw.genre_catalog" title="nw.genre_catalog"><code class="xref py py-func docutils literal notranslate"><span class="pre">nw.genre_catalog()</span></code></a> (nw#28): a
+consumer needs no registry-internal knowledge to render or compose.
+Entry shape:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="n">name</span><span class="p">,</span> <span class="n">input_kinds</span><span class="p">,</span> <span class="n">output_kind</span><span class="p">,</span> <span class="n">is_batch</span><span class="p">,</span> <span class="n">impl_version</span><span class="p">,</span> <span class="n">params_schema</span><span class="p">}</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">name</span></code> is the registry key (the addressable name). <code class="docutils literal notranslate"><span class="pre">params_schema</span></code>
+is the params model’s JSON Schema — <code class="docutils literal notranslate"><span class="pre">{}</span></code> for a Transform with no
+params — and is what an MCP tool definition is built from. The whole
+list is JSON-serializable as returned.</p>
 </dd></dl>
 
 <dl class="py data">

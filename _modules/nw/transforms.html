@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.transforms &mdash; nw 0.0.28 documentation</title>
+  <title>nw.transforms &mdash; nw 0.0.29 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=26ffa1e9"></script>
+      <script src="../../_static/documentation_options.js?v=828725f0"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -735,6 +735,47 @@
 
 
 
+<div class="viewcode-block" id="transform_catalog">
+<a class="viewcode-back" href="../../module_docs/nw/transforms.html#nw.transform_catalog">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">transform_catalog</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Every registered Transform as a JSON-able capability entry (sorted by name).</span>
+
+<span class="sd">    The typed-capability surface an HTTP route / MCP tool builder / agent</span>
+<span class="sd">    serves or selects from, mirroring :func:`nw.genre_catalog` (nw#28): a</span>
+<span class="sd">    consumer needs no registry-internal knowledge to render or compose.</span>
+<span class="sd">    Entry shape::</span>
+
+<span class="sd">        {name, input_kinds, output_kind, is_batch, impl_version, params_schema}</span>
+
+<span class="sd">    ``name`` is the registry key (the addressable name). ``params_schema``</span>
+<span class="sd">    is the params model&#39;s JSON Schema — ``{}`` for a Transform with no</span>
+<span class="sd">    params — and is what an MCP tool definition is built from. The whole</span>
+<span class="sd">    list is JSON-serializable as returned.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">entries</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">list_transforms</span><span class="p">():</span>
+        <span class="n">transform</span> <span class="o">=</span> <span class="n">transforms</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+        <span class="n">params_model</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">transform</span><span class="p">,</span> <span class="s2">&quot;params_model&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">))</span>
+        <span class="n">entries</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+                <span class="s2">&quot;input_kinds&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">transform</span><span class="o">.</span><span class="n">input_kinds</span><span class="p">),</span>
+                <span class="s2">&quot;output_kind&quot;</span><span class="p">:</span> <span class="n">transform</span><span class="o">.</span><span class="n">output_kind</span><span class="p">,</span>
+                <span class="s2">&quot;is_batch&quot;</span><span class="p">:</span> <span class="n">transform</span><span class="o">.</span><span class="n">is_batch</span><span class="p">,</span>
+                <span class="s2">&quot;impl_version&quot;</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span>
+                    <span class="n">transform</span><span class="p">,</span> <span class="s2">&quot;impl_version&quot;</span><span class="p">,</span> <span class="n">DFLT_IMPL_VERSION</span>
+                <span class="p">),</span>
+                <span class="s2">&quot;params_schema&quot;</span><span class="p">:</span> <span class="p">(</span>
+                    <span class="p">{}</span>
+                    <span class="k">if</span> <span class="n">params_model</span> <span class="ow">is</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+                    <span class="k">else</span> <span class="n">params_model</span><span class="o">.</span><span class="n">model_json_schema</span><span class="p">()</span>
+                <span class="p">),</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">entries</span></div>
+
+
+
 <span class="c1"># --- import adapters so the built-in render-strategy Transforms self-register</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">_adapters</span> <span class="k">as</span> <span class="n">_adapters</span>  <span class="c1"># noqa: E402,F401</span>
 
@@ -749,6 +790,7 @@
     <span class="s2">&quot;register_transform&quot;</span><span class="p">,</span>
     <span class="s2">&quot;get_transform&quot;</span><span class="p">,</span>
     <span class="s2">&quot;list_transforms&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;transform_catalog&quot;</span><span class="p">,</span>
     <span class="s2">&quot;stamp_transform_identity&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 </pre></div>

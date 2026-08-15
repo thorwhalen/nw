@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw &mdash; nw 0.0.28 documentation</title>
+  <title>nw &mdash; nw 0.0.29 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=26ffa1e9"></script>
+      <script src="../_static/documentation_options.js?v=828725f0"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -254,6 +254,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#nw.storyboard_db_path"><code class="docutils literal notranslate"><span class="pre">storyboard_db_path()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.storyboard_from_shots"><code class="docutils literal notranslate"><span class="pre">storyboard_from_shots()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.summarize_all"><code class="docutils literal notranslate"><span class="pre">summarize_all()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.transform_catalog"><code class="docutils literal notranslate"><span class="pre">transform_catalog()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="nw/bodies.html">nw.bodies</a></li>
@@ -2089,6 +2090,23 @@ into <a class="reference internal" href="#nw.save_storyboard" title="nw.save_sto
 <span class="sig-prename descclassname"><span class="pre">nw.</span></span><span class="sig-name descname"><span class="pre">summarize_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">roots</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="nw/schema.html#nw.schema.ProjectSummary" title="nw.schema.ProjectSummary"><span class="pre">ProjectSummary</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/nw/experiment.html#summarize_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.summarize_all" title="Link to this definition"></a></dt>
 <dd><p>Convenience: return a <a class="reference internal" href="#nw.ProjectSummary" title="nw.ProjectSummary"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProjectSummary</span></code></a> for each project.</p>
 <p>Equivalent to <code class="docutils literal notranslate"><span class="pre">apply_to_projects(roots,</span> <span class="pre">lambda</span> <span class="pre">p:</span> <span class="pre">p.read_summary())</span></code>.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.transform_catalog">
+<span class="sig-prename descclassname"><span class="pre">nw.</span></span><span class="sig-name descname"><span class="pre">transform_catalog</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/nw/transforms.html#transform_catalog"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.transform_catalog" title="Link to this definition"></a></dt>
+<dd><p>Every registered Transform as a JSON-able capability entry (sorted by name).</p>
+<p>The typed-capability surface an HTTP route / MCP tool builder / agent
+serves or selects from, mirroring <a class="reference internal" href="#nw.genre_catalog" title="nw.genre_catalog"><code class="xref py py-func docutils literal notranslate"><span class="pre">nw.genre_catalog()</span></code></a> (nw#28): a
+consumer needs no registry-internal knowledge to render or compose.
+Entry shape:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="n">name</span><span class="p">,</span> <span class="n">input_kinds</span><span class="p">,</span> <span class="n">output_kind</span><span class="p">,</span> <span class="n">is_batch</span><span class="p">,</span> <span class="n">impl_version</span><span class="p">,</span> <span class="n">params_schema</span><span class="p">}</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">name</span></code> is the registry key (the addressable name). <code class="docutils literal notranslate"><span class="pre">params_schema</span></code>
+is the params model’s JSON Schema — <code class="docutils literal notranslate"><span class="pre">{}</span></code> for a Transform with no
+params — and is what an MCP tool definition is built from. The whole
+list is JSON-serializable as returned.</p>
 </dd></dl>
 
 </section>
