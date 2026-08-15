@@ -42,12 +42,15 @@ still equals what its children recorded. Rewriting ``X`` in place makes
 node is classified against **its own** recorded digests; the walk prunes
 nothing.
 
-**Unverifiable means stale.** Every branch above defaults to stale, which is
-why this change needs no data migration: an annotation written before traces
-existed reads as ``no-trace`` and behaves exactly as it did under pure
-reachability. Over-reporting wastes a recompute — which the content-addressed
-``falaw`` cache makes close to free. Under-reporting serves a stale artifact
-as if it were current, so every ambiguous case resolves the other way.
+**Unverifiable means stale.** Every branch above defaults to stale.
+Over-reporting wastes a recompute — which the content-addressed ``falaw``
+cache makes close to free. Under-reporting serves a stale artifact as if it
+were current, so every ambiguous case resolves the other way. For the
+*scoped* walk this also means no data migration: an annotation written
+before traces existed reads as ``no-trace`` and behaves exactly as it did
+under pure reachability. The *snapshot* walk has no such equivalence — on a
+pre-trace project it reports every derived annotation stale until each is
+rewritten through the trace-writing path; see :func:`stale_verdicts_all`.
 
 What this does **not** catch
 -----------------------------
@@ -164,12 +167,20 @@ def stale_verdicts_all(project_root: str | Path) -> list[FreshnessVerdict]:
     consumer approximating it (nw#39):
 
     - **Parentless annotations are never stale** and stay out of the walk —
-      an imported screenplay must not read as stale forever. (Verifying
-      traces are themselves parentless annotations, so they stay out too.)
+      an imported screenplay must not read as stale forever. (nw-written
+      verifying traces are parentless, so they stay out too.)
     - **Upstream-stale recursion runs over the whole derived set.** The
       scoped walk only recurses into parents inside ``reachable`` (outside
       it a parent is by construction unaffected by the change); with no
       change there is no such boundary. The cycle guard covers termination.
+
+    **Legacy projects read all-stale, by design.** A derived annotation
+    written before verifying traces existed classifies ``no-trace`` →
+    stale, and unlike the scoped walk (which only surfaces it downstream
+    of an actual change) the snapshot reports it *always*, until it is
+    rewritten through the trace-writing path. A consumer replacing its own
+    weaker snapshot with this one is making a behavior change on pre-trace
+    projects, not installing a pure wrapper.
     """
     annotations = list(iter_all_annotations(project_root))
     derived = {a.id for a in annotations if a.provenance.was_derived_from}
