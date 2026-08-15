@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.transforms &mdash; nw 0.0.29 documentation</title>
+  <title>nw.transforms &mdash; nw 0.0.30 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=828725f0"></script>
+      <script src="../../_static/documentation_options.js?v=61a342a2"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -385,11 +385,11 @@ guessed would hit) to what actually hit.</p>
 <dt class="sig sig-object py" id="nw.transforms.TransformResult.cost_usd_actual">
 <span class="sig-name descname"><span class="pre">cost_usd_actual</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></span><a class="headerlink" href="#nw.transforms.TransformResult.cost_usd_actual" title="Link to this definition"></a></dt>
 <dd><p>USD billed during execution, over the calls that <strong>succeeded and were not
-cache hits</strong> — falaw’s observed <code class="xref py py-attr docutils literal notranslate"><span class="pre">ExecutionReport.estimated_spend_usd</span></code>,
-not the plan-time prediction stamped on each <code class="docutils literal notranslate"><span class="pre">Artifact</span></code>. The difference is
-not cosmetic: a call planned as a miss that came back from cache carries a
-<code class="docutils literal notranslate"><span class="pre">cost_usd</span></code> it never cost (thorwhalen/falaw#26), so summing artifacts
-over-reports every run that benefited from the cache.</p>
+cache hits</strong> — falaw’s observed <code class="xref py py-attr docutils literal notranslate"><span class="pre">ExecutionReport.estimated_spend_usd</span></code>.
+Since falaw#26 the per-<code class="docutils literal notranslate"><span class="pre">Artifact</span></code> <code class="docutils literal notranslate"><span class="pre">cost_usd</span></code> is <em>also</em> stamped from the
+observed outcome, so the two now agree; the report stays the source here
+because it is the run-level truth (and carries <code class="docutils literal notranslate"><span class="pre">has_unknown_costs</span></code>),
+not because the artifacts lie anymore.</p>
 <p><strong>A lower bound, despite the name.</strong> falaw runs its converter <em>inside</em> the
 unit of work, after the billed call, so a call fal charged for can still end
 as <code class="docutils literal notranslate"><span class="pre">status=&quot;failed&quot;</span></code> — and a failed call is excluded here, because falaw
