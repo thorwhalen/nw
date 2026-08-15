@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.project &mdash; nw 0.0.23 documentation</title>
+  <title>nw.project &mdash; nw 0.0.24 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=3294188c"></script>
+      <script src="../../_static/documentation_options.js?v=f91d8841"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -54,6 +54,7 @@
 <li class="toctree-l1"><a class="reference internal" href="bodies/character_ref.html">nw.bodies.character_ref</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bodies/decision.html">nw.bodies.decision</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bodies/environment_ref.html">nw.bodies.environment_ref</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/genre_envelope.html">nw.bodies.genre_envelope</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bodies/render_result.html">nw.bodies.render_result</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bodies/section.html">nw.bodies.section</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bodies/shot.html">nw.bodies.shot</a></li>
@@ -75,6 +76,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#nw.project.Project.log_decision"><code class="docutils literal notranslate"><span class="pre">Project.log_decision()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.project.Project.read_spec"><code class="docutils literal notranslate"><span class="pre">Project.read_spec()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.project.Project.read_summary"><code class="docutils literal notranslate"><span class="pre">Project.read_summary()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.project.Project.resolved_genre"><code class="docutils literal notranslate"><span class="pre">Project.resolved_genre()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.project.Project.resumption_brief"><code class="docutils literal notranslate"><span class="pre">Project.resumption_brief()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.project.Project.set_character_anchor"><code class="docutils literal notranslate"><span class="pre">Project.set_character_anchor()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.project.Project.set_global_style"><code class="docutils literal notranslate"><span class="pre">Project.set_global_style()</span></code></a></li>
@@ -237,6 +239,18 @@ with code that still reads via <code class="docutils literal notranslate"><span 
 <dt class="sig sig-object py" id="nw.project.Project.read_summary">
 <span class="sig-name descname"><span class="pre">read_summary</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="schema.html#nw.schema.ProjectSummary" title="nw.schema.ProjectSummary"><span class="pre">ProjectSummary</span></a></span></span><a class="reference internal" href="../../_modules/nw/project.html#Project.read_summary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.project.Project.read_summary" title="Link to this definition"></a></dt>
 <dd><p>Return a typed read view of the project — all the facts at once.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.project.Project.resolved_genre">
+<span class="sig-name descname"><span class="pre">resolved_genre</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/nw/project.html#Project.resolved_genre"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.project.Project.resolved_genre" title="Link to this definition"></a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">{genre,</span> <span class="pre">template,</span> <span class="pre">params}</span></code> envelope this project was created as.</p>
+<p>The read accessor for the envelope <a class="reference internal" href="genres.html#nw.genres.initialize_genre" title="nw.genres.initialize_genre"><code class="xref py py-func docutils literal notranslate"><span class="pre">nw.genres.initialize_genre()</span></code></a>
+persists at creation (nw#32) — same shape as
+<a class="reference internal" href="genres.html#nw.genres.resolve_genre" title="nw.genres.resolve_genre"><code class="xref py py-func docutils literal notranslate"><span class="pre">nw.genres.resolve_genre()</span></code></a> returns, so consumers reuse or diff
+the <em>effective</em> creation params without re-deriving them. <code class="docutils literal notranslate"><span class="pre">None</span></code>
+for a project with no recorded genre (created before nw#32, or not
+through the genre machinery).</p>
 </dd></dl>
 
 <dl class="py method">

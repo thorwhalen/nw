@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; nw 0.0.23 documentation</title>
+  <title>Index &mdash; nw 0.0.24 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=3294188c"></script>
+      <script src="_static/documentation_options.js?v=f91d8841"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -51,6 +51,7 @@
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/character_ref.html">nw.bodies.character_ref</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/decision.html">nw.bodies.decision</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/environment_ref.html">nw.bodies.environment_ref</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/genre_envelope.html">nw.bodies.genre_envelope</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/render_result.html">nw.bodies.render_result</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/section.html">nw.bodies.section</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/shot.html">nw.bodies.shot</a></li>
@@ -484,6 +485,12 @@
         <li><a href="module_docs/nw/genres.html#nw.genres.genre_catalog">(in module nw.genres)</a>
 </li>
       </ul></li>
+      <li><a href="module_docs/nw/graph.html#nw.graph.ProjectGraph.genre_envelope">genre_envelope() (nw.graph.ProjectGraph method)</a>
+
+      <ul>
+        <li><a href="module_docs/nw.html#nw.ProjectGraph.genre_envelope">(nw.ProjectGraph method)</a>
+</li>
+      </ul></li>
       <li><a href="module_docs/nw/genres.html#nw.genres.genre_initializers">genre_initializers (in module nw.genres)</a>
 </li>
       <li><a href="module_docs/nw/genres.html#nw.genres.genre_project_factories">genre_project_factories (in module nw.genres)</a>
@@ -492,10 +499,16 @@
 </li>
       <li><a href="module_docs/nw/genres.html#nw.genres.GENRE_STATUSES">GENRE_STATUSES (in module nw.genres)</a>
 </li>
-      <li><a href="module_docs/nw/genres.html#nw.genres.GenreInitializer">GenreInitializer (in module nw.genres)</a>
+      <li><a href="module_docs/nw/bodies.html#nw.bodies.GenreEnvelopeBodyV1">GenreEnvelopeBodyV1 (class in nw.bodies)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/bodies/genre_envelope.html#nw.bodies.genre_envelope.GenreEnvelopeBodyV1">(class in nw.bodies.genre_envelope)</a>
 </li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="module_docs/nw/genres.html#nw.genres.GenreInitializer">GenreInitializer (in module nw.genres)</a>
+</li>
       <li><a href="module_docs/nw/genres.html#nw.genres.GenreProjectFactory">GenreProjectFactory (in module nw.genres)</a>
 </li>
       <li><a href="module_docs/nw/genres.html#nw.genres.GenreResolver">GenreResolver (in module nw.genres)</a>
@@ -739,6 +752,10 @@
 </li>
         <li><a href="module_docs/nw/bodies.html#nw.bodies.EnvironmentRefBodyV1.model_config">(nw.bodies.EnvironmentRefBodyV1 attribute)</a>
 </li>
+        <li><a href="module_docs/nw/bodies/genre_envelope.html#nw.bodies.genre_envelope.GenreEnvelopeBodyV1.model_config">(nw.bodies.genre_envelope.GenreEnvelopeBodyV1 attribute)</a>
+</li>
+        <li><a href="module_docs/nw/bodies.html#nw.bodies.GenreEnvelopeBodyV1.model_config">(nw.bodies.GenreEnvelopeBodyV1 attribute)</a>
+</li>
         <li><a href="module_docs/nw/bodies/render_result.html#nw.bodies.render_result.RenderResultBodyV1.model_config">(nw.bodies.render_result.RenderResultBodyV1 attribute)</a>
 </li>
         <li><a href="module_docs/nw/bodies.html#nw.bodies.RenderResultBodyV1.model_config">(nw.bodies.RenderResultBodyV1 attribute)</a>
@@ -831,6 +848,8 @@
         <li><a href="module_docs/nw/bodies/decision.html#module-nw.bodies.decision">nw.bodies.decision</a>
 </li>
         <li><a href="module_docs/nw/bodies/environment_ref.html#module-nw.bodies.environment_ref">nw.bodies.environment_ref</a>
+</li>
+        <li><a href="module_docs/nw/bodies/genre_envelope.html#module-nw.bodies.genre_envelope">nw.bodies.genre_envelope</a>
 </li>
         <li><a href="module_docs/nw/bodies/render_result.html#module-nw.bodies.render_result">nw.bodies.render_result</a>
 </li>
@@ -939,6 +958,13 @@
 </li>
       </ul></li>
       <li>
+    nw.bodies.genre_envelope
+
+      <ul>
+        <li><a href="module_docs/nw/bodies/genre_envelope.html#module-nw.bodies.genre_envelope">module</a>
+</li>
+      </ul></li>
+      <li>
     nw.bodies.render_result
 
       <ul>
@@ -1008,6 +1034,8 @@
         <li><a href="module_docs/nw/inspect.html#module-nw.inspect">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     nw.jobs
 
@@ -1015,8 +1043,6 @@
         <li><a href="module_docs/nw/jobs.html#module-nw.jobs">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     nw.migrate
 
@@ -1310,14 +1336,14 @@
         <li><a href="module_docs/nw/renderers.html#nw.renderers.register_strategy">(in module nw.renderers)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module_docs/nw.html#nw.register_transform">register_transform() (in module nw)</a>
 
       <ul>
         <li><a href="module_docs/nw/transforms.html#nw.transforms.register_transform">(in module nw.transforms)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module_docs/nw/graph.html#nw.graph.ProjectGraph.remove_annotation">remove_annotation() (nw.graph.ProjectGraph method)</a>
 
       <ul>
@@ -1346,6 +1372,12 @@
 
       <ul>
         <li><a href="module_docs/nw/genres.html#nw.genres.resolve_genre">(in module nw.genres)</a>
+</li>
+      </ul></li>
+      <li><a href="module_docs/nw.html#nw.Project.resolved_genre">resolved_genre() (nw.Project method)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/project.html#nw.project.Project.resolved_genre">(nw.project.Project method)</a>
 </li>
       </ul></li>
       <li><a href="module_docs/nw.html#nw.Project.resumption_brief">resumption_brief() (nw.Project method)</a>
@@ -1396,6 +1428,12 @@
 
       <ul>
         <li><a href="module_docs/nw/project.html#nw.project.Project.set_character_anchor">(nw.project.Project method)</a>
+</li>
+      </ul></li>
+      <li><a href="module_docs/nw/graph.html#nw.graph.ProjectGraph.set_genre_envelope">set_genre_envelope() (nw.graph.ProjectGraph method)</a>
+
+      <ul>
+        <li><a href="module_docs/nw.html#nw.ProjectGraph.set_genre_envelope">(nw.ProjectGraph method)</a>
 </li>
       </ul></li>
       <li><a href="module_docs/nw.html#nw.Project.set_global_style">set_global_style() (nw.Project method)</a>

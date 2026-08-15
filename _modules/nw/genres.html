@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.genres &mdash; nw 0.0.23 documentation</title>
+  <title>nw.genres &mdash; nw 0.0.24 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=3294188c"></script>
+      <script src="../../_static/documentation_options.js?v=f91d8841"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -51,6 +51,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/character_ref.html">nw.bodies.character_ref</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/decision.html">nw.bodies.decision</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/environment_ref.html">nw.bodies.environment_ref</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/genre_envelope.html">nw.bodies.genre_envelope</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/render_result.html">nw.bodies.render_result</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/section.html">nw.bodies.section</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/shot.html">nw.bodies.shot</a></li>
@@ -697,8 +698,18 @@
 <span class="sd">    one call. Raises :class:`KeyError` on an unknown genre or — **uniformly** — an</span>
 <span class="sd">    unknown ``template`` slug (matching :func:`resolve_genre`).</span>
 
+<span class="sd">    **The envelope is persisted** (nw#32): after the initializer succeeds (or</span>
+<span class="sd">    no-ops), the resolved ``{genre, template, params}`` is recorded on the</span>
+<span class="sd">    project&#39;s graph — so &quot;what genre is this project?&quot; stays answerable after</span>
+<span class="sd">    this call returns, on the host-creates path exactly as on</span>
+<span class="sd">    :func:`create_genre_project`&#39;s. Written *after* the seed on purpose: a</span>
+<span class="sd">    recorded envelope certifies a completed initialization, never a failed</span>
+<span class="sd">    one. A ``project`` stand-in without a ``graph`` (a test double, a</span>
+<span class="sd">    factory that returns no live project) skips the recording; read it back</span>
+<span class="sd">    via :meth:`nw.Project.resolved_genre`.</span>
+
 <span class="sd">    &gt;&gt;&gt; _ = register_genre(Genre(slug=&quot;_noinit_demo&quot;, title=&quot;Demo&quot;))</span>
-<span class="sd">    &gt;&gt;&gt; initialize_genre(&quot;_noinit_demo&quot;, object())  # no initializer -&gt; no-op</span>
+<span class="sd">    &gt;&gt;&gt; initialize_genre(&quot;_noinit_demo&quot;, object())  # no initializer -&gt; no seed</span>
 <span class="sd">    &gt;&gt;&gt; del genres[&quot;_noinit_demo&quot;]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">g</span> <span class="o">=</span> <span class="n">get_genre</span><span class="p">(</span><span class="n">genre</span><span class="p">)</span>  <span class="c1"># validates the genre slug (KeyError otherwise)</span>
@@ -707,8 +718,35 @@
     <span class="k">elif</span> <span class="n">template</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">g</span><span class="o">.</span><span class="n">template</span><span class="p">(</span><span class="n">template</span><span class="p">)</span>  <span class="c1"># validate template uniformly even when params given</span>
     <span class="k">if</span> <span class="n">genre</span> <span class="ow">in</span> <span class="n">genre_initializers</span><span class="p">:</span>
-        <span class="n">genre_initializers</span><span class="p">[</span><span class="n">genre</span><span class="p">](</span><span class="n">g</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">params</span><span class="p">))</span></div>
+        <span class="n">genre_initializers</span><span class="p">[</span><span class="n">genre</span><span class="p">](</span><span class="n">g</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="nb">dict</span><span class="p">(</span><span class="n">params</span><span class="p">))</span>
+    <span class="n">_persist_genre_envelope</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">genre</span><span class="o">=</span><span class="n">genre</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="n">template</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span></div>
 
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_persist_genre_envelope</span><span class="p">(</span>
+    <span class="n">project</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">genre</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">template</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">params</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Record the resolved envelope on ``project``&#39;s graph; return whether it was.</span>
+
+<span class="sd">    Duck-typed on ``project.graph.set_genre_envelope`` because the genre</span>
+<span class="sd">    machinery legitimately runs against non-:class:`nw.Project` objects (a</span>
+<span class="sd">    factory that returns ``{&quot;project&quot;: None}``, test doubles). A real nw</span>
+<span class="sd">    project always records; anything else is the caller&#39;s to record.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">graph</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="s2">&quot;graph&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">set_envelope</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="s2">&quot;set_genre_envelope&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">set_envelope</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">.bodies</span><span class="w"> </span><span class="kn">import</span> <span class="n">GenreEnvelopeBodyV1</span>
+
+    <span class="n">set_envelope</span><span class="p">(</span>
+        <span class="n">GenreEnvelopeBodyV1</span><span class="p">(</span><span class="n">genre</span><span class="o">=</span><span class="n">genre</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="n">template</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">params</span><span class="p">))</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="kc">True</span>
 
 
 <span class="c1"># ---------------------------------------------------------------------------</span>
@@ -799,7 +837,11 @@
 <span class="sd">    **All-or-nothing** — if seeding fails the just-created project is rolled back (its</span>
 <span class="sd">    folder removed) and the error re-raised. Returns the factory&#39;s JSON-able info (minus</span>
 <span class="sd">    the live ``project``) plus the resolved ``{genre, template, params}`` envelope, so the</span>
-<span class="sd">    caller can immediately address the new project (e.g. by ``project_id``).</span>
+<span class="sd">    caller can immediately address the new project (e.g. by ``project_id``). The same</span>
+<span class="sd">    envelope is **persisted on the project** by the initialize step (nw#32) — under the</span>
+<span class="sd">    all-or-nothing guarantee, since a failure there rolls the whole create back — so the</span>
+<span class="sd">    association survives this call returning; read it back via</span>
+<span class="sd">    :meth:`nw.Project.resolved_genre`.</span>
 
 <span class="sd">    Raises :class:`KeyError` on an unknown genre/template, or a genre with no registered</span>
 <span class="sd">    factory (a host&#39;s own genre is created by the host, not via this path).</span>

@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw &mdash; nw 0.0.23 documentation</title>
+  <title>nw &mdash; nw 0.0.24 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=3294188c"></script>
+      <script src="../_static/documentation_options.js?v=f91d8841"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -109,6 +109,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#nw.Project.log_decision"><code class="docutils literal notranslate"><span class="pre">Project.log_decision()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.Project.read_spec"><code class="docutils literal notranslate"><span class="pre">Project.read_spec()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.Project.read_summary"><code class="docutils literal notranslate"><span class="pre">Project.read_summary()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.Project.resolved_genre"><code class="docutils literal notranslate"><span class="pre">Project.resolved_genre()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.Project.resumption_brief"><code class="docutils literal notranslate"><span class="pre">Project.resumption_brief()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.Project.set_character_anchor"><code class="docutils literal notranslate"><span class="pre">Project.set_character_anchor()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.Project.set_global_style"><code class="docutils literal notranslate"><span class="pre">Project.set_global_style()</span></code></a></li>
@@ -122,7 +123,9 @@
 <li class="toctree-l2"><a class="reference internal" href="#nw.ProjectGraph"><code class="docutils literal notranslate"><span class="pre">ProjectGraph</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#nw.ProjectGraph.add_annotation"><code class="docutils literal notranslate"><span class="pre">ProjectGraph.add_annotation()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.ProjectGraph.append_decision"><code class="docutils literal notranslate"><span class="pre">ProjectGraph.append_decision()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.ProjectGraph.genre_envelope"><code class="docutils literal notranslate"><span class="pre">ProjectGraph.genre_envelope()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.ProjectGraph.remove_annotation"><code class="docutils literal notranslate"><span class="pre">ProjectGraph.remove_annotation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.ProjectGraph.set_genre_envelope"><code class="docutils literal notranslate"><span class="pre">ProjectGraph.set_genre_envelope()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.ProjectGraph.upsert_character_ref"><code class="docutils literal notranslate"><span class="pre">ProjectGraph.upsert_character_ref()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.ProjectGraph.upsert_environment_ref"><code class="docutils literal notranslate"><span class="pre">ProjectGraph.upsert_environment_ref()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.ProjectGraph.upsert_section"><code class="docutils literal notranslate"><span class="pre">ProjectGraph.upsert_section()</span></code></a></li>
@@ -251,6 +254,7 @@
 <li class="toctree-l1"><a class="reference internal" href="nw/bodies/character_ref.html">nw.bodies.character_ref</a></li>
 <li class="toctree-l1"><a class="reference internal" href="nw/bodies/decision.html">nw.bodies.decision</a></li>
 <li class="toctree-l1"><a class="reference internal" href="nw/bodies/environment_ref.html">nw.bodies.environment_ref</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nw/bodies/genre_envelope.html">nw.bodies.genre_envelope</a></li>
 <li class="toctree-l1"><a class="reference internal" href="nw/bodies/render_result.html">nw.bodies.render_result</a></li>
 <li class="toctree-l1"><a class="reference internal" href="nw/bodies/section.html">nw.bodies.section</a></li>
 <li class="toctree-l1"><a class="reference internal" href="nw/bodies/shot.html">nw.bodies.shot</a></li>
@@ -702,6 +706,18 @@ with code that still reads via <code class="docutils literal notranslate"><span 
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="nw.Project.resolved_genre">
+<span class="sig-name descname"><span class="pre">resolved_genre</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/nw/project.html#Project.resolved_genre"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.Project.resolved_genre" title="Link to this definition"></a></dt>
+<dd><p>The <code class="docutils literal notranslate"><span class="pre">{genre,</span> <span class="pre">template,</span> <span class="pre">params}</span></code> envelope this project was created as.</p>
+<p>The read accessor for the envelope <a class="reference internal" href="nw/genres.html#nw.genres.initialize_genre" title="nw.genres.initialize_genre"><code class="xref py py-func docutils literal notranslate"><span class="pre">nw.genres.initialize_genre()</span></code></a>
+persists at creation (nw#32) — same shape as
+<a class="reference internal" href="nw/genres.html#nw.genres.resolve_genre" title="nw.genres.resolve_genre"><code class="xref py py-func docutils literal notranslate"><span class="pre">nw.genres.resolve_genre()</span></code></a> returns, so consumers reuse or diff
+the <em>effective</em> creation params without re-deriving them. <code class="docutils literal notranslate"><span class="pre">None</span></code>
+for a project with no recorded genre (created before nw#32, or not
+through the genre machinery).</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="nw.Project.resumption_brief">
 <span class="sig-name descname"><span class="pre">resumption_brief</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">recent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="nw/schema.html#nw.schema.ResumptionBrief" title="nw.schema.ResumptionBrief"><span class="pre">ResumptionBrief</span></a></span></span><a class="reference internal" href="../_modules/nw/project.html#Project.resumption_brief"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.Project.resumption_brief" title="Link to this definition"></a></dt>
 <dd><p>Return a “where we left off” snapshot for the start of a session.</p>
@@ -820,6 +836,15 @@ is nothing to verify, and they are nobody’s descendant.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="nw.ProjectGraph.genre_envelope">
+<span class="sig-name descname"><span class="pre">genre_envelope</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="nw/bodies/genre_envelope.html#nw.bodies.genre_envelope.GenreEnvelopeBodyV1" title="nw.bodies.genre_envelope.GenreEnvelopeBodyV1"><span class="pre">GenreEnvelopeBodyV1</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/nw/graph.html#ProjectGraph.genre_envelope"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.ProjectGraph.genre_envelope" title="Link to this definition"></a></dt>
+<dd><p>The recorded genre envelope, or <code class="docutils literal notranslate"><span class="pre">None</span></code> for a genre-less project.</p>
+<p>The read half of <a class="reference internal" href="#nw.ProjectGraph.set_genre_envelope" title="nw.ProjectGraph.set_genre_envelope"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_genre_envelope()</span></code></a>; consumers should reach
+it through <a class="reference internal" href="#nw.Project.resolved_genre" title="nw.Project.resolved_genre"><code class="xref py py-meth docutils literal notranslate"><span class="pre">nw.Project.resolved_genre()</span></code></a>, which returns the
+plain-dict envelope shape <a class="reference internal" href="nw/genres.html#nw.genres.resolve_genre" title="nw.genres.resolve_genre"><code class="xref py py-func docutils literal notranslate"><span class="pre">nw.genres.resolve_genre()</span></code></a> produces.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="nw.ProjectGraph.remove_annotation">
 <span class="sig-name descname"><span class="pre">remove_annotation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">annotation_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">UUID</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/nw/graph.html#ProjectGraph.remove_annotation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.ProjectGraph.remove_annotation" title="Link to this definition"></a></dt>
 <dd><p>Remove one annotation from the project graph, with its verifying traces.</p>
@@ -839,6 +864,16 @@ scopes (storyboard, alignment) are removed by their own facades;
 removed either way).</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.ProjectGraph.set_genre_envelope">
+<span class="sig-name descname"><span class="pre">set_genre_envelope</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">body</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="nw/bodies/genre_envelope.html#nw.bodies.genre_envelope.GenreEnvelopeBodyV1" title="nw.bodies.genre_envelope.GenreEnvelopeBodyV1"><span class="pre">GenreEnvelopeBodyV1</span></a></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">was_attributed_to</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'agent:nw.genres'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">UUID</span></span></span><a class="reference internal" href="../_modules/nw/graph.html#ProjectGraph.set_genre_envelope"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.ProjectGraph.set_genre_envelope" title="Link to this definition"></a></dt>
+<dd><p>Record the resolved <code class="docutils literal notranslate"><span class="pre">{genre,</span> <span class="pre">template,</span> <span class="pre">params}</span></code> envelope; return its id.</p>
+<p>Singleton per project (nw#32): the tier is the identity, so
+re-initializing replaces the recorded envelope in place — the
+annotation id is stable across replacements, like every entity
+upsert. A no-op write (same envelope) writes nothing.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1389,7 +1424,11 @@ is worse than carrying it.</p>
 <strong>All-or-nothing</strong> — if seeding fails the just-created project is rolled back (its
 folder removed) and the error re-raised. Returns the factory’s JSON-able info (minus
 the live <code class="docutils literal notranslate"><span class="pre">project</span></code>) plus the resolved <code class="docutils literal notranslate"><span class="pre">{genre,</span> <span class="pre">template,</span> <span class="pre">params}</span></code> envelope, so the
-caller can immediately address the new project (e.g. by <code class="docutils literal notranslate"><span class="pre">project_id</span></code>).</p>
+caller can immediately address the new project (e.g. by <code class="docutils literal notranslate"><span class="pre">project_id</span></code>). The same
+envelope is <strong>persisted on the project</strong> by the initialize step (nw#32) — under the
+all-or-nothing guarantee, since a failure there rolls the whole create back — so the
+association survives this call returning; read it back via
+<a class="reference internal" href="#nw.Project.resolved_genre" title="nw.Project.resolved_genre"><code class="xref py py-meth docutils literal notranslate"><span class="pre">nw.Project.resolved_genre()</span></code></a>.</p>
 <p>Raises <code class="xref py py-class docutils literal notranslate"><span class="pre">KeyError</span></code> on an unknown genre/template, or a genre with no registered
 factory (a host’s own genre is created by the host, not via this path).</p>
 </dd></dl>
@@ -1513,8 +1552,17 @@ render time).</p>
 <code class="docutils literal notranslate"><span class="pre">initialize_genre(genre,</span> <span class="pre">project)</span></code> seeds a project in the genre’s defaults in
 one call. Raises <code class="xref py py-class docutils literal notranslate"><span class="pre">KeyError</span></code> on an unknown genre or — <strong>uniformly</strong> — an
 unknown <code class="docutils literal notranslate"><span class="pre">template</span></code> slug (matching <a class="reference internal" href="#nw.resolve_genre" title="nw.resolve_genre"><code class="xref py py-func docutils literal notranslate"><span class="pre">resolve_genre()</span></code></a>).</p>
+<p><strong>The envelope is persisted</strong> (nw#32): after the initializer succeeds (or
+no-ops), the resolved <code class="docutils literal notranslate"><span class="pre">{genre,</span> <span class="pre">template,</span> <span class="pre">params}</span></code> is recorded on the
+project’s graph — so “what genre is this project?” stays answerable after
+this call returns, on the host-creates path exactly as on
+<a class="reference internal" href="#nw.create_genre_project" title="nw.create_genre_project"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_genre_project()</span></code></a>’s. Written <em>after</em> the seed on purpose: a
+recorded envelope certifies a completed initialization, never a failed
+one. A <code class="docutils literal notranslate"><span class="pre">project</span></code> stand-in without a <code class="docutils literal notranslate"><span class="pre">graph</span></code> (a test double, a
+factory that returns no live project) skips the recording; read it back
+via <a class="reference internal" href="#nw.Project.resolved_genre" title="nw.Project.resolved_genre"><code class="xref py py-meth docutils literal notranslate"><span class="pre">nw.Project.resolved_genre()</span></code></a>.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">register_genre</span><span class="p">(</span><span class="n">Genre</span><span class="p">(</span><span class="n">slug</span><span class="o">=</span><span class="s2">&quot;_noinit_demo&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Demo&quot;</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">initialize_genre</span><span class="p">(</span><span class="s2">&quot;_noinit_demo&quot;</span><span class="p">,</span> <span class="nb">object</span><span class="p">())</span>  <span class="c1"># no initializer -&gt; no-op</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">initialize_genre</span><span class="p">(</span><span class="s2">&quot;_noinit_demo&quot;</span><span class="p">,</span> <span class="nb">object</span><span class="p">())</span>  <span class="c1"># no initializer -&gt; no seed</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">del</span> <span class="n">genres</span><span class="p">[</span><span class="s2">&quot;_noinit_demo&quot;</span><span class="p">]</span>
 </pre></div>
 </div>

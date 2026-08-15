@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.genres &mdash; nw 0.0.23 documentation</title>
+  <title>nw.genres &mdash; nw 0.0.24 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=3294188c"></script>
+      <script src="../../_static/documentation_options.js?v=f91d8841"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -54,6 +54,7 @@
 <li class="toctree-l1"><a class="reference internal" href="bodies/character_ref.html">nw.bodies.character_ref</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bodies/decision.html">nw.bodies.decision</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bodies/environment_ref.html">nw.bodies.environment_ref</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/genre_envelope.html">nw.bodies.genre_envelope</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bodies/render_result.html">nw.bodies.render_result</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bodies/section.html">nw.bodies.section</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bodies/shot.html">nw.bodies.shot</a></li>
@@ -384,7 +385,11 @@ identity and normalized to an immutable mapping), so a Template can live in a
 <strong>All-or-nothing</strong> — if seeding fails the just-created project is rolled back (its
 folder removed) and the error re-raised. Returns the factory’s JSON-able info (minus
 the live <code class="docutils literal notranslate"><span class="pre">project</span></code>) plus the resolved <code class="docutils literal notranslate"><span class="pre">{genre,</span> <span class="pre">template,</span> <span class="pre">params}</span></code> envelope, so the
-caller can immediately address the new project (e.g. by <code class="docutils literal notranslate"><span class="pre">project_id</span></code>).</p>
+caller can immediately address the new project (e.g. by <code class="docutils literal notranslate"><span class="pre">project_id</span></code>). The same
+envelope is <strong>persisted on the project</strong> by the initialize step (nw#32) — under the
+all-or-nothing guarantee, since a failure there rolls the whole create back — so the
+association survives this call returning; read it back via
+<a class="reference internal" href="../nw.html#nw.Project.resolved_genre" title="nw.Project.resolved_genre"><code class="xref py py-meth docutils literal notranslate"><span class="pre">nw.Project.resolved_genre()</span></code></a>.</p>
 <p>Raises <code class="xref py py-class docutils literal notranslate"><span class="pre">KeyError</span></code> on an unknown genre/template, or a genre with no registered
 factory (a host’s own genre is created by the host, not via this path).</p>
 </dd></dl>
@@ -459,8 +464,17 @@ render time).</p>
 <code class="docutils literal notranslate"><span class="pre">initialize_genre(genre,</span> <span class="pre">project)</span></code> seeds a project in the genre’s defaults in
 one call. Raises <code class="xref py py-class docutils literal notranslate"><span class="pre">KeyError</span></code> on an unknown genre or — <strong>uniformly</strong> — an
 unknown <code class="docutils literal notranslate"><span class="pre">template</span></code> slug (matching <a class="reference internal" href="#nw.genres.resolve_genre" title="nw.genres.resolve_genre"><code class="xref py py-func docutils literal notranslate"><span class="pre">resolve_genre()</span></code></a>).</p>
+<p><strong>The envelope is persisted</strong> (nw#32): after the initializer succeeds (or
+no-ops), the resolved <code class="docutils literal notranslate"><span class="pre">{genre,</span> <span class="pre">template,</span> <span class="pre">params}</span></code> is recorded on the
+project’s graph — so “what genre is this project?” stays answerable after
+this call returns, on the host-creates path exactly as on
+<a class="reference internal" href="#nw.genres.create_genre_project" title="nw.genres.create_genre_project"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_genre_project()</span></code></a>’s. Written <em>after</em> the seed on purpose: a
+recorded envelope certifies a completed initialization, never a failed
+one. A <code class="docutils literal notranslate"><span class="pre">project</span></code> stand-in without a <code class="docutils literal notranslate"><span class="pre">graph</span></code> (a test double, a
+factory that returns no live project) skips the recording; read it back
+via <a class="reference internal" href="../nw.html#nw.Project.resolved_genre" title="nw.Project.resolved_genre"><code class="xref py py-meth docutils literal notranslate"><span class="pre">nw.Project.resolved_genre()</span></code></a>.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">register_genre</span><span class="p">(</span><span class="n">Genre</span><span class="p">(</span><span class="n">slug</span><span class="o">=</span><span class="s2">&quot;_noinit_demo&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Demo&quot;</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">initialize_genre</span><span class="p">(</span><span class="s2">&quot;_noinit_demo&quot;</span><span class="p">,</span> <span class="nb">object</span><span class="p">())</span>  <span class="c1"># no initializer -&gt; no-op</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">initialize_genre</span><span class="p">(</span><span class="s2">&quot;_noinit_demo&quot;</span><span class="p">,</span> <span class="nb">object</span><span class="p">())</span>  <span class="c1"># no initializer -&gt; no seed</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">del</span> <span class="n">genres</span><span class="p">[</span><span class="s2">&quot;_noinit_demo&quot;</span><span class="p">]</span>
 </pre></div>
 </div>

@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.graph &mdash; nw 0.0.23 documentation</title>
+  <title>nw.graph &mdash; nw 0.0.24 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=3294188c"></script>
+      <script src="../../_static/documentation_options.js?v=f91d8841"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -51,6 +51,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/character_ref.html">nw.bodies.character_ref</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/decision.html">nw.bodies.decision</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/environment_ref.html">nw.bodies.environment_ref</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/genre_envelope.html">nw.bodies.genre_envelope</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/render_result.html">nw.bodies.render_result</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/section.html">nw.bodies.section</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/shot.html">nw.bodies.shot</a></li>
@@ -152,6 +153,9 @@
     <span class="n">CHARACTER_REF_BODY_SCHEMA_URI</span><span class="p">,</span>
     <span class="n">DECISION_BODY_SCHEMA_URI</span><span class="p">,</span>
     <span class="n">ENVIRONMENT_REF_BODY_SCHEMA_URI</span><span class="p">,</span>
+    <span class="n">GENRE_ENVELOPE_BODY_SCHEMA_URI</span><span class="p">,</span>
+    <span class="n">GENRE_ENVELOPE_TIER</span><span class="p">,</span>
+    <span class="n">GenreEnvelopeBodyV1</span><span class="p">,</span>
     <span class="n">SECTION_BODY_SCHEMA_URI</span><span class="p">,</span>
     <span class="n">SHOT_BODY_SCHEMA_URI</span><span class="p">,</span>
     <span class="n">VERIFYING_TRACE_BODY_SCHEMA_URI</span><span class="p">,</span>
@@ -475,6 +479,62 @@
         <span class="k">return</span> <span class="n">new_id</span></div>
 
 
+    <span class="c1"># -- genre envelope (singleton) ------------------------------------------</span>
+
+<div class="viewcode-block" id="ProjectGraph.set_genre_envelope">
+<a class="viewcode-back" href="../../module_docs/nw/graph.html#nw.ProjectGraph.set_genre_envelope">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_genre_envelope</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">body</span><span class="p">:</span> <span class="n">GenreEnvelopeBodyV1</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">was_attributed_to</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;agent:nw.genres&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UUID</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Record the resolved ``{genre, template, params}`` envelope; return its id.</span>
+
+<span class="sd">        Singleton per project (nw#32): the tier is the identity, so</span>
+<span class="sd">        re-initializing replaces the recorded envelope in place — the</span>
+<span class="sd">        annotation id is stable across replacements, like every entity</span>
+<span class="sd">        upsert. A no-op write (same envelope) writes nothing.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">lacing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tier</span><span class="p">,</span> <span class="n">TierStereotype</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open</span><span class="p">()</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
+            <span class="n">store</span><span class="o">.</span><span class="n">add_tier</span><span class="p">(</span>
+                <span class="n">Tier</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">GENRE_ENVELOPE_TIER</span><span class="p">,</span> <span class="n">stereotype</span><span class="o">=</span><span class="n">TierStereotype</span><span class="o">.</span><span class="n">NONE</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">_upsert</span><span class="p">(</span>
+                <span class="n">store</span><span class="p">,</span>
+                <span class="n">tier</span><span class="o">=</span><span class="n">GENRE_ENVELOPE_TIER</span><span class="p">,</span>
+                <span class="n">schema_uri</span><span class="o">=</span><span class="n">GENRE_ENVELOPE_BODY_SCHEMA_URI</span><span class="p">,</span>
+                <span class="n">body</span><span class="o">=</span><span class="n">body</span><span class="p">,</span>
+                <span class="n">interval</span><span class="o">=</span><span class="n">TimeInterval</span><span class="o">.</span><span class="n">from_seconds</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                <span class="n">asset_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asset_id</span><span class="p">,</span>
+                <span class="n">was_attributed_to</span><span class="o">=</span><span class="n">was_attributed_to</span><span class="p">,</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ProjectGraph.genre_envelope">
+<a class="viewcode-back" href="../../module_docs/nw/graph.html#nw.ProjectGraph.genre_envelope">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">genre_envelope</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">GenreEnvelopeBodyV1</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The recorded genre envelope, or ``None`` for a genre-less project.</span>
+
+<span class="sd">        The read half of :meth:`set_genre_envelope`; consumers should reach</span>
+<span class="sd">        it through :meth:`nw.Project.resolved_genre`, which returns the</span>
+<span class="sd">        plain-dict envelope shape :func:`nw.genres.resolve_genre` produces.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open</span><span class="p">()</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">store</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="n">ann</span><span class="o">.</span><span class="n">tier</span> <span class="o">==</span> <span class="n">GENRE_ENVELOPE_TIER</span>
+                    <span class="ow">and</span> <span class="n">ann</span><span class="o">.</span><span class="n">body_schema_uri</span> <span class="o">==</span> <span class="n">GENRE_ENVELOPE_BODY_SCHEMA_URI</span>
+                <span class="p">):</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="n">GenreEnvelopeBodyV1</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                        <span class="k">continue</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
     <span class="c1"># -- arbitrary annotations (for things that don&#39;t fit a typed bucket) ----</span>
 
 <div class="viewcode-block" id="ProjectGraph.add_annotation">
@@ -784,8 +844,7 @@
             <span class="n">orphans</span> <span class="o">=</span> <span class="p">[</span>
                 <span class="n">ann</span><span class="o">.</span><span class="n">id</span>
                 <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">store</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
-                <span class="k">if</span> <span class="p">(</span><span class="n">target</span> <span class="o">:=</span> <span class="n">_trace_target</span><span class="p">(</span><span class="n">ann</span><span class="p">))</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-                <span class="ow">and</span> <span class="n">target</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">existing</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">target</span> <span class="o">:=</span> <span class="n">_trace_target</span><span class="p">(</span><span class="n">ann</span><span class="p">))</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">target</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">existing</span>
             <span class="p">]</span>
             <span class="k">for</span> <span class="n">annotation_id</span> <span class="ow">in</span> <span class="n">orphans</span><span class="p">:</span>
                 <span class="n">store</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">annotation_id</span><span class="p">)</span>
@@ -835,13 +894,16 @@
     <span class="n">interval</span><span class="p">:</span> <span class="n">TimeInterval</span><span class="p">,</span>
     <span class="n">asset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">was_attributed_to</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">identity_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">identity_value</span><span class="p">,</span>
+    <span class="n">identity_key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">identity_value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UUID</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Insert-or-update one *entity* annotation, preserving its identity.</span>
 
 <span class="sd">    An entity (a shot, a section, a character/environment ref) is identified</span>
 <span class="sd">    by a natural key in its body — ``shot_id``, ``section_id``, ``name``.</span>
+<span class="sd">    ``identity_key=None`` means the **tier itself** is the identity: at most</span>
+<span class="sd">    one annotation lives at that tier (e.g. the genre envelope), and an</span>
+<span class="sd">    upsert replaces it whatever its body says.</span>
 <span class="sd">    The annotation id is that entity&#39;s identity **in the provenance graph**,</span>
 <span class="sd">    so it must survive an edit:</span>
 
@@ -872,7 +934,7 @@
             <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">store</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">ann</span><span class="o">.</span><span class="n">tier</span> <span class="o">==</span> <span class="n">tier</span>
             <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">body</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
-            <span class="ow">and</span> <span class="n">ann</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">identity_key</span><span class="p">)</span> <span class="o">==</span> <span class="n">identity_value</span>
+            <span class="ow">and</span> <span class="p">(</span><span class="n">identity_key</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">ann</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">identity_key</span><span class="p">)</span> <span class="o">==</span> <span class="n">identity_value</span><span class="p">)</span>
         <span class="p">),</span>
         <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span>

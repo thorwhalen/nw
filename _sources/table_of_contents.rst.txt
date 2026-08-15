@@ -7,6 +7,7 @@
    module_docs/nw/bodies/character_ref
    module_docs/nw/bodies/decision
    module_docs/nw/bodies/environment_ref
+   module_docs/nw/bodies/genre_envelope
    module_docs/nw/bodies/render_result
    module_docs/nw/bodies/section
    module_docs/nw/bodies/shot

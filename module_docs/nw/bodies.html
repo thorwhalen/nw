@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.bodies &mdash; nw 0.0.23 documentation</title>
+  <title>nw.bodies &mdash; nw 0.0.24 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=3294188c"></script>
+      <script src="../../_static/documentation_options.js?v=f91d8841"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -63,6 +63,10 @@
 <li class="toctree-l3"><a class="reference internal" href="#nw.bodies.EnvironmentRefBodyV1.model_config"><code class="docutils literal notranslate"><span class="pre">EnvironmentRefBodyV1.model_config</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.bodies.GenreEnvelopeBodyV1"><code class="docutils literal notranslate"><span class="pre">GenreEnvelopeBodyV1</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#nw.bodies.GenreEnvelopeBodyV1.model_config"><code class="docutils literal notranslate"><span class="pre">GenreEnvelopeBodyV1.model_config</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.bodies.RenderResultBodyV1"><code class="docutils literal notranslate"><span class="pre">RenderResultBodyV1</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#nw.bodies.RenderResultBodyV1.model_config"><code class="docutils literal notranslate"><span class="pre">RenderResultBodyV1.model_config</span></code></a></li>
 </ul>
@@ -89,6 +93,7 @@
 <li class="toctree-l1"><a class="reference internal" href="bodies/character_ref.html">nw.bodies.character_ref</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bodies/decision.html">nw.bodies.decision</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bodies/environment_ref.html">nw.bodies.environment_ref</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/genre_envelope.html">nw.bodies.genre_envelope</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bodies/render_result.html">nw.bodies.render_result</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bodies/section.html">nw.bodies.section</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bodies/shot.html">nw.bodies.shot</a></li>
@@ -156,6 +161,8 @@ with a matching <code class="docutils literal notranslate"><span class="pre">bod
 <li><p><code class="docutils literal notranslate"><span class="pre">annot://schema/decision/v1</span></code>       — provenance-rich decision log entry</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">annot://schema/render-result/v1</span></code>  — output of a render Transform</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">annot://schema/verifying-trace/v1</span></code> — upstream value digests, for early cutoff</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">annot://schema/genre-envelope/v1</span></code> — the resolved {genre, template, params}
+the project was created as (singleton per project)</p></li>
 </ul>
 <p>These are deliberately small and project-agnostic. Reelee will be able to
 walk the same graph for freshness analysis (“what’s downstream of this
@@ -199,6 +206,20 @@ later, it can graduate into its own body URI without disturbing this one.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nw.bodies.EnvironmentRefBodyV1.model_config">
 <span class="sig-name descname"><span class="pre">model_config</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'extra':</span> <span class="pre">'forbid',</span> <span class="pre">'frozen':</span> <span class="pre">True}</span></span><a class="headerlink" href="#nw.bodies.EnvironmentRefBodyV1.model_config" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.bodies.GenreEnvelopeBodyV1">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.bodies.</span></span><span class="sig-name descname"><span class="pre">GenreEnvelopeBodyV1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">genre</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">~typing.Any]</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nw/bodies/genre_envelope.html#GenreEnvelopeBodyV1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.bodies.GenreEnvelopeBodyV1" title="Link to this definition"></a></dt>
+<dd><p>Body of the (singleton) genre-envelope annotation.</p>
+<p>Field-for-field the <a class="reference internal" href="genres.html#nw.genres.resolve_genre" title="nw.genres.resolve_genre"><code class="xref py py-func docutils literal notranslate"><span class="pre">nw.genres.resolve_genre()</span></code></a> envelope, so the
+persisted record and the creation-time contract can never drift apart.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.bodies.GenreEnvelopeBodyV1.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'extra':</span> <span class="pre">'forbid',</span> <span class="pre">'frozen':</span> <span class="pre">True}</span></span><a class="headerlink" href="#nw.bodies.GenreEnvelopeBodyV1.model_config" title="Link to this definition"></a></dt>
 <dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
 </dd></dl>
 

@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.transforms._provenance &mdash; nw 0.0.24 documentation</title>
+  <title>nw.bodies.genre_envelope &mdash; nw 0.0.24 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -97,8 +97,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
-          <li class="breadcrumb-item"><a href="../transforms.html">nw.transforms</a></li>
-      <li class="breadcrumb-item active">nw.transforms._provenance</li>
+      <li class="breadcrumb-item active">nw.bodies.genre_envelope</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -107,65 +106,76 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <h1>Source code for nw.transforms._provenance</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Provenance construction for Transform outputs.</span>
+  <h1>Source code for nw.bodies.genre_envelope</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Body schema for the project&#39;s resolved genre envelope.</span>
 
-<span class="sd">Every Transform output annotation needs a :class:`lacing.Provenance` whose</span>
-<span class="sd">``was_derived_from`` is the union of all input annotation ids — that edge is</span>
-<span class="sd">what ``nw.descendants_of`` / ``nw.stale_after`` walk for freshness analysis.</span>
-<span class="sd">This helper centralizes that so every Transform doesn&#39;t reinvent it.</span>
+<span class="sd">URI: ``annot://schema/genre-envelope/v1``</span>
+
+<span class="sd">The persisted form of the creation envelope :func:`nw.genres.resolve_genre`</span>
+<span class="sd">returns — ``{genre, template, params}`` — so &quot;what genre/template/params</span>
+<span class="sd">created this project?&quot; stays answerable after the create call returns</span>
+<span class="sd">(nw#32). Before this schema existed the envelope went to the *caller* and</span>
+<span class="sd">nowhere else: reopen the project tomorrow and nothing in it said what genre</span>
+<span class="sd">it was, so nothing downstream (planner scoping, genre presets on a later</span>
+<span class="sd">run, a host aggregating another app&#39;s genre) could be genre-conditioned.</span>
+
+<span class="sd">Why an annotation rather than a ``ProjectSpec`` field</span>
+<span class="sd">-----------------------------------------------------</span>
+<span class="sd">``project.json`` is deliberately round-trip-compatible with muvid&#39;s</span>
+<span class="sd">``ProjectSpec`` for ``schema_version=1`` (nw#30), and its</span>
+<span class="sd">``extra=&quot;ignore&quot;`` means a foreign reader&#39;s load/save cycle would silently</span>
+<span class="sd">*drop* an unmodelled genre key — failing quietly, the worst failure shape.</span>
+<span class="sd">The graph is nw&#39;s SSOT direction, carries provenance for free, and the</span>
+<span class="sd">precedent (:mod:`nw.bodies.decision` — a timeless, project-local, typed</span>
+<span class="sd">record under a sentinel zero-duration reference) already exists. Same</span>
+<span class="sd">shape here, singleton per project: stored under the ``genre-envelope``</span>
+<span class="sd">tier, replaced in place on re-initialization.</span>
+
+<span class="sd">``params`` is the *resolved* payload — the effective values after template</span>
+<span class="sd">and defaults merged — and stays opaque to the substrate, exactly as in</span>
+<span class="sd">:class:`nw.genres.Template`: the app that owns the genre gives it meaning.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">uuid</span><span class="w"> </span><span class="kn">import</span> <span class="n">UUID</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">lacing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Provenance</span><span class="p">,</span> <span class="n">RationalTime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">Field</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">TransformInputs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">lacing.schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_body_schema</span>
 
 
-<div class="viewcode-block" id="derive_provenance">
-<a class="viewcode-back" href="../../../module_docs/nw/transforms/_provenance.html#nw.transforms._provenance.derive_provenance">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">derive_provenance</span><span class="p">(</span>
-    <span class="n">transform_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">transform_version</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span><span class="p">,</span>
-    <span class="n">inputs</span><span class="p">:</span> <span class="n">TransformInputs</span><span class="p">,</span>
-    <span class="o">*</span><span class="p">,</span>
-    <span class="n">activity</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;derive&quot;</span><span class="p">,</span>
-    <span class="n">attributed_to</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Provenance</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build the :class:`lacing.Provenance` for a Transform-produced annotation.</span>
+<span class="n">GENRE_ENVELOPE_BODY_SCHEMA_URI</span> <span class="o">=</span> <span class="s2">&quot;annot://schema/genre-envelope/v1&quot;</span>
+<span class="n">GENRE_ENVELOPE_TIER</span> <span class="o">=</span> <span class="s2">&quot;genre-envelope&quot;</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        transform_name: The Transform&#39;s ``name`` (e.g. ``&quot;beat_to_panel.llm.default&quot;``).</span>
-<span class="sd">        transform_version: A version stamp — a prompt version for LLM</span>
-<span class="sd">            Transforms, a model id, or the package version for deterministic</span>
-<span class="sd">            ones. Recorded in ``was_generated_by`` so a replayed plan is</span>
-<span class="sd">            traceable to exactly what produced it.</span>
-<span class="sd">        inputs: The :class:`TransformInputs` the Transform consumed.</span>
-<span class="sd">            ``was_derived_from`` is set to the ids of every annotation in</span>
-<span class="sd">            ``primary`` plus every annotation in every ``context`` group.</span>
-<span class="sd">        activity: PROV-O activity — almost always ``&quot;derive&quot;`` for a Transform.</span>
-<span class="sd">        attributed_to: Who is responsible. Defaults to</span>
-<span class="sd">            ``f&quot;agent:{transform_name}&quot;`` (a deterministic transformer);</span>
-<span class="sd">            LLM-backed Transforms should pass ``&quot;agent:claude-&lt;model&gt;@&lt;hash&gt;&quot;``</span>
-<span class="sd">            and human-in-the-loop ones ``&quot;user:&lt;handle&gt;&quot;``.</span>
 
-<span class="sd">    Returns:</span>
-<span class="sd">        A :class:`lacing.Provenance` ready to attach to a skeleton annotation.</span>
+<div class="viewcode-block" id="GenreEnvelopeBodyV1">
+<a class="viewcode-back" href="../../../module_docs/nw/bodies/genre_envelope.html#nw.bodies.GenreEnvelopeBodyV1">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">GenreEnvelopeBodyV1</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Body of the (singleton) genre-envelope annotation.</span>
+
+<span class="sd">    Field-for-field the :func:`nw.genres.resolve_genre` envelope, so the</span>
+<span class="sd">    persisted record and the creation-time contract can never drift apart.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">parent_ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">UUID</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">inputs</span><span class="o">.</span><span class="n">primary</span><span class="p">]</span>
-    <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">inputs</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-        <span class="n">parent_ids</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">group</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">Provenance</span><span class="p">(</span>
-        <span class="n">was_generated_by</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;transform:</span><span class="si">{</span><span class="n">transform_name</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">transform_version</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-        <span class="n">was_attributed_to</span><span class="o">=</span><span class="n">attributed_to</span> <span class="ow">or</span> <span class="sa">f</span><span class="s2">&quot;agent:</span><span class="si">{</span><span class="n">transform_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-        <span class="n">was_derived_from</span><span class="o">=</span><span class="n">parent_ids</span><span class="p">,</span>
-        <span class="n">generated_at_time</span><span class="o">=</span><span class="n">RationalTime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
-        <span class="n">activity</span><span class="o">=</span><span class="n">activity</span><span class="p">,</span>
+
+    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;frozen&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;extra&quot;</span><span class="p">:</span> <span class="s2">&quot;forbid&quot;</span><span class="p">}</span>
+
+    <span class="n">genre</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The genre slug the project was created as.&quot;</span><span class="p">)</span>
+    <span class="n">template</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The chosen template slug, or None for &#39;start from scratch&#39;.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;The *resolved* creation params — template + defaults merged. &quot;</span>
+            <span class="s2">&quot;Opaque to nw; the genre&#39;s owning app interprets them.&quot;</span>
+        <span class="p">),</span>
     <span class="p">)</span></div>
 
+
+
+<span class="n">register_body_schema</span><span class="p">(</span><span class="n">GENRE_ENVELOPE_BODY_SCHEMA_URI</span><span class="p">,</span> <span class="n">GenreEnvelopeBodyV1</span><span class="p">)</span>
 </pre></div>
 
            </div>

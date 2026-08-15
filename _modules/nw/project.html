@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.project &mdash; nw 0.0.23 documentation</title>
+  <title>nw.project &mdash; nw 0.0.24 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=3294188c"></script>
+      <script src="../../_static/documentation_options.js?v=f91d8841"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -51,6 +51,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/character_ref.html">nw.bodies.character_ref</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/decision.html">nw.bodies.decision</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/environment_ref.html">nw.bodies.environment_ref</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/genre_envelope.html">nw.bodies.genre_envelope</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/render_result.html">nw.bodies.render_result</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/section.html">nw.bodies.section</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/shot.html">nw.bodies.shot</a></li>
@@ -181,7 +182,7 @@
     <span class="n">iter_all_annotations</span><span class="p">,</span>
     <span class="n">remove_annotations_with_traces</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.bodies</span><span class="w"> </span><span class="kn">import</span> <span class="n">VERIFYING_TRACE_TIER</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.bodies</span><span class="w"> </span><span class="kn">import</span> <span class="n">GENRE_ENVELOPE_TIER</span><span class="p">,</span> <span class="n">VERIFYING_TRACE_TIER</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.migrate</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">_TIER_CHARACTER_REF</span><span class="p">,</span>
     <span class="n">_TIER_DECISION</span><span class="p">,</span>
@@ -205,12 +206,16 @@
 <span class="p">)</span>
 
 
-<span class="n">_BOOKKEEPING_TIERS</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">({</span><span class="n">_TIER_DECISION</span><span class="p">,</span> <span class="n">VERIFYING_TRACE_TIER</span><span class="p">})</span>
+<span class="n">_BOOKKEEPING_TIERS</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span>
+    <span class="p">{</span><span class="n">_TIER_DECISION</span><span class="p">,</span> <span class="n">VERIFYING_TRACE_TIER</span><span class="p">,</span> <span class="n">GENRE_ENVELOPE_TIER</span><span class="p">}</span>
+<span class="p">)</span>
 <span class="sd">&quot;&quot;&quot;Tiers that record *what nw did*, not *what the project is*.</span>
 
 <span class="sd">The resumption brief is a statement about project content, so these are</span>
 <span class="sd">excluded from both halves of it: they are neither an authored change nor a</span>
-<span class="sd">downstream consequence of one.&quot;&quot;&quot;</span>
+<span class="sd">downstream consequence of one. The genre envelope qualifies on both counts:</span>
+<span class="sd">it is parentless and written at creation, so without this it would shadow</span>
+<span class="sd">the user&#39;s actual last authored change.&quot;&quot;&quot;</span>
 
 
 <span class="c1"># ---------------------------------------------------------------------------</span>
@@ -439,6 +444,28 @@
         <span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="Project.resolved_genre">
+<a class="viewcode-back" href="../../module_docs/nw/project.html#nw.Project.resolved_genre">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">resolved_genre</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The ``{genre, template, params}`` envelope this project was created as.</span>
+
+<span class="sd">        The read accessor for the envelope :func:`nw.genres.initialize_genre`</span>
+<span class="sd">        persists at creation (nw#32) — same shape as</span>
+<span class="sd">        :func:`nw.genres.resolve_genre` returns, so consumers reuse or diff</span>
+<span class="sd">        the *effective* creation params without re-deriving them. ``None``</span>
+<span class="sd">        for a project with no recorded genre (created before nw#32, or not</span>
+<span class="sd">        through the genre machinery).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">body</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">genre_envelope</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">body</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;genre&quot;</span><span class="p">:</span> <span class="n">body</span><span class="o">.</span><span class="n">genre</span><span class="p">,</span>
+            <span class="s2">&quot;template&quot;</span><span class="p">:</span> <span class="n">body</span><span class="o">.</span><span class="n">template</span><span class="p">,</span>
+            <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="n">body</span><span class="o">.</span><span class="n">params</span><span class="p">),</span>
+        <span class="p">}</span></div>
+
+
 <div class="viewcode-block" id="Project.write_spec">
 <a class="viewcode-back" href="../../module_docs/nw/project.html#nw.Project.write_spec">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">write_spec</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spec</span><span class="p">:</span> <span class="n">ProjectSpec</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -468,9 +495,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_sync_shots</span><span class="p">(</span><span class="n">spec</span><span class="o">.</span><span class="n">shots</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_drop_entities_not_in</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">tier</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">identity_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">keep</span><span class="p">:</span> <span class="nb">set</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_drop_entities_not_in</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">tier</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">identity_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">keep</span><span class="p">:</span> <span class="nb">set</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove ``tier`` entities whose ``identity_key`` is not in ``keep``.</span>
 
 <span class="sd">        The removal half of ``write_spec``&#39;s reconciliation. Routes through</span>
