@@ -53,12 +53,14 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import statistics
+import tempfile
 import threading
 import time
 import urllib.parse
-from collections.abc import Callable, Mapping, MutableMapping
-from contextlib import AbstractContextManager, nullcontext
+from collections.abc import Callable, Iterator, Mapping, MutableMapping
+from contextlib import AbstractContextManager, nullcontext, suppress
 from dataclasses import dataclass, field, asdict
 from datetime import datetime, timezone
 from pathlib import Path
@@ -73,7 +75,6 @@ from au import (
     ThreadBackend,
 )
 from au.base import ComputationBackend
-from dol import JsonFiles
 
 
 # ---------------------------------------------------------------------------
@@ -559,6 +560,87 @@ def predict_total_s(
 # ---------------------------------------------------------------------------
 
 
+class _AtomicJsonFiles(MutableMapping):
+    """A ``{key: json-value}`` directory store whose writes are **atomic**.
+
+    Drop-in for the ``dol.JsonFiles`` it replaced — same on-disk layout, one
+    plain-named file per key holding JSON — with the one difference this
+    module needs (reelee#298): ``__setitem__`` serializes fully in memory,
+    writes to a sibling temp file, and ``os.replace``\\ s it over the
+    destination. ``os.replace`` is atomic on POSIX and Windows, so a
+    concurrent reader observes either the old record or the new one — never
+    a truncated or empty file.
+
+    Why here: the job index is rewritten by the worker thread on every
+    mirrored event (and even on reads, for the pct floor) while reelee's API
+    polls ``get_job`` concurrently. With a truncate-then-write store, a read
+    can land in the window after ``open(..., "w")`` and before the bytes —
+    ``json.loads("")`` — surfacing as an intermittent 500 precisely during a
+    cancel, when clients poll hardest. The au store already writes this way;
+    now every durable record this module owns does too.
+
+    A failed serialization touches nothing: the old record survives and no
+    temp file is left behind. Temp names start with ``.`` so iteration never
+    lists an in-flight write as a key.
+    """
+
+    def __init__(self, rootdir: str | Path) -> None:
+        self._rootdir = Path(rootdir)
+        self._rootdir.mkdir(parents=True, exist_ok=True)
+
+    def _path(self, key: str) -> Path:
+        # Keys here are filesystem-safe by construction (sha256 hex job ids,
+        # percent-encoded ETA keys); refuse anything that could escape the
+        # directory rather than silently writing elsewhere.
+        if not key or key != Path(key).name or key.startswith("."):
+            raise ValueError(f"not a safe store key: {key!r}")
+        return self._rootdir / key
+
+    def __getitem__(self, key: str):
+        try:
+            text = self._path(key).read_text(encoding="utf-8")
+        except FileNotFoundError:
+            raise KeyError(key) from None
+        return json.loads(text)
+
+    def __setitem__(self, key: str, value) -> None:
+        path = self._path(key)
+        data = json.dumps(value).encode("utf-8")  # serialize BEFORE touching disk
+        fd, tmp = tempfile.mkstemp(
+            dir=self._rootdir, prefix=f".{key}.", suffix=".tmp"
+        )
+        try:
+            with os.fdopen(fd, "wb") as f:
+                f.write(data)
+        except BaseException:
+            with suppress(OSError):  # best-effort cleanup; the raise is the point
+                os.unlink(tmp)
+            raise
+        os.replace(tmp, path)
+
+    def __delitem__(self, key: str) -> None:
+        try:
+            os.unlink(self._path(key))
+        except FileNotFoundError:
+            raise KeyError(key) from None
+
+    def __iter__(self) -> Iterator[str]:
+        return (
+            p.name
+            for p in self._rootdir.iterdir()
+            if p.is_file() and not p.name.startswith(".")
+        )
+
+    def __len__(self) -> int:
+        return sum(1 for _ in self)
+
+    def __contains__(self, key) -> bool:
+        try:
+            return self._path(key).is_file()
+        except ValueError:
+            return False
+
+
 @dataclass
 class _JobsRuntime:
     root: str
@@ -591,8 +673,10 @@ def _runtime(project, config: JobsConfig = DEFAULT_CONFIG) -> _JobsRuntime:
             (base / "index").mkdir(parents=True, exist_ok=True)
             (base / "durations").mkdir(parents=True, exist_ok=True)
             au_store = FileSystemStore(str(base / "au"), ttl_seconds=None)
-            index = JsonFiles(str(base / "index"))
-            durations = JsonFiles(str(base / "durations"))
+            # Atomic on purpose (reelee#298): these two are rewritten by the
+            # worker while the API reads them; see :class:`_AtomicJsonFiles`.
+            index = _AtomicJsonFiles(base / "index")
+            durations = _AtomicJsonFiles(base / "durations")
             lock = threading.Lock()
             middleware = DurationLearningMiddleware(
                 durations=durations, index=index, lock=lock, config=config
@@ -1115,8 +1199,11 @@ def _dur_bucket(duration_s, config) -> str | None:
 
 
 def _durations_get(durations: MutableMapping, eta_key: str) -> list:
-    # Reads can race a concurrent (non-atomic) sample write from the learning
-    # middleware; a half-written JSON file is transient — treat it as no history.
+    # Defense in depth, no longer load-bearing: since the store writes
+    # atomically (reelee#298, :class:`_AtomicJsonFiles`) a reader cannot catch
+    # a sample write half-done. The guard stays for what atomicity cannot
+    # promise — a record written by a pre-atomic version mid-upgrade, or a
+    # hand-mangled file — where "no history" beats a crashed ETA query.
     try:
         record = durations.get(_safe_key(eta_key))
     except Exception:
