@@ -40,7 +40,10 @@ dependencies = [
     # `nw.freshness` compares to cut off early. 0.0.24 does NOT have it, so a
     # lower floor resolves to a lacing without the symbol and fails at import
     # rather than at resolve time.
-    "lacing>=0.0.25",
+    # >=0.0.31 for the store-migration ladder's registered v1->v2 step and
+    # the widened ProvenanceRef union (lacing#14/D5): nw opens its project
+    # stores with migrate=True, which needs the step to exist.
+    "lacing>=0.0.31",
     "xdol>=0.1.11",
     "artful>=0.0.2",
     "au>=0.1.1",

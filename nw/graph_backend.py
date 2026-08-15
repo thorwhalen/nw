@@ -172,7 +172,12 @@ def open_graph_store(
         # _open_postgres logged a warning and we fall through to SQLite.
 
     db_path.parent.mkdir(parents=True, exist_ok=True)
-    return SqliteStore(str(db_path))
+    # migrate=True: nw owns its project stores (application-level policy),
+    # so a file written under an older lacing store schema upgrades on open
+    # via the ladder — stamp-only for v1→v2 (lacing#14), idempotent, and
+    # concurrent-open-safe (the version is re-checked under the write lock).
+    # Without this, every pre-D5 project refuses to open under lacing>=0.0.31.
+    return SqliteStore(str(db_path), migrate=True)
 
 
 def _open_postgres(
