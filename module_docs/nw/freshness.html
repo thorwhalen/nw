@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.freshness &mdash; nw 0.0.26 documentation</title>
+  <title>nw.freshness &mdash; nw 0.0.27 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=6a9d8632"></script>
+      <script src="../../_static/documentation_options.js?v=cee5022b"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -65,8 +65,10 @@
 <li class="toctree-l2"><a class="reference internal" href="#what-this-does-not-catch">What this does <strong>not</strong> catch</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.freshness.FreshnessVerdict"><code class="docutils literal notranslate"><span class="pre">FreshnessVerdict</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.freshness.STALE_REASONS"><code class="docutils literal notranslate"><span class="pre">STALE_REASONS</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.freshness.all_stale"><code class="docutils literal notranslate"><span class="pre">all_stale()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.freshness.stale_after"><code class="docutils literal notranslate"><span class="pre">stale_after()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.freshness.stale_verdicts"><code class="docutils literal notranslate"><span class="pre">stale_verdicts()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.freshness.stale_verdicts_all"><code class="docutils literal notranslate"><span class="pre">stale_verdicts_all()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="genres.html">nw.genres</a></li>
@@ -134,8 +136,14 @@ and stop when they agree. One 32-byte digest comparison replaces loading a
 40 MB video, which is what makes cutoff free rather than pointless.</p>
 <section id="the-rule-stated-exactly">
 <h2>The rule, stated exactly<a class="headerlink" href="#the-rule-stated-exactly" title="Link to this heading"></a></h2>
-<p>An annotation <code class="docutils literal notranslate"><span class="pre">X</span></code> reachable from <code class="docutils literal notranslate"><span class="pre">changed_id</span></code> is <strong>stale</strong> when any of
-these holds, and <strong>fresh</strong> only when none does:</p>
+<p>The walk has two frontiers over the same rule: <a class="reference internal" href="#nw.freshness.stale_verdicts" title="nw.freshness.stale_verdicts"><code class="xref py py-func docutils literal notranslate"><span class="pre">stale_verdicts()</span></code></a> /
+<a class="reference internal" href="#nw.freshness.stale_after" title="nw.freshness.stale_after"><code class="xref py py-func docutils literal notranslate"><span class="pre">stale_after()</span></code></a> classify everything reachable from a <code class="docutils literal notranslate"><span class="pre">changed_id</span></code>;
+<a class="reference internal" href="#nw.freshness.stale_verdicts_all" title="nw.freshness.stale_verdicts_all"><code class="xref py py-func docutils literal notranslate"><span class="pre">stale_verdicts_all()</span></code></a> / <a class="reference internal" href="#nw.freshness.all_stale" title="nw.freshness.all_stale"><code class="xref py py-func docutils literal notranslate"><span class="pre">all_stale()</span></code></a> classify every annotation
+with at least one provenance parent — the whole-project snapshot a
+freshness indicator wants (parentless annotations are never stale, or an
+imported screenplay would read stale forever). An annotation <code class="docutils literal notranslate"><span class="pre">X</span></code> on the
+frontier is <strong>stale</strong> when any of these holds, and <strong>fresh</strong> only when none
+does:</p>
 <ul class="simple">
 <li><p>no verifying trace was recorded for <code class="docutils literal notranslate"><span class="pre">X</span></code> (<a class="reference internal" href="bodies/verifying_trace.html#module-nw.bodies.verifying_trace" title="nw.bodies.verifying_trace"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nw.bodies.verifying_trace</span></code></a>),</p></li>
 <li><p>the trace was written under a different digest scheme,</p></li>
@@ -152,12 +160,15 @@ still equals what its children recorded. Rewriting <code class="docutils literal
 <code class="docutils literal notranslate"><span class="pre">X</span></code> fresh and its children stale at the same instant. So every reachable
 node is classified against <strong>its own</strong> recorded digests; the walk prunes
 nothing.</p>
-<p><strong>Unverifiable means stale.</strong> Every branch above defaults to stale, which is
-why this change needs no data migration: an annotation written before traces
-existed reads as <code class="docutils literal notranslate"><span class="pre">no-trace</span></code> and behaves exactly as it did under pure
-reachability. Over-reporting wastes a recompute — which the content-addressed
-<code class="docutils literal notranslate"><span class="pre">falaw</span></code> cache makes close to free. Under-reporting serves a stale artifact
-as if it were current, so every ambiguous case resolves the other way.</p>
+<p><strong>Unverifiable means stale.</strong> Every branch above defaults to stale.
+Over-reporting wastes a recompute — which the content-addressed <code class="docutils literal notranslate"><span class="pre">falaw</span></code>
+cache makes close to free. Under-reporting serves a stale artifact as if it
+were current, so every ambiguous case resolves the other way. For the
+<em>scoped</em> walk this also means no data migration: an annotation written
+before traces existed reads as <code class="docutils literal notranslate"><span class="pre">no-trace</span></code> and behaves exactly as it did
+under pure reachability. The <em>snapshot</em> walk has no such equivalence — on a
+pre-trace project it reports every derived annotation stale until each is
+rewritten through the trace-writing path; see <a class="reference internal" href="#nw.freshness.stale_verdicts_all" title="nw.freshness.stale_verdicts_all"><code class="xref py py-func docutils literal notranslate"><span class="pre">stale_verdicts_all()</span></code></a>.</p>
 </section>
 <section id="what-this-does-not-catch">
 <h2>What this does <strong>not</strong> catch<a class="headerlink" href="#what-this-does-not-catch" title="Link to this heading"></a></h2>
@@ -199,6 +210,16 @@ stale” true by construction rather than by review.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="nw.freshness.all_stale">
+<span class="sig-prename descclassname"><span class="pre">nw.freshness.</span></span><span class="sig-name descname"><span class="pre">all_stale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Annotation</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nw/freshness.html#all_stale"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.freshness.all_stale" title="Link to this definition"></a></dt>
+<dd><p>Every annotation that is currently stale, regardless of cause.</p>
+<p><a class="reference internal" href="#nw.freshness.stale_verdicts_all" title="nw.freshness.stale_verdicts_all"><code class="xref py py-func docutils literal notranslate"><span class="pre">stale_verdicts_all()</span></code></a> with the fresh verdicts dropped — the
+snapshot counterpart of <a class="reference internal" href="#nw.freshness.stale_after" title="nw.freshness.stale_after"><code class="xref py py-func docutils literal notranslate"><span class="pre">stale_after()</span></code></a>, and the primitive a
+freshness indicator or a “regenerate everything stale” verb should sit
+on instead of re-deriving its own definition of the word.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="nw.freshness.stale_after">
 <span class="sig-prename descclassname"><span class="pre">nw.freshness.</span></span><span class="sig-name descname"><span class="pre">stale_after</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">changed_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">UUID</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Annotation</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nw/freshness.html#stale_after"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.freshness.stale_after" title="Link to this definition"></a></dt>
 <dd><p>Return every annotation that <code class="docutils literal notranslate"><span class="pre">changed_id</span></code> actually invalidated.</p>
@@ -226,7 +247,37 @@ annotation, stale or not, in a deterministic order (generation time, then
 id). <code class="docutils literal notranslate"><span class="pre">changed_id</span></code> itself is never included — it is the source of the
 change, not a derivative of it.</p>
 <p>Use this when the <em>number</em> is being questioned. <code class="docutils literal notranslate"><span class="pre">stale_after</span></code> is the
-same walk with the fresh verdicts dropped.</p>
+same walk with the fresh verdicts dropped;
+<a class="reference internal" href="#nw.freshness.stale_verdicts_all" title="nw.freshness.stale_verdicts_all"><code class="xref py py-func docutils literal notranslate"><span class="pre">stale_verdicts_all()</span></code></a> is the same classification with no
+<code class="docutils literal notranslate"><span class="pre">changed_id</span></code> — the whole-project snapshot.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.freshness.stale_verdicts_all">
+<span class="sig-prename descclassname"><span class="pre">nw.freshness.</span></span><span class="sig-name descname"><span class="pre">stale_verdicts_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#nw.freshness.FreshnessVerdict" title="nw.freshness.FreshnessVerdict"><span class="pre">FreshnessVerdict</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nw/freshness.html#stale_verdicts_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.freshness.stale_verdicts_all" title="Link to this definition"></a></dt>
+<dd><p>Classify every derived annotation in the project — the snapshot form.</p>
+<p>The question a freshness <em>indicator</em> asks: “what is stale in this
+project right now?”, with no <code class="docutils literal notranslate"><span class="pre">changed_id</span></code> to anchor on. Same
+verifying-trace classification as <a class="reference internal" href="#nw.freshness.stale_verdicts" title="nw.freshness.stale_verdicts"><code class="xref py py-func docutils literal notranslate"><span class="pre">stale_verdicts()</span></code></a>, over a wider
+frontier: every annotation with at least one provenance parent.</p>
+<p>Two boundaries that are the point of this living here rather than each
+consumer approximating it (nw#39):</p>
+<ul class="simple">
+<li><p><strong>Parentless annotations are never stale</strong> and stay out of the walk —
+an imported screenplay must not read as stale forever. (nw-written
+verifying traces are parentless, so they stay out too.)</p></li>
+<li><p><strong>Upstream-stale recursion runs over the whole derived set.</strong> The
+scoped walk only recurses into parents inside <code class="docutils literal notranslate"><span class="pre">reachable</span></code> (outside
+it a parent is by construction unaffected by the change); with no
+change there is no such boundary. The cycle guard covers termination.</p></li>
+</ul>
+<p><strong>Legacy projects read all-stale, by design.</strong> A derived annotation
+written before verifying traces existed classifies <code class="docutils literal notranslate"><span class="pre">no-trace</span></code> →
+stale, and unlike the scoped walk (which only surfaces it downstream
+of an actual change) the snapshot reports it <em>always</em>, until it is
+rewritten through the trace-writing path. A consumer replacing its own
+weaker snapshot with this one is making a behavior change on pre-trace
+projects, not installing a pure wrapper.</p>
 </dd></dl>
 
 </section>
