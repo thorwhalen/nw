@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.bodies.genre_envelope &mdash; nw 0.0.31 documentation</title>
+  <title>nw.bodies.genre_envelope &mdash; nw 0.0.32 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=c5dbc6bb"></script>
+      <script src="../../../_static/documentation_options.js?v=f2234cd1"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -107,25 +107,25 @@
            <div itemprop="articleBody">
              
   <h1>Source code for nw.bodies.genre_envelope</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Body schema for the project&#39;s resolved genre envelope.</span>
+<span></span><span class="sd">"""Body schema for the project's resolved genre envelope.</span>
 
 <span class="sd">URI: ``annot://schema/genre-envelope/v1``</span>
 
 <span class="sd">The persisted form of the creation envelope :func:`nw.genres.resolve_genre`</span>
-<span class="sd">returns — ``{genre, template, params}`` — so &quot;what genre/template/params</span>
-<span class="sd">created this project?&quot; stays answerable after the create call returns</span>
+<span class="sd">returns — ``{genre, template, params}`` — so "what genre/template/params</span>
+<span class="sd">created this project?" stays answerable after the create call returns</span>
 <span class="sd">(nw#32). Before this schema existed the envelope went to the *caller* and</span>
 <span class="sd">nowhere else: reopen the project tomorrow and nothing in it said what genre</span>
 <span class="sd">it was, so nothing downstream (planner scoping, genre presets on a later</span>
-<span class="sd">run, a host aggregating another app&#39;s genre) could be genre-conditioned.</span>
+<span class="sd">run, a host aggregating another app's genre) could be genre-conditioned.</span>
 
 <span class="sd">Why an annotation rather than a ``ProjectSpec`` field</span>
 <span class="sd">-----------------------------------------------------</span>
-<span class="sd">``project.json`` is deliberately round-trip-compatible with muvid&#39;s</span>
+<span class="sd">``project.json`` is deliberately round-trip-compatible with muvid's</span>
 <span class="sd">``ProjectSpec`` for ``schema_version=1`` (nw#30), and its</span>
-<span class="sd">``extra=&quot;ignore&quot;`` means a foreign reader&#39;s load/save cycle would silently</span>
+<span class="sd">``extra="ignore"`` means a foreign reader's load/save cycle would silently</span>
 <span class="sd">*drop* an unmodelled genre key — failing quietly, the worst failure shape.</span>
-<span class="sd">The graph is nw&#39;s SSOT direction, carries provenance for free, and the</span>
+<span class="sd">The graph is nw's SSOT direction, carries provenance for free, and the</span>
 <span class="sd">precedent (:mod:`nw.bodies.decision` — a timeless, project-local, typed</span>
 <span class="sd">record under a sentinel zero-duration reference) already exists. Same</span>
 <span class="sd">shape here, singleton per project: stored under the ``genre-envelope``</span>
@@ -134,7 +134,7 @@
 <span class="sd">``params`` is the *resolved* payload — the effective values after template</span>
 <span class="sd">and defaults merged — and stays opaque to the substrate, exactly as in</span>
 <span class="sd">:class:`nw.genres.Template`: the app that owns the genre gives it meaning.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -145,31 +145,31 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">lacing.schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_body_schema</span>
 
 
-<span class="n">GENRE_ENVELOPE_BODY_SCHEMA_URI</span> <span class="o">=</span> <span class="s2">&quot;annot://schema/genre-envelope/v1&quot;</span>
-<span class="n">GENRE_ENVELOPE_TIER</span> <span class="o">=</span> <span class="s2">&quot;genre-envelope&quot;</span>
+<span class="n">GENRE_ENVELOPE_BODY_SCHEMA_URI</span> <span class="o">=</span> <span class="s2">"annot://schema/genre-envelope/v1"</span>
+<span class="n">GENRE_ENVELOPE_TIER</span> <span class="o">=</span> <span class="s2">"genre-envelope"</span>
 
 
 <div class="viewcode-block" id="GenreEnvelopeBodyV1">
 <a class="viewcode-back" href="../../../module_docs/nw/bodies/genre_envelope.html#nw.bodies.GenreEnvelopeBodyV1">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">GenreEnvelopeBodyV1</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Body of the (singleton) genre-envelope annotation.</span>
+<span class="w">    </span><span class="sd">"""Body of the (singleton) genre-envelope annotation.</span>
 
 <span class="sd">    Field-for-field the :func:`nw.genres.resolve_genre` envelope, so the</span>
 <span class="sd">    persisted record and the creation-time contract can never drift apart.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;frozen&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;extra&quot;</span><span class="p">:</span> <span class="s2">&quot;forbid&quot;</span><span class="p">}</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"frozen"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">"extra"</span><span class="p">:</span> <span class="s2">"forbid"</span><span class="p">}</span>
 
-    <span class="n">genre</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The genre slug the project was created as.&quot;</span><span class="p">)</span>
+    <span class="n">genre</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"The genre slug the project was created as."</span><span class="p">)</span>
     <span class="n">template</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;The chosen template slug, or None for &#39;start from scratch&#39;.&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"The chosen template slug, or None for 'start from scratch'."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="p">(</span>
-            <span class="s2">&quot;The *resolved* creation params — template + defaults merged. &quot;</span>
-            <span class="s2">&quot;Opaque to nw; the genre&#39;s owning app interprets them.&quot;</span>
+            <span class="s2">"The *resolved* creation params — template + defaults merged. "</span>
+            <span class="s2">"Opaque to nw; the genre's owning app interprets them."</span>
         <span class="p">),</span>
     <span class="p">)</span></div>
 

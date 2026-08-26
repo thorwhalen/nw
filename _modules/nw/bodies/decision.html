@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.bodies.decision &mdash; nw 0.0.31 documentation</title>
+  <title>nw.bodies.decision &mdash; nw 0.0.32 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=c5dbc6bb"></script>
+      <script src="../../../_static/documentation_options.js?v=f2234cd1"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -107,7 +107,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for nw.bodies.decision</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Body schema for decision-log entries.</span>
+<span></span><span class="sd">"""Body schema for decision-log entries.</span>
 
 <span class="sd">URI: ``annot://schema/decision/v1``</span>
 
@@ -117,10 +117,10 @@
 <span class="sd">quick tail-grepping; the canonical form is this annotation.</span>
 
 <span class="sd">Decisions are stored as **timeless** annotations (no interval) under a</span>
-<span class="sd">sentinel zero-duration MediaRef pointing at the project&#39;s asset_id.</span>
+<span class="sd">sentinel zero-duration MediaRef pointing at the project's asset_id.</span>
 <span class="sd">Reelee will surface them in inspector / network views as the audit</span>
-<span class="sd">trail for &quot;why did this come out this way?&quot;.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">trail for "why did this come out this way?".</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -131,26 +131,26 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">lacing.schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_body_schema</span>
 
 
-<span class="n">DECISION_BODY_SCHEMA_URI</span> <span class="o">=</span> <span class="s2">&quot;annot://schema/decision/v1&quot;</span>
+<span class="n">DECISION_BODY_SCHEMA_URI</span> <span class="o">=</span> <span class="s2">"annot://schema/decision/v1"</span>
 
 
 <div class="viewcode-block" id="DecisionBodyV1">
 <a class="viewcode-back" href="../../../module_docs/nw/bodies/decision.html#nw.bodies.DecisionBodyV1">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DecisionBodyV1</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Body of a decision annotation.</span>
+<span class="w">    </span><span class="sd">"""Body of a decision annotation.</span>
 
-<span class="sd">    ``kind`` names the operation (e.g. ``&quot;render_shot&quot;``, ``&quot;set_character_anchor&quot;``,</span>
-<span class="sd">    ``&quot;clone_project&quot;``). ``payload`` is a free-form dict so producers don&#39;t</span>
+<span class="sd">    ``kind`` names the operation (e.g. ``"render_shot"``, ``"set_character_anchor"``,</span>
+<span class="sd">    ``"clone_project"``). ``payload`` is a free-form dict so producers don't</span>
 <span class="sd">    need a schema-versioned table per kind. If a kind earns a richer schema</span>
 <span class="sd">    later, it can graduate into its own body URI without disturbing this one.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;frozen&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;extra&quot;</span><span class="p">:</span> <span class="s2">&quot;forbid&quot;</span><span class="p">}</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"frozen"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">"extra"</span><span class="p">:</span> <span class="s2">"forbid"</span><span class="p">}</span>
 
-    <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Operation name (e.g. &#39;render_shot&#39;).&quot;</span><span class="p">)</span>
+    <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Operation name (e.g. 'render_shot')."</span><span class="p">)</span>
     <span class="n">payload</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Free-form structured details. Keys vary by kind.&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Free-form structured details. Keys vary by kind."</span><span class="p">,</span>
     <span class="p">)</span></div>
 
 

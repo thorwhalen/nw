@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.workflow &mdash; nw 0.0.31 documentation</title>
+  <title>nw.workflow &mdash; nw 0.0.32 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=c5dbc6bb"></script>
+      <script src="../../_static/documentation_options.js?v=f2234cd1"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -126,7 +126,32 @@
              
   <section id="module-nw.workflow">
 <span id="nw-workflow"></span><h1>nw.workflow<a class="headerlink" href="#module-nw.workflow" title="Link to this heading"></a></h1>
-<p>Workflow: prepare → plan → execute, the architectural pivot.</p>
+<p>Workflow: prepare → plan → execute, for a <strong>video shot</strong>.</p>
+<p><strong>Scope — read this before extending anything here.</strong> This module and
+<a class="reference internal" href="renderers.html#module-nw.renderers" title="nw.renderers"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nw.renderers</span></code></a> are the <em>shot</em> render unit: they bake in
+<a class="reference internal" href="schema.html#nw.schema.ShotSpec" title="nw.schema.ShotSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">nw.schema.ShotSpec</span></code></a>, an open-string <code class="docutils literal notranslate"><span class="pre">render_strategy</span></code>, and an
+<code class="docutils literal notranslate"><span class="pre">output.mp4</span></code>. They are <strong>not</strong> the render-kind-agnostic engine, and they are
+<strong>not</strong> the place to add a new render <em>kind</em>. That engine is
+<a class="reference internal" href="transforms.html#module-nw.transforms" title="nw.transforms"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nw.transforms</span></code></a>, whose <code class="docutils literal notranslate"><span class="pre">plan</span></code>/<code class="docutils literal notranslate"><span class="pre">execute</span></code> split is the same shape over
+arbitrary annotation kinds — it is what reelee’s production video path and
+braidio’s audio-weave path both ride.</p>
+<p><strong>This is a layer *under* that engine, not a path parallel to it — and it is
+not dead code.</strong> The engine’s shot arrow is built on top of this module:
+<code class="docutils literal notranslate"><span class="pre">nw/transforms/_adapters/render_strategy.py</span></code>, which publishes every
+<code class="docutils literal notranslate"><span class="pre">shot_to_render_result.fal.&lt;strategy&gt;</span></code> Transform, calls <a class="reference internal" href="#nw.workflow.prepare_shot" title="nw.workflow.prepare_shot"><code class="xref py py-func docutils literal notranslate"><span class="pre">prepare_shot()</span></code></a>
+in both its <code class="docutils literal notranslate"><span class="pre">plan</span></code> (<code class="docutils literal notranslate"><span class="pre">upload=params.upload</span></code>) and its <code class="docutils literal notranslate"><span class="pre">execute</span></code>
+(<code class="docutils literal notranslate"><span class="pre">upload=False</span></code>); and <a class="reference internal" href="#nw.workflow.plan_render_shot" title="nw.workflow.plan_render_shot"><code class="xref py py-func docutils literal notranslate"><span class="pre">plan_render_shot()</span></code></a> / <a class="reference internal" href="#nw.workflow.execute_render" title="nw.workflow.execute_render"><code class="xref py py-func docutils literal notranslate"><span class="pre">execute_render()</span></code></a> both
+call <a class="reference internal" href="renderers.html#nw.renderers.get_strategy" title="nw.renderers.get_strategy"><code class="xref py py-func docutils literal notranslate"><span class="pre">nw.renderers.get_strategy()</span></code></a>. So a “cleanup” here — dropping
+<a class="reference internal" href="#nw.workflow.prepare_shot" title="nw.workflow.prepare_shot"><code class="xref py py-func docutils literal notranslate"><span class="pre">prepare_shot()</span></code></a>’s <code class="docutils literal notranslate"><span class="pre">upload=</span></code> keyword, deleting this module as unused —
+silently breaks the Transform path that the docs hold up as the correct one.</p>
+<p>What is true, and narrower than “legacy” sounds, is a statement about <em>entry
+points</em>: measured 2026-08-27, <a class="reference internal" href="#nw.workflow.prepare_shot" title="nw.workflow.prepare_shot"><code class="xref py py-func docutils literal notranslate"><span class="pre">prepare_shot()</span></code></a>, <a class="reference internal" href="#nw.workflow.plan_render_shot" title="nw.workflow.plan_render_shot"><code class="xref py py-func docutils literal notranslate"><span class="pre">plan_render_shot()</span></code></a>,
+<a class="reference internal" href="#nw.workflow.execute_render" title="nw.workflow.execute_render"><code class="xref py py-func docutils literal notranslate"><span class="pre">execute_render()</span></code></a> and <a class="reference internal" href="renderers.html#nw.renderers.get_strategy" title="nw.renderers.get_strategy"><code class="xref py py-func docutils literal notranslate"><span class="pre">nw.renderers.get_strategy()</span></code></a> have <strong>zero</strong> call
+sites outside nw (muvid has its own <code class="docutils literal notranslate"><span class="pre">muvid.schema.ShotSpec</span></code> and its own
+ffmpeg strategies). Nothing downstream drives these functions <em>directly</em> today,
+and new callers should go through the Transform registry instead — but inside
+nw they are load-bearing. See <code class="docutils literal notranslate"><span class="pre">misc/docs/Rendering</span> <span class="pre">Provenance</span> <span class="pre">and</span> <span class="pre">Partial</span>
+<span class="pre">Re-render.md</span></code> and nw#9.</p>
 <p>The render pipeline has three phases, each cleanly separable:</p>
 <ol class="arabic simple">
 <li><p><strong>Prepare</strong> (<a class="reference internal" href="#nw.workflow.prepare_shot" title="nw.workflow.prepare_shot"><code class="xref py py-func docutils literal notranslate"><span class="pre">prepare_shot()</span></code></a>) — <em>local</em> work: extract the audio slice

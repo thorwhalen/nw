@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.schema &mdash; nw 0.0.31 documentation</title>
+  <title>nw.schema &mdash; nw 0.0.32 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=c5dbc6bb"></script>
+      <script src="../../_static/documentation_options.js?v=f2234cd1"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -107,12 +107,12 @@
            <div itemprop="articleBody">
              
   <h1>Source code for nw.schema</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Schema for an nw project — narrative-workflow SSOT data shapes.</span>
+<span></span><span class="sd">"""Schema for an nw project — narrative-workflow SSOT data shapes.</span>
 
 <span class="sd">A project is a folder with a ``project.json`` at its root. The shape is</span>
 <span class="sd">deliberately compatible with the layout muvid established for music-video</span>
 <span class="sd">projects, so the_bells_v* fixtures load directly into nw without</span>
-<span class="sd">migration. nw generalizes muvid&#39;s IR by:</span>
+<span class="sd">migration. nw generalizes muvid's IR by:</span>
 
 <span class="sd">- making :class:`RenderStrategy` open (a string), so apps can register</span>
 <span class="sd">  their own strategies (composite_lipsync, slideshow, panel, …) without</span>
@@ -128,7 +128,7 @@
 <span class="sd">   ecosystem coherent.</span>
 <span class="sd">2. nw will eventually round-trip schemas through HTTP/MCP; Pydantic gives</span>
 <span class="sd">   JSON-Schema export and validation for free.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -143,14 +143,14 @@
 <div class="viewcode-block" id="SongInfo">
 <a class="viewcode-back" href="../../module_docs/nw/schema.html#nw.SongInfo">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SongInfo</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Metadata for the master audio file.</span>
+<span class="w">    </span><span class="sd">"""Metadata for the master audio file.</span>
 
-<span class="sd">    Compatible with muvid&#39;s SongInfo by field name and type.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    Compatible with muvid's SongInfo by field name and type.</span>
+<span class="sd">    """</span>
 
-    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;extra&quot;</span><span class="p">:</span> <span class="s2">&quot;ignore&quot;</span><span class="p">}</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"extra"</span><span class="p">:</span> <span class="s2">"ignore"</span><span class="p">}</span>
 
-    <span class="n">audio_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Path relative to project root.&quot;</span><span class="p">)</span>
+    <span class="n">audio_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Path relative to project root."</span><span class="p">)</span>
     <span class="n">duration_s</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="n">sample_rate</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="n">bitrate</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
@@ -161,21 +161,21 @@
 <div class="viewcode-block" id="SectionSpec">
 <a class="viewcode-back" href="../../module_docs/nw/schema.html#nw.SectionSpec">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SectionSpec</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A non-overlapping span of the project&#39;s master timeline.</span>
+<span class="w">    </span><span class="sd">"""A non-overlapping span of the project's master timeline.</span>
 
-<span class="sd">    ``label`` is free-form (&quot;intro&quot;, &quot;verse&quot;, &quot;chorus&quot;, &quot;scene-1&quot;, &quot;act-2&quot;,</span>
+<span class="sd">    ``label`` is free-form ("intro", "verse", "chorus", "scene-1", "act-2",</span>
 <span class="sd">    …) so different apps (music-video, explainer, podcast-clip) can use</span>
 <span class="sd">    their own taxonomy.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;extra&quot;</span><span class="p">:</span> <span class="s2">&quot;ignore&quot;</span><span class="p">}</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"extra"</span><span class="p">:</span> <span class="s2">"ignore"</span><span class="p">}</span>
 
     <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">start_s</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="n">end_s</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-    <span class="n">energy</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-    <span class="n">mood</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
+    <span class="n">energy</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
+    <span class="n">mood</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">duration_s</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
@@ -186,27 +186,27 @@
 <div class="viewcode-block" id="ShotSpec">
 <a class="viewcode-back" href="../../module_docs/nw/schema.html#nw.ShotSpec">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ShotSpec</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A timeline-locked visual unit.</span>
+<span class="w">    </span><span class="sd">"""A timeline-locked visual unit.</span>
 
 <span class="sd">    ``[start_s, end_s)`` is half-open. ``render_strategy`` is an open string</span>
 <span class="sd">    rather than a closed Literal, so apps can register their own strategies</span>
 <span class="sd">    via :func:`nw.renderers.register_strategy` (Phase 1b.3) without modifying</span>
 <span class="sd">    the schema.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;extra&quot;</span><span class="p">:</span> <span class="s2">&quot;ignore&quot;</span><span class="p">}</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"extra"</span><span class="p">:</span> <span class="s2">"ignore"</span><span class="p">}</span>
 
     <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">start_s</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="n">end_s</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">ge</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">section_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-    <span class="n">render_strategy</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;image_to_video&quot;</span>
-    <span class="n">environment</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">section_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
+    <span class="n">render_strategy</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"image_to_video"</span>
+    <span class="n">environment</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
     <span class="n">characters</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
-    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-    <span class="n">camera</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-    <span class="n">framing</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;medium&quot;</span>
-    <span class="n">notes</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
+    <span class="n">camera</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
+    <span class="n">framing</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"medium"</span>
+    <span class="n">notes</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">duration_s</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
@@ -217,7 +217,7 @@
 <div class="viewcode-block" id="CharacterRef">
 <a class="viewcode-back" href="../../module_docs/nw/schema.html#nw.CharacterRef">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">CharacterRef</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pointer to a character folder under ``characters/&lt;name&gt;/``.</span>
+<span class="w">    </span><span class="sd">"""Pointer to a character folder under ``characters/&lt;name&gt;/``.</span>
 
 <span class="sd">    The stable-attribute fields mirror</span>
 <span class="sd">    :class:`nw.bodies.CharacterRefBodyV1` field-for-field, and that is</span>
@@ -227,16 +227,16 @@
 <span class="sd">    ``CharacterRef``. Any field present on the body but missing here is</span>
 <span class="sd">    **silently erased** by the next ``update_spec`` — which is what used to</span>
 <span class="sd">    happen to ``reference_image_urls``. Add a field to one, add it to both.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;extra&quot;</span><span class="p">:</span> <span class="s2">&quot;ignore&quot;</span><span class="p">}</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"extra"</span><span class="p">:</span> <span class="s2">"ignore"</span><span class="p">}</span>
 
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
     <span class="n">reference_image_urls</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
-    <span class="n">costume</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-    <span class="n">age</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-    <span class="n">default_setting</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">costume</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
+    <span class="n">age</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
+    <span class="n">default_setting</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
     <span class="n">distinguishing_features</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
     <span class="n">palette_anchors</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
     <span class="n">do_not_do</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span></div>
@@ -246,18 +246,18 @@
 <div class="viewcode-block" id="EnvironmentRef">
 <a class="viewcode-back" href="../../module_docs/nw/schema.html#nw.EnvironmentRef">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">EnvironmentRef</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pointer to an environment folder under ``environments/&lt;name&gt;/``.</span>
+<span class="w">    </span><span class="sd">"""Pointer to an environment folder under ``environments/&lt;name&gt;/``.</span>
 
 <span class="sd">    Mirrors :class:`nw.bodies.EnvironmentRefBodyV1` field-for-field, for the</span>
 <span class="sd">    same load-bearing reason as :class:`CharacterRef` — see that docstring.</span>
 <span class="sd">    ``reference_image_urls`` (the lookbook the FE curates for a *location*)</span>
 <span class="sd">    was erased by every ``update_spec`` until this mirror was completed.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;extra&quot;</span><span class="p">:</span> <span class="s2">&quot;ignore&quot;</span><span class="p">}</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"extra"</span><span class="p">:</span> <span class="s2">"ignore"</span><span class="p">}</span>
 
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
     <span class="n">reference_image_urls</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span></div>
 
 
@@ -265,24 +265,24 @@
 <div class="viewcode-block" id="ProjectSpec">
 <a class="viewcode-back" href="../../module_docs/nw/schema.html#nw.ProjectSpec">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ProjectSpec</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The top-level project SSOT, persisted as ``project.json``.</span>
+<span class="w">    </span><span class="sd">"""The top-level project SSOT, persisted as ``project.json``.</span>
 
-<span class="sd">    Field names and order are chosen to round-trip identically with muvid&#39;s</span>
+<span class="sd">    Field names and order are chosen to round-trip identically with muvid's</span>
 <span class="sd">    ProjectSpec for ``schema_version=1``, so the_bells_v* fixtures (and any</span>
 <span class="sd">    other muvid-shaped project) load and re-save without churn.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;extra&quot;</span><span class="p">:</span> <span class="s2">&quot;ignore&quot;</span><span class="p">}</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"extra"</span><span class="p">:</span> <span class="s2">"ignore"</span><span class="p">}</span>
 
     <span class="n">schema_version</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">SCHEMA_VERSION</span>
-    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
     <span class="n">song</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SongInfo</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">characters</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">CharacterRef</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
     <span class="n">environments</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">EnvironmentRef</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
     <span class="n">sections</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">SectionSpec</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
     <span class="n">shots</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">ShotSpec</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
-    <span class="n">global_style</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-    <span class="n">notes</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">global_style</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
+    <span class="n">notes</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
 
     <span class="c1"># -- queries -----------------------------------------------------------</span>
 
@@ -315,15 +315,15 @@
 <div class="viewcode-block" id="ProjectSummary">
 <a class="viewcode-back" href="../../module_docs/nw/schema.html#nw.ProjectSummary">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ProjectSummary</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Typed read view of a project — what ``muvid status`` printed, but typed.</span>
+<span class="w">    </span><span class="sd">"""Typed read view of a project — what ``muvid status`` printed, but typed.</span>
 
 <span class="sd">    Returned by :meth:`Project.read_summary`. Holds the small facts the user</span>
 <span class="sd">    most often wants: title, root, song path, counts of characters / shots /</span>
-<span class="sd">    sections / output, plus a coarse &quot;stages_done&quot; list naming the lifecycle</span>
+<span class="sd">    sections / output, plus a coarse "stages_done" list naming the lifecycle</span>
 <span class="sd">    stages that have been reached.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;extra&quot;</span><span class="p">:</span> <span class="s2">&quot;ignore&quot;</span><span class="p">}</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"extra"</span><span class="p">:</span> <span class="s2">"ignore"</span><span class="p">}</span>
 
     <span class="n">title</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">root</span><span class="p">:</span> <span class="nb">str</span>
@@ -348,51 +348,51 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">stages_done</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Coarse stage list — what&#39;s been reached, in lifecycle order.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Coarse stage list — what's been reached, in lifecycle order."""</span>
         <span class="n">out</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">song_path</span><span class="p">:</span>
-            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;song&quot;</span><span class="p">)</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"song"</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_lyrics</span><span class="p">:</span>
-            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;lyrics&quot;</span><span class="p">)</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"lyrics"</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_alignment</span><span class="p">:</span>
-            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;alignment&quot;</span><span class="p">)</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"alignment"</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">character_count</span><span class="p">:</span>
-            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;characters&quot;</span><span class="p">)</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"characters"</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">environment_count</span><span class="p">:</span>
-            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;environments&quot;</span><span class="p">)</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"environments"</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">section_count</span><span class="p">:</span>
-            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;sections&quot;</span><span class="p">)</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"sections"</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">shot_count</span><span class="p">:</span>
-            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;shots&quot;</span><span class="p">)</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"shots"</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_script</span><span class="p">:</span>
-            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;script&quot;</span><span class="p">)</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"script"</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rendered_shot_count</span><span class="p">:</span>
-            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;rendered:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rendered_shot_count</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">shot_count</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"rendered:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">rendered_shot_count</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">shot_count</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_final_compose</span><span class="p">:</span>
-            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;compose&quot;</span><span class="p">)</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"compose"</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">out</span></div>
 
 
 
 <span class="c1"># ---------------------------------------------------------------------------</span>
-<span class="c1"># Session resumption — &quot;where we left off&quot;</span>
+<span class="c1"># Session resumption — "where we left off"</span>
 <span class="c1"># ---------------------------------------------------------------------------</span>
 
 
 <div class="viewcode-block" id="DecisionEntry">
 <a class="viewcode-back" href="../../module_docs/nw/schema.html#nw.DecisionEntry">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DecisionEntry</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;One entry of a project&#39;s decision log, flattened for display.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""One entry of a project's decision log, flattened for display."""</span>
 
-    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;extra&quot;</span><span class="p">:</span> <span class="s2">&quot;ignore&quot;</span><span class="p">}</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"extra"</span><span class="p">:</span> <span class="s2">"ignore"</span><span class="p">}</span>
 
     <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">at</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="kc">None</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="p">(</span>
-            <span class="s2">&quot;ISO-8601 UTC timestamp from the annotation&#39;s &quot;</span>
-            <span class="s2">&quot;``provenance.generated_at_time``. ``None`` when the decision &quot;</span>
-            <span class="s2">&quot;predates provenance timestamps.&quot;</span>
+            <span class="s2">"ISO-8601 UTC timestamp from the annotation's "</span>
+            <span class="s2">"``provenance.generated_at_time``. ``None`` when the decision "</span>
+            <span class="s2">"predates provenance timestamps."</span>
         <span class="p">),</span>
     <span class="p">)</span>
     <span class="n">payload</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span></div>
@@ -402,7 +402,7 @@
 <div class="viewcode-block" id="ResumptionBrief">
 <a class="viewcode-back" href="../../module_docs/nw/schema.html#nw.ResumptionBrief">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ResumptionBrief</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A &quot;where we left off&quot; snapshot, returned by :meth:`nw.Project.resumption_brief`.</span>
+<span class="w">    </span><span class="sd">"""A "where we left off" snapshot, returned by :meth:`nw.Project.resumption_brief`.</span>
 
 <span class="sd">    Pure data: no fal calls, no LLM, no network. reelee renders it as prose</span>
 <span class="sd">    and injects it as the first tool-result of a session.</span>
@@ -410,7 +410,7 @@
 <span class="sd">    **The field names are chosen to be honest about what nw can currently</span>
 <span class="sd">    measure**, because a confidently wrong number is worse than no number:</span>
 
-<span class="sd">    - :attr:`downstream_of_last_authored_change` is *not* &quot;stale&quot;. It is</span>
+<span class="sd">    - :attr:`downstream_of_last_authored_change` is *not* "stale". It is</span>
 <span class="sd">      ``nw.descendants_of`` — pure provenance reachability, comparing no</span>
 <span class="sd">      content and no timestamp — so this set includes everything already</span>
 <span class="sd">      regenerated since the change. It is an **upper bound** on what needs</span>
@@ -420,13 +420,13 @@
 <span class="sd">      (nw#24), so switching this field to it would return a smaller and</span>
 <span class="sd">      correct set. That is deliberately **not** done here: the field would</span>
 <span class="sd">      then be named for the wrong measurement, and which of the two a</span>
-<span class="sd">      resumption brief should show is nw#7&#39;s call, not nw#24&#39;s. Callers who</span>
+<span class="sd">      resumption brief should show is nw#7's call, not nw#24's. Callers who</span>
 <span class="sd">      want the exact set can call ``nw.stale_after`` with</span>
 <span class="sd">      :attr:`last_authored_change_id`.</span>
 <span class="sd">    - The walk starts at the last **authored** change — the most recent</span>
 <span class="sd">      annotation the user wrote (a shot, a section, a character or</span>
-<span class="sd">      environment ref), never one a Transform derived. Walking from &quot;the</span>
-<span class="sd">      newest annotation&quot; instead would be inverted: the newest node in a</span>
+<span class="sd">      environment ref), never one a Transform derived. Walking from "the</span>
+<span class="sd">      newest annotation" instead would be inverted: the newest node in a</span>
 <span class="sd">      provenance graph is by construction a *leaf*, so its descendant set is</span>
 <span class="sd">      empty in exactly the case the field exists for.</span>
 <span class="sd">    - :attr:`total_spend_usd` sums *every* recorded render decision across</span>
@@ -436,18 +436,18 @@
 
 <span class="sd">    :attr:`caveats` carries those qualifications as data — so a consumer</span>
 <span class="sd">    renders them next to the numbers instead of rediscovering them.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;extra&quot;</span><span class="p">:</span> <span class="s2">&quot;ignore&quot;</span><span class="p">}</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"extra"</span><span class="p">:</span> <span class="s2">"ignore"</span><span class="p">}</span>
 
     <span class="n">title</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">root</span><span class="p">:</span> <span class="nb">str</span>
 
     <span class="n">last_session_at</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;ISO-8601 UTC time of the most recent graph write.&quot;</span>
+        <span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"ISO-8601 UTC time of the most recent graph write."</span>
     <span class="p">)</span>
     <span class="n">gap_seconds</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Seconds between ``last_session_at`` and now.&quot;</span>
+        <span class="kc">None</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Seconds between ``last_session_at`` and now."</span>
     <span class="p">)</span>
 
     <span class="n">recent_decisions</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">DecisionEntry</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
@@ -455,27 +455,27 @@
     <span class="n">downstream_of_last_authored_change</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default_factory</span><span class="o">=</span><span class="nb">tuple</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="p">(</span>
-            <span class="s2">&quot;Annotation ids reachable from :attr:`last_authored_change_id` &quot;</span>
-            <span class="s2">&quot;via ``was_derived_from``, excluding decision-log rows (an audit &quot;</span>
-            <span class="s2">&quot;entry is never something to regenerate). Reachability, not &quot;</span>
-            <span class="s2">&quot;staleness — an upper bound. See the class docstring.&quot;</span>
+            <span class="s2">"Annotation ids reachable from :attr:`last_authored_change_id` "</span>
+            <span class="s2">"via ``was_derived_from``, excluding decision-log rows (an audit "</span>
+            <span class="s2">"entry is never something to regenerate). Reachability, not "</span>
+            <span class="s2">"staleness — an upper bound. See the class docstring."</span>
         <span class="p">),</span>
     <span class="p">)</span>
     <span class="n">last_authored_change_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="kc">None</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="p">(</span>
-            <span class="s2">&quot;The annotation the walk started from: the most recent one the &quot;</span>
-            <span class="s2">&quot;user authored — no ``was_derived_from`` parents and not a &quot;</span>
-            <span class="s2">&quot;decision — i.e. the last edit whose consequences are downstream.&quot;</span>
+            <span class="s2">"The annotation the walk started from: the most recent one the "</span>
+            <span class="s2">"user authored — no ``was_derived_from`` parents and not a "</span>
+            <span class="s2">"decision — i.e. the last edit whose consequences are downstream."</span>
         <span class="p">),</span>
     <span class="p">)</span>
 
     <span class="n">total_spend_usd</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="mf">0.0</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="p">(</span>
-            <span class="s2">&quot;Sum over recorded render-decision cost payloads, across every &quot;</span>
-            <span class="s2">&quot;store scope. Includes renders that were billed and then failed &quot;</span>
-            <span class="s2">&quot;— an upper bound.&quot;</span>
+            <span class="s2">"Sum over recorded render-decision cost payloads, across every "</span>
+            <span class="s2">"store scope. Includes renders that were billed and then failed "</span>
+            <span class="s2">"— an upper bound."</span>
         <span class="p">),</span>
     <span class="p">)</span>
 
@@ -483,13 +483,13 @@
 
     <span class="n">suggested_next</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default_factory</span><span class="o">=</span><span class="nb">tuple</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Deterministic next-action hints, most actionable first.&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Deterministic next-action hints, most actionable first."</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">caveats</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default_factory</span><span class="o">=</span><span class="nb">tuple</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="p">(</span>
-            <span class="s2">&quot;Known imprecisions in *this* brief, emitted only when the &quot;</span>
-            <span class="s2">&quot;number they qualify is non-zero.&quot;</span>
+            <span class="s2">"Known imprecisions in *this* brief, emitted only when the "</span>
+            <span class="s2">"number they qualify is non-zero."</span>
         <span class="p">),</span>
     <span class="p">)</span>
 

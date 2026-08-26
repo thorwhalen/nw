@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.renderers &mdash; nw 0.0.31 documentation</title>
+  <title>nw.renderers &mdash; nw 0.0.32 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=c5dbc6bb"></script>
+      <script src="../../_static/documentation_options.js?v=f2234cd1"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -122,7 +122,26 @@
              
   <section id="module-nw.renderers">
 <span id="nw-renderers"></span><h1>nw.renderers<a class="headerlink" href="#module-nw.renderers" title="Link to this heading"></a></h1>
-<p>Render strategies — pluggable, plan-producing.</p>
+<p>Render strategies — pluggable, plan-producing, <strong>shot-typed</strong>.</p>
+<p><strong>Scope.</strong> A Strategy is the plug-in point of the <em>shot</em> render unit
+(<a class="reference internal" href="workflow.html#module-nw.workflow" title="nw.workflow"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nw.workflow</span></code></a>) — and, through the adapter in
+<code class="docutils literal notranslate"><span class="pre">nw/transforms/_adapters/render_strategy.py</span></code>, of the <strong>general engine too</strong>.
+That adapter wraps <em>every</em> registered strategy at import time, so registering
+one here publishes a <code class="docutils literal notranslate"><span class="pre">shot_to_render_result.fal.&lt;name&gt;</span></code> Transform for free,
+and <a class="reference internal" href="genres.html#nw.genres.Genre" title="nw.genres.Genre"><code class="xref py py-class docutils literal notranslate"><span class="pre">nw.genres.Genre</span></code></a> validates a genre’s <code class="docutils literal notranslate"><span class="pre">strategy_names</span></code> against
+this registry. The two registries are one pipeline with two front doors, not
+two pipelines — the README says the same thing under “Render strategies”.</p>
+<p>What a Strategy <strong>cannot</strong> express is a render that is not a video shot: it is
+typed to a <a class="reference internal" href="workflow.html#nw.workflow.ShotPreparation" title="nw.workflow.ShotPreparation"><code class="xref py py-class docutils literal notranslate"><span class="pre">nw.workflow.ShotPreparation</span></code></a> in and an <code class="docutils literal notranslate"><span class="pre">output.mp4</span></code> out.
+So the split is by render <em>kind</em>, not by registry:</p>
+<ul class="simple">
+<li><p>a new way to render a <strong>shot</strong> → register a Strategy here, and get the
+Transform adaptation for free;</p></li>
+<li><p>a new render <strong>kind</strong> — audio weave, slideshow, anything whose input is not a
+shot — → register a <a class="reference internal" href="transforms.html#nw.transforms.Transform" title="nw.transforms.Transform"><code class="xref py py-class docutils literal notranslate"><span class="pre">nw.transforms.Transform</span></code></a> directly; that registry
+is the render-kind-agnostic one.</p></li>
+</ul>
+<p>See nw#9.</p>
 <p>A <em>strategy</em> knows how to turn a <a class="reference internal" href="workflow.html#nw.workflow.ShotPreparation" title="nw.workflow.ShotPreparation"><code class="xref py py-class docutils literal notranslate"><span class="pre">nw.workflow.ShotPreparation</span></code></a> into:</p>
 <ol class="arabic simple">
 <li><p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">falaw.Plan</span></code> (pure data — <a class="reference internal" href="#nw.renderers.Strategy.plan" title="nw.renderers.Strategy.plan"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Strategy.plan()</span></code></a>).</p></li>

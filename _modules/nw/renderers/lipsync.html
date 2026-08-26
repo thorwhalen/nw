@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.renderers.lipsync &mdash; nw 0.0.31 documentation</title>
+  <title>nw.renderers.lipsync &mdash; nw 0.0.32 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=c5dbc6bb"></script>
+      <script src="../../../_static/documentation_options.js?v=f2234cd1"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -108,18 +108,18 @@
            <div itemprop="articleBody">
              
   <h1>Source code for nw.renderers.lipsync</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Strategy: lipsync — character anchor + audio → talking video.</span>
+<span></span><span class="sd">"""Strategy: lipsync — character anchor + audio → talking video.</span>
 
 <span class="sd">Calls ``falaw.animate_face`` (image+audio → talking video). Defaults to</span>
-<span class="sd">``omnihuman/v1.5`` at ``quality=&quot;high&quot;`` because the default ``ai-avatar``</span>
+<span class="sd">``omnihuman/v1.5`` at ``quality="high"`` because the default ``ai-avatar``</span>
 <span class="sd">hangs reliably (see muvid_project bugs_encountered.md, 2026-05-07).</span>
 
 <span class="sd">If multiple characters are present, the first one is picked and a warning is</span>
-<span class="sd">emitted — multi-character lipsync is composite_lipsync&#39;s territory (Phase 2).</span>
+<span class="sd">emitted — multi-character lipsync is composite_lipsync's territory (Phase 2).</span>
 
 <span class="sd">model_overrides keys understood:</span>
 <span class="sd">  - ``avatar`` — override the ``avatar_model_id`` (e.g. omnihuman, ai-avatar).</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -140,47 +140,47 @@
 <div class="viewcode-block" id="LipsyncStrategy">
 <a class="viewcode-back" href="../../../module_docs/nw/renderers/lipsync.html#nw.renderers.lipsync.LipsyncStrategy">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">LipsyncStrategy</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;``render_strategy=&quot;lipsync&quot;``.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""``render_strategy="lipsync"``."""</span>
 
-    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;lipsync&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">"lipsync"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">plan</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">prep</span><span class="p">:</span> <span class="s2">&quot;ShotPreparation&quot;</span><span class="p">,</span>
+        <span class="n">prep</span><span class="p">:</span> <span class="s2">"ShotPreparation"</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
-        <span class="n">quality</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;balanced&quot;</span><span class="p">,</span>
+        <span class="n">quality</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"balanced"</span><span class="p">,</span>
         <span class="n">model_overrides</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Plan</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">prep</span><span class="o">.</span><span class="n">character_anchor_paths</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;lipsync: shot </span><span class="si">{</span><span class="n">prep</span><span class="o">.</span><span class="n">shot_id</span><span class="si">!r}</span><span class="s2"> has no character anchor &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;image. Use Project.set_character_anchor() to pick one.&quot;</span>
+                <span class="sa">f</span><span class="s2">"lipsync: shot </span><span class="si">{</span><span class="n">prep</span><span class="o">.</span><span class="n">shot_id</span><span class="si">!r}</span><span class="s2"> has no character anchor "</span>
+                <span class="sa">f</span><span class="s2">"image. Use Project.set_character_anchor() to pick one."</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">prep</span><span class="o">.</span><span class="n">character_anchor_paths</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;lipsync: shot </span><span class="si">{</span><span class="n">prep</span><span class="o">.</span><span class="n">shot_id</span><span class="si">!r}</span><span class="s2"> has multiple characters &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">prep</span><span class="o">.</span><span class="n">character_anchor_paths</span><span class="p">)</span><span class="si">}</span><span class="s2">); v0 only lipsyncs the first.&quot;</span>
+                <span class="sa">f</span><span class="s2">"lipsync: shot </span><span class="si">{</span><span class="n">prep</span><span class="o">.</span><span class="n">shot_id</span><span class="si">!r}</span><span class="s2"> has multiple characters "</span>
+                <span class="sa">f</span><span class="s2">"(</span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">prep</span><span class="o">.</span><span class="n">character_anchor_paths</span><span class="p">)</span><span class="si">}</span><span class="s2">); v0 only lipsyncs the first."</span>
             <span class="p">)</span>
 
         <span class="n">char_name</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="n">prep</span><span class="o">.</span><span class="n">character_anchor_paths</span><span class="p">))</span>
         <span class="c1"># URLs are only required at execute time; planning works with</span>
         <span class="c1"># local-path placeholders (the executor downstream of this still</span>
-        <span class="c1"># needs URLs, but a plan-only inspection doesn&#39;t).</span>
+        <span class="c1"># needs URLs, but a plan-only inspection doesn't).</span>
         <span class="n">image_url</span> <span class="o">=</span> <span class="n">prep</span><span class="o">.</span><span class="n">character_anchor_urls</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="n">char_name</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;&lt;plan-only:</span><span class="si">{</span><span class="n">prep</span><span class="o">.</span><span class="n">character_anchor_paths</span><span class="p">[</span><span class="n">char_name</span><span class="p">]</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+            <span class="n">char_name</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"&lt;plan-only:</span><span class="si">{</span><span class="n">prep</span><span class="o">.</span><span class="n">character_anchor_paths</span><span class="p">[</span><span class="n">char_name</span><span class="p">]</span><span class="si">}</span><span class="s2">&gt;"</span>
         <span class="p">)</span>
-        <span class="n">audio_url</span> <span class="o">=</span> <span class="n">prep</span><span class="o">.</span><span class="n">audio_slice_url</span> <span class="ow">or</span> <span class="sa">f</span><span class="s2">&quot;&lt;plan-only:</span><span class="si">{</span><span class="n">prep</span><span class="o">.</span><span class="n">audio_slice_path</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+        <span class="n">audio_url</span> <span class="o">=</span> <span class="n">prep</span><span class="o">.</span><span class="n">audio_slice_url</span> <span class="ow">or</span> <span class="sa">f</span><span class="s2">"&lt;plan-only:</span><span class="si">{</span><span class="n">prep</span><span class="o">.</span><span class="n">audio_slice_path</span><span class="si">}</span><span class="s2">&gt;"</span>
 
-        <span class="n">prompt</span> <span class="o">=</span> <span class="n">prep</span><span class="o">.</span><span class="n">shot</span><span class="o">.</span><span class="n">description</span> <span class="ow">or</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">char_name</span><span class="si">}</span><span class="s2"> singing&quot;</span>
+        <span class="n">prompt</span> <span class="o">=</span> <span class="n">prep</span><span class="o">.</span><span class="n">shot</span><span class="o">.</span><span class="n">description</span> <span class="ow">or</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">char_name</span><span class="si">}</span><span class="s2"> singing"</span>
         <span class="k">if</span> <span class="n">prep</span><span class="o">.</span><span class="n">lyric_lines</span><span class="p">:</span>
-            <span class="n">prompt</span> <span class="o">+=</span> <span class="s2">&quot; — lyrics: &quot;</span> <span class="o">+</span> <span class="s2">&quot; / &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-                <span class="n">L</span><span class="p">[</span><span class="s2">&quot;text&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">L</span> <span class="ow">in</span> <span class="n">prep</span><span class="o">.</span><span class="n">lyric_lines</span> <span class="k">if</span> <span class="n">L</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;text&quot;</span><span class="p">)</span>
+            <span class="n">prompt</span> <span class="o">+=</span> <span class="s2">" — lyrics: "</span> <span class="o">+</span> <span class="s2">" / "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">L</span><span class="p">[</span><span class="s2">"text"</span><span class="p">]</span> <span class="k">for</span> <span class="n">L</span> <span class="ow">in</span> <span class="n">prep</span><span class="o">.</span><span class="n">lyric_lines</span> <span class="k">if</span> <span class="n">L</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"text"</span><span class="p">)</span>
             <span class="p">)</span>
 
-        <span class="n">avatar_model</span> <span class="o">=</span> <span class="p">(</span><span class="n">model_overrides</span> <span class="ow">or</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;avatar&quot;</span><span class="p">)</span>
-        <span class="c1"># Use quality=&quot;high&quot; by default for lipsync — that picks omnihuman,</span>
-        <span class="c1"># avoiding the default ai-avatar that&#39;s known to hang.</span>
-        <span class="n">effective_quality</span> <span class="o">=</span> <span class="s2">&quot;high&quot;</span> <span class="k">if</span> <span class="n">quality</span> <span class="o">==</span> <span class="s2">&quot;balanced&quot;</span> <span class="k">else</span> <span class="n">quality</span>
+        <span class="n">avatar_model</span> <span class="o">=</span> <span class="p">(</span><span class="n">model_overrides</span> <span class="ow">or</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"avatar"</span><span class="p">)</span>
+        <span class="c1"># Use quality="high" by default for lipsync — that picks omnihuman,</span>
+        <span class="c1"># avoiding the default ai-avatar that's known to hang.</span>
+        <span class="n">effective_quality</span> <span class="o">=</span> <span class="s2">"high"</span> <span class="k">if</span> <span class="n">quality</span> <span class="o">==</span> <span class="s2">"balanced"</span> <span class="k">else</span> <span class="n">quality</span>
 
         <span class="n">call</span> <span class="o">=</span> <span class="n">plan_animate_face</span><span class="p">(</span>
             <span class="n">image_url</span><span class="o">=</span><span class="n">image_url</span><span class="p">,</span>
@@ -190,32 +190,32 @@
             <span class="n">model_id</span><span class="o">=</span><span class="n">avatar_model</span><span class="p">,</span>
             <span class="n">duration_s</span><span class="o">=</span><span class="n">prep</span><span class="o">.</span><span class="n">duration_s</span><span class="p">,</span>
             <span class="n">metadata</span><span class="o">=</span><span class="p">{</span>
-                <span class="s2">&quot;shot_id&quot;</span><span class="p">:</span> <span class="n">prep</span><span class="o">.</span><span class="n">shot_id</span><span class="p">,</span>
-                <span class="s2">&quot;strategy&quot;</span><span class="p">:</span> <span class="s2">&quot;lipsync&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;character&quot;</span><span class="p">:</span> <span class="n">char_name</span><span class="p">,</span>
+                <span class="s2">"shot_id"</span><span class="p">:</span> <span class="n">prep</span><span class="o">.</span><span class="n">shot_id</span><span class="p">,</span>
+                <span class="s2">"strategy"</span><span class="p">:</span> <span class="s2">"lipsync"</span><span class="p">,</span>
+                <span class="s2">"character"</span><span class="p">:</span> <span class="n">char_name</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">Plan</span><span class="p">(</span><span class="n">calls</span><span class="o">=</span><span class="p">(</span><span class="n">call</span><span class="p">,))</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">materialize</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">prep</span><span class="p">:</span> <span class="s2">&quot;ShotPreparation&quot;</span><span class="p">,</span>
+        <span class="n">prep</span><span class="p">:</span> <span class="s2">"ShotPreparation"</span><span class="p">,</span>
         <span class="n">plan</span><span class="p">:</span> <span class="n">Plan</span><span class="p">,</span>
         <span class="n">artifacts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Artifact</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
         <span class="n">artifact</span> <span class="o">=</span> <span class="n">artifacts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">artifact</span><span class="o">.</span><span class="n">url</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;lipsync: avatar call for shot </span><span class="si">{</span><span class="n">prep</span><span class="o">.</span><span class="n">shot_id</span><span class="si">!r}</span><span class="s2"> returned no URL&quot;</span>
+                <span class="sa">f</span><span class="s2">"lipsync: avatar call for shot </span><span class="si">{</span><span class="n">prep</span><span class="o">.</span><span class="n">shot_id</span><span class="si">!r}</span><span class="s2"> returned no URL"</span>
             <span class="p">)</span>
-        <span class="n">raw</span> <span class="o">=</span> <span class="n">prep</span><span class="o">.</span><span class="n">shot_dir</span> <span class="o">/</span> <span class="s2">&quot;raw.mp4&quot;</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">prep</span><span class="o">.</span><span class="n">shot_dir</span> <span class="o">/</span> <span class="s2">"raw.mp4"</span>
         <span class="n">download_to</span><span class="p">(</span><span class="n">artifact</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">raw</span><span class="p">)</span>
-        <span class="n">final</span> <span class="o">=</span> <span class="n">prep</span><span class="o">.</span><span class="n">shot_dir</span> <span class="o">/</span> <span class="s2">&quot;output.mp4&quot;</span>
+        <span class="n">final</span> <span class="o">=</span> <span class="n">prep</span><span class="o">.</span><span class="n">shot_dir</span> <span class="o">/</span> <span class="s2">"output.mp4"</span>
         <span class="k">return</span> <span class="n">trim_or_pad_video</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">prep</span><span class="o">.</span><span class="n">duration_s</span><span class="p">,</span> <span class="n">final</span><span class="p">)</span></div>
 
 
 
-<span class="n">register_strategy</span><span class="p">(</span><span class="s2">&quot;lipsync&quot;</span><span class="p">,</span> <span class="n">LipsyncStrategy</span><span class="p">())</span>
+<span class="n">register_strategy</span><span class="p">(</span><span class="s2">"lipsync"</span><span class="p">,</span> <span class="n">LipsyncStrategy</span><span class="p">())</span>
 </pre></div>
 
            </div>

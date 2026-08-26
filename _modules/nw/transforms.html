@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.transforms &mdash; nw 0.0.31 documentation</title>
+  <title>nw.transforms &mdash; nw 0.0.32 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=c5dbc6bb"></script>
+      <script src="../../_static/documentation_options.js?v=f2234cd1"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -107,11 +107,11 @@
            <div itemprop="articleBody">
              
   <h1>Source code for nw.transforms</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Transforms — the unified, swappable &quot;A-annotation → B-annotation&quot; step.</span>
+<span></span><span class="sd">"""Transforms — the unified, swappable "A-annotation → B-annotation" step.</span>
 
 <span class="sd">A :class:`Transform` generalizes :class:`nw.renderers.Strategy`: where a</span>
 <span class="sd">Strategy turns a prepared *shot* into a rendered clip, a Transform turns any</span>
-<span class="sd">input annotation(s) into any output annotation(s). Every &quot;A → B&quot; arrow in an</span>
+<span class="sd">input annotation(s) into any output annotation(s). Every "A → B" arrow in an</span>
 <span class="sd">audiovisual workflow — screenplay → treatment, beat → storyboard panel, panel</span>
 <span class="sd">→ image, clips → animatic, shot → rendered clip — is a Transform.</span>
 
@@ -132,14 +132,14 @@
 <span class="sd">Naming convention for ``Transform.name``::</span>
 
 <span class="sd">    &lt;from_kind&gt;_to_&lt;to_kind&gt;[.&lt;flavor&gt;[.&lt;variant&gt;]]</span>
-<span class="sd">    e.g. &quot;beat_to_panel.llm.default&quot;, &quot;panel_to_image.fal.flux_kontext&quot;,</span>
-<span class="sd">         &quot;shot_to_render_result.fal.lipsync&quot;</span>
+<span class="sd">    e.g. "beat_to_panel.llm.default", "panel_to_image.fal.flux_kontext",</span>
+<span class="sd">         "shot_to_render_result.fal.lipsync"</span>
 
 <span class="sd">Most Transforms subclass :class:`BaseTransform` (which supplies a default</span>
 <span class="sd">:meth:`~BaseTransform.execute`) and override only :meth:`~BaseTransform.plan`</span>
 <span class="sd">plus the class-level ``name`` / ``input_kinds`` / ``output_kind`` /</span>
 <span class="sd">``params_model`` attributes.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -165,68 +165,68 @@
 <a class="viewcode-back" href="../../module_docs/nw/transforms.html#nw.TransformInputs">[docs]</a>
 <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">TransformInputs</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The annotations a Transform consumes.</span>
+<span class="w">    </span><span class="sd">"""The annotations a Transform consumes.</span>
 
 <span class="sd">    ``primary`` is the subject of the operation — a single-element tuple for</span>
 <span class="sd">    one-to-one Transforms, many for batch Transforms (e.g. ``clips_to_animatic``</span>
 <span class="sd">    consumes every clip). ``context`` is side material keyed by kind name, so</span>
 <span class="sd">    a Transform that declares ``input_kinds=(beat, character-ref)`` receives</span>
-<span class="sd">    the Beat in ``primary`` and the CharacterRefs in ``context[&quot;character-ref&quot;]``.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    the Beat in ``primary`` and the CharacterRefs in ``context["character-ref"]``.</span>
+<span class="sd">    """</span>
 
     <span class="n">primary</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Annotation</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
     <span class="n">context</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Annotation</span><span class="p">,</span> <span class="o">...</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span></div>
 
 
 
-<span class="n">DFLT_IMPL_VERSION</span> <span class="o">=</span> <span class="s2">&quot;1&quot;</span>
-<span class="sd">&quot;&quot;&quot;The ``impl_version`` every Transform starts at.</span>
+<span class="n">DFLT_IMPL_VERSION</span> <span class="o">=</span> <span class="s2">"1"</span>
+<span class="sd">"""The ``impl_version`` every Transform starts at.</span>
 
 <span class="sd">Doubles as the omit-if-default sentinel for the cache salt: at this value</span>
 <span class="sd">:func:`stamp_transform_identity` stamps nothing, so every falaw cache key</span>
 <span class="sd">and cassette ever issued stays byte-identical. The first real bump is the</span>
-<span class="sd">first salt (nw#27).&quot;&quot;&quot;</span>
+<span class="sd">first salt (nw#27)."""</span>
 
-<span class="n">OnFailure</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;halt&quot;</span><span class="p">,</span> <span class="s2">&quot;isolate&quot;</span><span class="p">]</span>
-<span class="sd">&quot;&quot;&quot;What a Transform does when one of its calls fails.</span>
+<span class="n">OnFailure</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"halt"</span><span class="p">,</span> <span class="s2">"isolate"</span><span class="p">]</span>
+<span class="sd">"""What a Transform does when one of its calls fails.</span>
 
-<span class="sd">``&quot;halt&quot;`` — the default and the historical behaviour: stop at the first</span>
+<span class="sd">``"halt"`` — the default and the historical behaviour: stop at the first</span>
 <span class="sd">failure and re-raise it, writing nothing to the graph.</span>
 
-<span class="sd">``&quot;isolate&quot;`` — run what can be run, write every success to the graph, and</span>
+<span class="sd">``"isolate"`` — run what can be run, write every success to the graph, and</span>
 <span class="sd">report the rest. The policy to use for a **fan-out**: with 200 panels, one</span>
 <span class="sd">rate-limited call discarding 199 paid renders is the failure mode this exists</span>
 <span class="sd">to prevent.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 
 <div class="viewcode-block" id="FailedOutput">
 <a class="viewcode-back" href="../../module_docs/nw.html#nw.FailedOutput">[docs]</a>
 <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">FailedOutput</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;An output annotation that was planned but never produced.</span>
+<span class="w">    </span><span class="sd">"""An output annotation that was planned but never produced.</span>
 
 <span class="sd">    Carries the *skeleton* rather than an id because the skeleton is what the</span>
 <span class="sd">    caller planned and what a retry would re-submit — and because a UI needs its</span>
 <span class="sd">    body to say which panel is missing, not just that something is.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">skeleton</span><span class="p">:</span> <span class="n">Annotation</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The annotation that would have been completed.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""The annotation that would have been completed."""</span>
 
     <span class="n">status</span><span class="p">:</span> <span class="nb">str</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;``&quot;failed&quot;`` (its own call failed) or ``&quot;blocked&quot;`` (an upstream one did).&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""``"failed"`` (its own call failed) or ``"blocked"`` (an upstream one did)."""</span>
 
-    <span class="n">reason</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Human-readable cause, from falaw. Renders as *&quot;skipped: upstream panel 47</span>
-<span class="sd">    was filtered&quot;* rather than an unexplained hole.&quot;&quot;&quot;</span>
+    <span class="n">reason</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
+<span class="w">    </span><span class="sd">"""Human-readable cause, from falaw. Renders as *"skipped: upstream panel 47</span>
+<span class="sd">    was filtered"* rather than an unexplained hole."""</span>
 
     <span class="n">error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="ne">BaseException</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The original exception, for a caller that classifies on falaw&#39;s typed</span>
-<span class="sd">    hierarchy (``FalRateLimited`` is worth retrying; ``FalAccountLocked`` is not).&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""The original exception, for a caller that classifies on falaw's typed</span>
+<span class="sd">    hierarchy (``FalRateLimited`` is worth retrying; ``FalAccountLocked`` is not)."""</span>
 
     <span class="n">blocked_by</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Indices of the calls whose failure blocked this one.&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">"""Indices of the calls whose failure blocked this one."""</span></div>
 
 
 
@@ -234,18 +234,18 @@
 <a class="viewcode-back" href="../../module_docs/nw/transforms.html#nw.TransformResult">[docs]</a>
 <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">TransformResult</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The outputs of a Transform&#39;s :meth:`~Transform.execute`.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""The outputs of a Transform's :meth:`~Transform.execute`."""</span>
 
     <span class="n">annotations</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Annotation</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The completed output annotation(s), written to the project graph.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""The completed output annotation(s), written to the project graph."""</span>
 
     <span class="n">artifacts</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Artifact</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The ``lacing.Artifact``\\ s produced (images, videos, audio, json …).</span>
-<span class="sd">    Annotations reference these by ``artifact_id`` in their bodies.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""The ``lacing.Artifact``\\ s produced (images, videos, audio, json …).</span>
+<span class="sd">    Annotations reference these by ``artifact_id`` in their bodies."""</span>
 
     <span class="n">cost_usd_actual</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;USD billed during execution, over the calls that **succeeded and were not</span>
-<span class="sd">    cache hits** — falaw&#39;s observed :attr:`ExecutionReport.estimated_spend_usd`.</span>
+<span class="w">    </span><span class="sd">"""USD billed during execution, over the calls that **succeeded and were not</span>
+<span class="sd">    cache hits** — falaw's observed :attr:`ExecutionReport.estimated_spend_usd`.</span>
 <span class="sd">    Since falaw#26 the per-``Artifact`` ``cost_usd`` is *also* stamped from the</span>
 <span class="sd">    observed outcome, so the two now agree; the report stays the source here</span>
 <span class="sd">    because it is the run-level truth (and carries ``has_unknown_costs``),</span>
@@ -253,33 +253,33 @@
 
 <span class="sd">    **A lower bound, despite the name.** falaw runs its converter *inside* the</span>
 <span class="sd">    unit of work, after the billed call, so a call fal charged for can still end</span>
-<span class="sd">    as ``status=&quot;failed&quot;`` — and a failed call is excluded here, because falaw</span>
+<span class="sd">    as ``status="failed"`` — and a failed call is excluded here, because falaw</span>
 <span class="sd">    cannot know whether the vendor billed it and inventing a number would be</span>
-<span class="sd">    worse. Under ``&quot;halt&quot;`` the run aborted anyway; under ``&quot;isolate&quot;`` it</span>
+<span class="sd">    worse. Under ``"halt"`` the run aborted anyway; under ``"isolate"`` it</span>
 <span class="sd">    continues, so a caller accumulating this across a fan-out with failures will</span>
-<span class="sd">    under-count. Read ``failed`` alongside it.&quot;&quot;&quot;</span>
+<span class="sd">    under-count. Read ``failed`` alongside it."""</span>
 
     <span class="n">cache_hit_savings_usd</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;USD not spent because a call was served from cache.</span>
+<span class="w">    </span><span class="sd">"""USD not spent because a call was served from cache.</span>
 
 <span class="sd">    Also observed rather than predicted — this changed source at the same time</span>
 <span class="sd">    as ``cost_usd_actual``, from ``Plan.cache_hit_savings_usd`` (what planning</span>
-<span class="sd">    guessed would hit) to what actually hit.&quot;&quot;&quot;</span>
+<span class="sd">    guessed would hit) to what actually hit."""</span>
 
     <span class="n">has_unknown_costs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Whether any executed call had no price. Carried so ``$0.00`` stays</span>
-<span class="sd">    distinguishable from &quot;we do not know&quot;, which is the distinction every cost</span>
-<span class="sd">    gate in the federation is required to read.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Whether any executed call had no price. Carried so ``$0.00`` stays</span>
+<span class="sd">    distinguishable from "we do not know", which is the distinction every cost</span>
+<span class="sd">    gate in the federation is required to read."""</span>
 
     <span class="n">failed</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">FailedOutput</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Outputs whose own call failed. Empty unless ``on_failure=&quot;isolate&quot;``.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Outputs whose own call failed. Empty unless ``on_failure="isolate"``."""</span>
 
     <span class="n">blocked</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">FailedOutput</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Outputs never attempted because an upstream call failed.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Outputs never attempted because an upstream call failed."""</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_complete</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Whether every planned output was produced.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Whether every planned output was produced."""</span>
         <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">failed</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">blocked</span></div>
 
 
@@ -293,25 +293,25 @@
 <a class="viewcode-back" href="../../module_docs/nw/transforms.html#nw.Transform">[docs]</a>
 <span class="nd">@runtime_checkable</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Transform</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A swappable, costed function from A-annotations to B-annotations.</span>
+<span class="w">    </span><span class="sd">"""A swappable, costed function from A-annotations to B-annotations.</span>
 
 <span class="sd">    Implementations usually subclass :class:`BaseTransform` rather than</span>
 <span class="sd">    satisfying this Protocol directly, but the Protocol is the contract the</span>
 <span class="sd">    registry and orchestrator depend on.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Globally-unique identifier in :data:`transforms`.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Globally-unique identifier in :data:`transforms`."""</span>
 
     <span class="n">input_kinds</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Body-schema URIs this Transform reads. The first is the *primary*</span>
-<span class="sd">    kind; the rest are context kinds.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Body-schema URIs this Transform reads. The first is the *primary*</span>
+<span class="sd">    kind; the rest are context kinds."""</span>
 
     <span class="n">output_kind</span><span class="p">:</span> <span class="nb">str</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The body-schema URI this Transform produces.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""The body-schema URI this Transform produces."""</span>
 
     <span class="n">is_batch</span><span class="p">:</span> <span class="nb">bool</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;How :meth:`plan` consumes ``inputs.primary``.</span>
+<span class="w">    </span><span class="sd">"""How :meth:`plan` consumes ``inputs.primary``.</span>
 
 <span class="sd">    ``False`` (one-to-one): :meth:`plan` operates on a *single* primary</span>
 <span class="sd">    annotation (``inputs.primary[0]``) — e.g. ``beat_to_panel``, one beat in,</span>
@@ -324,13 +324,13 @@
 <span class="sd">    whole set in a single :meth:`plan` call.</span>
 
 <span class="sd">    This is the property an orchestrator needs to fan a Transform across a</span>
-<span class="sd">    project&#39;s annotations correctly — it can&#39;t be inferred from</span>
-<span class="sd">    ``input_kinds``.&quot;&quot;&quot;</span>
+<span class="sd">    project's annotations correctly — it can't be inferred from</span>
+<span class="sd">    ``input_kinds``."""</span>
 
     <span class="n">impl_version</span><span class="p">:</span> <span class="nb">str</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Behaviour version of this implementation (nw#27).</span>
+<span class="w">    </span><span class="sd">"""Behaviour version of this implementation (nw#27).</span>
 
-<span class="sd">    &quot;Same interface, changed behaviour&quot; — a prompt-template edit, a</span>
+<span class="sd">    "Same interface, changed behaviour" — a prompt-template edit, a</span>
 <span class="sd">    post-processing change — bumps this **without renaming the registry</span>
 <span class="sd">    key** (the name denotes the capability; a different capability gets a</span>
 <span class="sd">    different name). It is a lock, not a receipt: it enters provenance</span>
@@ -340,14 +340,14 @@
 <span class="sd">    cannot keep serving results minted by the old behaviour. A Transform</span>
 <span class="sd">    that overrides ``execute`` must apply</span>
 <span class="sd">    :func:`stamp_transform_identity` itself; the lock only locks what</span>
-<span class="sd">    passes through it.&quot;&quot;&quot;</span>
+<span class="sd">    passes through it."""</span>
 
     <span class="n">params_model</span><span class="p">:</span> <span class="nb">type</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pydantic model class for this Transform&#39;s per-call params;</span>
+<span class="w">    </span><span class="sd">"""Pydantic model class for this Transform's per-call params;</span>
 <span class="sd">    ``type(None)`` means no params. On the Protocol — not just</span>
 <span class="sd">    :class:`BaseTransform` — so anything reading a Transform through the</span>
 <span class="sd">    contract (the capability catalogue, an MCP tool builder, the CLI</span>
-<span class="sd">    dispatcher) can rely on it (nw#27).&quot;&quot;&quot;</span>
+<span class="sd">    dispatcher) can rely on it (nw#27)."""</span>
 
 <div class="viewcode-block" id="Transform.plan">
 <a class="viewcode-back" href="../../module_docs/nw/transforms.html#nw.Transform.plan">[docs]</a>
@@ -358,12 +358,12 @@
         <span class="o">*</span><span class="p">,</span>
         <span class="n">params</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BaseModel</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Plan</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Annotation</span><span class="p">,</span> <span class="o">...</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build a :class:`falaw.Plan` + skeleton output annotations.</span>
+<span class="w">        </span><span class="sd">"""Build a :class:`falaw.Plan` + skeleton output annotations.</span>
 
 <span class="sd">        Pure data. No billable calls. The skeleton annotations have provenance</span>
-<span class="sd">        filled in; their bodies&#39; artifact references are placeholders that</span>
+<span class="sd">        filled in; their bodies' artifact references are placeholders that</span>
 <span class="sd">        :meth:`execute` replaces.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="o">...</span></div>
 
 
@@ -377,14 +377,14 @@
         <span class="o">*</span><span class="p">,</span>
         <span class="n">use_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">on_failure</span><span class="p">:</span> <span class="n">OnFailure</span> <span class="o">=</span> <span class="s2">&quot;halt&quot;</span><span class="p">,</span>
+        <span class="n">on_failure</span><span class="p">:</span> <span class="n">OnFailure</span> <span class="o">=</span> <span class="s2">"halt"</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TransformResult</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run ``plan``, complete ``skeleton``, write to the graph, return result.</span>
+<span class="w">        </span><span class="sd">"""Run ``plan``, complete ``skeleton``, write to the graph, return result.</span>
 
-<span class="sd">        ``force=True`` bypasses the cache (the &quot;regenerate this&quot; affordance).</span>
+<span class="sd">        ``force=True`` bypasses the cache (the "regenerate this" affordance).</span>
 
 <span class="sd">        ``on_failure`` selects the failure policy — see :data:`OnFailure`.</span>
-<span class="sd">        ``&quot;halt&quot;`` is the default so no existing caller changes behaviour.</span>
+<span class="sd">        ``"halt"`` is the default so no existing caller changes behaviour.</span>
 
 <span class="sd">        .. warning::</span>
 
@@ -398,9 +398,9 @@
 <span class="sd">           Until they are migrated, a caller iterating over arbitrary registered</span>
 <span class="sd">           Transforms should pass ``on_failure`` only to ones it knows accept</span>
 <span class="sd">           it, or catch ``TypeError``. Everything inheriting</span>
-<span class="sd">           :class:`BaseTransform`&#39;s ``execute`` — the common case — already</span>
+<span class="sd">           :class:`BaseTransform`'s ``execute`` — the common case — already</span>
 <span class="sd">           does.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="o">...</span></div>
 </div>
 
@@ -414,7 +414,7 @@
 <div class="viewcode-block" id="BaseTransform">
 <a class="viewcode-back" href="../../module_docs/nw/transforms.html#nw.BaseTransform">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">BaseTransform</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Default :class:`Transform` implementation.</span>
+<span class="w">    </span><span class="sd">"""Default :class:`Transform` implementation.</span>
 
 <span class="sd">    Subclasses set the class attributes (``name``, ``input_kinds``,</span>
 <span class="sd">    ``output_kind``, optionally ``params_model``) and implement :meth:`plan`.</span>
@@ -430,25 +430,25 @@
 <span class="sd">    shorter sequence and drop the surplus with no error and no record —</span>
 <span class="sd">    harmless only for as long as the executor returns exactly one artifact</span>
 <span class="sd">    per call, which is precisely what per-call failure isolation changes.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
     <span class="n">input_kinds</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
-    <span class="n">output_kind</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">output_kind</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
     <span class="n">params_model</span><span class="p">:</span> <span class="nb">type</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pydantic model class for this Transform&#39;s per-call params. Exposed as</span>
-<span class="sd">    JSON Schema to the MCP server and the CLI. ``type(None)`` means no params.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Pydantic model class for this Transform's per-call params. Exposed as</span>
+<span class="sd">    JSON Schema to the MCP server and the CLI. ``type(None)`` means no params."""</span>
     <span class="n">impl_version</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">DFLT_IMPL_VERSION</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Behaviour version — bump on &quot;same interface, changed behaviour&quot;, never</span>
+<span class="w">    </span><span class="sd">"""Behaviour version — bump on "same interface, changed behaviour", never</span>
 <span class="sd">    rename the registry key for it. See the :class:`Transform` Protocol for</span>
 <span class="sd">    the full contract. At the default, no cache salt is applied, so every</span>
 <span class="sd">    key ever issued stays byte-identical; the first real bump is the first</span>
-<span class="sd">    salt.&quot;&quot;&quot;</span>
+<span class="sd">    salt."""</span>
     <span class="n">is_batch</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Whether :meth:`plan` consumes all of ``inputs.primary`` at once (batch)</span>
+<span class="w">    </span><span class="sd">"""Whether :meth:`plan` consumes all of ``inputs.primary`` at once (batch)</span>
 <span class="sd">    or a single primary annotation (one-to-one — the default). See the</span>
 <span class="sd">    :class:`Transform` Protocol for the full contract. Batch Transforms</span>
-<span class="sd">    (``extract_*``, ``clips_to_animatic``) set this to ``True``.&quot;&quot;&quot;</span>
+<span class="sd">    (``extract_*``, ``clips_to_animatic``) set this to ``True``."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">plan</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -457,7 +457,7 @@
         <span class="o">*</span><span class="p">,</span>
         <span class="n">params</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BaseModel</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Plan</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Annotation</span><span class="p">,</span> <span class="o">...</span><span class="p">]]:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> must implement plan().&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> must implement plan()."</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -467,21 +467,21 @@
         <span class="o">*</span><span class="p">,</span>
         <span class="n">use_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">on_failure</span><span class="p">:</span> <span class="n">OnFailure</span> <span class="o">=</span> <span class="s2">&quot;halt&quot;</span><span class="p">,</span>
+        <span class="n">on_failure</span><span class="p">:</span> <span class="n">OnFailure</span> <span class="o">=</span> <span class="s2">"halt"</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TransformResult</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">skeleton</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">plan</span><span class="o">.</span><span class="n">calls</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.execute: plan has </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">plan</span><span class="o">.</span><span class="n">calls</span><span class="p">)</span><span class="si">}</span><span class="s2"> &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;calls but skeleton has </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">skeleton</span><span class="p">)</span><span class="si">}</span><span class="s2"> annotations. The &quot;</span>
-                <span class="s2">&quot;default execute maps artifacts onto skeletons 1:1 and zips &quot;</span>
-                <span class="s2">&quot;them, so a mismatch would silently drop the surplus — pass &quot;</span>
-                <span class="s2">&quot;the plan and skeleton that plan() returned together, or &quot;</span>
-                <span class="s2">&quot;override execute() if this Transform&#39;s mapping is not 1:1.&quot;</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.execute: plan has </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">plan</span><span class="o">.</span><span class="n">calls</span><span class="p">)</span><span class="si">}</span><span class="s2"> "</span>
+                <span class="sa">f</span><span class="s2">"calls but skeleton has </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">skeleton</span><span class="p">)</span><span class="si">}</span><span class="s2"> annotations. The "</span>
+                <span class="s2">"default execute maps artifacts onto skeletons 1:1 and zips "</span>
+                <span class="s2">"them, so a mismatch would silently drop the surplus — pass "</span>
+                <span class="s2">"the plan and skeleton that plan() returned together, or "</span>
+                <span class="s2">"override execute() if this Transform's mapping is not 1:1."</span>
             <span class="p">)</span>
-        <span class="k">if</span> <span class="n">on_failure</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;halt&quot;</span><span class="p">,</span> <span class="s2">&quot;isolate&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">on_failure</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"halt"</span><span class="p">,</span> <span class="s2">"isolate"</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.execute: on_failure must be &#39;halt&#39; or &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;&#39;isolate&#39;, got </span><span class="si">{</span><span class="n">on_failure</span><span class="si">!r}</span><span class="s2">.&quot;</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.execute: on_failure must be 'halt' or "</span>
+                <span class="sa">f</span><span class="s2">"'isolate', got </span><span class="si">{</span><span class="n">on_failure</span><span class="si">!r}</span><span class="s2">."</span>
             <span class="p">)</span>
         <span class="n">plan</span> <span class="o">=</span> <span class="n">stamp_transform_identity</span><span class="p">(</span><span class="n">plan</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
         <span class="c1"># One engine, two policies. `halt` is `execute_plan` — falaw defines the</span>
@@ -491,15 +491,15 @@
         <span class="n">report</span> <span class="o">=</span> <span class="n">execute_plan_isolated</span><span class="p">(</span>
             <span class="n">plan</span><span class="p">,</span>
             <span class="n">use_cache</span><span class="o">=</span><span class="n">use_cache</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">force</span><span class="p">,</span>
-            <span class="n">halt_on_failure</span><span class="o">=</span><span class="n">on_failure</span> <span class="o">==</span> <span class="s2">&quot;halt&quot;</span><span class="p">,</span>
+            <span class="n">halt_on_failure</span><span class="o">=</span><span class="n">on_failure</span> <span class="o">==</span> <span class="s2">"halt"</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="k">if</span> <span class="n">on_failure</span> <span class="o">==</span> <span class="s2">&quot;halt&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">on_failure</span> <span class="o">==</span> <span class="s2">"halt"</span><span class="p">:</span>
             <span class="n">report</span><span class="o">.</span><span class="n">artifacts_or_raise</span><span class="p">()</span>
 
         <span class="c1"># Zip against `report.outcomes`, never against the artifacts: outcomes</span>
         <span class="c1"># is full-length in plan order **by construction**, while the artifact</span>
         <span class="c1"># list is short exactly when something failed — so zipping that would</span>
-        <span class="c1"># pair panel 48&#39;s artifact onto panel 47&#39;s skeleton the moment one call</span>
+        <span class="c1"># pair panel 48's artifact onto panel 47's skeleton the moment one call</span>
         <span class="c1"># dropped out, silently, which is the defect this issue named.</span>
         <span class="n">completed</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">failed</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">FailedOutput</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
@@ -514,19 +514,19 @@
                     <span class="c1"># a `json` artifact with `path=None`, a `text` artifact has no</span>
                     <span class="c1"># obvious target field, and an LLM that prefaces its JSON with</span>
                     <span class="c1"># prose makes `json.loads` raise. Letting that propagate is</span>
-                    <span class="c1"># this issue&#39;s own defect one layer up — it would discard</span>
+                    <span class="c1"># this issue's own defect one layer up — it would discard</span>
                     <span class="c1"># every paid sibling in the run. So a completion failure is</span>
                     <span class="c1"># an *unproduced output*, exactly like an execution failure.</span>
-                    <span class="k">if</span> <span class="n">on_failure</span> <span class="o">==</span> <span class="s2">&quot;halt&quot;</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">on_failure</span> <span class="o">==</span> <span class="s2">"halt"</span><span class="p">:</span>
                         <span class="k">raise</span>
                     <span class="n">failed</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                         <span class="n">FailedOutput</span><span class="p">(</span>
                             <span class="n">skeleton</span><span class="o">=</span><span class="n">skel</span><span class="p">,</span>
-                            <span class="n">status</span><span class="o">=</span><span class="s2">&quot;failed&quot;</span><span class="p">,</span>
+                            <span class="n">status</span><span class="o">=</span><span class="s2">"failed"</span><span class="p">,</span>
                             <span class="n">reason</span><span class="o">=</span><span class="p">(</span>
-                                <span class="sa">f</span><span class="s2">&quot;the call succeeded but its result could not be &quot;</span>
-                                <span class="sa">f</span><span class="s2">&quot;turned into a </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_kind</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s1">&#39;output&#39;</span><span class="si">}</span><span class="s2"> &quot;</span>
-                                <span class="sa">f</span><span class="s2">&quot;annotation: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+                                <span class="sa">f</span><span class="s2">"the call succeeded but its result could not be "</span>
+                                <span class="sa">f</span><span class="s2">"turned into a </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_kind</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s1">'output'</span><span class="si">}</span><span class="s2"> "</span>
+                                <span class="sa">f</span><span class="s2">"annotation: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span>
                             <span class="p">),</span>
                             <span class="n">error</span><span class="o">=</span><span class="n">e</span><span class="p">,</span>
                         <span class="p">)</span>
@@ -539,7 +539,7 @@
                 <span class="n">error</span><span class="o">=</span><span class="n">outcome</span><span class="o">.</span><span class="n">error</span><span class="p">,</span>
                 <span class="n">blocked_by</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">outcome</span><span class="o">.</span><span class="n">blocked_by</span><span class="p">),</span>
             <span class="p">)</span>
-            <span class="p">(</span><span class="n">blocked</span> <span class="k">if</span> <span class="n">outcome</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="s2">&quot;blocked&quot;</span> <span class="k">else</span> <span class="n">failed</span><span class="p">)</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">unproduced</span><span class="p">)</span>
+            <span class="p">(</span><span class="n">blocked</span> <span class="k">if</span> <span class="n">outcome</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="s2">"blocked"</span> <span class="k">else</span> <span class="n">failed</span><span class="p">)</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">unproduced</span><span class="p">)</span>
 
         <span class="c1"># Successes reach the graph before the failure is reported. They are</span>
         <span class="c1"># paid for; discarding them because a sibling call failed is the waste</span>
@@ -560,42 +560,42 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_complete_annotation</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">skeleton</span><span class="p">:</span> <span class="n">Annotation</span><span class="p">,</span> <span class="n">artifact</span><span class="p">:</span> <span class="n">Artifact</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Annotation</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Map one executed ``artifact`` onto its ``skeleton`` annotation.</span>
+<span class="w">        </span><span class="sd">"""Map one executed ``artifact`` onto its ``skeleton`` annotation.</span>
 
 <span class="sd">        Two default behaviours, by artifact kind:</span>
 
 <span class="sd">        - **media** (``image`` / ``video`` / ``audio`` / ``binary``) — reference</span>
-<span class="sd">          the artifact by content id: ``body[&quot;artifact_id&quot;] = artifact.asset_id``.</span>
+<span class="sd">          the artifact by content id: ``body["artifact_id"] = artifact.asset_id``.</span>
 <span class="sd">        - **``json``** — the LLM-backed-Transform case: read the materialized</span>
-<span class="sd">          JSON file (``artifact.path``, written by ``falaw``&#39;s converter),</span>
-<span class="sd">          shallow-merge its keys into the skeleton body. The skeleton&#39;s</span>
-<span class="sd">          placeholder fields get overwritten by the LLM&#39;s values.</span>
+<span class="sd">          JSON file (``artifact.path``, written by ``falaw``'s converter),</span>
+<span class="sd">          shallow-merge its keys into the skeleton body. The skeleton's</span>
+<span class="sd">          placeholder fields get overwritten by the LLM's values.</span>
 
 <span class="sd">        ``text`` artifacts still raise — a bare string has no obvious target</span>
 <span class="sd">        field, so a Transform producing ``text`` must override this (or</span>
 <span class="sd">        ``execute``) to say where the text goes.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">artifact</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;json&quot;</span><span class="p">:</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">artifact</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">"json"</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">artifact</span><span class="o">.</span><span class="n">path</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: json artifact has no `path` to read; &quot;</span>
-                    <span class="s2">&quot;expected falaw&#39;s converter to have materialized it.&quot;</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: json artifact has no `path` to read; "</span>
+                    <span class="s2">"expected falaw's converter to have materialized it."</span>
                 <span class="p">)</span>
-            <span class="n">payload</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">artifact</span><span class="o">.</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
+            <span class="n">payload</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">artifact</span><span class="o">.</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">))</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: json artifact is not an object &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">); override _complete_annotation().&quot;</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: json artifact is not an object "</span>
+                    <span class="sa">f</span><span class="s2">"(</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">); override _complete_annotation()."</span>
                 <span class="p">)</span>
             <span class="n">new_body</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">skeleton</span><span class="o">.</span><span class="n">body</span><span class="p">,</span> <span class="o">**</span><span class="n">payload</span><span class="p">}</span>
-            <span class="k">return</span> <span class="n">skeleton</span><span class="o">.</span><span class="n">model_copy</span><span class="p">(</span><span class="n">update</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;body&quot;</span><span class="p">:</span> <span class="n">new_body</span><span class="p">})</span>
-        <span class="k">if</span> <span class="n">artifact</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;text&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">skeleton</span><span class="o">.</span><span class="n">model_copy</span><span class="p">(</span><span class="n">update</span><span class="o">=</span><span class="p">{</span><span class="s2">"body"</span><span class="p">:</span> <span class="n">new_body</span><span class="p">})</span>
+        <span class="k">if</span> <span class="n">artifact</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">"text"</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> produces &#39;text&#39; artifacts; override &quot;</span>
-                <span class="s2">&quot;_complete_annotation() (or execute()) to say where the text goes.&quot;</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> produces 'text' artifacts; override "</span>
+                <span class="s2">"_complete_annotation() (or execute()) to say where the text goes."</span>
             <span class="p">)</span>
-        <span class="n">new_body</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">skeleton</span><span class="o">.</span><span class="n">body</span><span class="p">,</span> <span class="s2">&quot;artifact_id&quot;</span><span class="p">:</span> <span class="n">artifact</span><span class="o">.</span><span class="n">asset_id</span><span class="p">}</span>
-        <span class="k">return</span> <span class="n">skeleton</span><span class="o">.</span><span class="n">model_copy</span><span class="p">(</span><span class="n">update</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;body&quot;</span><span class="p">:</span> <span class="n">new_body</span><span class="p">})</span></div>
+        <span class="n">new_body</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">skeleton</span><span class="o">.</span><span class="n">body</span><span class="p">,</span> <span class="s2">"artifact_id"</span><span class="p">:</span> <span class="n">artifact</span><span class="o">.</span><span class="n">asset_id</span><span class="p">}</span>
+        <span class="k">return</span> <span class="n">skeleton</span><span class="o">.</span><span class="n">model_copy</span><span class="p">(</span><span class="n">update</span><span class="o">=</span><span class="p">{</span><span class="s2">"body"</span><span class="p">:</span> <span class="n">new_body</span><span class="p">})</span></div>
 
 
 
@@ -603,25 +603,25 @@
 <span class="c1"># The registry</span>
 <span class="c1"># ---------------------------------------------------------------------------</span>
 
-<span class="n">transforms</span><span class="p">:</span> <span class="n">Registry</span> <span class="o">=</span> <span class="n">Registry</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;nw.transforms&quot;</span><span class="p">,</span> <span class="n">on_conflict</span><span class="o">=</span><span class="s2">&quot;error&quot;</span><span class="p">)</span>
-<span class="sd">&quot;&quot;&quot;Public registry of Transform instances. ``on_conflict=&quot;error&quot;`` so a</span>
-<span class="sd">misconfigured plugin fails loudly instead of silently shadowing a built-in.&quot;&quot;&quot;</span>
+<span class="n">transforms</span><span class="p">:</span> <span class="n">Registry</span> <span class="o">=</span> <span class="n">Registry</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"nw.transforms"</span><span class="p">,</span> <span class="n">on_conflict</span><span class="o">=</span><span class="s2">"error"</span><span class="p">)</span>
+<span class="sd">"""Public registry of Transform instances. ``on_conflict="error"`` so a</span>
+<span class="sd">misconfigured plugin fails loudly instead of silently shadowing a built-in."""</span>
 
 
 <div class="viewcode-block" id="stamp_transform_identity">
 <a class="viewcode-back" href="../../module_docs/nw/transforms.html#nw.stamp_transform_identity">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">stamp_transform_identity</span><span class="p">(</span><span class="n">plan</span><span class="p">:</span> <span class="n">Plan</span><span class="p">,</span> <span class="n">transform</span><span class="p">:</span> <span class="n">Transform</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Plan</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fold ``transform.impl_version`` into every call&#39;s cache identity.</span>
+<span class="w">    </span><span class="sd">"""Fold ``transform.impl_version`` into every call's cache identity.</span>
 
 <span class="sd">    The reader that makes ``impl_version`` a lock instead of a receipt</span>
-<span class="sd">    (nw#27): a bumped version lands in each call&#39;s falaw ``key_extra``, so</span>
+<span class="sd">    (nw#27): a bumped version lands in each call's falaw ``key_extra``, so</span>
 <span class="sd">    a cached result minted by the old behaviour cannot be reused. At</span>
 <span class="sd">    :data:`DFLT_IMPL_VERSION` nothing is stamped — every key ever issued</span>
 <span class="sd">    stays byte-identical, and the first real bump is the first salt.</span>
 
-<span class="sd">    Each stamped call&#39;s ``cache_status`` is reset to ``&quot;unknown&quot;``: the</span>
+<span class="sd">    Each stamped call's ``cache_status`` is reset to ``"unknown"``: the</span>
 <span class="sd">    plan-time peek keyed without the salt, so its prediction (typically</span>
-<span class="sd">    &quot;hit&quot; — the old-behaviour result is cached, invalidating it is the</span>
+<span class="sd">    "hit" — the old-behaviour result is cached, invalidating it is the</span>
 <span class="sd">    point) would make cost gates quote $0.00 for a full re-bill.</span>
 
 <span class="sd">    :meth:`BaseTransform.execute` applies this automatically. **A Transform</span>
@@ -632,22 +632,22 @@
 <span class="sd">    key over ``falaw.plan_hash``) should apply it at plan time so those</span>
 <span class="sd">    keys see the version too. Idempotent — stamping twice writes the same</span>
 <span class="sd">    value.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">version</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">transform</span><span class="p">,</span> <span class="s2">&quot;impl_version&quot;</span><span class="p">,</span> <span class="n">DFLT_IMPL_VERSION</span><span class="p">))</span>
+<span class="sd">    """</span>
+    <span class="n">version</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">transform</span><span class="p">,</span> <span class="s2">"impl_version"</span><span class="p">,</span> <span class="n">DFLT_IMPL_VERSION</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">version</span> <span class="o">==</span> <span class="n">DFLT_IMPL_VERSION</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">plan</span>
     <span class="k">return</span> <span class="n">Plan</span><span class="p">(</span>
         <span class="n">calls</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span>
             <span class="n">replace</span><span class="p">(</span>
                 <span class="n">call</span><span class="p">,</span>
-                <span class="n">key_extra</span><span class="o">=</span><span class="p">{</span><span class="o">**</span><span class="n">call</span><span class="o">.</span><span class="n">key_extra</span><span class="p">,</span> <span class="s2">&quot;transform_impl&quot;</span><span class="p">:</span> <span class="n">version</span><span class="p">},</span>
+                <span class="n">key_extra</span><span class="o">=</span><span class="p">{</span><span class="o">**</span><span class="n">call</span><span class="o">.</span><span class="n">key_extra</span><span class="p">,</span> <span class="s2">"transform_impl"</span><span class="p">:</span> <span class="n">version</span><span class="p">},</span>
                 <span class="c1"># The plan-time cache peek keyed WITHOUT the salt, so its</span>
-                <span class="c1"># prediction is void: a &quot;hit&quot; here would make the gates</span>
+                <span class="c1"># prediction is void: a "hit" here would make the gates</span>
                 <span class="c1"># quote $0.00 for what the salted execution re-bills in</span>
-                <span class="c1"># full. &quot;unknown&quot; makes the quote the full price - the</span>
+                <span class="c1"># full. "unknown" makes the quote the full price - the</span>
                 <span class="c1"># honest, conservative number for a deliberate</span>
                 <span class="c1"># invalidation.</span>
-                <span class="n">cache_status</span><span class="o">=</span><span class="s2">&quot;unknown&quot;</span><span class="p">,</span>
+                <span class="n">cache_status</span><span class="o">=</span><span class="s2">"unknown"</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="k">for</span> <span class="n">call</span> <span class="ow">in</span> <span class="n">plan</span><span class="o">.</span><span class="n">calls</span>
         <span class="p">)</span>
@@ -660,44 +660,44 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">register_transform</span><span class="p">(</span>
     <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">impl</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Transform</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Transform</span> <span class="o">|</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">type</span><span class="p">],</span> <span class="nb">type</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Register a Transform under ``name``. Two forms:</span>
+<span class="w">    </span><span class="sd">"""Register a Transform under ``name``. Two forms:</span>
 
 <span class="sd">    Direct — pass an instance::</span>
 
-<span class="sd">        register_transform(&quot;clips_to_animatic.ffmpeg&quot;, ClipsToAnimatic())</span>
+<span class="sd">        register_transform("clips_to_animatic.ffmpeg", ClipsToAnimatic())</span>
 
 <span class="sd">    Decorator — decorate a class; it is instantiated and the *instance* is</span>
 <span class="sd">    registered (so :func:`get_transform` always returns something callable),</span>
 <span class="sd">    and the class is returned unchanged::</span>
 
-<span class="sd">        @register_transform(&quot;beat_to_panel.llm.default&quot;)</span>
+<span class="sd">        @register_transform("beat_to_panel.llm.default")</span>
 <span class="sd">        class BeatToPanelLLM(BaseTransform):</span>
 <span class="sd">            ...</span>
 
-<span class="sd">    Registration validates the contract the registry&#39;s consumers depend on:</span>
+<span class="sd">    Registration validates the contract the registry's consumers depend on:</span>
 <span class="sd">    an empty ``output_kind`` is refused loudly, in the same spirit as the</span>
-<span class="sd">    registry&#39;s ``on_conflict=&quot;error&quot;`` — an agent&#39;s unit of work must have a</span>
-<span class="sd">    declared output type, or &quot;the job runs successfully but produces</span>
-<span class="sd">    nothing retrievable&quot; becomes invisible to every layer that reports</span>
+<span class="sd">    registry's ``on_conflict="error"`` — an agent's unit of work must have a</span>
+<span class="sd">    declared output type, or "the job runs successfully but produces</span>
+<span class="sd">    nothing retrievable" becomes invisible to every layer that reports</span>
 <span class="sd">    success (nw#27).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_checked</span><span class="p">(</span><span class="n">instance</span><span class="p">:</span> <span class="n">Transform</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Transform</span><span class="p">:</span>
-        <span class="n">version</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="s2">&quot;impl_version&quot;</span><span class="p">,</span> <span class="n">DFLT_IMPL_VERSION</span><span class="p">)</span>
+        <span class="n">version</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="s2">"impl_version"</span><span class="p">,</span> <span class="n">DFLT_IMPL_VERSION</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">version</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;register_transform(</span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2">): </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.&quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;impl_version must be a str, got </span><span class="si">{</span><span class="n">version</span><span class="si">!r}</span><span class="s2"> &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">version</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">). A non-str version defeats the &quot;</span>
-                <span class="s2">&quot;omit-if-default cache sentinel while rendering identically &quot;</span>
-                <span class="s2">&quot;in provenance.&quot;</span>
+                <span class="sa">f</span><span class="s2">"register_transform(</span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2">): </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">."</span>
+                <span class="sa">f</span><span class="s2">"impl_version must be a str, got </span><span class="si">{</span><span class="n">version</span><span class="si">!r}</span><span class="s2"> "</span>
+                <span class="sa">f</span><span class="s2">"(</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">version</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">). A non-str version defeats the "</span>
+                <span class="s2">"omit-if-default cache sentinel while rendering identically "</span>
+                <span class="s2">"in provenance."</span>
             <span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="s2">&quot;output_kind&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="s2">"output_kind"</span><span class="p">,</span> <span class="s2">""</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;register_transform(</span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2">): </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> &quot;</span>
-                <span class="s2">&quot;declares no output_kind. Every Transform must declare the &quot;</span>
-                <span class="s2">&quot;body-schema URI it produces — an undeclared output type is &quot;</span>
-                <span class="s2">&quot;a unit of work whose success is unverifiable.&quot;</span>
+                <span class="sa">f</span><span class="s2">"register_transform(</span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2">): </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> "</span>
+                <span class="s2">"declares no output_kind. Every Transform must declare the "</span>
+                <span class="s2">"body-schema URI it produces — an undeclared output type is "</span>
+                <span class="s2">"a unit of work whose success is unverifiable."</span>
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">instance</span>
 
@@ -715,13 +715,13 @@
 <div class="viewcode-block" id="get_transform">
 <a class="viewcode-back" href="../../module_docs/nw/transforms.html#nw.get_transform">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_transform</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Transform</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Look up a Transform instance by name; raises with the known names.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Look up a Transform instance by name; raises with the known names."""</span>
     <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">transforms</span><span class="p">:</span>
         <span class="n">known</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">transforms</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
         <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;No Transform </span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2">; registered: </span><span class="si">{</span><span class="n">known</span><span class="si">}</span><span class="s2">. Apps register &quot;</span>
-            <span class="s2">&quot;custom Transforms via `nw.register_transform(name, impl)` or the &quot;</span>
-            <span class="s2">&quot;`@nw.register_transform(&#39;name&#39;)` class decorator.&quot;</span>
+            <span class="sa">f</span><span class="s2">"No Transform </span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2">; registered: </span><span class="si">{</span><span class="n">known</span><span class="si">}</span><span class="s2">. Apps register "</span>
+            <span class="s2">"custom Transforms via `nw.register_transform(name, impl)` or the "</span>
+            <span class="s2">"`@nw.register_transform('name')` class decorator."</span>
         <span class="p">)</span>
     <span class="k">return</span> <span class="n">transforms</span><span class="p">[</span><span class="n">name</span><span class="p">]</span></div>
 
@@ -730,7 +730,7 @@
 <div class="viewcode-block" id="list_transforms">
 <a class="viewcode-back" href="../../module_docs/nw/transforms.html#nw.list_transforms">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">list_transforms</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return all registered Transform names (sorted).&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Return all registered Transform names (sorted)."""</span>
     <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">transforms</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
 
 
@@ -738,7 +738,7 @@
 <div class="viewcode-block" id="transform_catalog">
 <a class="viewcode-back" href="../../module_docs/nw/transforms.html#nw.transform_catalog">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">transform_catalog</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Every registered Transform as a JSON-able capability entry (sorted by name).</span>
+<span class="w">    </span><span class="sd">"""Every registered Transform as a JSON-able capability entry (sorted by name).</span>
 
 <span class="sd">    The typed-capability surface an HTTP route / MCP tool builder / agent</span>
 <span class="sd">    serves or selects from, mirroring :func:`nw.genre_catalog` (nw#28): a</span>
@@ -748,22 +748,22 @@
 <span class="sd">        {name, input_kinds, output_kind, is_batch, impl_version, params_schema}</span>
 
 <span class="sd">    ``name`` is the registry key (the addressable name). ``params_schema``</span>
-<span class="sd">    is the params model&#39;s JSON Schema — ``{}`` for a Transform with no</span>
+<span class="sd">    is the params model's JSON Schema — ``{}`` for a Transform with no</span>
 <span class="sd">    params — and is what an MCP tool definition is built from. The whole</span>
 <span class="sd">    list is JSON-serializable as returned.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">entries</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">list_transforms</span><span class="p">():</span>
         <span class="n">transform</span> <span class="o">=</span> <span class="n">transforms</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
-        <span class="n">params_model</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">transform</span><span class="p">,</span> <span class="s2">&quot;params_model&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">))</span>
+        <span class="n">params_model</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">transform</span><span class="p">,</span> <span class="s2">"params_model"</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">))</span>
         <span class="n">entries</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
             <span class="p">{</span>
-                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
-                <span class="s2">&quot;input_kinds&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">transform</span><span class="o">.</span><span class="n">input_kinds</span><span class="p">),</span>
-                <span class="s2">&quot;output_kind&quot;</span><span class="p">:</span> <span class="n">transform</span><span class="o">.</span><span class="n">output_kind</span><span class="p">,</span>
-                <span class="s2">&quot;is_batch&quot;</span><span class="p">:</span> <span class="n">transform</span><span class="o">.</span><span class="n">is_batch</span><span class="p">,</span>
-                <span class="s2">&quot;impl_version&quot;</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">transform</span><span class="p">,</span> <span class="s2">&quot;impl_version&quot;</span><span class="p">,</span> <span class="n">DFLT_IMPL_VERSION</span><span class="p">),</span>
-                <span class="s2">&quot;params_schema&quot;</span><span class="p">:</span> <span class="p">(</span>
+                <span class="s2">"name"</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+                <span class="s2">"input_kinds"</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">transform</span><span class="o">.</span><span class="n">input_kinds</span><span class="p">),</span>
+                <span class="s2">"output_kind"</span><span class="p">:</span> <span class="n">transform</span><span class="o">.</span><span class="n">output_kind</span><span class="p">,</span>
+                <span class="s2">"is_batch"</span><span class="p">:</span> <span class="n">transform</span><span class="o">.</span><span class="n">is_batch</span><span class="p">,</span>
+                <span class="s2">"impl_version"</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">transform</span><span class="p">,</span> <span class="s2">"impl_version"</span><span class="p">,</span> <span class="n">DFLT_IMPL_VERSION</span><span class="p">),</span>
+                <span class="s2">"params_schema"</span><span class="p">:</span> <span class="p">(</span>
                     <span class="p">{}</span>
                     <span class="k">if</span> <span class="n">params_model</span> <span class="ow">is</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
                     <span class="k">else</span> <span class="n">params_model</span><span class="o">.</span><span class="n">model_json_schema</span><span class="p">()</span>
@@ -779,17 +779,17 @@
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;Transform&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;TransformInputs&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;TransformResult&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;BaseTransform&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;DFLT_IMPL_VERSION&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;transforms&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;register_transform&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;get_transform&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;list_transforms&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;transform_catalog&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;stamp_transform_identity&quot;</span><span class="p">,</span>
+    <span class="s2">"Transform"</span><span class="p">,</span>
+    <span class="s2">"TransformInputs"</span><span class="p">,</span>
+    <span class="s2">"TransformResult"</span><span class="p">,</span>
+    <span class="s2">"BaseTransform"</span><span class="p">,</span>
+    <span class="s2">"DFLT_IMPL_VERSION"</span><span class="p">,</span>
+    <span class="s2">"transforms"</span><span class="p">,</span>
+    <span class="s2">"register_transform"</span><span class="p">,</span>
+    <span class="s2">"get_transform"</span><span class="p">,</span>
+    <span class="s2">"list_transforms"</span><span class="p">,</span>
+    <span class="s2">"transform_catalog"</span><span class="p">,</span>
+    <span class="s2">"stamp_transform_identity"</span><span class="p">,</span>
 <span class="p">]</span>
 </pre></div>
 

@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.bodies.render_result &mdash; nw 0.0.31 documentation</title>
+  <title>nw.bodies.render_result &mdash; nw 0.0.32 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=c5dbc6bb"></script>
+      <script src="../../../_static/documentation_options.js?v=f2234cd1"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -107,19 +107,19 @@
            <div itemprop="articleBody">
              
   <h1>Source code for nw.bodies.render_result</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Body schema for render results — the output of a render Transform.</span>
+<span></span><span class="sd">"""Body schema for render results — the output of a render Transform.</span>
 
 <span class="sd">URI: ``annot://schema/render-result/v1``</span>
 
 <span class="sd">A render-result records that a shot was rendered: which strategy ran, where</span>
 <span class="sd">the output landed, the video :class:`lacing.Artifact` it produced, and the</span>
 <span class="sd">estimated cost. Its ``provenance.was_derived_from`` includes the shot</span>
-<span class="sd">annotation&#39;s id, so a freshness traversal from the shot finds the render.</span>
+<span class="sd">annotation's id, so a freshness traversal from the shot finds the render.</span>
 
 <span class="sd">This is the ``output_kind`` of the render-strategy Transforms (see</span>
 <span class="sd">``nw.transforms._adapters.render_strategy``). It is intentionally small —</span>
 <span class="sd">the heavy data (the actual mp4) is the referenced Artifact, not the body.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -130,41 +130,41 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">lacing.schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_body_schema</span>
 
 
-<span class="n">RENDER_RESULT_BODY_SCHEMA_URI</span> <span class="o">=</span> <span class="s2">&quot;annot://schema/render-result/v1&quot;</span>
-<span class="n">RENDER_RESULT_TIER</span> <span class="o">=</span> <span class="s2">&quot;render-result&quot;</span>
+<span class="n">RENDER_RESULT_BODY_SCHEMA_URI</span> <span class="o">=</span> <span class="s2">"annot://schema/render-result/v1"</span>
+<span class="n">RENDER_RESULT_TIER</span> <span class="o">=</span> <span class="s2">"render-result"</span>
 
 
 <div class="viewcode-block" id="RenderResultBodyV1">
 <a class="viewcode-back" href="../../../module_docs/nw/bodies/render_result.html#nw.bodies.RenderResultBodyV1">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">RenderResultBodyV1</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Body of a render-result annotation.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Body of a render-result annotation."""</span>
 
-    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;frozen&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;extra&quot;</span><span class="p">:</span> <span class="s2">&quot;forbid&quot;</span><span class="p">}</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"frozen"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">"extra"</span><span class="p">:</span> <span class="s2">"forbid"</span><span class="p">}</span>
 
-    <span class="n">shot_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Id of the shot that was rendered.&quot;</span><span class="p">)</span>
+    <span class="n">shot_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Id of the shot that was rendered."</span><span class="p">)</span>
     <span class="n">strategy</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Render strategy / Transform that produced this result.&quot;</span>
+        <span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Render strategy / Transform that produced this result."</span>
     <span class="p">)</span>
     <span class="n">output_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="s2">""</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="p">(</span>
-            <span class="s2">&quot;Project-relative path to the rendered ``output.mp4``. Empty in a &quot;</span>
-            <span class="s2">&quot;skeleton annotation produced by ``plan``; filled by ``execute``.&quot;</span>
+            <span class="s2">"Project-relative path to the rendered ``output.mp4``. Empty in a "</span>
+            <span class="s2">"skeleton annotation produced by ``plan``; filled by ``execute``."</span>
         <span class="p">),</span>
     <span class="p">)</span>
     <span class="n">artifact_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="kc">None</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="p">(</span>
-            <span class="s2">&quot;``asset_id`` of the video :class:`lacing.Artifact`. ``None`` in a &quot;</span>
-            <span class="s2">&quot;skeleton; filled by ``execute`` once the Plan has run.&quot;</span>
+            <span class="s2">"``asset_id`` of the video :class:`lacing.Artifact`. ``None`` in a "</span>
+            <span class="s2">"skeleton; filled by ``execute`` once the Plan has run."</span>
         <span class="p">),</span>
     <span class="p">)</span>
     <span class="n">duration_s</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="mf">0.0</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Target duration of the shot, in seconds.&quot;</span>
+        <span class="mf">0.0</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Target duration of the shot, in seconds."</span>
     <span class="p">)</span>
     <span class="n">total_estimated_cost_usd</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="mf">0.0</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Plan-time cost estimate for the render (sum of CallPlan costs).&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Plan-time cost estimate for the render (sum of CallPlan costs)."</span><span class="p">,</span>
     <span class="p">)</span></div>
 
 

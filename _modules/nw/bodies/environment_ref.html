@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.bodies.environment_ref &mdash; nw 0.0.31 documentation</title>
+  <title>nw.bodies.environment_ref &mdash; nw 0.0.32 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=c5dbc6bb"></script>
+      <script src="../../../_static/documentation_options.js?v=f2234cd1"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -107,13 +107,13 @@
            <div itemprop="articleBody">
              
   <h1>Source code for nw.bodies.environment_ref</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Body schema for environment refs.</span>
+<span></span><span class="sd">"""Body schema for environment refs.</span>
 
 <span class="sd">URI: ``annot://schema/environment-ref/v1``</span>
 
 <span class="sd">Same pattern as character-ref: small project-level pointer at an</span>
 <span class="sd">``environments/&lt;name&gt;/`` folder.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -122,26 +122,26 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">lacing.schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_body_schema</span>
 
 
-<span class="n">ENVIRONMENT_REF_BODY_SCHEMA_URI</span> <span class="o">=</span> <span class="s2">&quot;annot://schema/environment-ref/v1&quot;</span>
+<span class="n">ENVIRONMENT_REF_BODY_SCHEMA_URI</span> <span class="o">=</span> <span class="s2">"annot://schema/environment-ref/v1"</span>
 
 
 <div class="viewcode-block" id="EnvironmentRefBodyV1">
 <a class="viewcode-back" href="../../../module_docs/nw/bodies/environment_ref.html#nw.bodies.EnvironmentRefBodyV1">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">EnvironmentRefBodyV1</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Body of an environment-ref annotation.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Body of an environment-ref annotation."""</span>
 
-    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;frozen&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;extra&quot;</span><span class="p">:</span> <span class="s2">&quot;forbid&quot;</span><span class="p">}</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"frozen"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">"extra"</span><span class="p">:</span> <span class="s2">"forbid"</span><span class="p">}</span>
 
-    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Folder name under environments/.&quot;</span><span class="p">)</span>
-    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Short description.&quot;</span><span class="p">)</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Folder name under environments/."</span><span class="p">)</span>
+    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="s2">""</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Short description."</span><span class="p">)</span>
     <span class="n">reference_image_urls</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default_factory</span><span class="o">=</span><span class="nb">tuple</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="p">(</span>
-            <span class="s2">&quot;URLs of reference images for this environment — the lookbook &quot;</span>
-            <span class="s2">&quot;the FE curates and a future ``panel_to_image.composite.*`` &quot;</span>
-            <span class="s2">&quot;transform passes to the image-gen model as visual anchors &quot;</span>
-            <span class="s2">&quot;for style consistency. Backwards-compatible (defaults to &quot;</span>
-            <span class="s2">&quot;empty); v0.4-era dumps without this field load cleanly.&quot;</span>
+            <span class="s2">"URLs of reference images for this environment — the lookbook "</span>
+            <span class="s2">"the FE curates and a future ``panel_to_image.composite.*`` "</span>
+            <span class="s2">"transform passes to the image-gen model as visual anchors "</span>
+            <span class="s2">"for style consistency. Backwards-compatible (defaults to "</span>
+            <span class="s2">"empty); v0.4-era dumps without this field load cleanly."</span>
         <span class="p">),</span>
     <span class="p">)</span></div>
 

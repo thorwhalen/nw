@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.renderers.text_to_video &mdash; nw 0.0.31 documentation</title>
+  <title>nw.renderers.text_to_video &mdash; nw 0.0.32 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=c5dbc6bb"></script>
+      <script src="../../../_static/documentation_options.js?v=f2234cd1"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -108,13 +108,13 @@
            <div itemprop="articleBody">
              
   <h1>Source code for nw.renderers.text_to_video</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Strategy: text_to_video — prompt-only short clip.</span>
+<span></span><span class="sd">"""Strategy: text_to_video — prompt-only short clip.</span>
 
 <span class="sd">Single-call: ``falaw.text_to_video``. No image inputs.</span>
 
 <span class="sd">model_overrides keys understood:</span>
 <span class="sd">  - ``text_to_video`` — t2v model (e.g. seedance, veo3).</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -140,59 +140,59 @@
 <div class="viewcode-block" id="TextToVideoStrategy">
 <a class="viewcode-back" href="../../../module_docs/nw/renderers/text_to_video.html#nw.renderers.text_to_video.TextToVideoStrategy">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">TextToVideoStrategy</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;``render_strategy=&quot;text_to_video&quot;``.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""``render_strategy="text_to_video"``."""</span>
 
-    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;text_to_video&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">"text_to_video"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">plan</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">prep</span><span class="p">:</span> <span class="s2">&quot;ShotPreparation&quot;</span><span class="p">,</span>
+        <span class="n">prep</span><span class="p">:</span> <span class="s2">"ShotPreparation"</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
-        <span class="n">quality</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;balanced&quot;</span><span class="p">,</span>
+        <span class="n">quality</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"balanced"</span><span class="p">,</span>
         <span class="n">model_overrides</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Plan</span><span class="p">:</span>
         <span class="n">prompt</span> <span class="o">=</span> <span class="n">prep</span><span class="o">.</span><span class="n">storyboard_prompt</span> <span class="ow">or</span> <span class="n">prep</span><span class="o">.</span><span class="n">shot</span><span class="o">.</span><span class="n">description</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">prompt</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;text_to_video: shot </span><span class="si">{</span><span class="n">prep</span><span class="o">.</span><span class="n">shot_id</span><span class="si">!r}</span><span class="s2"> has no description.&quot;</span>
+                <span class="sa">f</span><span class="s2">"text_to_video: shot </span><span class="si">{</span><span class="n">prep</span><span class="o">.</span><span class="n">shot_id</span><span class="si">!r}</span><span class="s2"> has no description."</span>
             <span class="p">)</span>
         <span class="n">overrides</span> <span class="o">=</span> <span class="n">model_overrides</span> <span class="ow">or</span> <span class="p">{}</span>
-        <span class="n">model_id</span> <span class="o">=</span> <span class="n">overrides</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;text_to_video&quot;</span><span class="p">)</span>
+        <span class="n">model_id</span> <span class="o">=</span> <span class="n">overrides</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"text_to_video"</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">model_id</span><span class="p">:</span>
             <span class="n">record</span> <span class="o">=</span> <span class="n">get_model</span><span class="p">(</span><span class="n">model_id</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">record</span> <span class="o">=</span> <span class="n">pick_model</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="s2">&quot;text_to_video&quot;</span><span class="p">,</span> <span class="n">quality_tier</span><span class="o">=</span><span class="n">quality</span><span class="p">)</span>
+            <span class="n">record</span> <span class="o">=</span> <span class="n">pick_model</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="s2">"text_to_video"</span><span class="p">,</span> <span class="n">quality_tier</span><span class="o">=</span><span class="n">quality</span><span class="p">)</span>
         <span class="n">cost</span> <span class="o">=</span> <span class="n">estimate_call_cost</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="n">seconds</span><span class="o">=</span><span class="n">prep</span><span class="o">.</span><span class="n">duration_s</span><span class="p">)</span>
 
         <span class="n">call</span> <span class="o">=</span> <span class="n">make_call_plan</span><span class="p">(</span>
-            <span class="n">tool</span><span class="o">=</span><span class="s2">&quot;text_to_video&quot;</span><span class="p">,</span>
+            <span class="n">tool</span><span class="o">=</span><span class="s2">"text_to_video"</span><span class="p">,</span>
             <span class="n">application</span><span class="o">=</span><span class="n">record</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
-            <span class="n">arguments</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;prompt&quot;</span><span class="p">:</span> <span class="n">prompt</span><span class="p">},</span>
-            <span class="n">output_kind</span><span class="o">=</span><span class="s2">&quot;video&quot;</span><span class="p">,</span>
+            <span class="n">arguments</span><span class="o">=</span><span class="p">{</span><span class="s2">"prompt"</span><span class="p">:</span> <span class="n">prompt</span><span class="p">},</span>
+            <span class="n">output_kind</span><span class="o">=</span><span class="s2">"video"</span><span class="p">,</span>
             <span class="n">estimated_cost_usd</span><span class="o">=</span><span class="n">cost</span><span class="p">,</span>
-            <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;shot_id&quot;</span><span class="p">:</span> <span class="n">prep</span><span class="o">.</span><span class="n">shot_id</span><span class="p">,</span> <span class="s2">&quot;strategy&quot;</span><span class="p">:</span> <span class="s2">&quot;text_to_video&quot;</span><span class="p">},</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">"shot_id"</span><span class="p">:</span> <span class="n">prep</span><span class="o">.</span><span class="n">shot_id</span><span class="p">,</span> <span class="s2">"strategy"</span><span class="p">:</span> <span class="s2">"text_to_video"</span><span class="p">},</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">Plan</span><span class="p">(</span><span class="n">calls</span><span class="o">=</span><span class="p">(</span><span class="n">call</span><span class="p">,))</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">materialize</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">prep</span><span class="p">:</span> <span class="s2">&quot;ShotPreparation&quot;</span><span class="p">,</span>
+        <span class="n">prep</span><span class="p">:</span> <span class="s2">"ShotPreparation"</span><span class="p">,</span>
         <span class="n">plan</span><span class="p">:</span> <span class="n">Plan</span><span class="p">,</span>
         <span class="n">artifacts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Artifact</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
         <span class="n">artifact</span> <span class="o">=</span> <span class="n">artifacts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">artifact</span><span class="o">.</span><span class="n">url</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;text_to_video: call for shot </span><span class="si">{</span><span class="n">prep</span><span class="o">.</span><span class="n">shot_id</span><span class="si">!r}</span><span class="s2"> returned no URL&quot;</span>
+                <span class="sa">f</span><span class="s2">"text_to_video: call for shot </span><span class="si">{</span><span class="n">prep</span><span class="o">.</span><span class="n">shot_id</span><span class="si">!r}</span><span class="s2"> returned no URL"</span>
             <span class="p">)</span>
-        <span class="n">raw</span> <span class="o">=</span> <span class="n">prep</span><span class="o">.</span><span class="n">shot_dir</span> <span class="o">/</span> <span class="s2">&quot;raw.mp4&quot;</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">prep</span><span class="o">.</span><span class="n">shot_dir</span> <span class="o">/</span> <span class="s2">"raw.mp4"</span>
         <span class="n">download_to</span><span class="p">(</span><span class="n">artifact</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">raw</span><span class="p">)</span>
-        <span class="n">final</span> <span class="o">=</span> <span class="n">prep</span><span class="o">.</span><span class="n">shot_dir</span> <span class="o">/</span> <span class="s2">&quot;output.mp4&quot;</span>
+        <span class="n">final</span> <span class="o">=</span> <span class="n">prep</span><span class="o">.</span><span class="n">shot_dir</span> <span class="o">/</span> <span class="s2">"output.mp4"</span>
         <span class="k">return</span> <span class="n">trim_or_pad_video</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">prep</span><span class="o">.</span><span class="n">duration_s</span><span class="p">,</span> <span class="n">final</span><span class="p">)</span></div>
 
 
 
-<span class="n">register_strategy</span><span class="p">(</span><span class="s2">&quot;text_to_video&quot;</span><span class="p">,</span> <span class="n">TextToVideoStrategy</span><span class="p">())</span>
+<span class="n">register_strategy</span><span class="p">(</span><span class="s2">"text_to_video"</span><span class="p">,</span> <span class="n">TextToVideoStrategy</span><span class="p">())</span>
 </pre></div>
 
            </div>

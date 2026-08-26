@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.experiment &mdash; nw 0.0.31 documentation</title>
+  <title>nw.experiment &mdash; nw 0.0.32 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=c5dbc6bb"></script>
+      <script src="../../_static/documentation_options.js?v=f2234cd1"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -107,19 +107,19 @@
            <div itemprop="articleBody">
              
   <h1>Source code for nw.experiment</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Experiment helpers — clone projects, apply operations across siblings.</span>
+<span></span><span class="sd">"""Experiment helpers — clone projects, apply operations across siblings.</span>
 
 <span class="sd">Replaces the bash glue from the muvid_project run:</span>
 
 <span class="sd">- ``cp -r the_bells the_bells_v1_lipsync; cp -r the_bells the_bells_v2_…``</span>
 <span class="sd">  becomes :func:`clone_project` calls in a Python loop, with typed</span>
-<span class="sd">  control over what&#39;s preserved vs. reset.</span>
+<span class="sd">  control over what's preserved vs. reset.</span>
 <span class="sd">- ``for v in v1 v2 v3 v4; do muvid script-apply …; done`` becomes</span>
 <span class="sd">  :func:`apply_to_projects`.</span>
 
-<span class="sd">The &quot;compare four interpretations&quot; workflow is now a first-class feature</span>
+<span class="sd">The "compare four interpretations" workflow is now a first-class feature</span>
 <span class="sd">rather than a shell pipeline.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -131,16 +131,16 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">.schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProjectSummary</span>
 
 
-<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
+<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">"T"</span><span class="p">)</span>
 
 
 <span class="c1"># Subtrees that make sense to preserve when cloning — copying these from src</span>
 <span class="c1"># carries forward shared inputs (the song, the alignment, the casting).</span>
-<span class="n">_DEFAULT_PRESERVE</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;song&quot;</span><span class="p">,</span> <span class="s2">&quot;lyrics&quot;</span><span class="p">,</span> <span class="s2">&quot;characters&quot;</span><span class="p">)</span>
+<span class="n">_DEFAULT_PRESERVE</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"song"</span><span class="p">,</span> <span class="s2">"lyrics"</span><span class="p">,</span> <span class="s2">"characters"</span><span class="p">)</span>
 
 <span class="c1"># Subtrees that make sense to reset (recreate empty) when cloning — these are</span>
 <span class="c1"># per-experiment outputs that must NOT carry over.</span>
-<span class="n">_DEFAULT_RESET</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;script&quot;</span><span class="p">,</span> <span class="s2">&quot;shots&quot;</span><span class="p">,</span> <span class="s2">&quot;output&quot;</span><span class="p">,</span> <span class="s2">&quot;.nw&quot;</span><span class="p">)</span>
+<span class="n">_DEFAULT_RESET</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"script"</span><span class="p">,</span> <span class="s2">"shots"</span><span class="p">,</span> <span class="s2">"output"</span><span class="p">,</span> <span class="s2">".nw"</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="clone_project">
@@ -154,41 +154,41 @@
     <span class="n">title</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ProjectSummary</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Clone an nw project to a new root.</span>
+<span class="w">    </span><span class="sd">"""Clone an nw project to a new root.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        src_root: Path to an existing nw project (must contain ``project.json``).</span>
 <span class="sd">        dst_root: Destination path. Must not exist (or pass ``force=True`` to</span>
 <span class="sd">            overwrite).</span>
 <span class="sd">        preserve: Subtrees of ``src_root`` to copy verbatim into ``dst_root``.</span>
-<span class="sd">            Default: ``(&quot;song&quot;, &quot;lyrics&quot;, &quot;characters&quot;)``.</span>
+<span class="sd">            Default: ``("song", "lyrics", "characters")``.</span>
 <span class="sd">        reset: Subtrees of ``dst_root`` to (re)create as empty after copying.</span>
-<span class="sd">            Default: ``(&quot;script&quot;, &quot;shots&quot;, &quot;output&quot;, &quot;.nw&quot;)``.</span>
-<span class="sd">        title: New title for the cloned project. Defaults to ``dst_root``&#39;s</span>
+<span class="sd">            Default: ``("script", "shots", "output", ".nw")``.</span>
+<span class="sd">        title: New title for the cloned project. Defaults to ``dst_root``'s</span>
 <span class="sd">            folder name.</span>
 <span class="sd">        force: When True, overwrite an existing ``dst_root`` (refuses by default</span>
 <span class="sd">            to avoid clobbering work).</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        :class:`ProjectSummary` of the cloned project.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">src</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">src_root</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
     <span class="n">dst</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">dst_root</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">src</span> <span class="o">/</span> <span class="s2">&quot;project.json&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">src</span><span class="si">}</span><span class="s2"> is not an nw project (no project.json).&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">src</span> <span class="o">/</span> <span class="s2">"project.json"</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">src</span><span class="si">}</span><span class="s2"> is not an nw project (no project.json)."</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">dst</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">force</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dst</span><span class="si">}</span><span class="s2"> already exists. Pass force=True to overwrite.&quot;</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">dst</span><span class="si">}</span><span class="s2"> already exists. Pass force=True to overwrite."</span>
             <span class="p">)</span>
         <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">dst</span><span class="p">)</span>
 
     <span class="n">dst</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="c1"># Copy project.json — always preserved (it&#39;s the SSOT pointer).</span>
-    <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">src</span> <span class="o">/</span> <span class="s2">&quot;project.json&quot;</span><span class="p">,</span> <span class="n">dst</span> <span class="o">/</span> <span class="s2">&quot;project.json&quot;</span><span class="p">)</span>
+    <span class="c1"># Copy project.json — always preserved (it's the SSOT pointer).</span>
+    <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">src</span> <span class="o">/</span> <span class="s2">"project.json"</span><span class="p">,</span> <span class="n">dst</span> <span class="o">/</span> <span class="s2">"project.json"</span><span class="p">)</span>
 
     <span class="c1"># Copy each preserve subtree, when it exists in src.</span>
     <span class="n">preserve_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">preserve</span><span class="p">)</span>
@@ -199,7 +199,7 @@
         <span class="k">elif</span> <span class="n">src_sub</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="n">src_sub</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
             <span class="n">shutil</span><span class="o">.</span><span class="n">copy2</span><span class="p">(</span><span class="n">src_sub</span><span class="p">,</span> <span class="n">dst</span> <span class="o">/</span> <span class="n">name</span><span class="p">)</span>
 
-    <span class="c1"># Reset each &quot;reset&quot; subtree to an empty directory.</span>
+    <span class="c1"># Reset each "reset" subtree to an empty directory.</span>
     <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">reset</span><span class="p">:</span>
         <span class="n">target</span> <span class="o">=</span> <span class="n">dst</span> <span class="o">/</span> <span class="n">name</span>
         <span class="k">if</span> <span class="n">target</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
@@ -213,7 +213,7 @@
     <span class="n">proj</span> <span class="o">=</span> <span class="n">Project</span><span class="p">(</span><span class="n">dst</span><span class="p">)</span>
     <span class="n">proj</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span> <span class="k">if</span> <span class="n">title</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">dst</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
     <span class="n">proj</span><span class="o">.</span><span class="n">log_decision</span><span class="p">(</span>
-        <span class="s2">&quot;clone_project&quot;</span><span class="p">,</span>
+        <span class="s2">"clone_project"</span><span class="p">,</span>
         <span class="n">src</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">src</span><span class="p">),</span>
         <span class="n">preserve</span><span class="o">=</span><span class="nb">sorted</span><span class="p">(</span><span class="n">preserve_set</span><span class="p">),</span>
         <span class="n">reset</span><span class="o">=</span><span class="nb">sorted</span><span class="p">(</span><span class="n">reset</span><span class="p">),</span>
@@ -230,7 +230,7 @@
     <span class="o">*</span><span class="p">,</span>
     <span class="n">parallel</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Apply ``fn`` to each project at ``roots`` and collect the results.</span>
+<span class="w">    </span><span class="sd">"""Apply ``fn`` to each project at ``roots`` and collect the results.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        roots: Iterable of project roots. Each must point to an existing</span>
@@ -250,7 +250,7 @@
 <span class="sd">        &gt;&gt;&gt; # totals = apply_to_projects(roots, lambda p: estimate_render_cost(p))</span>
 <span class="sd">        &gt;&gt;&gt; # Apply the same script to all of them after a refactor:</span>
 <span class="sd">        &gt;&gt;&gt; # apply_to_projects(roots, lambda p: parse_script(p))</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">projects</span> <span class="o">=</span> <span class="p">[</span><span class="n">Project</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">roots</span><span class="p">]</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">parallel</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">fn</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">projects</span><span class="p">]</span>
@@ -266,10 +266,10 @@
 <div class="viewcode-block" id="summarize_all">
 <a class="viewcode-back" href="../../module_docs/nw/experiment.html#nw.summarize_all">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">summarize_all</span><span class="p">(</span><span class="n">roots</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">ProjectSummary</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convenience: return a :class:`ProjectSummary` for each project.</span>
+<span class="w">    </span><span class="sd">"""Convenience: return a :class:`ProjectSummary` for each project.</span>
 
 <span class="sd">    Equivalent to ``apply_to_projects(roots, lambda p: p.read_summary())``.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="n">apply_to_projects</span><span class="p">(</span><span class="n">roots</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">read_summary</span><span class="p">())</span></div>
 
 </pre></div>

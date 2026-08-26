@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.transforms._adapters.render_strategy &mdash; nw 0.0.31 documentation</title>
+  <title>nw.transforms._adapters.render_strategy &mdash; nw 0.0.32 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=c5dbc6bb"></script>
+      <script src="../../../../_static/documentation_options.js?v=f2234cd1"></script>
       <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -108,7 +108,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for nw.transforms._adapters.render_strategy</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Adapter: wrap a legacy ``nw.renderers.Strategy`` as a ``Transform``.</span>
+<span></span><span class="sd">"""Adapter: wrap a legacy ``nw.renderers.Strategy`` as a ``Transform``.</span>
 
 <span class="sd">The 5 built-in render strategies (``lipsync``, ``image_to_video``,</span>
 <span class="sd">``text_to_video``, ``still``, ``composite_lipsync``) predate the Transform</span>
@@ -129,12 +129,12 @@
 <span class="sd">existing rendering code. ``nw.workflow.execute_render`` is untouched and keeps</span>
 <span class="sd">working; new code can drive renders through the Transform registry instead.</span>
 
-<span class="sd">Known wart surfaced by this adapter: a render strategy&#39;s ``materialize`` step</span>
-<span class="sd">needs local paths that aren&#39;t in the ``falaw.Plan``, so ``execute`` re-runs</span>
-<span class="sd">``prepare_shot``. ``falaw``-only Transforms don&#39;t have this issue (the Plan&#39;s</span>
-<span class="sd">``&lt;from N&gt;`` placeholders are self-contained). Left as-is for now — it&#39;s the</span>
+<span class="sd">Known wart surfaced by this adapter: a render strategy's ``materialize`` step</span>
+<span class="sd">needs local paths that aren't in the ``falaw.Plan``, so ``execute`` re-runs</span>
+<span class="sd">``prepare_shot``. ``falaw``-only Transforms don't have this issue (the Plan's</span>
+<span class="sd">``&lt;from N&gt;`` placeholders are self-contained). Left as-is for now — it's the</span>
 <span class="sd">honest shape of wrapping pre-Transform code.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -165,25 +165,25 @@
 <div class="viewcode-block" id="RenderStrategyParams">
 <a class="viewcode-back" href="../../../../module_docs/nw/transforms/_adapters/render_strategy.html#nw.transforms._adapters.render_strategy.RenderStrategyParams">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">RenderStrategyParams</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Per-call parameters for a render-strategy Transform.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Per-call parameters for a render-strategy Transform."""</span>
 
-    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;forbid&quot;</span><span class="p">)</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="s2">"forbid"</span><span class="p">)</span>
 
     <span class="n">quality</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="s2">&quot;balanced&quot;</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Quality tier passed to the strategy: &quot;draft&quot; | &quot;balanced&quot; | &quot;high&quot;.&#39;</span><span class="p">,</span>
+        <span class="s2">"balanced"</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s1">'Quality tier passed to the strategy: "draft" | "balanced" | "high".'</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">upload</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="kc">True</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="p">(</span>
-            <span class="s2">&quot;Upload local files to fal-storage during plan so the Plan has &quot;</span>
-            <span class="s2">&quot;stable URLs. False for offline plan inspection (the resulting &quot;</span>
-            <span class="s2">&quot;Plan can&#39;t be executed).&quot;</span>
+            <span class="s2">"Upload local files to fal-storage during plan so the Plan has "</span>
+            <span class="s2">"stable URLs. False for offline plan inspection (the resulting "</span>
+            <span class="s2">"Plan can't be executed)."</span>
         <span class="p">),</span>
     <span class="p">)</span>
     <span class="n">model_overrides</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Per-step model id overrides, forwarded to the strategy.&quot;</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Per-step model id overrides, forwarded to the strategy."</span><span class="p">,</span>
     <span class="p">)</span></div>
 
 
@@ -191,12 +191,12 @@
 <div class="viewcode-block" id="RenderStrategyTransform">
 <a class="viewcode-back" href="../../../../module_docs/nw/transforms/_adapters/render_strategy.html#nw.transforms._adapters.render_strategy.RenderStrategyTransform">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">RenderStrategyTransform</span><span class="p">(</span><span class="n">BaseTransform</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Wraps one ``nw.renderers.Strategy`` instance as a Transform.</span>
+<span class="w">    </span><span class="sd">"""Wraps one ``nw.renderers.Strategy`` instance as a Transform.</span>
 
 <span class="sd">    ``input_kinds`` is just ``(shot,)`` — the character / environment context</span>
 <span class="sd">    a strategy needs is resolved from the *project* by ``prepare_shot``, not</span>
 <span class="sd">    passed through ``TransformInputs``.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">input_kinds</span> <span class="o">=</span> <span class="p">(</span><span class="n">SHOT_BODY_SCHEMA_URI</span><span class="p">,)</span>
     <span class="n">output_kind</span> <span class="o">=</span> <span class="n">RENDER_RESULT_BODY_SCHEMA_URI</span>
@@ -204,7 +204,7 @@
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">strategy</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_strategy</span> <span class="o">=</span> <span class="n">strategy</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;shot_to_render_result.fal.</span><span class="si">{</span><span class="n">strategy</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"shot_to_render_result.fal.</span><span class="si">{</span><span class="n">strategy</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">plan</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -217,7 +217,7 @@
 
         <span class="n">params</span> <span class="o">=</span> <span class="n">params</span> <span class="ow">or</span> <span class="n">RenderStrategyParams</span><span class="p">()</span>
         <span class="n">shot_ann</span> <span class="o">=</span> <span class="n">inputs</span><span class="o">.</span><span class="n">primary</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">shot_id</span> <span class="o">=</span> <span class="n">shot_ann</span><span class="o">.</span><span class="n">body</span><span class="p">[</span><span class="s2">&quot;shot_id&quot;</span><span class="p">]</span>
+        <span class="n">shot_id</span> <span class="o">=</span> <span class="n">shot_ann</span><span class="o">.</span><span class="n">body</span><span class="p">[</span><span class="s2">"shot_id"</span><span class="p">]</span>
 
         <span class="n">prep</span> <span class="o">=</span> <span class="n">prepare_shot</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">shot_id</span><span class="p">,</span> <span class="n">upload</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">upload</span><span class="p">)</span>
         <span class="n">plan</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_strategy</span><span class="o">.</span><span class="n">plan</span><span class="p">(</span>
@@ -229,11 +229,11 @@
         <span class="n">skeleton</span> <span class="o">=</span> <span class="n">Annotation</span><span class="p">(</span>
             <span class="nb">id</span><span class="o">=</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">(),</span>
             <span class="n">tier</span><span class="o">=</span><span class="n">RENDER_RESULT_TIER</span><span class="p">,</span>
-            <span class="n">reference</span><span class="o">=</span><span class="n">shot_ann</span><span class="o">.</span><span class="n">reference</span><span class="p">,</span>  <span class="c1"># inherit the shot&#39;s interval + asset</span>
+            <span class="n">reference</span><span class="o">=</span><span class="n">shot_ann</span><span class="o">.</span><span class="n">reference</span><span class="p">,</span>  <span class="c1"># inherit the shot's interval + asset</span>
             <span class="n">body</span><span class="o">=</span><span class="n">RenderResultBodyV1</span><span class="p">(</span>
                 <span class="n">shot_id</span><span class="o">=</span><span class="n">shot_id</span><span class="p">,</span>
                 <span class="n">strategy</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_strategy</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-                <span class="n">output_path</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+                <span class="n">output_path</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span>
                 <span class="n">artifact_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                 <span class="n">duration_s</span><span class="o">=</span><span class="n">prep</span><span class="o">.</span><span class="n">duration_s</span><span class="p">,</span>
                 <span class="n">total_estimated_cost_usd</span><span class="o">=</span><span class="n">plan</span><span class="o">.</span><span class="n">total_cost_usd</span><span class="p">,</span>
@@ -242,7 +242,7 @@
             <span class="n">provenance</span><span class="o">=</span><span class="n">derive_provenance</span><span class="p">(</span>
                 <span class="bp">self</span><span class="p">,</span>
                 <span class="n">inputs</span><span class="p">,</span>
-                <span class="n">attributed_to</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;agent:nw.renderers.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_strategy</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">attributed_to</span><span class="o">=</span><span class="sa">f</span><span class="s2">"agent:nw.renderers.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_strategy</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
             <span class="p">),</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">plan</span><span class="p">,</span> <span class="p">(</span><span class="n">skeleton</span><span class="p">,)</span>
@@ -257,36 +257,36 @@
         <span class="o">*</span><span class="p">,</span>
         <span class="n">use_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">on_failure</span><span class="p">:</span> <span class="n">OnFailure</span> <span class="o">=</span> <span class="s2">&quot;halt&quot;</span><span class="p">,</span>
+        <span class="n">on_failure</span><span class="p">:</span> <span class="n">OnFailure</span> <span class="o">=</span> <span class="s2">"halt"</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TransformResult</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Render one shot. ``on_failure`` isolates at the *shot* boundary.</span>
+<span class="w">        </span><span class="sd">"""Render one shot. ``on_failure`` isolates at the *shot* boundary.</span>
 
 <span class="sd">        This Transform composes N calls into **one** output, so there is no</span>
 <span class="sd">        partial output to hand back: a strategy cannot materialize a shot from</span>
-<span class="sd">        some of its clips. ``&quot;isolate&quot;`` therefore means &quot;report this shot as</span>
-<span class="sd">        failed instead of raising&quot;, which is what lets a caller rendering 40</span>
+<span class="sd">        some of its clips. ``"isolate"`` therefore means "report this shot as</span>
+<span class="sd">        failed instead of raising", which is what lets a caller rendering 40</span>
 <span class="sd">        shots keep the other 39 — the same guarantee as the 1:1 case, at the</span>
 <span class="sd">        granularity this Transform actually has.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">...workflow</span><span class="w"> </span><span class="kn">import</span> <span class="n">prepare_shot</span>
 
-        <span class="k">if</span> <span class="n">on_failure</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;halt&quot;</span><span class="p">,</span> <span class="s2">&quot;isolate&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">on_failure</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"halt"</span><span class="p">,</span> <span class="s2">"isolate"</span><span class="p">):</span>
             <span class="c1"># The same refusal the base class makes, for the same reason: without</span>
             <span class="c1"># it any typo silently selects `isolate`, so a caller that asked to</span>
             <span class="c1"># raise gets `annotations=()` instead — and `result.annotations[0]`,</span>
             <span class="c1"># the reelee idiom, becomes an IndexError far from the mistake.</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.execute: on_failure must be &#39;halt&#39; or &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;&#39;isolate&#39;, got </span><span class="si">{</span><span class="n">on_failure</span><span class="si">!r}</span><span class="s2">.&quot;</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.execute: on_failure must be 'halt' or "</span>
+                <span class="sa">f</span><span class="s2">"'isolate', got </span><span class="si">{</span><span class="n">on_failure</span><span class="si">!r}</span><span class="s2">."</span>
             <span class="p">)</span>
-        <span class="n">shot_id</span> <span class="o">=</span> <span class="n">skeleton</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">body</span><span class="p">[</span><span class="s2">&quot;shot_id&quot;</span><span class="p">]</span>
+        <span class="n">shot_id</span> <span class="o">=</span> <span class="n">skeleton</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">body</span><span class="p">[</span><span class="s2">"shot_id"</span><span class="p">]</span>
         <span class="c1"># materialize() needs only local paths — no upload required.</span>
         <span class="n">prep</span> <span class="o">=</span> <span class="n">prepare_shot</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">shot_id</span><span class="p">,</span> <span class="n">upload</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">report</span> <span class="o">=</span> <span class="n">execute_plan_isolated</span><span class="p">(</span>
             <span class="n">plan</span><span class="p">,</span> <span class="n">use_cache</span><span class="o">=</span><span class="n">use_cache</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">force</span><span class="p">,</span> <span class="n">halt_on_failure</span><span class="o">=</span><span class="kc">True</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">report</span><span class="o">.</span><span class="n">is_complete</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">on_failure</span> <span class="o">==</span> <span class="s2">&quot;halt&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">on_failure</span> <span class="o">==</span> <span class="s2">"halt"</span><span class="p">:</span>
                 <span class="n">report</span><span class="o">.</span><span class="n">artifacts_or_raise</span><span class="p">()</span>
             <span class="c1"># Report the shot under the status of the *first* non-succeeded call,</span>
             <span class="c1"># and put it in the matching bucket. Filing a blocked outcome under</span>
@@ -297,11 +297,11 @@
                 <span class="n">skeleton</span><span class="o">=</span><span class="n">skeleton</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
                 <span class="n">status</span><span class="o">=</span><span class="n">first</span><span class="o">.</span><span class="n">status</span><span class="p">,</span>
                 <span class="n">reason</span><span class="o">=</span><span class="n">first</span><span class="o">.</span><span class="n">reason</span>
-                <span class="ow">or</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_strategy</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: a call in the shot&#39;s plan failed&quot;</span><span class="p">,</span>
+                <span class="ow">or</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_strategy</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: a call in the shot's plan failed"</span><span class="p">,</span>
                 <span class="n">error</span><span class="o">=</span><span class="n">first</span><span class="o">.</span><span class="n">error</span><span class="p">,</span>
                 <span class="n">blocked_by</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">first</span><span class="o">.</span><span class="n">blocked_by</span><span class="p">),</span>
             <span class="p">)</span>
-            <span class="n">is_blocked</span> <span class="o">=</span> <span class="n">first</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="s2">&quot;blocked&quot;</span>
+            <span class="n">is_blocked</span> <span class="o">=</span> <span class="n">first</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="s2">"blocked"</span>
             <span class="k">return</span> <span class="n">TransformResult</span><span class="p">(</span>
                 <span class="n">annotations</span><span class="o">=</span><span class="p">(),</span>
                 <span class="n">artifacts</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">report</span><span class="o">.</span><span class="n">produced</span><span class="p">),</span>
@@ -314,7 +314,7 @@
         <span class="n">artifacts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">report</span><span class="o">.</span><span class="n">produced</span><span class="p">)</span>
         <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_strategy</span><span class="o">.</span><span class="n">materialize</span><span class="p">(</span><span class="n">prep</span><span class="p">,</span> <span class="n">plan</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">artifacts</span><span class="p">))</span>
 
-        <span class="n">video_artifact</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">a</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">artifacts</span> <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;video&quot;</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">video_artifact</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">a</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">artifacts</span> <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">"video"</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
         <span class="n">rel_output</span> <span class="o">=</span> <span class="p">(</span>
             <span class="nb">str</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">root</span><span class="p">))</span>
             <span class="k">if</span> <span class="n">output</span><span class="o">.</span><span class="n">is_relative_to</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
@@ -322,10 +322,10 @@
         <span class="p">)</span>
         <span class="n">completed</span> <span class="o">=</span> <span class="n">skeleton</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">model_copy</span><span class="p">(</span>
             <span class="n">update</span><span class="o">=</span><span class="p">{</span>
-                <span class="s2">&quot;body&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">"body"</span><span class="p">:</span> <span class="p">{</span>
                     <span class="o">**</span><span class="n">skeleton</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">body</span><span class="p">,</span>
-                    <span class="s2">&quot;output_path&quot;</span><span class="p">:</span> <span class="n">rel_output</span><span class="p">,</span>
-                    <span class="s2">&quot;artifact_id&quot;</span><span class="p">:</span> <span class="n">video_artifact</span><span class="o">.</span><span class="n">asset_id</span> <span class="k">if</span> <span class="n">video_artifact</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+                    <span class="s2">"output_path"</span><span class="p">:</span> <span class="n">rel_output</span><span class="p">,</span>
+                    <span class="s2">"artifact_id"</span><span class="p">:</span> <span class="n">video_artifact</span><span class="o">.</span><span class="n">asset_id</span> <span class="k">if</span> <span class="n">video_artifact</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="p">}</span>
             <span class="p">}</span>
         <span class="p">)</span>
@@ -347,7 +347,7 @@
 
 <span class="k">for</span> <span class="n">_name</span><span class="p">,</span> <span class="n">_strategy</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">_strategies</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
     <span class="n">register_transform</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;shot_to_render_result.fal.</span><span class="si">{</span><span class="n">_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">"shot_to_render_result.fal.</span><span class="si">{</span><span class="n">_name</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
         <span class="n">RenderStrategyTransform</span><span class="p">(</span><span class="n">_strategy</span><span class="p">),</span>
     <span class="p">)</span>
 </pre></div>

@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.genres &mdash; nw 0.0.31 documentation</title>
+  <title>nw.genres &mdash; nw 0.0.32 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=c5dbc6bb"></script>
+      <script src="../../_static/documentation_options.js?v=f2234cd1"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -107,11 +107,11 @@
            <div itemprop="articleBody">
              
   <h1>Source code for nw.genres</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;nw.genres — production *genres*: the reusable specialization of a project.</span>
+<span></span><span class="sd">"""nw.genres — production *genres*: the reusable specialization of a project.</span>
 
 <span class="sd">A **Genre** is a pure-data descriptor of a *kind* of audiovisual production</span>
 <span class="sd">(music video, narrative video, commentary weave, music visualizer, ...). It is</span>
-<span class="sd">the first-class formalization of what nw informally called an &quot;app&quot;: a bundle</span>
+<span class="sd">the first-class formalization of what nw informally called an "app": a bundle</span>
 <span class="sd">declared *over the substrate that already exists*, carrying no engine of its</span>
 <span class="sd">own.</span>
 
@@ -131,12 +131,12 @@
 <span class="sd">open-closed shape as :mod:`nw.renderers` and :mod:`nw.transforms`.</span>
 
 <span class="sd">Genres live in the :data:`genres` registry (an :class:`xdol.Registry` with</span>
-<span class="sd">``on_conflict=&quot;error&quot;``). nw ships **no** built-in genres: concrete genres</span>
+<span class="sd">``on_conflict="error"``). nw ships **no** built-in genres: concrete genres</span>
 <span class="sd">register themselves from their own packages (``muvid``, ``braidio``) or from</span>
 <span class="sd">the studio host (``reelee``), which keeps app-layer concerns (output intents,</span>
 <span class="sd">flavors, prompt packs, cost profiles) out of the substrate. A named preset</span>
 <span class="sd">*within* a genre (a filled-in default configuration) is a :class:`Template`.</span>
-<span class="sd">The substrate owns a Template&#39;s *identity* (slug/title/description) and carries</span>
+<span class="sd">The substrate owns a Template's *identity* (slug/title/description) and carries</span>
 <span class="sd">a genre-defined ``params`` payload it does **not** interpret — the app that owns</span>
 <span class="sd">the genre validates and resolves those params (reelee reads ``output_intent`` /</span>
 <span class="sd">``flavor``; braidio reads a ``format_id``). This keeps the genre *self-describing*</span>
@@ -144,10 +144,10 @@
 <span class="sd">meaning stays in the app.</span>
 
 <span class="sd">Naming rationale (Genre vs the alternatives ``kind`` / ``format`` / ...) is in</span>
-<span class="sd">GitHub issue thorwhalen/nw#10; the &quot;nw owns the engine, each app supplies its</span>
-<span class="sd">schemas + Transforms&quot; stance is in</span>
+<span class="sd">GitHub issue thorwhalen/nw#10; the "nw owns the engine, each app supplies its</span>
+<span class="sd">schemas + Transforms" stance is in</span>
 <span class="sd">``misc/docs/Rendering Provenance and Partial Re-render.md``.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -164,70 +164,70 @@
 
 <span class="c1">#: Genre lifecycle statuses. ``available`` = usable now; ``experimental`` =</span>
 <span class="c1">#: usable but unstable; ``planned`` = declared for discovery, not yet ready.</span>
-<span class="n">GENRE_STATUSES</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;available&quot;</span><span class="p">,</span> <span class="s2">&quot;experimental&quot;</span><span class="p">,</span> <span class="s2">&quot;planned&quot;</span><span class="p">)</span>
-<span class="n">DFLT_GENRE_STATUS</span> <span class="o">=</span> <span class="s2">&quot;available&quot;</span>
+<span class="n">GENRE_STATUSES</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"available"</span><span class="p">,</span> <span class="s2">"experimental"</span><span class="p">,</span> <span class="s2">"planned"</span><span class="p">)</span>
+<span class="n">DFLT_GENRE_STATUS</span> <span class="o">=</span> <span class="s2">"available"</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_validate_slug</span><span class="p">(</span><span class="n">slug</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">what</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Assert ``slug`` is a registry-safe key: a non-empty, whitespace-free string.</span>
+<span class="w">    </span><span class="sd">"""Assert ``slug`` is a registry-safe key: a non-empty, whitespace-free string.</span>
 
 <span class="sd">    The one place the slug contract for :class:`Genre`, :class:`Template`, and a</span>
 <span class="sd">    genre resolver is defined — so every registrable thing keyed by a slug fails</span>
 <span class="sd">    fast on a bad key instead of becoming silent dead state.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">slug</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">slug</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">what</span><span class="si">}</span><span class="s2"> slug must be a non-empty string&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">what</span><span class="si">}</span><span class="s2"> slug must be a non-empty string"</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">ch</span><span class="o">.</span><span class="n">isspace</span><span class="p">()</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">slug</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">what</span><span class="si">}</span><span class="s2"> slug </span><span class="si">{</span><span class="n">slug</span><span class="si">!r}</span><span class="s2"> must not contain whitespace&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">what</span><span class="si">}</span><span class="s2"> slug </span><span class="si">{</span><span class="n">slug</span><span class="si">!r}</span><span class="s2"> must not contain whitespace"</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="Template">
 <a class="viewcode-back" href="../../module_docs/nw/genres.html#nw.Template">[docs]</a>
 <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Template</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A named preset (&quot;subgenre&quot;) *within* a genre — a filled-in default config.</span>
+<span class="w">    </span><span class="sd">"""A named preset ("subgenre") *within* a genre — a filled-in default config.</span>
 
-<span class="sd">    AV-general: the substrate owns the Template&#39;s identity (``slug``/``title``/</span>
+<span class="sd">    AV-general: the substrate owns the Template's identity (``slug``/``title``/</span>
 <span class="sd">    ``description``) and carries an opaque ``params`` payload it does **not**</span>
 <span class="sd">    interpret. The app that owns the genre puts meaning in ``params`` (reelee:</span>
-<span class="sd">    ``{&quot;output_intent&quot;: ..., &quot;flavor&quot;: ...}``; braidio: ``{&quot;format_id&quot;: ...}``)</span>
+<span class="sd">    ``{"output_intent": ..., "flavor": ...}``; braidio: ``{"format_id": ...}``)</span>
 <span class="sd">    and validates/resolves it. Frozen + hashable (``params`` is excluded from</span>
 <span class="sd">    identity and normalized to an immutable mapping), so a Template can live in a</span>
-<span class="sd">    ``Genre.templates`` tuple without breaking the genre&#39;s ``__hash__``.</span>
+<span class="sd">    ``Genre.templates`` tuple without breaking the genre's ``__hash__``.</span>
 
-<span class="sd">    &gt;&gt;&gt; t = Template(slug=&quot;cinematic_clip&quot;, title=&quot;Cinematic clip&quot;,</span>
-<span class="sd">    ...              params={&quot;flavor&quot;: &quot;fal.cinematic&quot;})</span>
-<span class="sd">    &gt;&gt;&gt; t.params[&quot;flavor&quot;]</span>
-<span class="sd">    &#39;fal.cinematic&#39;</span>
-<span class="sd">    &gt;&gt;&gt; t.to_dict()[&quot;params&quot;]</span>
-<span class="sd">    {&#39;flavor&#39;: &#39;fal.cinematic&#39;}</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    &gt;&gt;&gt; t = Template(slug="cinematic_clip", title="Cinematic clip",</span>
+<span class="sd">    ...              params={"flavor": "fal.cinematic"})</span>
+<span class="sd">    &gt;&gt;&gt; t.params["flavor"]</span>
+<span class="sd">    'fal.cinematic'</span>
+<span class="sd">    &gt;&gt;&gt; t.to_dict()["params"]</span>
+<span class="sd">    {'flavor': 'fal.cinematic'}</span>
+<span class="sd">    """</span>
 
     <span class="n">slug</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">title</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
     <span class="c1"># opaque, genre-defined preset payload — see class docstring. ``compare=False``</span>
     <span class="c1"># keeps the frozen Template hashable (a Mapping field would break __hash__).</span>
     <span class="n">params</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span> <span class="n">compare</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">_validate_slug</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">slug</span><span class="p">,</span> <span class="n">what</span><span class="o">=</span><span class="s2">&quot;Template&quot;</span><span class="p">)</span>
+        <span class="n">_validate_slug</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">slug</span><span class="p">,</span> <span class="n">what</span><span class="o">=</span><span class="s2">"Template"</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Template </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">slug</span><span class="si">!r}</span><span class="s2">: title must be a non-empty string&quot;</span>
+                <span class="sa">f</span><span class="s2">"Template </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">slug</span><span class="si">!r}</span><span class="s2">: title must be a non-empty string"</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">,</span> <span class="n">MappingProxyType</span><span class="p">):</span>
-            <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">,</span> <span class="n">MappingProxyType</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">)))</span>
+            <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"params"</span><span class="p">,</span> <span class="n">MappingProxyType</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">)))</span>
 
 <div class="viewcode-block" id="Template.to_dict">
 <a class="viewcode-back" href="../../module_docs/nw/genres.html#nw.Template.to_dict">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;A JSON-able catalog entry: ``{slug, title, description, params}``.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""A JSON-able catalog entry: ``{slug, title, description, params}``."""</span>
         <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;slug&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">slug</span><span class="p">,</span>
-            <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">,</span>
-            <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
-            <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">),</span>
+            <span class="s2">"slug"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">slug</span><span class="p">,</span>
+            <span class="s2">"title"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">,</span>
+            <span class="s2">"description"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
+            <span class="s2">"params"</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">),</span>
         <span class="p">}</span></div>
 </div>
 
@@ -237,81 +237,81 @@
 <a class="viewcode-back" href="../../module_docs/nw/genres.html#nw.Genre">[docs]</a>
 <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Genre</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A reusable definition of a *production kind* over the nw substrate.</span>
+<span class="w">    </span><span class="sd">"""A reusable definition of a *production kind* over the nw substrate.</span>
 
 <span class="sd">    Pure data: it *references* substrate pieces by name rather than owning</span>
 <span class="sd">    them, so declaring a genre never touches the engine.</span>
 
 <span class="sd">    &gt;&gt;&gt; slideshow = Genre(</span>
-<span class="sd">    ...     slug=&quot;slideshow&quot;,</span>
-<span class="sd">    ...     title=&quot;Slideshow&quot;,</span>
-<span class="sd">    ...     description=&quot;Stills over narration, assembled to a video.&quot;,</span>
-<span class="sd">    ...     transform_names=(&quot;clips_to_animatic.ffmpeg&quot;,),</span>
-<span class="sd">    ...     projection_entrypoint=&quot;clips_to_animatic.ffmpeg&quot;,</span>
+<span class="sd">    ...     slug="slideshow",</span>
+<span class="sd">    ...     title="Slideshow",</span>
+<span class="sd">    ...     description="Stills over narration, assembled to a video.",</span>
+<span class="sd">    ...     transform_names=("clips_to_animatic.ffmpeg",),</span>
+<span class="sd">    ...     projection_entrypoint="clips_to_animatic.ffmpeg",</span>
 <span class="sd">    ... )</span>
 <span class="sd">    &gt;&gt;&gt; slideshow.title</span>
-<span class="sd">    &#39;Slideshow&#39;</span>
+<span class="sd">    'Slideshow'</span>
 <span class="sd">    &gt;&gt;&gt; slideshow.status</span>
-<span class="sd">    &#39;available&#39;</span>
+<span class="sd">    'available'</span>
 
-<span class="sd">    ``projection_entrypoint``, when given, must be one of the genre&#39;s own</span>
+<span class="sd">    ``projection_entrypoint``, when given, must be one of the genre's own</span>
 <span class="sd">    declared transforms or strategies:</span>
 
-<span class="sd">    &gt;&gt;&gt; Genre(slug=&quot;bad&quot;, title=&quot;Bad&quot;, projection_entrypoint=&quot;nope&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; Genre(slug="bad", title="Bad", projection_entrypoint="nope")</span>
 <span class="sd">    Traceback (most recent call last):</span>
 <span class="sd">        ...</span>
-<span class="sd">    ValueError: Genre &#39;bad&#39;: projection_entrypoint &#39;nope&#39; is not among its transform_names or strategy_names</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    ValueError: Genre 'bad': projection_entrypoint 'nope' is not among its transform_names or strategy_names</span>
+<span class="sd">    """</span>
 
     <span class="n">slug</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">title</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
     <span class="n">body_schema_uris</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
     <span class="n">transform_names</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
     <span class="n">strategy_names</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
     <span class="n">projection_entrypoint</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="c1"># ``compare=False`` keeps the descriptor hashable (a dict field would break</span>
-    <span class="c1"># the frozen dataclass&#39;s generated ``__hash__``) and keeps folder layout —</span>
+    <span class="c1"># the frozen dataclass's generated ``__hash__``) and keeps folder layout —</span>
     <span class="c1"># incidental metadata — out of genre *identity*. Normalized to an immutable</span>
-    <span class="c1"># mapping in ``__post_init__`` so a &quot;frozen&quot; Genre is genuinely frozen.</span>
+    <span class="c1"># mapping in ``__post_init__`` so a "frozen" Genre is genuinely frozen.</span>
     <span class="n">folder_conventions</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span> <span class="n">compare</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">status</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">DFLT_GENRE_STATUS</span>
-    <span class="c1">#: Named presets (&quot;subgenres&quot;) within this genre — see :class:`Template`.</span>
+    <span class="c1">#: Named presets ("subgenres") within this genre — see :class:`Template`.</span>
     <span class="n">templates</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Template</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
-    <span class="c1">#: Intake &quot;what are you making?&quot; answers that select this genre (the edge</span>
-    <span class="c1">#: :func:`recommend_genre` walks). App data (e.g. reelee&#39;s intake form) owns</span>
+    <span class="c1">#: Intake "what are you making?" answers that select this genre (the edge</span>
+    <span class="c1">#: :func:`recommend_genre` walks). App data (e.g. reelee's intake form) owns</span>
     <span class="c1">#: the vocabulary; the genre just declares which answers it covers.</span>
     <span class="n">intake_kinds</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
     <span class="c1">#: A short discriminator slug routing the cost gate to the right estimator</span>
-    <span class="c1">#: (e.g. ``&quot;tts&quot;`` = per-character audio, ``&quot;per_clip&quot;`` = per-render video).</span>
+    <span class="c1">#: (e.g. ``"tts"`` = per-character audio, ``"per_clip"`` = per-render video).</span>
     <span class="c1">#: The real numbers stay in the app; this is only the routing tag.</span>
     <span class="n">cost_profile</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="c1">#: The &quot;start from scratch&quot; params for this genre (same opaque shape as a</span>
-    <span class="c1">#: :class:`Template`&#39;s ``params``) — used when no template is chosen.</span>
+    <span class="c1">#: The "start from scratch" params for this genre (same opaque shape as a</span>
+    <span class="c1">#: :class:`Template`'s ``params``) — used when no template is chosen.</span>
     <span class="n">defaults</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span> <span class="n">compare</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># Normalize every sequence field to a tuple up front — symmetrically with</span>
-        <span class="c1"># the Mapping-field normalization below — so a &quot;frozen&quot; Genre built with a</span>
+        <span class="c1"># the Mapping-field normalization below — so a "frozen" Genre built with a</span>
         <span class="c1"># list (e.g. ``templates=[Template(...) for ...]``) is genuinely immutable</span>
         <span class="c1"># AND hashable, rather than a mutable list silently breaking ``__hash__``</span>
         <span class="c1"># only at the first set/dict-key use far from here.</span>
         <span class="k">for</span> <span class="n">_name</span> <span class="ow">in</span> <span class="p">(</span>
-            <span class="s2">&quot;body_schema_uris&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;transform_names&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;strategy_names&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;templates&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;intake_kinds&quot;</span><span class="p">,</span>
+            <span class="s2">"body_schema_uris"</span><span class="p">,</span>
+            <span class="s2">"transform_names"</span><span class="p">,</span>
+            <span class="s2">"strategy_names"</span><span class="p">,</span>
+            <span class="s2">"templates"</span><span class="p">,</span>
+            <span class="s2">"intake_kinds"</span><span class="p">,</span>
         <span class="p">):</span>
             <span class="n">_value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_name</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">_value</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
                 <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_name</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">_value</span><span class="p">))</span>
-        <span class="n">_validate_slug</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">slug</span><span class="p">,</span> <span class="n">what</span><span class="o">=</span><span class="s2">&quot;Genre&quot;</span><span class="p">)</span>
+        <span class="n">_validate_slug</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">slug</span><span class="p">,</span> <span class="n">what</span><span class="o">=</span><span class="s2">"Genre"</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Genre </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">slug</span><span class="si">!r}</span><span class="s2">: title must be a non-empty string&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Genre </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">slug</span><span class="si">!r}</span><span class="s2">: title must be a non-empty string"</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">GENRE_STATUSES</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Genre </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">slug</span><span class="si">!r}</span><span class="s2">: status </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="si">!r}</span><span class="s2"> not in </span><span class="si">{</span><span class="n">GENRE_STATUSES</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">"Genre </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">slug</span><span class="si">!r}</span><span class="s2">: status </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="si">!r}</span><span class="s2"> not in </span><span class="si">{</span><span class="n">GENRE_STATUSES</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
         <span class="n">pe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">projection_entrypoint</span>
         <span class="k">if</span> <span class="p">(</span>
@@ -320,79 +320,79 @@
             <span class="ow">and</span> <span class="n">pe</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">strategy_names</span>
         <span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Genre </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">slug</span><span class="si">!r}</span><span class="s2">: projection_entrypoint </span><span class="si">{</span><span class="n">pe</span><span class="si">!r}</span><span class="s2"> is not among &quot;</span>
-                <span class="s2">&quot;its transform_names or strategy_names&quot;</span>
+                <span class="sa">f</span><span class="s2">"Genre </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">slug</span><span class="si">!r}</span><span class="s2">: projection_entrypoint </span><span class="si">{</span><span class="n">pe</span><span class="si">!r}</span><span class="s2"> is not among "</span>
+                <span class="s2">"its transform_names or strategy_names"</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_conventions</span><span class="p">,</span> <span class="n">MappingProxyType</span><span class="p">):</span>
             <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span>
                 <span class="bp">self</span><span class="p">,</span>
-                <span class="s2">&quot;folder_conventions&quot;</span><span class="p">,</span>
+                <span class="s2">"folder_conventions"</span><span class="p">,</span>
                 <span class="n">MappingProxyType</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folder_conventions</span><span class="p">)),</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">Template</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">templates</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Genre </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">slug</span><span class="si">!r}</span><span class="s2">: templates must all be nw.Template&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Genre </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">slug</span><span class="si">!r}</span><span class="s2">: templates must all be nw.Template"</span><span class="p">)</span>
         <span class="n">slugs</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">slug</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">templates</span><span class="p">]</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">slugs</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">slugs</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Genre </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">slug</span><span class="si">!r}</span><span class="s2">: template slugs must be unique, got </span><span class="si">{</span><span class="n">slugs</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">"Genre </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">slug</span><span class="si">!r}</span><span class="s2">: template slugs must be unique, got </span><span class="si">{</span><span class="n">slugs</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="nb">any</span><span class="p">((</span><span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">k</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">intake_kinds</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Genre </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">slug</span><span class="si">!r}</span><span class="s2">: intake_kinds must be non-empty strings&quot;</span>
+                <span class="sa">f</span><span class="s2">"Genre </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">slug</span><span class="si">!r}</span><span class="s2">: intake_kinds must be non-empty strings"</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cost_profile</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="p">(</span>
             <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cost_profile</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cost_profile</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
         <span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Genre </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">slug</span><span class="si">!r}</span><span class="s2">: cost_profile must be a non-empty string or None&quot;</span>
+                <span class="sa">f</span><span class="s2">"Genre </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">slug</span><span class="si">!r}</span><span class="s2">: cost_profile must be a non-empty string or None"</span>
             <span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">defaults</span><span class="p">,</span> <span class="n">MappingProxyType</span><span class="p">):</span>
-            <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;defaults&quot;</span><span class="p">,</span> <span class="n">MappingProxyType</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">defaults</span><span class="p">)))</span>
+            <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"defaults"</span><span class="p">,</span> <span class="n">MappingProxyType</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">defaults</span><span class="p">)))</span>
 
 <div class="viewcode-block" id="Genre.template">
 <a class="viewcode-back" href="../../module_docs/nw/genres.html#nw.Genre.template">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">template</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slug</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Template</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Look up one of this genre&#39;s :class:`Template`\\ s by slug (KeyError if absent).&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Look up one of this genre's :class:`Template`\\ s by slug (KeyError if absent)."""</span>
         <span class="k">for</span> <span class="n">candidate</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">templates</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">candidate</span><span class="o">.</span><span class="n">slug</span> <span class="o">==</span> <span class="n">slug</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">candidate</span>
         <span class="n">known</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">slug</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">templates</span><span class="p">]</span>
-        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Genre </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">slug</span><span class="si">!r}</span><span class="s2"> has no template </span><span class="si">{</span><span class="n">slug</span><span class="si">!r}</span><span class="s2">; has: </span><span class="si">{</span><span class="n">known</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Genre </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">slug</span><span class="si">!r}</span><span class="s2"> has no template </span><span class="si">{</span><span class="n">slug</span><span class="si">!r}</span><span class="s2">; has: </span><span class="si">{</span><span class="n">known</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Genre.list_templates">
 <a class="viewcode-back" href="../../module_docs/nw/genres.html#nw.Genre.list_templates">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">list_templates</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;This genre&#39;s Template slugs, in declared order.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""This genre's Template slugs, in declared order."""</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">slug</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">templates</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="Genre.to_dict">
 <a class="viewcode-back" href="../../module_docs/nw/genres.html#nw.Genre.to_dict">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;A JSON-able catalog entry — the shape apps serve to a frontend / MCP client.</span>
+<span class="w">        </span><span class="sd">"""A JSON-able catalog entry — the shape apps serve to a frontend / MCP client.</span>
 
 <span class="sd">        Templates are emitted with their opaque ``params`` (not flattened), and</span>
 <span class="sd">        ``intake_kinds``/``cost_profile``/``defaults`` ride at the genre level, so a</span>
 <span class="sd">        consumer needs no app-specific knowledge to render the catalog.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;slug&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">slug</span><span class="p">,</span>
-            <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">,</span>
-            <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
-            <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="p">,</span>
-            <span class="s2">&quot;ready&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_ready</span><span class="p">(),</span>
-            <span class="s2">&quot;intake_kinds&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">intake_kinds</span><span class="p">),</span>
-            <span class="s2">&quot;cost_profile&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">cost_profile</span><span class="p">,</span>
-            <span class="s2">&quot;defaults&quot;</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">defaults</span><span class="p">),</span>
-            <span class="s2">&quot;templates&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">templates</span><span class="p">],</span>
+            <span class="s2">"slug"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">slug</span><span class="p">,</span>
+            <span class="s2">"title"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">,</span>
+            <span class="s2">"description"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
+            <span class="s2">"status"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="p">,</span>
+            <span class="s2">"ready"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_ready</span><span class="p">(),</span>
+            <span class="s2">"intake_kinds"</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">intake_kinds</span><span class="p">),</span>
+            <span class="s2">"cost_profile"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">cost_profile</span><span class="p">,</span>
+            <span class="s2">"defaults"</span><span class="p">:</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">defaults</span><span class="p">),</span>
+            <span class="s2">"templates"</span><span class="p">:</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">templates</span><span class="p">],</span>
         <span class="p">}</span></div>
 
 
 <div class="viewcode-block" id="Genre.missing_transforms">
 <a class="viewcode-back" href="../../module_docs/nw/genres.html#nw.Genre.missing_transforms">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">missing_transforms</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Declared ``transform_names`` not (yet) present in ``nw.transforms``.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Declared ``transform_names`` not (yet) present in ``nw.transforms``."""</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">.transforms</span><span class="w"> </span><span class="kn">import</span> <span class="n">transforms</span> <span class="k">as</span> <span class="n">_transforms</span>
 
         <span class="k">return</span> <span class="p">[</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform_names</span> <span class="k">if</span> <span class="n">n</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_transforms</span><span class="p">]</span></div>
@@ -401,7 +401,7 @@
 <div class="viewcode-block" id="Genre.missing_strategies">
 <a class="viewcode-back" href="../../module_docs/nw/genres.html#nw.Genre.missing_strategies">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">missing_strategies</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Declared ``strategy_names`` not (yet) present in ``nw.renderers``.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Declared ``strategy_names`` not (yet) present in ``nw.renderers``."""</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">.renderers</span><span class="w"> </span><span class="kn">import</span> <span class="n">strategies</span> <span class="k">as</span> <span class="n">_strategies</span>
 
         <span class="k">return</span> <span class="p">[</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">strategy_names</span> <span class="k">if</span> <span class="n">n</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_strategies</span><span class="p">]</span></div>
@@ -410,37 +410,37 @@
 <div class="viewcode-block" id="Genre.is_ready">
 <a class="viewcode-back" href="../../module_docs/nw/genres.html#nw.Genre.is_ready">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_ready</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;True iff every declared transform and strategy is registered.</span>
+<span class="w">        </span><span class="sd">"""True iff every declared transform and strategy is registered.</span>
 
 <span class="sd">        A ``planned`` genre may legitimately be *not* ready; an ``available``</span>
-<span class="sd">        one that isn&#39;t ready is a wiring bug worth catching in a test.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        one that isn't ready is a wiring bug worth catching in a test.</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">missing_transforms</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">missing_strategies</span><span class="p">()</span></div>
 </div>
 
 
 
-<span class="c1">#: The genre registry. ``on_conflict=&quot;error&quot;`` so a misconfigured plugin can&#39;t</span>
-<span class="c1">#: silently shadow another package&#39;s genre.</span>
-<span class="n">genres</span><span class="p">:</span> <span class="n">Registry</span> <span class="o">=</span> <span class="n">Registry</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;nw.genres&quot;</span><span class="p">,</span> <span class="n">on_conflict</span><span class="o">=</span><span class="s2">&quot;error&quot;</span><span class="p">)</span>
-<span class="sd">&quot;&quot;&quot;Public registry of :class:`Genre` instances, keyed by ``genre.slug``.</span>
-<span class="sd">Apps add genres via :func:`register_genre` (or ``nw.register_genre``).&quot;&quot;&quot;</span>
+<span class="c1">#: The genre registry. ``on_conflict="error"`` so a misconfigured plugin can't</span>
+<span class="c1">#: silently shadow another package's genre.</span>
+<span class="n">genres</span><span class="p">:</span> <span class="n">Registry</span> <span class="o">=</span> <span class="n">Registry</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"nw.genres"</span><span class="p">,</span> <span class="n">on_conflict</span><span class="o">=</span><span class="s2">"error"</span><span class="p">)</span>
+<span class="sd">"""Public registry of :class:`Genre` instances, keyed by ``genre.slug``.</span>
+<span class="sd">Apps add genres via :func:`register_genre` (or ``nw.register_genre``)."""</span>
 
 
 <div class="viewcode-block" id="register_genre">
 <a class="viewcode-back" href="../../module_docs/nw/genres.html#nw.register_genre">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">register_genre</span><span class="p">(</span><span class="n">genre</span><span class="p">:</span> <span class="n">Genre</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Genre</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Register a :class:`Genre` under its ``slug``; returns it for inline use.</span>
+<span class="w">    </span><span class="sd">"""Register a :class:`Genre` under its ``slug``; returns it for inline use.</span>
 
-<span class="sd">    &gt;&gt;&gt; g = register_genre(Genre(slug=&quot;doctest_demo&quot;, title=&quot;Demo&quot;))</span>
-<span class="sd">    &gt;&gt;&gt; get_genre(&quot;doctest_demo&quot;).title</span>
-<span class="sd">    &#39;Demo&#39;</span>
-<span class="sd">    &gt;&gt;&gt; &quot;doctest_demo&quot; in list_genres()</span>
+<span class="sd">    &gt;&gt;&gt; g = register_genre(Genre(slug="doctest_demo", title="Demo"))</span>
+<span class="sd">    &gt;&gt;&gt; get_genre("doctest_demo").title</span>
+<span class="sd">    'Demo'</span>
+<span class="sd">    &gt;&gt;&gt; "doctest_demo" in list_genres()</span>
 <span class="sd">    True</span>
-<span class="sd">    &gt;&gt;&gt; del genres[&quot;doctest_demo&quot;]  # keep the shared registry clean</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    &gt;&gt;&gt; del genres["doctest_demo"]  # keep the shared registry clean</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">genre</span><span class="p">,</span> <span class="n">Genre</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;register_genre expects a Genre, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">genre</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"register_genre expects a Genre, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">genre</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
     <span class="n">genres</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">genre</span><span class="o">.</span><span class="n">slug</span><span class="p">,</span> <span class="n">genre</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">genre</span></div>
 
@@ -449,12 +449,12 @@
 <div class="viewcode-block" id="get_genre">
 <a class="viewcode-back" href="../../module_docs/nw/genres.html#nw.get_genre">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_genre</span><span class="p">(</span><span class="n">slug</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Genre</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Look up a genre by slug; raises :class:`KeyError` with the known slugs.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Look up a genre by slug; raises :class:`KeyError` with the known slugs."""</span>
     <span class="k">if</span> <span class="n">slug</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">genres</span><span class="p">:</span>
         <span class="n">known</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">genres</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
         <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;No genre </span><span class="si">{</span><span class="n">slug</span><span class="si">!r}</span><span class="s2">; registered: </span><span class="si">{</span><span class="n">known</span><span class="si">}</span><span class="s2">. Apps register genres via &quot;</span>
-            <span class="s2">&quot;`nw.register_genre(Genre(...))`.&quot;</span>
+            <span class="sa">f</span><span class="s2">"No genre </span><span class="si">{</span><span class="n">slug</span><span class="si">!r}</span><span class="s2">; registered: </span><span class="si">{</span><span class="n">known</span><span class="si">}</span><span class="s2">. Apps register genres via "</span>
+            <span class="s2">"`nw.register_genre(Genre(...))`."</span>
         <span class="p">)</span>
     <span class="k">return</span> <span class="n">genres</span><span class="p">[</span><span class="n">slug</span><span class="p">]</span></div>
 
@@ -463,7 +463,7 @@
 <div class="viewcode-block" id="list_genres">
 <a class="viewcode-back" href="../../module_docs/nw/genres.html#nw.list_genres">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">list_genres</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return all registered genre slugs (sorted).&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Return all registered genre slugs (sorted)."""</span>
     <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">genres</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
 
 
@@ -471,11 +471,11 @@
 <div class="viewcode-block" id="genre_catalog">
 <a class="viewcode-back" href="../../module_docs/nw/genres.html#nw.genre_catalog">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">genre_catalog</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Every registered genre as a JSON-able catalog entry (sorted by slug).</span>
+<span class="w">    </span><span class="sd">"""Every registered genre as a JSON-able catalog entry (sorted by slug).</span>
 
 <span class="sd">    This is the generic, app-agnostic catalog an HTTP route / MCP tool serves; see</span>
 <span class="sd">    :meth:`Genre.to_dict` for the entry shape.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">get_genre</span><span class="p">(</span><span class="n">slug</span><span class="p">)</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">slug</span> <span class="ow">in</span> <span class="n">list_genres</span><span class="p">()]</span></div>
 
 
@@ -483,7 +483,7 @@
 <div class="viewcode-block" id="describe_genre">
 <a class="viewcode-back" href="../../module_docs/nw/genres.html#nw.describe_genre">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">describe_genre</span><span class="p">(</span><span class="n">slug</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;One genre&#39;s catalog entry (raises :class:`KeyError` if the slug is unknown).&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""One genre's catalog entry (raises :class:`KeyError` if the slug is unknown)."""</span>
     <span class="k">return</span> <span class="n">get_genre</span><span class="p">(</span><span class="n">slug</span><span class="p">)</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span></div>
 
 
@@ -491,16 +491,16 @@
 <div class="viewcode-block" id="recommend_genre">
 <a class="viewcode-back" href="../../module_docs/nw/genres.html#nw.recommend_genre">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">recommend_genre</span><span class="p">(</span><span class="n">kind</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The slug of the genre whose ``intake_kinds`` contains ``kind`` (first in slug</span>
+<span class="w">    </span><span class="sd">"""The slug of the genre whose ``intake_kinds`` contains ``kind`` (first in slug</span>
 <span class="sd">    order), or ``None`` when ``kind`` is falsy / unmatched.</span>
 
-<span class="sd">    &gt;&gt;&gt; g = register_genre(Genre(slug=&quot;_rec_demo&quot;, title=&quot;Rec&quot;, intake_kinds=(&quot;essay&quot;,)))</span>
-<span class="sd">    &gt;&gt;&gt; recommend_genre(&quot;essay&quot;)</span>
-<span class="sd">    &#39;_rec_demo&#39;</span>
-<span class="sd">    &gt;&gt;&gt; recommend_genre(&quot;nope&quot;) is None and recommend_genre(None) is None</span>
+<span class="sd">    &gt;&gt;&gt; g = register_genre(Genre(slug="_rec_demo", title="Rec", intake_kinds=("essay",)))</span>
+<span class="sd">    &gt;&gt;&gt; recommend_genre("essay")</span>
+<span class="sd">    '_rec_demo'</span>
+<span class="sd">    &gt;&gt;&gt; recommend_genre("nope") is None and recommend_genre(None) is None</span>
 <span class="sd">    True</span>
-<span class="sd">    &gt;&gt;&gt; del genres[&quot;_rec_demo&quot;]</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    &gt;&gt;&gt; del genres["_rec_demo"]</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">kind</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span>
     <span class="k">for</span> <span class="n">slug</span> <span class="ow">in</span> <span class="n">list_genres</span><span class="p">():</span>
@@ -513,57 +513,57 @@
 <div class="viewcode-block" id="resolve_defaults">
 <a class="viewcode-back" href="../../module_docs/nw/genres.html#nw.resolve_defaults">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">resolve_defaults</span><span class="p">(</span><span class="n">genre</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Resolve a genre (+ optional template) to the params for a new project.</span>
+<span class="w">    </span><span class="sd">"""Resolve a genre (+ optional template) to the params for a new project.</span>
 
-<span class="sd">    Returns ``{&quot;genre&quot;: slug, &quot;template&quot;: template_or_None, &quot;params&quot;: {...}}`` — the</span>
-<span class="sd">    chosen :class:`Template`&#39;s ``params`` when ``template`` is given, else the genre&#39;s</span>
+<span class="sd">    Returns ``{"genre": slug, "template": template_or_None, "params": {...}}`` — the</span>
+<span class="sd">    chosen :class:`Template`'s ``params`` when ``template`` is given, else the genre's</span>
 <span class="sd">    ``defaults``. Raises :class:`KeyError` on an unknown genre or template. The caller</span>
 <span class="sd">    (app) interprets ``params`` (reelee reads ``output_intent``/``flavor``; braidio a</span>
 <span class="sd">    ``format_id``).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">g</span> <span class="o">=</span> <span class="n">get_genre</span><span class="p">(</span><span class="n">genre</span><span class="p">)</span>
     <span class="n">params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">defaults</span><span class="p">)</span> <span class="k">if</span> <span class="n">template</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">dict</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">template</span><span class="p">(</span><span class="n">template</span><span class="p">)</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;genre&quot;</span><span class="p">:</span> <span class="n">genre</span><span class="p">,</span> <span class="s2">&quot;template&quot;</span><span class="p">:</span> <span class="n">template</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="n">params</span><span class="p">}</span></div>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"genre"</span><span class="p">:</span> <span class="n">genre</span><span class="p">,</span> <span class="s2">"template"</span><span class="p">:</span> <span class="n">template</span><span class="p">,</span> <span class="s2">"params"</span><span class="p">:</span> <span class="n">params</span><span class="p">}</span></div>
 
 
 
 <span class="c1">#: A genre resolver: ``(genre, template) -&gt; params`` — an owning-app-defined,</span>
-<span class="c1">#: JSON-able ``params`` payload (e.g. reelee&#39;s ``{output_intent, flavor}``, braidio&#39;s</span>
-<span class="c1">#: ``{format_id}``) for the chosen template (or ``None`` = &quot;start from scratch&quot;).</span>
+<span class="c1">#: JSON-able ``params`` payload (e.g. reelee's ``{output_intent, flavor}``, braidio's</span>
+<span class="c1">#: ``{format_id}``) for the chosen template (or ``None`` = "start from scratch").</span>
 <span class="c1">#: :func:`resolve_genre` wraps this in the standard ``{genre, template, params}``</span>
 <span class="c1">#: envelope — the resolver returns ONLY the bare params. Registered per genre via</span>
 <span class="c1">#: :func:`register_genre_resolver`.</span>
 <span class="n">GenreResolver</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Genre</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span> <span class="nb">dict</span><span class="p">]</span>
 
-<span class="c1">#: Registry of per-genre resolvers, keyed by genre slug. A genre&#39;s **owning app**</span>
+<span class="c1">#: Registry of per-genre resolvers, keyed by genre slug. A genre's **owning app**</span>
 <span class="c1">#: registers how to turn a ``(genre, template)`` into its params, so a host that</span>
 <span class="c1">#: aggregates many genres (a CLI, an HTTP API, an MCP connector) can create ANY</span>
-<span class="c1">#: genre&#39;s project via :func:`resolve_genre` without hardcoding which app owns it.</span>
-<span class="n">genre_resolvers</span><span class="p">:</span> <span class="n">Registry</span> <span class="o">=</span> <span class="n">Registry</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;nw.genre_resolvers&quot;</span><span class="p">,</span> <span class="n">on_conflict</span><span class="o">=</span><span class="s2">&quot;error&quot;</span><span class="p">)</span>
+<span class="c1">#: genre's project via :func:`resolve_genre` without hardcoding which app owns it.</span>
+<span class="n">genre_resolvers</span><span class="p">:</span> <span class="n">Registry</span> <span class="o">=</span> <span class="n">Registry</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"nw.genre_resolvers"</span><span class="p">,</span> <span class="n">on_conflict</span><span class="o">=</span><span class="s2">"error"</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="register_genre_resolver">
 <a class="viewcode-back" href="../../module_docs/nw/genres.html#nw.register_genre_resolver">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">register_genre_resolver</span><span class="p">(</span><span class="n">slug</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">resolver</span><span class="p">:</span> <span class="s2">&quot;GenreResolver&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;GenreResolver&quot;</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Register a resolver for a genre slug; returns it for inline use.</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">register_genre_resolver</span><span class="p">(</span><span class="n">slug</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">resolver</span><span class="p">:</span> <span class="s2">"GenreResolver"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"GenreResolver"</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Register a resolver for a genre slug; returns it for inline use.</span>
 
-<span class="sd">    Called by the genre&#39;s owning app. ``resolver(genre, template) -&gt; params`` maps a</span>
-<span class="sd">    chosen template (or ``None`` for &quot;start from scratch&quot;) to that app&#39;s bare params</span>
+<span class="sd">    Called by the genre's owning app. ``resolver(genre, template) -&gt; params`` maps a</span>
+<span class="sd">    chosen template (or ``None`` for "start from scratch") to that app's bare params</span>
 <span class="sd">    payload; :func:`resolve_genre` adds the ``{genre, template, params}`` envelope.</span>
 <span class="sd">    Independent of genre *registration order* (keyed by the slug string).</span>
 
-<span class="sd">    &gt;&gt;&gt; _ = register_genre(Genre(slug=&quot;_resolver_demo&quot;, title=&quot;Demo&quot;,</span>
-<span class="sd">    ...                          defaults={&quot;look&quot;: &quot;plain&quot;}))</span>
-<span class="sd">    &gt;&gt;&gt; _ = register_genre_resolver(&quot;_resolver_demo&quot;,</span>
-<span class="sd">    ...     lambda genre, template: {&quot;look&quot;: genre.defaults[&quot;look&quot;], &quot;via&quot;: &quot;resolver&quot;})</span>
-<span class="sd">    &gt;&gt;&gt; resolve_genre(&quot;_resolver_demo&quot;)</span>
-<span class="sd">    {&#39;genre&#39;: &#39;_resolver_demo&#39;, &#39;template&#39;: None, &#39;params&#39;: {&#39;look&#39;: &#39;plain&#39;, &#39;via&#39;: &#39;resolver&#39;}}</span>
-<span class="sd">    &gt;&gt;&gt; del genres[&quot;_resolver_demo&quot;]; del genre_resolvers[&quot;_resolver_demo&quot;]</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">_validate_slug</span><span class="p">(</span><span class="n">slug</span><span class="p">,</span> <span class="n">what</span><span class="o">=</span><span class="s2">&quot;genre resolver&quot;</span><span class="p">)</span>
+<span class="sd">    &gt;&gt;&gt; _ = register_genre(Genre(slug="_resolver_demo", title="Demo",</span>
+<span class="sd">    ...                          defaults={"look": "plain"}))</span>
+<span class="sd">    &gt;&gt;&gt; _ = register_genre_resolver("_resolver_demo",</span>
+<span class="sd">    ...     lambda genre, template: {"look": genre.defaults["look"], "via": "resolver"})</span>
+<span class="sd">    &gt;&gt;&gt; resolve_genre("_resolver_demo")</span>
+<span class="sd">    {'genre': '_resolver_demo', 'template': None, 'params': {'look': 'plain', 'via': 'resolver'}}</span>
+<span class="sd">    &gt;&gt;&gt; del genres["_resolver_demo"]; del genre_resolvers["_resolver_demo"]</span>
+<span class="sd">    """</span>
+    <span class="n">_validate_slug</span><span class="p">(</span><span class="n">slug</span><span class="p">,</span> <span class="n">what</span><span class="o">=</span><span class="s2">"genre resolver"</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">resolver</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;register_genre_resolver expects a callable, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">resolver</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"register_genre_resolver expects a callable, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">resolver</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
     <span class="n">genre_resolvers</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">slug</span><span class="p">,</span> <span class="n">resolver</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">resolver</span></div>
@@ -573,24 +573,24 @@
 <div class="viewcode-block" id="resolve_genre">
 <a class="viewcode-back" href="../../module_docs/nw/genres.html#nw.resolve_genre">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">resolve_genre</span><span class="p">(</span><span class="n">genre</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Resolve a genre (+ optional template) to the standard creation envelope.</span>
+<span class="w">    </span><span class="sd">"""Resolve a genre (+ optional template) to the standard creation envelope.</span>
 
-<span class="sd">    Always returns ``{&quot;genre&quot;: slug, &quot;template&quot;: template_or_None, &quot;params&quot;: {...}}`` —</span>
+<span class="sd">    Always returns ``{"genre": slug, "template": template_or_None, "params": {...}}`` —</span>
 <span class="sd">    ONE stable contract for every host, regardless of whether the genre has a resolver.</span>
-<span class="sd">    ``params`` comes from the genre&#39;s registered resolver</span>
+<span class="sd">    ``params`` comes from the genre's registered resolver</span>
 <span class="sd">    (:func:`register_genre_resolver`) when one exists, else from the generic</span>
-<span class="sd">    :func:`resolve_defaults` (the template&#39;s params, or the genre&#39;s ``defaults``).</span>
+<span class="sd">    :func:`resolve_defaults` (the template's params, or the genre's ``defaults``).</span>
 
 <span class="sd">    Raises :class:`KeyError` on an unknown genre or — **uniformly, resolver or not** —</span>
 <span class="sd">    an unknown ``template`` slug (the substrate owns template identity; a resolver only</span>
-<span class="sd">    interprets params, it doesn&#39;t get to invent template slugs).</span>
+<span class="sd">    interprets params, it doesn't get to invent template slugs).</span>
 
-<span class="sd">    &gt;&gt;&gt; _ = register_genre(Genre(slug=&quot;_rg_demo&quot;, title=&quot;Demo&quot;,</span>
-<span class="sd">    ...                          defaults={&quot;flavor&quot;: &quot;cinematic&quot;}))</span>
-<span class="sd">    &gt;&gt;&gt; resolve_genre(&quot;_rg_demo&quot;)  # no resolver registered -&gt; generic params</span>
-<span class="sd">    {&#39;genre&#39;: &#39;_rg_demo&#39;, &#39;template&#39;: None, &#39;params&#39;: {&#39;flavor&#39;: &#39;cinematic&#39;}}</span>
-<span class="sd">    &gt;&gt;&gt; del genres[&quot;_rg_demo&quot;]</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    &gt;&gt;&gt; _ = register_genre(Genre(slug="_rg_demo", title="Demo",</span>
+<span class="sd">    ...                          defaults={"flavor": "cinematic"}))</span>
+<span class="sd">    &gt;&gt;&gt; resolve_genre("_rg_demo")  # no resolver registered -&gt; generic params</span>
+<span class="sd">    {'genre': '_rg_demo', 'template': None, 'params': {'flavor': 'cinematic'}}</span>
+<span class="sd">    &gt;&gt;&gt; del genres["_rg_demo"]</span>
+<span class="sd">    """</span>
     <span class="n">g</span> <span class="o">=</span> <span class="n">get_genre</span><span class="p">(</span><span class="n">genre</span><span class="p">)</span>
     <span class="n">chosen</span> <span class="o">=</span> <span class="p">(</span>
         <span class="n">g</span><span class="o">.</span><span class="n">template</span><span class="p">(</span><span class="n">template</span><span class="p">)</span> <span class="k">if</span> <span class="n">template</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
@@ -599,7 +599,7 @@
         <span class="n">params</span> <span class="o">=</span> <span class="n">genre_resolvers</span><span class="p">[</span><span class="n">genre</span><span class="p">](</span><span class="n">g</span><span class="p">,</span> <span class="n">template</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">defaults</span><span class="p">)</span> <span class="k">if</span> <span class="n">chosen</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="nb">dict</span><span class="p">(</span><span class="n">chosen</span><span class="o">.</span><span class="n">params</span><span class="p">)</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;genre&quot;</span><span class="p">:</span> <span class="n">genre</span><span class="p">,</span> <span class="s2">&quot;template&quot;</span><span class="p">:</span> <span class="n">template</span><span class="p">,</span> <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="n">params</span><span class="p">}</span></div>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">"genre"</span><span class="p">:</span> <span class="n">genre</span><span class="p">,</span> <span class="s2">"template"</span><span class="p">:</span> <span class="n">template</span><span class="p">,</span> <span class="s2">"params"</span><span class="p">:</span> <span class="n">params</span><span class="p">}</span></div>
 
 
 
@@ -612,15 +612,15 @@
 <span class="c1"># project** for the chosen genre/template (reelee writes an output-intent</span>
 <span class="c1"># annotation; braidio applies its format at *render* time, so it registers none).</span>
 <span class="c1"># Together they let a host that aggregates many genres (a CLI, an HTTP API, an MCP</span>
-<span class="c1"># connector) create ANY genre&#39;s project — resolve to get the params, create the</span>
+<span class="c1"># connector) create ANY genre's project — resolve to get the params, create the</span>
 <span class="c1"># bare project, then initialize — without hardcoding which app owns the genre.</span>
 <span class="c1"># ---------------------------------------------------------------------------</span>
 
 <span class="c1">#: A genre initializer: ``(genre, template, project, params) -&gt; None``. The</span>
-<span class="c1">#: side-effecting apply-counterpart to a :data:`GenreResolver`&#39;s pure</span>
+<span class="c1">#: side-effecting apply-counterpart to a :data:`GenreResolver`'s pure</span>
 <span class="c1">#: ``(genre, template) -&gt; params``. It receives the full resolver context (the</span>
 <span class="c1">#: :class:`Genre` object + chosen ``template`` slug) plus the freshly-created</span>
-<span class="c1">#: ``project`` to seed and the resolved ``params``. reelee&#39;s writes the</span>
+<span class="c1">#: ``project`` to seed and the resolved ``params``. reelee's writes the</span>
 <span class="c1">#: output-intent annotation; a genre that seeds nothing on create registers none.</span>
 <span class="c1">#:</span>
 <span class="c1">#: **Contract:** an initializer MUST confine all side effects to ``project``</span>
@@ -628,47 +628,47 @@
 <span class="c1">#: failed create by deleting the project folder — or own its own rollback. Writing</span>
 <span class="c1">#: to a shared store / external service / global registry breaks that guarantee.</span>
 <span class="n">GenreInitializer</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[</span>
-    <span class="p">[</span><span class="s2">&quot;Genre&quot;</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="s2">&quot;Project&quot;</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="kc">None</span>
+    <span class="p">[</span><span class="s2">"Genre"</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="s2">"Project"</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span> <span class="kc">None</span>
 <span class="p">]</span>
 
-<span class="c1">#: Registry of per-genre initializers, keyed by genre slug. A genre&#39;s **owning</span>
+<span class="c1">#: Registry of per-genre initializers, keyed by genre slug. A genre's **owning</span>
 <span class="c1">#: app** registers how to seed a fresh project for that genre; a genre that seeds</span>
 <span class="c1">#: nothing on create simply registers none (:func:`initialize_genre` no-ops).</span>
 <span class="n">genre_initializers</span><span class="p">:</span> <span class="n">Registry</span> <span class="o">=</span> <span class="n">Registry</span><span class="p">(</span>
-    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;nw.genre_initializers&quot;</span><span class="p">,</span> <span class="n">on_conflict</span><span class="o">=</span><span class="s2">&quot;error&quot;</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"nw.genre_initializers"</span><span class="p">,</span> <span class="n">on_conflict</span><span class="o">=</span><span class="s2">"error"</span>
 <span class="p">)</span>
 
 
 <div class="viewcode-block" id="register_genre_initializer">
 <a class="viewcode-back" href="../../module_docs/nw/genres.html#nw.register_genre_initializer">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">register_genre_initializer</span><span class="p">(</span>
-    <span class="n">slug</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">initializer</span><span class="p">:</span> <span class="s2">&quot;GenreInitializer&quot;</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;GenreInitializer&quot;</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Register an initializer for a genre slug; returns it for inline use.</span>
+    <span class="n">slug</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">initializer</span><span class="p">:</span> <span class="s2">"GenreInitializer"</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"GenreInitializer"</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Register an initializer for a genre slug; returns it for inline use.</span>
 
-<span class="sd">    Called by the genre&#39;s owning app. ``initializer(genre, template, project,</span>
+<span class="sd">    Called by the genre's owning app. ``initializer(genre, template, project,</span>
 <span class="sd">    params) -&gt; None`` seeds a freshly-created project for the chosen genre/template</span>
 <span class="sd">    (see :data:`GenreInitializer` for the side-effect contract);</span>
 <span class="sd">    :func:`initialize_genre` dispatches to it. Independent of genre *registration</span>
 <span class="sd">    order* (keyed by the slug string). A genre that seeds nothing on create needs</span>
 <span class="sd">    no initializer at all.</span>
 
-<span class="sd">    &gt;&gt;&gt; _ = register_genre(Genre(slug=&quot;_init_demo&quot;, title=&quot;Demo&quot;,</span>
-<span class="sd">    ...                          defaults={&quot;look&quot;: &quot;plain&quot;}))</span>
+<span class="sd">    &gt;&gt;&gt; _ = register_genre(Genre(slug="_init_demo", title="Demo",</span>
+<span class="sd">    ...                          defaults={"look": "plain"}))</span>
 <span class="sd">    &gt;&gt;&gt; seen = {}</span>
 <span class="sd">    &gt;&gt;&gt; def _seed(genre, template, project, params):</span>
-<span class="sd">    ...     seen[&quot;applied&quot;] = (genre.slug, template, params)</span>
-<span class="sd">    &gt;&gt;&gt; _ = register_genre_initializer(&quot;_init_demo&quot;, _seed)</span>
-<span class="sd">    &gt;&gt;&gt; initialize_genre(&quot;_init_demo&quot;, object())  # params default to the genre&#39;s</span>
-<span class="sd">    &gt;&gt;&gt; seen[&quot;applied&quot;]</span>
-<span class="sd">    (&#39;_init_demo&#39;, None, {&#39;look&#39;: &#39;plain&#39;})</span>
-<span class="sd">    &gt;&gt;&gt; del genres[&quot;_init_demo&quot;]; del genre_initializers[&quot;_init_demo&quot;]</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">_validate_slug</span><span class="p">(</span><span class="n">slug</span><span class="p">,</span> <span class="n">what</span><span class="o">=</span><span class="s2">&quot;genre initializer&quot;</span><span class="p">)</span>
+<span class="sd">    ...     seen["applied"] = (genre.slug, template, params)</span>
+<span class="sd">    &gt;&gt;&gt; _ = register_genre_initializer("_init_demo", _seed)</span>
+<span class="sd">    &gt;&gt;&gt; initialize_genre("_init_demo", object())  # params default to the genre's</span>
+<span class="sd">    &gt;&gt;&gt; seen["applied"]</span>
+<span class="sd">    ('_init_demo', None, {'look': 'plain'})</span>
+<span class="sd">    &gt;&gt;&gt; del genres["_init_demo"]; del genre_initializers["_init_demo"]</span>
+<span class="sd">    """</span>
+    <span class="n">_validate_slug</span><span class="p">(</span><span class="n">slug</span><span class="p">,</span> <span class="n">what</span><span class="o">=</span><span class="s2">"genre initializer"</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">initializer</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="s2">&quot;register_genre_initializer expects a callable, got &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">initializer</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="s2">"register_genre_initializer expects a callable, got "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">initializer</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
     <span class="n">genre_initializers</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">slug</span><span class="p">,</span> <span class="n">initializer</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">initializer</span></div>
@@ -679,42 +679,42 @@
 <a class="viewcode-back" href="../../module_docs/nw/genres.html#nw.initialize_genre">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">initialize_genre</span><span class="p">(</span>
     <span class="n">genre</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">project</span><span class="p">:</span> <span class="s2">&quot;Project&quot;</span><span class="p">,</span>
+    <span class="n">project</span><span class="p">:</span> <span class="s2">"Project"</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">template</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">params</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Seed a freshly-created ``project`` for ``genre`` (+ optional ``template``).</span>
+<span class="w">    </span><span class="sd">"""Seed a freshly-created ``project`` for ``genre`` (+ optional ``template``).</span>
 
 <span class="sd">    The side-effecting apply-counterpart to :func:`resolve_genre`. Dispatches to</span>
-<span class="sd">    the genre&#39;s registered initializer (:func:`register_genre_initializer`) when</span>
+<span class="sd">    the genre's registered initializer (:func:`register_genre_initializer`) when</span>
 <span class="sd">    one exists; **when none is registered this is a no-op** — the correct default</span>
 <span class="sd">    for a genre that seeds nothing on create (e.g. one whose preset is applied at</span>
 <span class="sd">    render time).</span>
 
 <span class="sd">    ``params`` is the resolved creation params (from :func:`resolve_genre`); when</span>
-<span class="sd">    ``None`` it is resolved from the genre&#39;s ``template``/``defaults`` here, so</span>
-<span class="sd">    ``initialize_genre(genre, project)`` seeds a project in the genre&#39;s defaults in</span>
+<span class="sd">    ``None`` it is resolved from the genre's ``template``/``defaults`` here, so</span>
+<span class="sd">    ``initialize_genre(genre, project)`` seeds a project in the genre's defaults in</span>
 <span class="sd">    one call. Raises :class:`KeyError` on an unknown genre or — **uniformly** — an</span>
 <span class="sd">    unknown ``template`` slug (matching :func:`resolve_genre`).</span>
 
 <span class="sd">    **The envelope is persisted** (nw#32): after the initializer succeeds (or</span>
 <span class="sd">    no-ops), the resolved ``{genre, template, params}`` is recorded on the</span>
-<span class="sd">    project&#39;s graph — so &quot;what genre is this project?&quot; stays answerable after</span>
+<span class="sd">    project's graph — so "what genre is this project?" stays answerable after</span>
 <span class="sd">    this call returns, on the host-creates path exactly as on</span>
-<span class="sd">    :func:`create_genre_project`&#39;s. Written *after* the seed on purpose: a</span>
+<span class="sd">    :func:`create_genre_project`'s. Written *after* the seed on purpose: a</span>
 <span class="sd">    recorded envelope certifies a completed initialization, never a failed</span>
 <span class="sd">    one. A ``project`` stand-in without a ``graph`` (a test double, a</span>
 <span class="sd">    factory that returns no live project) skips the recording; read it back</span>
 <span class="sd">    via :meth:`nw.Project.resolved_genre`.</span>
 
-<span class="sd">    &gt;&gt;&gt; _ = register_genre(Genre(slug=&quot;_noinit_demo&quot;, title=&quot;Demo&quot;))</span>
-<span class="sd">    &gt;&gt;&gt; initialize_genre(&quot;_noinit_demo&quot;, object())  # no initializer -&gt; no seed</span>
-<span class="sd">    &gt;&gt;&gt; del genres[&quot;_noinit_demo&quot;]</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    &gt;&gt;&gt; _ = register_genre(Genre(slug="_noinit_demo", title="Demo"))</span>
+<span class="sd">    &gt;&gt;&gt; initialize_genre("_noinit_demo", object())  # no initializer -&gt; no seed</span>
+<span class="sd">    &gt;&gt;&gt; del genres["_noinit_demo"]</span>
+<span class="sd">    """</span>
     <span class="n">g</span> <span class="o">=</span> <span class="n">get_genre</span><span class="p">(</span><span class="n">genre</span><span class="p">)</span>  <span class="c1"># validates the genre slug (KeyError otherwise)</span>
     <span class="k">if</span> <span class="n">params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">params</span> <span class="o">=</span> <span class="n">resolve_genre</span><span class="p">(</span><span class="n">genre</span><span class="p">,</span> <span class="n">template</span><span class="p">)[</span><span class="s2">&quot;params&quot;</span><span class="p">]</span>  <span class="c1"># also validates template</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">resolve_genre</span><span class="p">(</span><span class="n">genre</span><span class="p">,</span> <span class="n">template</span><span class="p">)[</span><span class="s2">"params"</span><span class="p">]</span>  <span class="c1"># also validates template</span>
     <span class="k">elif</span> <span class="n">template</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">g</span><span class="o">.</span><span class="n">template</span><span class="p">(</span><span class="n">template</span><span class="p">)</span>  <span class="c1"># validate template uniformly even when params given</span>
     <span class="k">if</span> <span class="n">genre</span> <span class="ow">in</span> <span class="n">genre_initializers</span><span class="p">:</span>
@@ -730,15 +730,15 @@
     <span class="n">template</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="n">params</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Record the resolved envelope on ``project``&#39;s graph; return whether it was.</span>
+<span class="w">    </span><span class="sd">"""Record the resolved envelope on ``project``'s graph; return whether it was.</span>
 
 <span class="sd">    Duck-typed on ``project.graph.set_genre_envelope`` because the genre</span>
 <span class="sd">    machinery legitimately runs against non-:class:`nw.Project` objects (a</span>
-<span class="sd">    factory that returns ``{&quot;project&quot;: None}``, test doubles). A real nw</span>
-<span class="sd">    project always records; anything else is the caller&#39;s to record.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">graph</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="s2">&quot;graph&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-    <span class="n">set_envelope</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="s2">&quot;set_genre_envelope&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<span class="sd">    factory that returns ``{"project": None}``, test doubles). A real nw</span>
+<span class="sd">    project always records; anything else is the caller's to record.</span>
+<span class="sd">    """</span>
+    <span class="n">graph</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="s2">"graph"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">set_envelope</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="s2">"set_genre_envelope"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">set_envelope</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">False</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">.bodies</span><span class="w"> </span><span class="kn">import</span> <span class="n">GenreEnvelopeBodyV1</span>
@@ -755,57 +755,57 @@
 <span class="c1">#</span>
 <span class="c1"># resolve_genre (params) + initialize_genre (seed) assume the host already HAS a</span>
 <span class="c1"># project to seed. But when a host (e.g. an MCP connector) aggregates a genre owned by</span>
-<span class="c1"># ANOTHER app — reelee hosting braidio&#39;s ``commentary_weave`` — it can&#39;t build that</span>
-<span class="c1"># genre&#39;s project itself (a braidio project lives in the owning app&#39;s per-user</span>
+<span class="c1"># ANOTHER app — reelee hosting braidio's ``commentary_weave`` — it can't build that</span>
+<span class="c1"># genre's project itself (a braidio project lives in the owning app's per-user</span>
 <span class="c1"># workspace, not a reelee sibling folder). A project factory lets the owning app supply</span>
-<span class="c1"># &quot;create a fresh project for this genre in the CALLER&#39;s own space&quot;, so a host can offer</span>
+<span class="c1"># "create a fresh project for this genre in the CALLER's own space", so a host can offer</span>
 <span class="c1"># ``create_project(genre)`` for any plugged-in genre without knowing its storage. A</span>
-<span class="c1"># host&#39;s OWN genres (which it places itself) do NOT use this registry.</span>
+<span class="c1"># host's OWN genres (which it places itself) do NOT use this registry.</span>
 <span class="c1"># ---------------------------------------------------------------------------</span>
 
 <span class="c1">#: A genre project factory: ``(caller, project_id, *, title, template, params) -&gt; dict``.</span>
-<span class="c1">#: Creates a NEW project for a plugged-in ``genre`` in ``caller``&#39;s own (e.g. email-keyed)</span>
-<span class="c1">#: space and returns info including ``{&quot;project&quot;: &lt;created project&gt;, ...}`` — see</span>
+<span class="c1">#: Creates a NEW project for a plugged-in ``genre`` in ``caller``'s own (e.g. email-keyed)</span>
+<span class="c1">#: space and returns info including ``{"project": &lt;created project&gt;, ...}`` — see</span>
 <span class="c1">#: :func:`create_genre_project` (which seeds it then strips the live object from the JSON</span>
-<span class="c1">#: result). **Contract:** confine creation to the caller&#39;s own space (so a host can offer</span>
+<span class="c1">#: result). **Contract:** confine creation to the caller's own space (so a host can offer</span>
 <span class="c1">#: it multi-tenant safely); a host-tenancy genre does NOT register here.</span>
 <span class="n">GenreProjectFactory</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]</span>
 
 <span class="c1">#: Registry of per-genre project factories, keyed by genre slug (the owning app registers).</span>
 <span class="n">genre_project_factories</span><span class="p">:</span> <span class="n">Registry</span> <span class="o">=</span> <span class="n">Registry</span><span class="p">(</span>
-    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;nw.genre_project_factories&quot;</span><span class="p">,</span> <span class="n">on_conflict</span><span class="o">=</span><span class="s2">&quot;error&quot;</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">"nw.genre_project_factories"</span><span class="p">,</span> <span class="n">on_conflict</span><span class="o">=</span><span class="s2">"error"</span>
 <span class="p">)</span>
 
 
 <div class="viewcode-block" id="register_genre_project_factory">
 <a class="viewcode-back" href="../../module_docs/nw/genres.html#nw.register_genre_project_factory">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">register_genre_project_factory</span><span class="p">(</span>
-    <span class="n">slug</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">factory</span><span class="p">:</span> <span class="s2">&quot;GenreProjectFactory&quot;</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;GenreProjectFactory&quot;</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Register a project factory for a genre slug; returns it for inline use.</span>
+    <span class="n">slug</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">factory</span><span class="p">:</span> <span class="s2">"GenreProjectFactory"</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"GenreProjectFactory"</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Register a project factory for a genre slug; returns it for inline use.</span>
 
-<span class="sd">    Called by the genre&#39;s **owning app** so a host that aggregates the genre can create</span>
+<span class="sd">    Called by the genre's **owning app** so a host that aggregates the genre can create</span>
 <span class="sd">    its projects via :func:`create_genre_project` without knowing its storage. See</span>
 <span class="sd">    :data:`GenreProjectFactory` for the signature + the caller-space contract.</span>
 
-<span class="sd">    &gt;&gt;&gt; _ = register_genre(Genre(slug=&quot;_pf_demo&quot;, title=&quot;Demo&quot;,</span>
-<span class="sd">    ...                          defaults={&quot;format_id&quot;: &quot;solo&quot;}))</span>
+<span class="sd">    &gt;&gt;&gt; _ = register_genre(Genre(slug="_pf_demo", title="Demo",</span>
+<span class="sd">    ...                          defaults={"format_id": "solo"}))</span>
 <span class="sd">    &gt;&gt;&gt; made = {}</span>
 <span class="sd">    &gt;&gt;&gt; def _f(caller, project_id, *, title, template, params):</span>
 <span class="sd">    ...     made.update(caller=caller, project_id=project_id, params=params)</span>
-<span class="sd">    ...     return {&quot;project&quot;: None, &quot;project_id&quot;: project_id}</span>
-<span class="sd">    &gt;&gt;&gt; _ = register_genre_project_factory(&quot;_pf_demo&quot;, _f)</span>
-<span class="sd">    &gt;&gt;&gt; create_genre_project(&quot;_pf_demo&quot;, &quot;u@x.com&quot;, &quot;p1&quot;)[&quot;project_id&quot;]</span>
-<span class="sd">    &#39;p1&#39;</span>
-<span class="sd">    &gt;&gt;&gt; (made[&quot;caller&quot;], made[&quot;params&quot;])</span>
-<span class="sd">    (&#39;u@x.com&#39;, {&#39;format_id&#39;: &#39;solo&#39;})</span>
-<span class="sd">    &gt;&gt;&gt; del genres[&quot;_pf_demo&quot;]; del genre_project_factories[&quot;_pf_demo&quot;]</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">_validate_slug</span><span class="p">(</span><span class="n">slug</span><span class="p">,</span> <span class="n">what</span><span class="o">=</span><span class="s2">&quot;genre project factory&quot;</span><span class="p">)</span>
+<span class="sd">    ...     return {"project": None, "project_id": project_id}</span>
+<span class="sd">    &gt;&gt;&gt; _ = register_genre_project_factory("_pf_demo", _f)</span>
+<span class="sd">    &gt;&gt;&gt; create_genre_project("_pf_demo", "u@x.com", "p1")["project_id"]</span>
+<span class="sd">    'p1'</span>
+<span class="sd">    &gt;&gt;&gt; (made["caller"], made["params"])</span>
+<span class="sd">    ('u@x.com', {'format_id': 'solo'})</span>
+<span class="sd">    &gt;&gt;&gt; del genres["_pf_demo"]; del genre_project_factories["_pf_demo"]</span>
+<span class="sd">    """</span>
+    <span class="n">_validate_slug</span><span class="p">(</span><span class="n">slug</span><span class="p">,</span> <span class="n">what</span><span class="o">=</span><span class="s2">"genre project factory"</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">factory</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="s2">&quot;register_genre_project_factory expects a callable, got &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">factory</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="s2">"register_genre_project_factory expects a callable, got "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">factory</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
     <span class="n">genre_project_factories</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">slug</span><span class="p">,</span> <span class="n">factory</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">factory</span></div>
@@ -815,7 +815,7 @@
 <div class="viewcode-block" id="has_genre_project_factory">
 <a class="viewcode-back" href="../../module_docs/nw/genres.html#nw.has_genre_project_factory">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">has_genre_project_factory</span><span class="p">(</span><span class="n">slug</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;True iff a plugged-in project factory is registered for ``slug``.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""True iff a plugged-in project factory is registered for ``slug``."""</span>
     <span class="k">return</span> <span class="n">slug</span> <span class="ow">in</span> <span class="n">genre_project_factories</span></div>
 
 
@@ -830,12 +830,12 @@
     <span class="n">title</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">template</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create + seed a new project for a PLUGGED-IN ``genre`` in ``caller``&#39;s space.</span>
+<span class="w">    </span><span class="sd">"""Create + seed a new project for a PLUGGED-IN ``genre`` in ``caller``'s space.</span>
 
 <span class="sd">    The *create*-counterpart to :func:`resolve_genre` (params) + :func:`initialize_genre`</span>
-<span class="sd">    (seed): resolve → the genre&#39;s factory (create in the caller&#39;s space) → initialize.</span>
+<span class="sd">    (seed): resolve → the genre's factory (create in the caller's space) → initialize.</span>
 <span class="sd">    **All-or-nothing** — if seeding fails the just-created project is rolled back (its</span>
-<span class="sd">    folder removed) and the error re-raised. Returns the factory&#39;s JSON-able info (minus</span>
+<span class="sd">    folder removed) and the error re-raised. Returns the factory's JSON-able info (minus</span>
 <span class="sd">    the live ``project``) plus the resolved ``{genre, template, params}`` envelope, so the</span>
 <span class="sd">    caller can immediately address the new project (e.g. by ``project_id``). The same</span>
 <span class="sd">    envelope is **persisted on the project** by the initialize step (nw#32) — under the</span>
@@ -844,44 +844,44 @@
 <span class="sd">    :meth:`nw.Project.resolved_genre`.</span>
 
 <span class="sd">    Raises :class:`KeyError` on an unknown genre/template, or a genre with no registered</span>
-<span class="sd">    factory (a host&#39;s own genre is created by the host, not via this path).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    factory (a host's own genre is created by the host, not via this path).</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">genre</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">genre_project_factories</span><span class="p">:</span>
         <span class="n">known</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">genre_project_factories</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
         <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;genre </span><span class="si">{</span><span class="n">genre</span><span class="si">!r}</span><span class="s2"> has no project factory (registered: </span><span class="si">{</span><span class="n">known</span><span class="si">}</span><span class="s2">); a host&#39;s &quot;</span>
-            <span class="s2">&quot;own genres are created by the host, not via create_genre_project.&quot;</span>
+            <span class="sa">f</span><span class="s2">"genre </span><span class="si">{</span><span class="n">genre</span><span class="si">!r}</span><span class="s2"> has no project factory (registered: </span><span class="si">{</span><span class="n">known</span><span class="si">}</span><span class="s2">); a host's "</span>
+            <span class="s2">"own genres are created by the host, not via create_genre_project."</span>
         <span class="p">)</span>
     <span class="n">envelope</span> <span class="o">=</span> <span class="n">resolve_genre</span><span class="p">(</span><span class="n">genre</span><span class="p">,</span> <span class="n">template</span><span class="p">)</span>  <span class="c1"># validates genre + template</span>
-    <span class="n">params</span> <span class="o">=</span> <span class="n">envelope</span><span class="p">[</span><span class="s2">&quot;params&quot;</span><span class="p">]</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="n">envelope</span><span class="p">[</span><span class="s2">"params"</span><span class="p">]</span>
     <span class="n">info</span> <span class="o">=</span> <span class="n">genre_project_factories</span><span class="p">[</span><span class="n">genre</span><span class="p">](</span>
         <span class="n">caller</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">title</span> <span class="ow">or</span> <span class="n">project_id</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="n">template</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span>
     <span class="p">)</span>
-    <span class="n">project</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;project&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="n">project</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"project"</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">initialize_genre</span><span class="p">(</span><span class="n">genre</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="n">template</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
         <span class="n">_rollback_project</span><span class="p">(</span><span class="n">project</span><span class="p">)</span>  <span class="c1"># all-or-nothing: leave no half-built orphan</span>
         <span class="k">raise</span>
     <span class="n">result</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">info</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="o">!=</span> <span class="s2">&quot;project&quot;</span><span class="p">}</span>
+        <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">info</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="o">!=</span> <span class="s2">"project"</span><span class="p">}</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span>
         <span class="k">else</span> <span class="p">{}</span>
     <span class="p">)</span>
-    <span class="n">result</span><span class="p">[</span><span class="s2">&quot;genre&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">genre</span>
-    <span class="n">result</span><span class="p">[</span><span class="s2">&quot;template&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">template</span>
-    <span class="n">result</span><span class="p">[</span><span class="s2">&quot;params&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">params</span>
+    <span class="n">result</span><span class="p">[</span><span class="s2">"genre"</span><span class="p">]</span> <span class="o">=</span> <span class="n">genre</span>
+    <span class="n">result</span><span class="p">[</span><span class="s2">"template"</span><span class="p">]</span> <span class="o">=</span> <span class="n">template</span>
+    <span class="n">result</span><span class="p">[</span><span class="s2">"params"</span><span class="p">]</span> <span class="o">=</span> <span class="n">params</span>
     <span class="k">return</span> <span class="n">result</span></div>
 
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_rollback_project</span><span class="p">(</span><span class="n">project</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Best-effort delete of a just-created project after a failed seed (all-or-nothing).</span>
+<span class="w">    </span><span class="sd">"""Best-effort delete of a just-created project after a failed seed (all-or-nothing).</span>
 
-<span class="sd">    Removes ``project.root`` if present — the factory creates in the caller&#39;s own space,</span>
+<span class="sd">    Removes ``project.root`` if present — the factory creates in the caller's own space,</span>
 <span class="sd">    so this only reverts what was just made.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">root</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="s2">&quot;root&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="n">root</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="s2">"root"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">root</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
 
@@ -889,30 +889,30 @@
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;GENRE_STATUSES&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Genre&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;Template&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;genres&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;get_genre&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;list_genres&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;register_genre&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;genre_catalog&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;describe_genre&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;recommend_genre&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;resolve_defaults&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;GenreResolver&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;genre_resolvers&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;register_genre_resolver&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;resolve_genre&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;GenreInitializer&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;genre_initializers&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;register_genre_initializer&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;initialize_genre&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;GenreProjectFactory&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;genre_project_factories&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;register_genre_project_factory&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;has_genre_project_factory&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;create_genre_project&quot;</span><span class="p">,</span>
+    <span class="s2">"GENRE_STATUSES"</span><span class="p">,</span>
+    <span class="s2">"Genre"</span><span class="p">,</span>
+    <span class="s2">"Template"</span><span class="p">,</span>
+    <span class="s2">"genres"</span><span class="p">,</span>
+    <span class="s2">"get_genre"</span><span class="p">,</span>
+    <span class="s2">"list_genres"</span><span class="p">,</span>
+    <span class="s2">"register_genre"</span><span class="p">,</span>
+    <span class="s2">"genre_catalog"</span><span class="p">,</span>
+    <span class="s2">"describe_genre"</span><span class="p">,</span>
+    <span class="s2">"recommend_genre"</span><span class="p">,</span>
+    <span class="s2">"resolve_defaults"</span><span class="p">,</span>
+    <span class="s2">"GenreResolver"</span><span class="p">,</span>
+    <span class="s2">"genre_resolvers"</span><span class="p">,</span>
+    <span class="s2">"register_genre_resolver"</span><span class="p">,</span>
+    <span class="s2">"resolve_genre"</span><span class="p">,</span>
+    <span class="s2">"GenreInitializer"</span><span class="p">,</span>
+    <span class="s2">"genre_initializers"</span><span class="p">,</span>
+    <span class="s2">"register_genre_initializer"</span><span class="p">,</span>
+    <span class="s2">"initialize_genre"</span><span class="p">,</span>
+    <span class="s2">"GenreProjectFactory"</span><span class="p">,</span>
+    <span class="s2">"genre_project_factories"</span><span class="p">,</span>
+    <span class="s2">"register_genre_project_factory"</span><span class="p">,</span>
+    <span class="s2">"has_genre_project_factory"</span><span class="p">,</span>
+    <span class="s2">"create_genre_project"</span><span class="p">,</span>
 <span class="p">]</span>
 </pre></div>
 

@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.inspect &mdash; nw 0.0.31 documentation</title>
+  <title>nw.inspect &mdash; nw 0.0.32 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=c5dbc6bb"></script>
+      <script src="../../_static/documentation_options.js?v=f2234cd1"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -107,12 +107,12 @@
            <div itemprop="articleBody">
              
   <h1>Source code for nw.inspect</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;QA helpers — typed reports about rendered shots.</span>
+<span></span><span class="sd">"""QA helpers — typed reports about rendered shots.</span>
 
-<span class="sd">A render finishing without an exception doesn&#39;t mean it&#39;s *right*. The v3</span>
+<span class="sd">A render finishing without an exception doesn't mean it's *right*. The v3</span>
 <span class="sd">fixture in muvid_project rendered successfully but produced a 5.87s clip</span>
 <span class="sd">when 8s were asked for. The four-second freeze in v4 was visible only by</span>
-<span class="sd">extracting frames and md5&#39;ing them. These reports surface those defects</span>
+<span class="sd">extracting frames and md5'ing them. These reports surface those defects</span>
 <span class="sd">without a manual ffprobe / ffmpeg dance.</span>
 
 <span class="sd">Public surface:</span>
@@ -123,7 +123,7 @@
 <span class="sd">  per-shot rollup, gaps between shots, freeze alerts.</span>
 
 <span class="sd">Both return frozen Pydantic models for typed downstream use.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -147,12 +147,12 @@
 <div class="viewcode-block" id="FrozenSegment">
 <a class="viewcode-back" href="../../module_docs/nw/inspect.html#nw.FrozenSegment">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">FrozenSegment</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A run of consecutive frames whose pixels don&#39;t change.</span>
+<span class="w">    </span><span class="sd">"""A run of consecutive frames whose pixels don't change.</span>
 
 <span class="sd">    A short freeze (≤ 0.25s) is usually a model artifact; a long one (≥ 1s)</span>
 <span class="sd">    is almost always a bug — Hailuo Pro returning a too-short clip + a tpad</span>
 <span class="sd">    fallback that froze the last frame, etc.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">start_s</span><span class="p">:</span> <span class="nb">float</span>
     <span class="n">end_s</span><span class="p">:</span> <span class="nb">float</span>
@@ -166,9 +166,9 @@
 <div class="viewcode-block" id="ShotReport">
 <a class="viewcode-back" href="../../module_docs/nw/inspect.html#nw.ShotReport">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ShotReport</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Inspection of one rendered shot.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Inspection of one rendered shot."""</span>
 
-    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;frozen&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"frozen"</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
 
     <span class="n">shot_id</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">output_path</span><span class="p">:</span> <span class="nb">str</span>
@@ -188,7 +188,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">has_long_freeze</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Any freeze ≥ 1.0s is suspicious. Anything ≥ 0.5s is worth flagging.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Any freeze ≥ 1.0s is suspicious. Anything ≥ 0.5s is worth flagging."""</span>
         <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">seg</span><span class="o">.</span><span class="n">duration_s</span> <span class="o">&gt;=</span> <span class="mf">1.0</span> <span class="k">for</span> <span class="n">seg</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">frozen_segments</span><span class="p">)</span></div>
 
 
@@ -196,9 +196,9 @@
 <div class="viewcode-block" id="Gap">
 <a class="viewcode-back" href="../../module_docs/nw/inspect.html#nw.Gap">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Gap</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A gap on the timeline between two shots.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""A gap on the timeline between two shots."""</span>
 
-    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;frozen&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"frozen"</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
 
     <span class="n">after_shot_id</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">before_shot_id</span><span class="p">:</span> <span class="nb">str</span>
@@ -214,9 +214,9 @@
 <div class="viewcode-block" id="ComposeReport">
 <a class="viewcode-back" href="../../module_docs/nw/inspect.html#nw.ComposeReport">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ComposeReport</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Inspection of the project-level final composed video.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Inspection of the project-level final composed video."""</span>
 
-    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;frozen&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"frozen"</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
 
     <span class="n">output_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
     <span class="n">has_final</span><span class="p">:</span> <span class="nb">bool</span>
@@ -247,7 +247,7 @@
     <span class="n">freeze_sample_fps</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">4.0</span><span class="p">,</span>
     <span class="n">duration_tolerance_s</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ShotReport</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Inspect ``shots/&lt;shot_id&gt;/output.mp4`` and return a typed report.</span>
+<span class="w">    </span><span class="sd">"""Inspect ``shots/&lt;shot_id&gt;/output.mp4`` and return a typed report.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        project: The :class:`nw.Project`.</span>
@@ -260,15 +260,15 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        A :class:`ShotReport`.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">spec</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">read_spec</span><span class="p">()</span>
     <span class="n">shot</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">shot</span><span class="p">(</span><span class="n">shot_id</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">shot</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No shot </span><span class="si">{</span><span class="n">shot_id</span><span class="si">!r}</span><span class="s2"> in project </span><span class="si">{</span><span class="n">project</span><span class="o">.</span><span class="n">root</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"No shot </span><span class="si">{</span><span class="n">shot_id</span><span class="si">!r}</span><span class="s2"> in project </span><span class="si">{</span><span class="n">project</span><span class="o">.</span><span class="n">root</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
-    <span class="n">output</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">shot_dir</span><span class="p">(</span><span class="n">shot_id</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;output.mp4&quot;</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">shot_dir</span><span class="p">(</span><span class="n">shot_id</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"output.mp4"</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">output</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-        <span class="c1"># Emit an empty report — caller can treat this as &quot;not yet rendered.&quot;</span>
+        <span class="c1"># Emit an empty report — caller can treat this as "not yet rendered."</span>
         <span class="k">return</span> <span class="n">ShotReport</span><span class="p">(</span>
             <span class="n">shot_id</span><span class="o">=</span><span class="n">shot_id</span><span class="p">,</span>
             <span class="n">output_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">output</span><span class="p">),</span>
@@ -282,12 +282,12 @@
         <span class="p">)</span>
 
     <span class="n">probe</span> <span class="o">=</span> <span class="n">_ffprobe</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
-    <span class="n">duration</span> <span class="o">=</span> <span class="n">probe</span><span class="p">[</span><span class="s2">&quot;duration_s&quot;</span><span class="p">]</span>
+    <span class="n">duration</span> <span class="o">=</span> <span class="n">probe</span><span class="p">[</span><span class="s2">"duration_s"</span><span class="p">]</span>
     <span class="n">target</span> <span class="o">=</span> <span class="n">shot</span><span class="o">.</span><span class="n">duration_s</span>
     <span class="n">within_tol</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">duration</span> <span class="o">-</span> <span class="n">target</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">duration_tolerance_s</span>
 
     <span class="n">frozen_segments</span> <span class="o">=</span> <span class="p">()</span>
-    <span class="k">if</span> <span class="n">probe</span><span class="p">[</span><span class="s2">&quot;has_video&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">shutil</span><span class="o">.</span><span class="n">which</span><span class="p">(</span><span class="s2">&quot;ffmpeg&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">probe</span><span class="p">[</span><span class="s2">"has_video"</span><span class="p">]</span> <span class="ow">and</span> <span class="n">shutil</span><span class="o">.</span><span class="n">which</span><span class="p">(</span><span class="s2">"ffmpeg"</span><span class="p">):</span>
         <span class="n">frozen_segments</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
             <span class="n">_detect_frozen_segments</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">sample_fps</span><span class="o">=</span><span class="n">freeze_sample_fps</span><span class="p">)</span>
         <span class="p">)</span>
@@ -300,10 +300,10 @@
         <span class="n">duration_s</span><span class="o">=</span><span class="n">duration</span><span class="p">,</span>
         <span class="n">target_duration_s</span><span class="o">=</span><span class="n">target</span><span class="p">,</span>
         <span class="n">duration_within_tolerance</span><span class="o">=</span><span class="n">within_tol</span><span class="p">,</span>
-        <span class="n">has_video</span><span class="o">=</span><span class="n">probe</span><span class="p">[</span><span class="s2">&quot;has_video&quot;</span><span class="p">],</span>
-        <span class="n">has_audio</span><span class="o">=</span><span class="n">probe</span><span class="p">[</span><span class="s2">&quot;has_audio&quot;</span><span class="p">],</span>
-        <span class="n">frame_count</span><span class="o">=</span><span class="n">probe</span><span class="p">[</span><span class="s2">&quot;frame_count&quot;</span><span class="p">],</span>
-        <span class="n">fps</span><span class="o">=</span><span class="n">probe</span><span class="p">[</span><span class="s2">&quot;fps&quot;</span><span class="p">],</span>
+        <span class="n">has_video</span><span class="o">=</span><span class="n">probe</span><span class="p">[</span><span class="s2">"has_video"</span><span class="p">],</span>
+        <span class="n">has_audio</span><span class="o">=</span><span class="n">probe</span><span class="p">[</span><span class="s2">"has_audio"</span><span class="p">],</span>
+        <span class="n">frame_count</span><span class="o">=</span><span class="n">probe</span><span class="p">[</span><span class="s2">"frame_count"</span><span class="p">],</span>
+        <span class="n">fps</span><span class="o">=</span><span class="n">probe</span><span class="p">[</span><span class="s2">"fps"</span><span class="p">],</span>
         <span class="n">frozen_segments</span><span class="o">=</span><span class="n">frozen_segments</span><span class="p">,</span>
         <span class="n">freeze_total_s</span><span class="o">=</span><span class="n">freeze_total</span><span class="p">,</span>
     <span class="p">)</span></div>
@@ -318,9 +318,9 @@
     <span class="n">freeze_sample_fps</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">4.0</span><span class="p">,</span>
     <span class="n">duration_tolerance_s</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComposeReport</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Per-shot reports + final-compose inspection in one call.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Per-shot reports + final-compose inspection in one call."""</span>
     <span class="n">spec</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">read_spec</span><span class="p">()</span>
-    <span class="n">final</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;output&quot;</span> <span class="o">/</span> <span class="s2">&quot;final.mp4&quot;</span>
+    <span class="n">final</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="s2">"output"</span> <span class="o">/</span> <span class="s2">"final.mp4"</span>
     <span class="n">has_final</span> <span class="o">=</span> <span class="n">final</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span>
 
     <span class="n">shots</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
@@ -348,7 +348,7 @@
 
     <span class="k">if</span> <span class="n">has_final</span><span class="p">:</span>
         <span class="n">final_probe</span> <span class="o">=</span> <span class="n">_ffprobe</span><span class="p">(</span><span class="n">final</span><span class="p">)</span>
-        <span class="n">total_duration</span> <span class="o">=</span> <span class="n">final_probe</span><span class="p">[</span><span class="s2">&quot;duration_s&quot;</span><span class="p">]</span>
+        <span class="n">total_duration</span> <span class="o">=</span> <span class="n">final_probe</span><span class="p">[</span><span class="s2">"duration_s"</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">total_duration</span> <span class="o">=</span> <span class="mf">0.0</span>
 
@@ -375,25 +375,25 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_ffprobe</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Best-effort metadata probe via ffprobe. Falls back to zeros if unavailable.&quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">shutil</span><span class="o">.</span><span class="n">which</span><span class="p">(</span><span class="s2">&quot;ffprobe&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Best-effort metadata probe via ffprobe. Falls back to zeros if unavailable."""</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">shutil</span><span class="o">.</span><span class="n">which</span><span class="p">(</span><span class="s2">"ffprobe"</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;duration_s&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-            <span class="s2">&quot;has_video&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-            <span class="s2">&quot;has_audio&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-            <span class="s2">&quot;frame_count&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-            <span class="s2">&quot;fps&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+            <span class="s2">"duration_s"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+            <span class="s2">"has_video"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s2">"has_audio"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s2">"frame_count"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">"fps"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
         <span class="p">}</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">out</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
             <span class="p">[</span>
-                <span class="s2">&quot;ffprobe&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;-v&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;error&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;-show_format&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;-show_streams&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;-of&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;json&quot;</span><span class="p">,</span>
+                <span class="s2">"ffprobe"</span><span class="p">,</span>
+                <span class="s2">"-v"</span><span class="p">,</span>
+                <span class="s2">"error"</span><span class="p">,</span>
+                <span class="s2">"-show_format"</span><span class="p">,</span>
+                <span class="s2">"-show_streams"</span><span class="p">,</span>
+                <span class="s2">"-of"</span><span class="p">,</span>
+                <span class="s2">"json"</span><span class="p">,</span>
                 <span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">),</span>
             <span class="p">],</span>
             <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -403,31 +403,31 @@
         <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">out</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
     <span class="k">except</span> <span class="p">(</span><span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span><span class="p">,</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONDecodeError</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">{</span>
-            <span class="s2">&quot;duration_s&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
-            <span class="s2">&quot;has_video&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-            <span class="s2">&quot;has_audio&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-            <span class="s2">&quot;frame_count&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-            <span class="s2">&quot;fps&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+            <span class="s2">"duration_s"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
+            <span class="s2">"has_video"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s2">"has_audio"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s2">"frame_count"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">"fps"</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
         <span class="p">}</span>
 
-    <span class="n">duration</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;format&quot;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;duration&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="mf">0.0</span><span class="p">)</span>
-    <span class="n">streams</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;streams&quot;</span><span class="p">,</span> <span class="p">[])</span>
-    <span class="n">has_video</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;codec_type&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;video&quot;</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">streams</span><span class="p">)</span>
-    <span class="n">has_audio</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;codec_type&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;audio&quot;</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">streams</span><span class="p">)</span>
+    <span class="n">duration</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"format"</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"duration"</span><span class="p">)</span> <span class="ow">or</span> <span class="mf">0.0</span><span class="p">)</span>
+    <span class="n">streams</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"streams"</span><span class="p">,</span> <span class="p">[])</span>
+    <span class="n">has_video</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"codec_type"</span><span class="p">)</span> <span class="o">==</span> <span class="s2">"video"</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">streams</span><span class="p">)</span>
+    <span class="n">has_audio</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"codec_type"</span><span class="p">)</span> <span class="o">==</span> <span class="s2">"audio"</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">streams</span><span class="p">)</span>
 
     <span class="n">frame_count</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">fps</span> <span class="o">=</span> <span class="mf">0.0</span>
     <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">streams</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;codec_type&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;video&quot;</span><span class="p">:</span>
-            <span class="n">fps_str</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;avg_frame_rate&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">s</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;r_frame_rate&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;0/1&quot;</span>
+        <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"codec_type"</span><span class="p">)</span> <span class="o">==</span> <span class="s2">"video"</span><span class="p">:</span>
+            <span class="n">fps_str</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"avg_frame_rate"</span><span class="p">)</span> <span class="ow">or</span> <span class="n">s</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"r_frame_rate"</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">"0/1"</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">num</span><span class="p">,</span> <span class="n">den</span> <span class="o">=</span> <span class="n">fps_str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+                <span class="n">num</span><span class="p">,</span> <span class="n">den</span> <span class="o">=</span> <span class="n">fps_str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
                 <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">den</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="n">fps</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">num</span><span class="p">)</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">den</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
                 <span class="n">fps</span> <span class="o">=</span> <span class="mf">0.0</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">frame_count</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;nb_frames&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="n">frame_count</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"nb_frames"</span><span class="p">)</span> <span class="ow">or</span> <span class="mi">0</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
                 <span class="n">frame_count</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="k">if</span> <span class="n">frame_count</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">fps</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -435,18 +435,18 @@
             <span class="k">break</span>
 
     <span class="k">return</span> <span class="p">{</span>
-        <span class="s2">&quot;duration_s&quot;</span><span class="p">:</span> <span class="n">duration</span><span class="p">,</span>
-        <span class="s2">&quot;has_video&quot;</span><span class="p">:</span> <span class="n">has_video</span><span class="p">,</span>
-        <span class="s2">&quot;has_audio&quot;</span><span class="p">:</span> <span class="n">has_audio</span><span class="p">,</span>
-        <span class="s2">&quot;frame_count&quot;</span><span class="p">:</span> <span class="n">frame_count</span><span class="p">,</span>
-        <span class="s2">&quot;fps&quot;</span><span class="p">:</span> <span class="n">fps</span><span class="p">,</span>
+        <span class="s2">"duration_s"</span><span class="p">:</span> <span class="n">duration</span><span class="p">,</span>
+        <span class="s2">"has_video"</span><span class="p">:</span> <span class="n">has_video</span><span class="p">,</span>
+        <span class="s2">"has_audio"</span><span class="p">:</span> <span class="n">has_audio</span><span class="p">,</span>
+        <span class="s2">"frame_count"</span><span class="p">:</span> <span class="n">frame_count</span><span class="p">,</span>
+        <span class="s2">"fps"</span><span class="p">:</span> <span class="n">fps</span><span class="p">,</span>
     <span class="p">}</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_detect_frozen_segments</span><span class="p">(</span>
     <span class="n">video</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">sample_fps</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">4.0</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">FrozenSegment</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Extract frames at ``sample_fps`` and group consecutive identical ones.</span>
+<span class="w">    </span><span class="sd">"""Extract frames at ``sample_fps`` and group consecutive identical ones.</span>
 
 <span class="sd">    Identity = byte-md5 of the JPEG-encoded frame. Two consecutive samples</span>
 <span class="sd">    with the same hash count as a frozen run; we emit a segment for runs of</span>
@@ -454,31 +454,31 @@
 
 <span class="sd">    This is the same trick the muvid_project agent had to do via shell: now</span>
 <span class="sd">    one function call.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
 
     <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">td</span><span class="p">:</span>
         <span class="n">td_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">td</span><span class="p">)</span>
         <span class="c1"># Extract sampled frames as JPEGs.</span>
         <span class="n">cmd</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="s2">&quot;ffmpeg&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;-v&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;error&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;-y&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;-i&quot;</span><span class="p">,</span>
+            <span class="s2">"ffmpeg"</span><span class="p">,</span>
+            <span class="s2">"-v"</span><span class="p">,</span>
+            <span class="s2">"error"</span><span class="p">,</span>
+            <span class="s2">"-y"</span><span class="p">,</span>
+            <span class="s2">"-i"</span><span class="p">,</span>
             <span class="nb">str</span><span class="p">(</span><span class="n">video</span><span class="p">),</span>
-            <span class="s2">&quot;-vf&quot;</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;fps=</span><span class="si">{</span><span class="n">sample_fps</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;-q:v&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;2&quot;</span><span class="p">,</span>
-            <span class="nb">str</span><span class="p">(</span><span class="n">td_path</span> <span class="o">/</span> <span class="s2">&quot;f_</span><span class="si">%05d</span><span class="s2">.jpg&quot;</span><span class="p">),</span>
+            <span class="s2">"-vf"</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"fps=</span><span class="si">{</span><span class="n">sample_fps</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+            <span class="s2">"-q:v"</span><span class="p">,</span>
+            <span class="s2">"2"</span><span class="p">,</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">td_path</span> <span class="o">/</span> <span class="s2">"f_</span><span class="si">%05d</span><span class="s2">.jpg"</span><span class="p">),</span>
         <span class="p">]</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">except</span> <span class="p">(</span><span class="n">subprocess</span><span class="o">.</span><span class="n">CalledProcessError</span><span class="p">,</span> <span class="ne">FileNotFoundError</span><span class="p">):</span>
             <span class="k">return</span> <span class="p">[]</span>
 
-        <span class="n">frames</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">td_path</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;f_*.jpg&quot;</span><span class="p">))</span>
+        <span class="n">frames</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">td_path</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">"f_*.jpg"</span><span class="p">))</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">frames</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">[]</span>
 

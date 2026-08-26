@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.jobs &mdash; nw 0.0.31 documentation</title>
+  <title>nw.jobs &mdash; nw 0.0.32 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=c5dbc6bb"></script>
+      <script src="../../_static/documentation_options.js?v=f2234cd1"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -107,9 +107,9 @@
            <div itemprop="articleBody">
              
   <h1>Source code for nw.jobs</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;nw.jobs — a project-scoped async **job** facade over ``au``.</span>
+<span></span><span class="sd">"""nw.jobs — a project-scoped async **job** facade over ``au``.</span>
 
-<span class="sd">A &quot;job&quot; is one long, cancellable unit of render work (a full-auto journey, a</span>
+<span class="sd">A "job" is one long, cancellable unit of render work (a full-auto journey, a</span>
 <span class="sd">single ``panel.animate``, an ``assemble_animatic`` pass, …). It has a durable</span>
 <span class="sd">id, a persistent terminal state, live progress + ETA, a cost, and a cancel</span>
 <span class="sd">entry keyed by that id — everything a task tray needs and none of which a bare</span>
@@ -120,7 +120,7 @@
 <span class="sd">``nw.jobs`` adds the five render-domain concerns ``au`` has no data model for —</span>
 <span class="sd">progress %, ETA, human label/kind, idempotency (dedup), and cost — plus the</span>
 <span class="sd">5-state normalization, context-capture so a job outlives its request, and the</span>
-<span class="sd">active-jobs index that makes membership meaningful. Consumers (reelee&#39;s</span>
+<span class="sd">active-jobs index that makes membership meaningful. Consumers (reelee's</span>
 <span class="sd">``/api/jobs`` closures) stay thin: they call :func:`enqueue` / :func:`estimate`</span>
 <span class="sd">/ :func:`list_jobs` / :func:`get_job` / :func:`cancel_job` / :func:`to_dict`</span>
 <span class="sd">and serialize the result.</span>
@@ -151,12 +151,12 @@
 <span class="sd">  ``cancelling`` → ``cancelled`` regardless of whether the still-running</span>
 <span class="sd">  ``ThreadBackend`` thread later clobbers the store with COMPLETED.</span>
 <span class="sd">- **ETA is learned from observed wall-time**, per ``(model, operation, dur_bucket)``</span>
-<span class="sd">  with back-off, median (not mean), honest &quot;estimating…&quot; before enough</span>
+<span class="sd">  with back-off, median (not mean), honest "estimating…" before enough</span>
 <span class="sd">  history, and **cache-hits excluded from learning**.</span>
 
 <span class="sd">All tunables are keyword-configurable via :class:`JobsConfig`; defaults live at</span>
 <span class="sd">the top of this module — no magic numbers below.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -195,50 +195,50 @@
 <a class="viewcode-back" href="../../module_docs/nw/jobs.html#nw.jobs.JobsConfig">[docs]</a>
 <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">JobsConfig</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Tunables for the job manager. All keyword-configurable; sensible defaults.</span>
+<span class="w">    </span><span class="sd">"""Tunables for the job manager. All keyword-configurable; sensible defaults.</span>
 
 <span class="sd">    ETA knobs (``n_min`` … ``prior_total_s``) mirror the design report §5.7.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">n_min</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Minimum samples for a key before its prediction is ``&quot;learned&quot;`` (not prior).&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Minimum samples for a key before its prediction is ``"learned"`` (not prior)."""</span>
     <span class="n">sample_window_k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Keep only the most-recent K duration samples per key (robust to drift).&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Keep only the most-recent K duration samples per key (robust to drift)."""</span>
     <span class="n">pct_ceil</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">99</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Never *compute* 100% — only the → succeeded transition sets 100.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Never *compute* 100% — only the → succeeded transition sets 100."""</span>
     <span class="n">overrun_factor</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.5</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Synthesize ``p90 = p50 * overrun_factor`` when a real p90 isn&#39;t available.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Synthesize ``p90 = p50 * overrun_factor`` when a real p90 isn't available."""</span>
     <span class="n">cache_hit_floor_s</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Predicted total for an all-cache-hit plan (``confidence=&quot;exact&quot;``).&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Predicted total for an all-cache-hit plan (``confidence="exact"``)."""</span>
     <span class="n">dur_buckets_s</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">8.0</span><span class="p">,</span> <span class="mf">12.0</span><span class="p">)</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Upper edges of the output-duration buckets for ``per_second`` models.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Upper edges of the output-duration buckets for ``per_second`` models."""</span>
     <span class="n">prior_total_s</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span>
-        <span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;image&quot;</span><span class="p">:</span> <span class="mf">12.0</span><span class="p">,</span> <span class="s2">&quot;video&quot;</span><span class="p">:</span> <span class="mf">90.0</span><span class="p">,</span> <span class="s2">&quot;audio&quot;</span><span class="p">:</span> <span class="mf">15.0</span><span class="p">}</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">{</span><span class="s2">"image"</span><span class="p">:</span> <span class="mf">12.0</span><span class="p">,</span> <span class="s2">"video"</span><span class="p">:</span> <span class="mf">90.0</span><span class="p">,</span> <span class="s2">"audio"</span><span class="p">:</span> <span class="mf">15.0</span><span class="p">}</span>
     <span class="p">)</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Cold-start priors by output kind (drives the honest &quot;estimating…&quot; label).&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Cold-start priors by output kind (drives the honest "estimating…" label)."""</span>
     <span class="n">default_prior_total_s</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">30.0</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Prior when even the output kind is unknown.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Prior when even the output kind is unknown."""</span>
     <span class="n">stale_running_s</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">900.0</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A RUNNING record older than this with no live worker is reaped as</span>
-<span class="sd">    ``FAILED(&quot;worker died — resumable&quot;)`` (kills the stuck-toast bug).&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""A RUNNING record older than this with no live worker is reaped as</span>
+<span class="sd">    ``FAILED("worker died — resumable")`` (kills the stuck-toast bug)."""</span>
     <span class="n">approval_threshold_usd</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Estimated cost at/above which a render requires explicit approval.&quot;&quot;&quot;</span>
-    <span class="n">jobs_dirname</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;.nw/jobs&quot;</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Sub-path under ``project.root`` for the job stores (nw&#39;s ``.nw/`` convention).&quot;&quot;&quot;</span></div>
+<span class="w">    </span><span class="sd">"""Estimated cost at/above which a render requires explicit approval."""</span>
+    <span class="n">jobs_dirname</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">".nw/jobs"</span>
+<span class="w">    </span><span class="sd">"""Sub-path under ``project.root`` for the job stores (nw's ``.nw/`` convention)."""</span></div>
 
 
 
 <span class="n">DEFAULT_CONFIG</span> <span class="o">=</span> <span class="n">JobsConfig</span><span class="p">()</span>
 
-<span class="n">REAPED_REASON</span> <span class="o">=</span> <span class="s2">&quot;worker died — resumable&quot;</span>
+<span class="n">REAPED_REASON</span> <span class="o">=</span> <span class="s2">"worker died — resumable"</span>
 
-<span class="c1"># Job status vocabulary (normalized from au&#39;s ComputationStatus + render outcome)</span>
-<span class="n">QUEUED</span> <span class="o">=</span> <span class="s2">&quot;queued&quot;</span>
-<span class="n">RUNNING</span> <span class="o">=</span> <span class="s2">&quot;running&quot;</span>
-<span class="n">CANCELLING</span> <span class="o">=</span> <span class="s2">&quot;cancelling&quot;</span>
-<span class="n">SUCCEEDED</span> <span class="o">=</span> <span class="s2">&quot;succeeded&quot;</span>
-<span class="n">FAILED</span> <span class="o">=</span> <span class="s2">&quot;failed&quot;</span>
-<span class="n">CANCELLED</span> <span class="o">=</span> <span class="s2">&quot;cancelled&quot;</span>
+<span class="c1"># Job status vocabulary (normalized from au's ComputationStatus + render outcome)</span>
+<span class="n">QUEUED</span> <span class="o">=</span> <span class="s2">"queued"</span>
+<span class="n">RUNNING</span> <span class="o">=</span> <span class="s2">"running"</span>
+<span class="n">CANCELLING</span> <span class="o">=</span> <span class="s2">"cancelling"</span>
+<span class="n">SUCCEEDED</span> <span class="o">=</span> <span class="s2">"succeeded"</span>
+<span class="n">FAILED</span> <span class="o">=</span> <span class="s2">"failed"</span>
+<span class="n">CANCELLED</span> <span class="o">=</span> <span class="s2">"cancelled"</span>
 <span class="n">TERMINAL_STATUSES</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">({</span><span class="n">SUCCEEDED</span><span class="p">,</span> <span class="n">FAILED</span><span class="p">,</span> <span class="n">CANCELLED</span><span class="p">})</span>
 
 
@@ -272,7 +272,7 @@
 <a class="viewcode-back" href="../../module_docs/nw/jobs.html#nw.jobs.Job">[docs]</a>
 <span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">Job</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Projected, JSON-serializable view of one job (see :func:`to_dict`).&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Projected, JSON-serializable view of one job (see :func:`to_dict`)."""</span>
 
     <span class="n">job_id</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span>
@@ -336,8 +336,8 @@
     <span class="n">capture_context</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="n">AbstractContextManager</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">config</span><span class="p">:</span> <span class="n">JobsConfig</span> <span class="o">=</span> <span class="n">DEFAULT_CONFIG</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Job</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Enqueue a billable render as a background job. Returns a :class:`Job`</span>
-<span class="sd">    (``status=&quot;queued&quot;``) **immediately** — the call never blocks and never</span>
+<span class="w">    </span><span class="sd">"""Enqueue a billable render as a background job. Returns a :class:`Job`</span>
+<span class="sd">    (``status="queued"``) **immediately** — the call never blocks and never</span>
 <span class="sd">    bills on the calling thread.</span>
 
 <span class="sd">    The request context (fal credentials + the resolved ``Project``) is</span>
@@ -348,9 +348,9 @@
 <span class="sd">    Args:</span>
 <span class="sd">        project: the ``nw.Project`` the render operates on.</span>
 <span class="sd">        kind: dispatch key selecting the render callable (e.g.</span>
-<span class="sd">            ``&quot;journey.full_auto&quot;``, ``&quot;panel.animate&quot;``).</span>
+<span class="sd">            ``"journey.full_auto"``, ``"panel.animate"``).</span>
 <span class="sd">        params: render parameters (also the ETA-key + default-idempotency basis).</span>
-<span class="sd">        on_event: sink for the render&#39;s lifecycle events (reelee wires this to</span>
+<span class="sd">        on_event: sink for the render's lifecycle events (reelee wires this to</span>
 <span class="sd">            its ``agent_log`` / SSE tail). Events are stamped with</span>
 <span class="sd">            ``job_id``/``run_id`` and mirrored into progress/cost/eta.</span>
 <span class="sd">        dispatch: ``{kind: callable}`` table. Each callable is invoked as</span>
@@ -360,7 +360,7 @@
 <span class="sd">        backend: advanced override; default is the managed ``ThreadBackend``</span>
 <span class="sd">            (which carries the duration-learning middleware + liveness map).</span>
 <span class="sd">        idempotency_key: dedup handle; default derived from ``falaw.plan_hash``</span>
-<span class="sd">            of ``params[&quot;plan&quot;]`` when present, else a stable hash of params.</span>
+<span class="sd">            of ``params["plan"]`` when present, else a stable hash of params.</span>
 <span class="sd">        label: human tray label; default derived from ``kind``/``params``.</span>
 <span class="sd">        capture_context: optional caller-supplied context hook. Called **now**</span>
 <span class="sd">            (on the request thread) to snapshot any request-scoped state the</span>
@@ -368,14 +368,14 @@
 <span class="sd">            manager entered around the render on the worker thread. ``nw.jobs``</span>
 <span class="sd">            handles fal credentials itself (``falaw`` is its dependency); this</span>
 <span class="sd">            hook is how a caller re-binds credentials it owns without ``nw``</span>
-<span class="sd">            importing them — e.g. reelee&#39;s BYO vision (aix) + ElevenLabs keys,</span>
+<span class="sd">            importing them — e.g. reelee's BYO vision (aix) + ElevenLabs keys,</span>
 <span class="sd">            which otherwise fall back to owner/env in a background job because</span>
 <span class="sd">            ``ThreadBackend`` does not copy ``ContextVars`` into the worker.</span>
 <span class="sd">        config: tunables (see :class:`JobsConfig`).</span>
 
 <span class="sd">    Raises:</span>
 <span class="sd">        KeyError: if ``kind`` is not in ``dispatch``.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">rt</span> <span class="o">=</span> <span class="n">_runtime</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
     <span class="n">dispatch</span> <span class="o">=</span> <span class="n">dispatch</span> <span class="ow">or</span> <span class="p">{}</span>
     <span class="n">idempotency_key</span> <span class="o">=</span> <span class="n">idempotency_key</span> <span class="ow">or</span> <span class="n">_default_idempotency_key</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
@@ -389,7 +389,7 @@
             <span class="n">au_result</span> <span class="o">=</span> <span class="n">rt</span><span class="o">.</span><span class="n">au_store</span><span class="p">[</span><span class="n">job_id</span><span class="p">]</span>
             <span class="n">status</span> <span class="o">=</span> <span class="n">_normalize_status</span><span class="p">(</span>
                 <span class="n">au_result</span><span class="o">.</span><span class="n">status</span><span class="p">,</span>
-                <span class="n">cancel_requested</span><span class="o">=</span><span class="n">existing</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cancel_requested&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+                <span class="n">cancel_requested</span><span class="o">=</span><span class="n">existing</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"cancel_requested"</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="n">status</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">TERMINAL_STATUSES</span><span class="p">:</span>
                 <span class="c1"># Live job with this key already exists → dedup, run once.</span>
@@ -398,30 +398,30 @@
         <span class="n">callable_</span> <span class="o">=</span> <span class="n">dispatch</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">kind</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">callable_</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;unknown job kind </span><span class="si">{</span><span class="n">kind</span><span class="si">!r}</span><span class="s2"> (dispatch has </span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><span class="n">dispatch</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
+                <span class="sa">f</span><span class="s2">"unknown job kind </span><span class="si">{</span><span class="n">kind</span><span class="si">!r}</span><span class="s2"> (dispatch has </span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><span class="n">dispatch</span><span class="p">)</span><span class="si">}</span><span class="s2">)"</span>
             <span class="p">)</span>
 
         <span class="n">record</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;job_id&quot;</span><span class="p">:</span> <span class="n">job_id</span><span class="p">,</span>
-            <span class="s2">&quot;kind&quot;</span><span class="p">:</span> <span class="n">kind</span><span class="p">,</span>
-            <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="n">label</span><span class="p">,</span>
-            <span class="s2">&quot;idempotency_key&quot;</span><span class="p">:</span> <span class="n">idempotency_key</span><span class="p">,</span>
-            <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="n">params</span><span class="p">,</span>
-            <span class="s2">&quot;created_at&quot;</span><span class="p">:</span> <span class="n">_now_iso</span><span class="p">(),</span>
-            <span class="s2">&quot;started_at&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="s2">&quot;finished_at&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="s2">&quot;eta_candidates&quot;</span><span class="p">:</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">eta_candidates</span><span class="p">],</span>
-            <span class="s2">&quot;output_kind&quot;</span><span class="p">:</span> <span class="n">output_kind</span><span class="p">,</span>
-            <span class="s2">&quot;expected_cache_hit&quot;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;expected_cache_hit&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)),</span>
-            <span class="s2">&quot;cached&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-            <span class="s2">&quot;cancel_requested&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-            <span class="s2">&quot;pct_floor&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="s2">&quot;progress&quot;</span><span class="p">:</span> <span class="p">{},</span>
-            <span class="s2">&quot;cost&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;estimated_usd&quot;</span><span class="p">:</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;estimated_usd&quot;</span><span class="p">)},</span>
-            <span class="s2">&quot;artifact_ref&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="s2">&quot;last_event_id&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">"job_id"</span><span class="p">:</span> <span class="n">job_id</span><span class="p">,</span>
+            <span class="s2">"kind"</span><span class="p">:</span> <span class="n">kind</span><span class="p">,</span>
+            <span class="s2">"label"</span><span class="p">:</span> <span class="n">label</span><span class="p">,</span>
+            <span class="s2">"idempotency_key"</span><span class="p">:</span> <span class="n">idempotency_key</span><span class="p">,</span>
+            <span class="s2">"params"</span><span class="p">:</span> <span class="n">params</span><span class="p">,</span>
+            <span class="s2">"created_at"</span><span class="p">:</span> <span class="n">_now_iso</span><span class="p">(),</span>
+            <span class="s2">"started_at"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">"finished_at"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">"eta_candidates"</span><span class="p">:</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">eta_candidates</span><span class="p">],</span>
+            <span class="s2">"output_kind"</span><span class="p">:</span> <span class="n">output_kind</span><span class="p">,</span>
+            <span class="s2">"expected_cache_hit"</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"expected_cache_hit"</span><span class="p">,</span> <span class="kc">False</span><span class="p">)),</span>
+            <span class="s2">"cached"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s2">"cancel_requested"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s2">"pct_floor"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">"progress"</span><span class="p">:</span> <span class="p">{},</span>
+            <span class="s2">"cost"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"estimated_usd"</span><span class="p">:</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"estimated_usd"</span><span class="p">)},</span>
+            <span class="s2">"artifact_ref"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">"result"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">"error"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="s2">"last_event_id"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="n">_index_set_locked</span><span class="p">(</span><span class="n">rt</span><span class="p">,</span> <span class="n">job_id</span><span class="p">,</span> <span class="n">record</span><span class="p">)</span>
 
@@ -448,25 +448,25 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">estimate</span><span class="p">(</span>
     <span class="n">project</span><span class="p">,</span> <span class="n">kind</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">JobsConfig</span> <span class="o">=</span> <span class="n">DEFAULT_CONFIG</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Dry-run cost gate **without enqueueing**.</span>
+<span class="w">    </span><span class="sd">"""Dry-run cost gate **without enqueueing**.</span>
 
 <span class="sd">    Returns ``{estimated_usd, has_unknown_costs, approval_threshold_usd,</span>
 <span class="sd">    requires_approval}``. Unknown cost always requires approval (preserves the</span>
 <span class="sd">    one-price-per-clip gate). reelee computes the falaw-``Plan`` cost and either</span>
-<span class="sd">    passes it via ``params[&quot;estimated_usd&quot;]`` or overrides this per its own</span>
+<span class="sd">    passes it via ``params["estimated_usd"]`` or overrides this per its own</span>
 <span class="sd">    policy.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">estimated</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;estimated_usd&quot;</span><span class="p">)</span>
+<span class="sd">    """</span>
+    <span class="n">estimated</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"estimated_usd"</span><span class="p">)</span>
     <span class="n">has_unknown</span> <span class="o">=</span> <span class="n">estimated</span> <span class="ow">is</span> <span class="kc">None</span>
     <span class="n">threshold</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">approval_threshold_usd</span>
     <span class="n">requires_approval</span> <span class="o">=</span> <span class="n">has_unknown</span> <span class="ow">or</span> <span class="p">(</span>
         <span class="n">estimated</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">estimated</span> <span class="o">&gt;=</span> <span class="n">threshold</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="p">{</span>
-        <span class="s2">&quot;estimated_usd&quot;</span><span class="p">:</span> <span class="n">estimated</span><span class="p">,</span>
-        <span class="s2">&quot;has_unknown_costs&quot;</span><span class="p">:</span> <span class="n">has_unknown</span><span class="p">,</span>
-        <span class="s2">&quot;approval_threshold_usd&quot;</span><span class="p">:</span> <span class="n">threshold</span><span class="p">,</span>
-        <span class="s2">&quot;requires_approval&quot;</span><span class="p">:</span> <span class="n">requires_approval</span><span class="p">,</span>
+        <span class="s2">"estimated_usd"</span><span class="p">:</span> <span class="n">estimated</span><span class="p">,</span>
+        <span class="s2">"has_unknown_costs"</span><span class="p">:</span> <span class="n">has_unknown</span><span class="p">,</span>
+        <span class="s2">"approval_threshold_usd"</span><span class="p">:</span> <span class="n">threshold</span><span class="p">,</span>
+        <span class="s2">"requires_approval"</span><span class="p">:</span> <span class="n">requires_approval</span><span class="p">,</span>
     <span class="p">}</span></div>
 
 
@@ -480,15 +480,15 @@
     <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
     <span class="n">config</span><span class="p">:</span> <span class="n">JobsConfig</span> <span class="o">=</span> <span class="n">DEFAULT_CONFIG</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Job</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Jobs for this project, **newest first**, optionally filtered by status.</span>
+<span class="w">    </span><span class="sd">"""Jobs for this project, **newest first**, optionally filtered by status.</span>
 
 <span class="sd">    Backed by the per-project active-jobs index (not by scanning the au store,</span>
 <span class="sd">    whose missing-key-returns-PENDING gotcha makes membership meaningless).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">rt</span> <span class="o">=</span> <span class="n">_runtime</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
     <span class="k">with</span> <span class="n">rt</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
         <span class="n">records</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="p">(</span><span class="n">_index_get_locked</span><span class="p">(</span><span class="n">rt</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">rt</span><span class="o">.</span><span class="n">index</span><span class="p">))</span> <span class="k">if</span> <span class="n">r</span><span class="p">]</span>
-    <span class="n">records</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;created_at&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">records</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"created_at"</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">""</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="n">jobs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Job</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">records</span><span class="p">:</span>
@@ -504,8 +504,8 @@
 <div class="viewcode-block" id="get_job">
 <a class="viewcode-back" href="../../module_docs/nw/jobs.html#nw.jobs.get_job">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_job</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">job_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">JobsConfig</span> <span class="o">=</span> <span class="n">DEFAULT_CONFIG</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Job</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;One job (projecting the au status + mirrored index metadata). ``None`` if</span>
-<span class="sd">    unknown. Reaps a stale-RUNNING record on read.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""One job (projecting the au status + mirrored index metadata). ``None`` if</span>
+<span class="sd">    unknown. Reaps a stale-RUNNING record on read."""</span>
     <span class="n">rt</span> <span class="o">=</span> <span class="n">_runtime</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
     <span class="k">with</span> <span class="n">rt</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
         <span class="n">record</span> <span class="o">=</span> <span class="n">_index_get_locked</span><span class="p">(</span><span class="n">rt</span><span class="p">,</span> <span class="n">job_id</span><span class="p">)</span>
@@ -520,7 +520,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">cancel_job</span><span class="p">(</span>
     <span class="n">project</span><span class="p">,</span> <span class="n">job_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">JobsConfig</span> <span class="o">=</span> <span class="n">DEFAULT_CONFIG</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Job</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Request cancellation. **Idempotent.** ``None`` if unknown.</span>
+<span class="w">    </span><span class="sd">"""Request cancellation. **Idempotent.** ``None`` if unknown.</span>
 
 <span class="sd">    Sets a durable should-cancel flag (a running stage stops at its next</span>
 <span class="sd">    boundary) *and* flips the au record terminal at once via ``au.cancel_task``</span>
@@ -528,13 +528,13 @@
 <span class="sd">    The ``cancel_requested`` flag is authoritative, so the job reads</span>
 <span class="sd">    ``cancelling`` → ``cancelled`` even if the still-running thread later</span>
 <span class="sd">    overwrites the store with COMPLETED.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">rt</span> <span class="o">=</span> <span class="n">_runtime</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
     <span class="k">with</span> <span class="n">rt</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
         <span class="n">record</span> <span class="o">=</span> <span class="n">_index_get_locked</span><span class="p">(</span><span class="n">rt</span><span class="p">,</span> <span class="n">job_id</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">record</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
-        <span class="n">record</span><span class="p">[</span><span class="s2">&quot;cancel_requested&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">record</span><span class="p">[</span><span class="s2">"cancel_requested"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="n">_index_set_locked</span><span class="p">(</span><span class="n">rt</span><span class="p">,</span> <span class="n">job_id</span><span class="p">,</span> <span class="n">record</span><span class="p">)</span>
     <span class="c1"># Flip the durable record terminal immediately (idempotent: no-op if already</span>
     <span class="c1"># terminal). Passing the backend lets cancel() reach terminate() (§3.1).</span>
@@ -546,35 +546,35 @@
 <div class="viewcode-block" id="to_dict">
 <a class="viewcode-back" href="../../module_docs/nw/jobs.html#nw.jobs.to_dict">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="n">job</span><span class="p">:</span> <span class="n">Job</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Serialize a :class:`Job` to the JSON contract (design report §7.4).&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Serialize a :class:`Job` to the JSON contract (design report §7.4)."""</span>
     <span class="k">return</span> <span class="p">{</span>
-        <span class="s2">&quot;job_id&quot;</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">job_id</span><span class="p">,</span>
-        <span class="s2">&quot;kind&quot;</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">kind</span><span class="p">,</span>
-        <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">label</span><span class="p">,</span>
-        <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">status</span><span class="p">,</span>
-        <span class="s2">&quot;cached&quot;</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">cached</span><span class="p">,</span>
-        <span class="s2">&quot;run_id&quot;</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">run_id</span><span class="p">,</span>
-        <span class="s2">&quot;idempotency_key&quot;</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">idempotency_key</span><span class="p">,</span>
-        <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">params</span><span class="p">,</span>
-        <span class="s2">&quot;created_at&quot;</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">created_at</span><span class="p">,</span>
-        <span class="s2">&quot;started_at&quot;</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">started_at</span><span class="p">,</span>
-        <span class="s2">&quot;finished_at&quot;</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">finished_at</span><span class="p">,</span>
-        <span class="s2">&quot;queue_wait_s&quot;</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">queue_wait_s</span><span class="p">,</span>
-        <span class="s2">&quot;elapsed_s&quot;</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">elapsed_s</span><span class="p">,</span>
-        <span class="s2">&quot;progress&quot;</span><span class="p">:</span> <span class="n">asdict</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">progress</span><span class="p">),</span>
-        <span class="s2">&quot;predicted_total_s&quot;</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">predicted_total_s</span><span class="p">,</span>
-        <span class="s2">&quot;remaining_s&quot;</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">remaining_s</span><span class="p">,</span>
-        <span class="s2">&quot;eta_ts&quot;</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">eta_ts</span><span class="p">,</span>
-        <span class="s2">&quot;eta_s&quot;</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">eta_s</span><span class="p">,</span>
-        <span class="s2">&quot;pct&quot;</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">pct</span><span class="p">,</span>
-        <span class="s2">&quot;confidence&quot;</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">confidence</span><span class="p">,</span>
-        <span class="s2">&quot;label_hint&quot;</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">label_hint</span><span class="p">,</span>
-        <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">eta_key</span><span class="p">,</span>
-        <span class="s2">&quot;cost&quot;</span><span class="p">:</span> <span class="n">asdict</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">cost</span><span class="p">),</span>
-        <span class="s2">&quot;artifact_ref&quot;</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">artifact_ref</span><span class="p">,</span>
-        <span class="s2">&quot;result&quot;</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">result</span><span class="p">,</span>
-        <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">error</span><span class="p">,</span>
-        <span class="s2">&quot;last_event_id&quot;</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">last_event_id</span><span class="p">,</span>
+        <span class="s2">"job_id"</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">job_id</span><span class="p">,</span>
+        <span class="s2">"kind"</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">kind</span><span class="p">,</span>
+        <span class="s2">"label"</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">label</span><span class="p">,</span>
+        <span class="s2">"status"</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">status</span><span class="p">,</span>
+        <span class="s2">"cached"</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">cached</span><span class="p">,</span>
+        <span class="s2">"run_id"</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">run_id</span><span class="p">,</span>
+        <span class="s2">"idempotency_key"</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">idempotency_key</span><span class="p">,</span>
+        <span class="s2">"params"</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">params</span><span class="p">,</span>
+        <span class="s2">"created_at"</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">created_at</span><span class="p">,</span>
+        <span class="s2">"started_at"</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">started_at</span><span class="p">,</span>
+        <span class="s2">"finished_at"</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">finished_at</span><span class="p">,</span>
+        <span class="s2">"queue_wait_s"</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">queue_wait_s</span><span class="p">,</span>
+        <span class="s2">"elapsed_s"</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">elapsed_s</span><span class="p">,</span>
+        <span class="s2">"progress"</span><span class="p">:</span> <span class="n">asdict</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">progress</span><span class="p">),</span>
+        <span class="s2">"predicted_total_s"</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">predicted_total_s</span><span class="p">,</span>
+        <span class="s2">"remaining_s"</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">remaining_s</span><span class="p">,</span>
+        <span class="s2">"eta_ts"</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">eta_ts</span><span class="p">,</span>
+        <span class="s2">"eta_s"</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">eta_s</span><span class="p">,</span>
+        <span class="s2">"pct"</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">pct</span><span class="p">,</span>
+        <span class="s2">"confidence"</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">confidence</span><span class="p">,</span>
+        <span class="s2">"label_hint"</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">label_hint</span><span class="p">,</span>
+        <span class="s2">"key"</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">eta_key</span><span class="p">,</span>
+        <span class="s2">"cost"</span><span class="p">:</span> <span class="n">asdict</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">cost</span><span class="p">),</span>
+        <span class="s2">"artifact_ref"</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">artifact_ref</span><span class="p">,</span>
+        <span class="s2">"result"</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">result</span><span class="p">,</span>
+        <span class="s2">"error"</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">error</span><span class="p">,</span>
+        <span class="s2">"last_event_id"</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">last_event_id</span><span class="p">,</span>
     <span class="p">}</span></div>
 
 
@@ -587,11 +587,11 @@
 <div class="viewcode-block" id="DurationLearningMiddleware">
 <a class="viewcode-back" href="../../module_docs/nw/jobs.html#nw.jobs.DurationLearningMiddleware">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DurationLearningMiddleware</span><span class="p">(</span><span class="n">Middleware</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Keyed, percentile duration learner — a cousin of ``au.MetricsMiddleware``.</span>
+<span class="w">    </span><span class="sd">"""Keyed, percentile duration learner — a cousin of ``au.MetricsMiddleware``.</span>
 
 <span class="sd">    Records the render wall-time under every ETA-key candidate for the job, so</span>
 <span class="sd">    a cold specific key backs off to a warmer coarse one. Two deliberate</span>
-<span class="sd">    departures from ``au``&#39;s built-in metrics:</span>
+<span class="sd">    departures from ``au``'s built-in metrics:</span>
 
 <span class="sd">    - **Self-timed** (``time.monotonic`` in ``before_compute`` → ``after_compute``)</span>
 <span class="sd">      rather than reading ``result.duration``: ``ThreadBackend`` constructs a</span>
@@ -599,13 +599,13 @@
 <span class="sd">      completion instant, so ``result.duration`` is ~0 and useless. (Surfaced</span>
 <span class="sd">      as an ``au`` finding.)</span>
 <span class="sd">    - **Cache-hits are never learned** — a ~0s cache hit would drag the median</span>
-<span class="sd">      to zero. The job&#39;s ``cached`` flag (mirrored from a ``cache_hit`` event</span>
+<span class="sd">      to zero. The job's ``cached`` flag (mirrored from a ``cache_hit`` event</span>
 <span class="sd">      during the run) gates recording.</span>
 
 <span class="sd">    Its ``_start`` map doubles as the in-process **liveness signal** the stale</span>
 <span class="sd">    reaper uses (a RUNNING au record whose key is not in ``_start`` and whose</span>
 <span class="sd">    ``started_at`` is old is a dead worker).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -635,8 +635,8 @@
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_start</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
             <span class="n">record</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">record</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;started_at&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">record</span><span class="p">[</span><span class="s2">&quot;started_at&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_now_iso</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">record</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"started_at"</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">record</span><span class="p">[</span><span class="s2">"started_at"</span><span class="p">]</span> <span class="o">=</span> <span class="n">_now_iso</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">record</span></div>
 
 
@@ -650,9 +650,9 @@
         <span class="n">elapsed</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
             <span class="n">record</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">record</span> <span class="ow">or</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cached&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">record</span> <span class="ow">or</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"cached"</span><span class="p">):</span>
                 <span class="k">return</span>  <span class="c1"># cache-hit (or unknown) → do NOT learn</span>
-            <span class="n">candidates</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;eta_candidates&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+            <span class="n">candidates</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"eta_candidates"</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">cand</span> <span class="ow">in</span> <span class="n">candidates</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_record_sample_locked</span><span class="p">(</span><span class="n">cand</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">elapsed</span><span class="p">)</span></div>
 
@@ -686,15 +686,15 @@
     <span class="n">expected_cache_hit</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">config</span><span class="p">:</span> <span class="n">JobsConfig</span> <span class="o">=</span> <span class="n">DEFAULT_CONFIG</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_Prediction</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Predict the total render seconds for a job as ``(p50, p90, confidence)``.</span>
+<span class="w">    </span><span class="sd">"""Predict the total render seconds for a job as ``(p50, p90, confidence)``.</span>
 
 <span class="sd">    Walks the ETA-key candidates most-specific-first; the first key with</span>
 <span class="sd">    ``&gt;= n_min`` samples wins (median, with a real or synthesized p90). Falls</span>
 <span class="sd">    back through the coarse key, the output-kind key, then the cold prior. An</span>
-<span class="sd">    all-cache-hit plan short-circuits to ``cache_hit_floor_s`` (``&quot;exact&quot;``).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    all-cache-hit plan short-circuits to ``cache_hit_floor_s`` (``"exact"``).</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">expected_cache_hit</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">_Prediction</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">cache_hit_floor_s</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">cache_hit_floor_s</span><span class="p">,</span> <span class="s2">&quot;exact&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_Prediction</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">cache_hit_floor_s</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">cache_hit_floor_s</span><span class="p">,</span> <span class="s2">"exact"</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">cand</span> <span class="ow">in</span> <span class="n">eta_candidates</span><span class="p">:</span>
         <span class="n">key</span><span class="p">,</span> <span class="n">conf</span> <span class="o">=</span> <span class="n">cand</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">cand</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">samples</span> <span class="o">=</span> <span class="n">_durations_get</span><span class="p">(</span><span class="n">durations</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
@@ -705,7 +705,7 @@
                 <span class="n">p90</span> <span class="o">=</span> <span class="n">p50</span> <span class="o">*</span> <span class="n">config</span><span class="o">.</span><span class="n">overrun_factor</span>
             <span class="k">return</span> <span class="n">_Prediction</span><span class="p">(</span><span class="n">p50</span><span class="p">,</span> <span class="n">p90</span><span class="p">,</span> <span class="n">conf</span><span class="p">)</span>
     <span class="n">prior</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">prior_total_s</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">output_kind</span><span class="p">,</span> <span class="n">config</span><span class="o">.</span><span class="n">default_prior_total_s</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">_Prediction</span><span class="p">(</span><span class="n">prior</span><span class="p">,</span> <span class="n">prior</span> <span class="o">*</span> <span class="n">config</span><span class="o">.</span><span class="n">overrun_factor</span><span class="p">,</span> <span class="s2">&quot;prior&quot;</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">_Prediction</span><span class="p">(</span><span class="n">prior</span><span class="p">,</span> <span class="n">prior</span> <span class="o">*</span> <span class="n">config</span><span class="o">.</span><span class="n">overrun_factor</span><span class="p">,</span> <span class="s2">"prior"</span><span class="p">)</span></div>
 
 
 
@@ -715,7 +715,7 @@
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">_AtomicJsonFiles</span><span class="p">(</span><span class="n">MutableMapping</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A ``{key: json-value}`` directory store whose writes are **atomic**.</span>
+<span class="w">    </span><span class="sd">"""A ``{key: json-value}`` directory store whose writes are **atomic**.</span>
 
 <span class="sd">    Drop-in for the ``dol.JsonFiles`` it replaced — same on-disk layout, one</span>
 <span class="sd">    plain-named file per key holding JSON — with the one difference this</span>
@@ -726,17 +726,17 @@
 <span class="sd">    a truncated or empty file.</span>
 
 <span class="sd">    Why here: the job index is rewritten by the worker thread on every</span>
-<span class="sd">    mirrored event (and even on reads, for the pct floor) while reelee&#39;s API</span>
+<span class="sd">    mirrored event (and even on reads, for the pct floor) while reelee's API</span>
 <span class="sd">    polls ``get_job`` concurrently. With a truncate-then-write store, a read</span>
-<span class="sd">    can land in the window after ``open(..., &quot;w&quot;)`` and before the bytes —</span>
-<span class="sd">    ``json.loads(&quot;&quot;)`` — surfacing as an intermittent 500 precisely during a</span>
+<span class="sd">    can land in the window after ``open(..., "w")`` and before the bytes —</span>
+<span class="sd">    ``json.loads("")`` — surfacing as an intermittent 500 precisely during a</span>
 <span class="sd">    cancel, when clients poll hardest. The au store already writes this way;</span>
 <span class="sd">    now every durable record this module owns does too.</span>
 
 <span class="sd">    A failed serialization touches nothing: the old record survives and no</span>
 <span class="sd">    temp file is left behind. Temp names start with ``.`` so iteration never</span>
 <span class="sd">    lists an in-flight write as a key.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rootdir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_rootdir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">rootdir</span><span class="p">)</span>
@@ -746,23 +746,23 @@
         <span class="c1"># Keys here are filesystem-safe by construction (sha256 hex job ids,</span>
         <span class="c1"># percent-encoded ETA keys); refuse anything that could escape the</span>
         <span class="c1"># directory rather than silently writing elsewhere.</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span> <span class="ow">or</span> <span class="n">key</span> <span class="o">!=</span> <span class="n">Path</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">name</span> <span class="ow">or</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;not a safe store key: </span><span class="si">{</span><span class="n">key</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span> <span class="ow">or</span> <span class="n">key</span> <span class="o">!=</span> <span class="n">Path</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">name</span> <span class="ow">or</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"."</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"not a safe store key: </span><span class="si">{</span><span class="n">key</span><span class="si">!r}</span><span class="s2">"</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rootdir</span> <span class="o">/</span> <span class="n">key</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">(</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span>
         <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>  <span class="c1"># serialize BEFORE touching disk</span>
-        <span class="n">fd</span><span class="p">,</span> <span class="n">tmp</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkstemp</span><span class="p">(</span><span class="nb">dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_rootdir</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;.</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;.tmp&quot;</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">"utf-8"</span><span class="p">)</span>  <span class="c1"># serialize BEFORE touching disk</span>
+        <span class="n">fd</span><span class="p">,</span> <span class="n">tmp</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkstemp</span><span class="p">(</span><span class="nb">dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_rootdir</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="sa">f</span><span class="s2">".</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">."</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">".tmp"</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">with</span> <span class="n">os</span><span class="o">.</span><span class="n">fdopen</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">os</span><span class="o">.</span><span class="n">fdopen</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="s2">"wb"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                 <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">BaseException</span><span class="p">:</span>
             <span class="k">with</span> <span class="n">suppress</span><span class="p">(</span><span class="ne">OSError</span><span class="p">):</span>  <span class="c1"># best-effort cleanup; the raise is the point</span>
@@ -780,7 +780,7 @@
         <span class="k">return</span> <span class="p">(</span>
             <span class="n">p</span><span class="o">.</span><span class="n">name</span>
             <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rootdir</span><span class="o">.</span><span class="n">iterdir</span><span class="p">()</span>
-            <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"."</span><span class="p">)</span>
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
@@ -810,25 +810,25 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_runtime</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">JobsConfig</span> <span class="o">=</span> <span class="n">DEFAULT_CONFIG</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_JobsRuntime</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get-or-build the memoized job runtime for ``project`` (keyed by root).</span>
+<span class="w">    </span><span class="sd">"""Get-or-build the memoized job runtime for ``project`` (keyed by root).</span>
 
 <span class="sd">    The first touch of a project fixes its runtime (stores + backend +</span>
 <span class="sd">    middleware share one lock and one liveness map). ``config`` is honored on</span>
 <span class="sd">    that first build.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">root</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">root</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">())</span>
     <span class="k">with</span> <span class="n">_RUNTIMES_LOCK</span><span class="p">:</span>
         <span class="n">rt</span> <span class="o">=</span> <span class="n">_RUNTIMES</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">rt</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">base</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">root</span><span class="p">)</span> <span class="o">/</span> <span class="n">config</span><span class="o">.</span><span class="n">jobs_dirname</span>
-            <span class="p">(</span><span class="n">base</span> <span class="o">/</span> <span class="s2">&quot;au&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="p">(</span><span class="n">base</span> <span class="o">/</span> <span class="s2">&quot;index&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="p">(</span><span class="n">base</span> <span class="o">/</span> <span class="s2">&quot;durations&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="n">au_store</span> <span class="o">=</span> <span class="n">FileSystemStore</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">base</span> <span class="o">/</span> <span class="s2">&quot;au&quot;</span><span class="p">),</span> <span class="n">ttl_seconds</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+            <span class="p">(</span><span class="n">base</span> <span class="o">/</span> <span class="s2">"au"</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="p">(</span><span class="n">base</span> <span class="o">/</span> <span class="s2">"index"</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="p">(</span><span class="n">base</span> <span class="o">/</span> <span class="s2">"durations"</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">au_store</span> <span class="o">=</span> <span class="n">FileSystemStore</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">base</span> <span class="o">/</span> <span class="s2">"au"</span><span class="p">),</span> <span class="n">ttl_seconds</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
             <span class="c1"># Atomic on purpose (reelee#298): these two are rewritten by the</span>
             <span class="c1"># worker while the API reads them; see :class:`_AtomicJsonFiles`.</span>
-            <span class="n">index</span> <span class="o">=</span> <span class="n">_AtomicJsonFiles</span><span class="p">(</span><span class="n">base</span> <span class="o">/</span> <span class="s2">&quot;index&quot;</span><span class="p">)</span>
-            <span class="n">durations</span> <span class="o">=</span> <span class="n">_AtomicJsonFiles</span><span class="p">(</span><span class="n">base</span> <span class="o">/</span> <span class="s2">&quot;durations&quot;</span><span class="p">)</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">_AtomicJsonFiles</span><span class="p">(</span><span class="n">base</span> <span class="o">/</span> <span class="s2">"index"</span><span class="p">)</span>
+            <span class="n">durations</span> <span class="o">=</span> <span class="n">_AtomicJsonFiles</span><span class="p">(</span><span class="n">base</span> <span class="o">/</span> <span class="s2">"durations"</span><span class="p">)</span>
             <span class="n">lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
             <span class="n">middleware</span> <span class="o">=</span> <span class="n">DurationLearningMiddleware</span><span class="p">(</span>
                 <span class="n">durations</span><span class="o">=</span><span class="n">durations</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span> <span class="n">lock</span><span class="o">=</span><span class="n">lock</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span>
@@ -849,7 +849,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_reset_runtimes</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Drop all memoized runtimes (test hygiene / re-open after config change).&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Drop all memoized runtimes (test hygiene / re-open after config change)."""</span>
     <span class="k">with</span> <span class="n">_RUNTIMES_LOCK</span><span class="p">:</span>
         <span class="n">_RUNTIMES</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
 
@@ -871,24 +871,24 @@
     <span class="n">config</span><span class="p">,</span>
     <span class="n">capture_context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Bind the render callable into a zero-arg worker body that (a) re-establishes</span>
+<span class="w">    </span><span class="sd">"""Bind the render callable into a zero-arg worker body that (a) re-establishes</span>
 <span class="sd">    request context (fal credentials + project + any caller-supplied context), (b)</span>
-<span class="sd">    routes events into both the caller&#39;s sink and the index mirror, (c) exposes a</span>
+<span class="sd">    routes events into both the caller's sink and the index mirror, (c) exposes a</span>
 <span class="sd">    durable ``should_cancel``.</span>
 
 <span class="sd">    ``capture_context`` (if given) is invoked **here**, on the request thread, so</span>
 <span class="sd">    it snapshots request-scoped state now; the context manager it returns is</span>
 <span class="sd">    entered around the render on the worker thread (``ThreadBackend`` does not</span>
 <span class="sd">    copy ``ContextVars`` into the worker, so anything the caller owns must be</span>
-<span class="sd">    re-bound explicitly — see :func:`enqueue`).&quot;&quot;&quot;</span>
+<span class="sd">    re-bound explicitly — see :func:`enqueue`)."""</span>
     <span class="n">captured_fal_key</span> <span class="o">=</span> <span class="n">_capture_fal_credentials</span><span class="p">()</span>
-    <span class="c1"># Snapshot the caller&#39;s context NOW (request thread); enter it in the worker.</span>
+    <span class="c1"># Snapshot the caller's context NOW (request thread); enter it in the worker.</span>
     <span class="n">extra_ctx</span> <span class="o">=</span> <span class="n">capture_context</span><span class="p">()</span> <span class="k">if</span> <span class="n">capture_context</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">should_cancel</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">with</span> <span class="n">rt</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
             <span class="n">record</span> <span class="o">=</span> <span class="n">_index_get_locked</span><span class="p">(</span><span class="n">rt</span><span class="p">,</span> <span class="n">job_id</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">record</span> <span class="ow">and</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cancel_requested&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">record</span> <span class="ow">and</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"cancel_requested"</span><span class="p">):</span>
             <span class="k">return</span> <span class="kc">True</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">rt</span><span class="o">.</span><span class="n">au_store</span><span class="p">[</span><span class="n">job_id</span><span class="p">]</span><span class="o">.</span><span class="n">status</span> <span class="ow">is</span> <span class="n">ComputationStatus</span><span class="o">.</span><span class="n">CANCELLED</span>
@@ -907,7 +907,7 @@
                 <span class="k">pass</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">():</span>
-        <span class="c1"># ``started_at`` is stamped by the backend&#39;s ``before_compute`` hook, which</span>
+        <span class="c1"># ``started_at`` is stamped by the backend's ``before_compute`` hook, which</span>
         <span class="c1"># runs before the RUNNING transition is observable — see</span>
         <span class="c1"># :meth:`DurationLearningMiddleware.before_compute`. Nothing to stamp here.</span>
         <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">():</span>
@@ -921,8 +921,8 @@
             <span class="p">)</span>
 
         <span class="c1"># Re-establish both credential contexts on the worker thread: fal</span>
-        <span class="c1"># (nw&#39;s own dependency, imported lazily) and the caller&#39;s captured</span>
-        <span class="c1"># context (e.g. reelee&#39;s BYO vision + ElevenLabs keys). ``nullcontext``</span>
+        <span class="c1"># (nw's own dependency, imported lazily) and the caller's captured</span>
+        <span class="c1"># context (e.g. reelee's BYO vision + ElevenLabs keys). ``nullcontext``</span>
         <span class="c1"># keeps the ``with`` shape uniform when either is absent.</span>
         <span class="k">if</span> <span class="n">captured_fal_key</span><span class="p">:</span>
             <span class="kn">from</span><span class="w"> </span><span class="nn">falaw</span><span class="w"> </span><span class="kn">import</span> <span class="n">using_fal_credentials</span>
@@ -941,7 +941,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_capture_fal_credentials</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Snapshot the active fal credential (if any) to re-bind inside the worker.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Snapshot the active fal credential (if any) to re-bind inside the worker."""</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">falaw</span><span class="w"> </span><span class="kn">import</span> <span class="n">current_fal_key</span>
 
@@ -951,11 +951,11 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_call_dispatch</span><span class="p">(</span><span class="n">callable_</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">job_id</span><span class="p">,</span> <span class="n">on_event</span><span class="p">,</span> <span class="n">should_cancel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Invoke the render callable, passing only the render-context kwargs it</span>
-<span class="sd">    accepts (progressive disclosure: a plain ``f(project, params)`` works too).&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Invoke the render callable, passing only the render-context kwargs it</span>
+<span class="sd">    accepts (progressive disclosure: a plain ``f(project, params)`` works too)."""</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
 
-    <span class="n">extras</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;job_id&quot;</span><span class="p">:</span> <span class="n">job_id</span><span class="p">,</span> <span class="s2">&quot;on_event&quot;</span><span class="p">:</span> <span class="n">on_event</span><span class="p">,</span> <span class="s2">&quot;should_cancel&quot;</span><span class="p">:</span> <span class="n">should_cancel</span><span class="p">}</span>
+    <span class="n">extras</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"job_id"</span><span class="p">:</span> <span class="n">job_id</span><span class="p">,</span> <span class="s2">"on_event"</span><span class="p">:</span> <span class="n">on_event</span><span class="p">,</span> <span class="s2">"should_cancel"</span><span class="p">:</span> <span class="n">should_cancel</span><span class="p">}</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">sig</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="n">callable_</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">kind</span> <span class="ow">is</span> <span class="n">p</span><span class="o">.</span><span class="n">VAR_KEYWORD</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">sig</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
@@ -966,64 +966,64 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_mirror_event_into_index</span><span class="p">(</span><span class="n">rt</span><span class="p">,</span> <span class="n">job_id</span><span class="p">,</span> <span class="n">ev</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Project a render lifecycle event into the index: progress, cost, cached,</span>
-<span class="sd">    last_event_id, artifact_ref.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Project a render lifecycle event into the index: progress, cost, cached,</span>
+<span class="sd">    last_event_id, artifact_ref."""</span>
     <span class="n">fields</span> <span class="o">=</span> <span class="n">_event_fields</span><span class="p">(</span><span class="n">ev</span><span class="p">)</span>
     <span class="n">kind</span> <span class="o">=</span> <span class="n">_event_kind</span><span class="p">(</span><span class="n">ev</span><span class="p">)</span>
     <span class="k">with</span> <span class="n">rt</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
         <span class="n">record</span> <span class="o">=</span> <span class="n">_index_get_locked</span><span class="p">(</span><span class="n">rt</span><span class="p">,</span> <span class="n">job_id</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">record</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span>
-        <span class="n">progress</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;progress&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{})</span>
-        <span class="n">cost</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cost&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{})</span>
+        <span class="n">progress</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"progress"</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{})</span>
+        <span class="n">cost</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"cost"</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{})</span>
         <span class="n">updates</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
 
-        <span class="k">for</span> <span class="n">src</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;stage_index&quot;</span><span class="p">,</span> <span class="s2">&quot;stage_count&quot;</span><span class="p">,</span> <span class="s2">&quot;current_transform&quot;</span><span class="p">,</span> <span class="s2">&quot;fraction&quot;</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">src</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"stage_index"</span><span class="p">,</span> <span class="s2">"stage_count"</span><span class="p">,</span> <span class="s2">"current_transform"</span><span class="p">,</span> <span class="s2">"fraction"</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">src</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">:</span>
                 <span class="n">progress</span><span class="p">[</span><span class="n">src</span><span class="p">]</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="n">src</span><span class="p">]</span>
         <span class="n">cost_map</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;estimated_usd&quot;</span><span class="p">:</span> <span class="s2">&quot;estimated_usd&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;actual_usd&quot;</span><span class="p">:</span> <span class="s2">&quot;actual_usd&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;cost_usd&quot;</span><span class="p">:</span> <span class="s2">&quot;actual_usd&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;cache_hit_savings_usd&quot;</span><span class="p">:</span> <span class="s2">&quot;cache_hit_savings_usd&quot;</span><span class="p">,</span>
+            <span class="s2">"estimated_usd"</span><span class="p">:</span> <span class="s2">"estimated_usd"</span><span class="p">,</span>
+            <span class="s2">"actual_usd"</span><span class="p">:</span> <span class="s2">"actual_usd"</span><span class="p">,</span>
+            <span class="s2">"cost_usd"</span><span class="p">:</span> <span class="s2">"actual_usd"</span><span class="p">,</span>
+            <span class="s2">"cache_hit_savings_usd"</span><span class="p">:</span> <span class="s2">"cache_hit_savings_usd"</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="k">for</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span> <span class="ow">in</span> <span class="n">cost_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">src</span> <span class="ow">in</span> <span class="n">fields</span> <span class="ow">and</span> <span class="n">fields</span><span class="p">[</span><span class="n">src</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">cost</span><span class="p">[</span><span class="n">dst</span><span class="p">]</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="n">src</span><span class="p">]</span>
 
-        <span class="n">updates</span><span class="p">[</span><span class="s2">&quot;progress&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">progress</span>
-        <span class="n">updates</span><span class="p">[</span><span class="s2">&quot;cost&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cost</span>
-        <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;cache_hit&quot;</span> <span class="ow">or</span> <span class="n">fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cache_hit&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cached&quot;</span><span class="p">):</span>
-            <span class="n">updates</span><span class="p">[</span><span class="s2">&quot;cached&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="k">for</span> <span class="n">src</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;last_event_id&quot;</span><span class="p">,</span> <span class="s2">&quot;event_id&quot;</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">):</span>
+        <span class="n">updates</span><span class="p">[</span><span class="s2">"progress"</span><span class="p">]</span> <span class="o">=</span> <span class="n">progress</span>
+        <span class="n">updates</span><span class="p">[</span><span class="s2">"cost"</span><span class="p">]</span> <span class="o">=</span> <span class="n">cost</span>
+        <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">"cache_hit"</span> <span class="ow">or</span> <span class="n">fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"cache_hit"</span><span class="p">)</span> <span class="ow">or</span> <span class="n">fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"cached"</span><span class="p">):</span>
+            <span class="n">updates</span><span class="p">[</span><span class="s2">"cached"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">for</span> <span class="n">src</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"last_event_id"</span><span class="p">,</span> <span class="s2">"event_id"</span><span class="p">,</span> <span class="s2">"id"</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">src</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">updates</span><span class="p">[</span><span class="s2">&quot;last_event_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="n">src</span><span class="p">]</span>
+                <span class="n">updates</span><span class="p">[</span><span class="s2">"last_event_id"</span><span class="p">]</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="n">src</span><span class="p">]</span>
                 <span class="k">break</span>
-        <span class="k">for</span> <span class="n">src</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;animatic_artifact_id&quot;</span><span class="p">,</span> <span class="s2">&quot;artifact_id&quot;</span><span class="p">,</span> <span class="s2">&quot;artifact_ref&quot;</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">src</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"animatic_artifact_id"</span><span class="p">,</span> <span class="s2">"artifact_id"</span><span class="p">,</span> <span class="s2">"artifact_ref"</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">fields</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">src</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">updates</span><span class="p">[</span><span class="s2">&quot;artifact_ref&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="n">src</span><span class="p">]</span>
+                <span class="n">updates</span><span class="p">[</span><span class="s2">"artifact_ref"</span><span class="p">]</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="n">src</span><span class="p">]</span>
                 <span class="k">break</span>
         <span class="n">_index_update_locked</span><span class="p">(</span><span class="n">rt</span><span class="p">,</span> <span class="n">job_id</span><span class="p">,</span> <span class="o">**</span><span class="n">updates</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_reconcile_terminal</span><span class="p">(</span><span class="n">rt</span><span class="p">,</span> <span class="n">job_id</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Capture terminal payload fields (artifact, actual cost) the render returns</span>
-<span class="sd">    but may not have emitted as events.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Capture terminal payload fields (artifact, actual cost) the render returns</span>
+<span class="sd">    but may not have emitted as events."""</span>
     <span class="k">with</span> <span class="n">rt</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
         <span class="n">record</span> <span class="o">=</span> <span class="n">_index_get_locked</span><span class="p">(</span><span class="n">rt</span><span class="p">,</span> <span class="n">job_id</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">record</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span>
-        <span class="n">updates</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;finished_at&quot;</span><span class="p">:</span> <span class="n">_now_iso</span><span class="p">()}</span>
+        <span class="n">updates</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"finished_at"</span><span class="p">:</span> <span class="n">_now_iso</span><span class="p">()}</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
-            <span class="n">cost</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cost&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{})</span>
-            <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cost_usd_actual&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">cost</span><span class="p">[</span><span class="s2">&quot;actual_usd&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;cost_usd_actual&quot;</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cache_hit_savings_usd&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">cost</span><span class="p">[</span><span class="s2">&quot;cache_hit_savings_usd&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;cache_hit_savings_usd&quot;</span><span class="p">]</span>
-            <span class="n">updates</span><span class="p">[</span><span class="s2">&quot;cost&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cost</span>
-            <span class="k">for</span> <span class="n">src</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;animatic_artifact_id&quot;</span><span class="p">,</span> <span class="s2">&quot;artifact_id&quot;</span><span class="p">,</span> <span class="s2">&quot;artifact_ref&quot;</span><span class="p">):</span>
+            <span class="n">cost</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"cost"</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{})</span>
+            <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"cost_usd_actual"</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">cost</span><span class="p">[</span><span class="s2">"actual_usd"</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">"cost_usd_actual"</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"cache_hit_savings_usd"</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">cost</span><span class="p">[</span><span class="s2">"cache_hit_savings_usd"</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">"cache_hit_savings_usd"</span><span class="p">]</span>
+            <span class="n">updates</span><span class="p">[</span><span class="s2">"cost"</span><span class="p">]</span> <span class="o">=</span> <span class="n">cost</span>
+            <span class="k">for</span> <span class="n">src</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"animatic_artifact_id"</span><span class="p">,</span> <span class="s2">"artifact_id"</span><span class="p">,</span> <span class="s2">"artifact_ref"</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">src</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">updates</span><span class="p">[</span><span class="s2">&quot;artifact_ref&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="n">src</span><span class="p">]</span>
+                    <span class="n">updates</span><span class="p">[</span><span class="s2">"artifact_ref"</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="n">src</span><span class="p">]</span>
                     <span class="k">break</span>
         <span class="n">_index_update_locked</span><span class="p">(</span><span class="n">rt</span><span class="p">,</span> <span class="n">job_id</span><span class="p">,</span> <span class="o">**</span><span class="n">updates</span><span class="p">)</span>
 
@@ -1034,17 +1034,17 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_read_job</span><span class="p">(</span><span class="n">rt</span><span class="p">,</span> <span class="n">record</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Job</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Read one job: reap-if-stale, project, and persist a grown pct floor.</span>
+<span class="w">    </span><span class="sd">"""Read one job: reap-if-stale, project, and persist a grown pct floor.</span>
 
 <span class="sd">    Terminal-read consistency: a caller may hand us an index ``record`` snapshot</span>
-<span class="sd">    taken *before* the worker mirrored the render&#39;s terminal fields (cost,</span>
+<span class="sd">    taken *before* the worker mirrored the render's terminal fields (cost,</span>
 <span class="sd">    artifact, finished_at), yet read the au store *after* the COMPLETED write.</span>
 <span class="sd">    Because the worker commits those index writes strictly before writing the</span>
 <span class="sd">    terminal au record, once we observe a terminal au status a fresh index</span>
 <span class="sd">    re-read is guaranteed to include them — so a job observed ``succeeded`` never</span>
 <span class="sd">    reports a stale/empty cost or a missing artifact_ref.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">job_id</span> <span class="o">=</span> <span class="n">record</span><span class="p">[</span><span class="s2">&quot;job_id&quot;</span><span class="p">]</span>
+<span class="sd">    """</span>
+    <span class="n">job_id</span> <span class="o">=</span> <span class="n">record</span><span class="p">[</span><span class="s2">"job_id"</span><span class="p">]</span>
     <span class="n">au_result</span> <span class="o">=</span> <span class="n">rt</span><span class="o">.</span><span class="n">au_store</span><span class="p">[</span><span class="n">job_id</span><span class="p">]</span>
     <span class="n">au_result</span> <span class="o">=</span> <span class="n">_maybe_reap</span><span class="p">(</span><span class="n">rt</span><span class="p">,</span> <span class="n">record</span><span class="p">,</span> <span class="n">au_result</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">au_result</span><span class="o">.</span><span class="n">status</span> <span class="ow">in</span> <span class="p">(</span>
@@ -1056,20 +1056,20 @@
             <span class="n">record</span> <span class="o">=</span> <span class="n">_index_get_locked</span><span class="p">(</span><span class="n">rt</span><span class="p">,</span> <span class="n">job_id</span><span class="p">)</span> <span class="ow">or</span> <span class="n">record</span>
     <span class="n">job</span> <span class="o">=</span> <span class="n">_project_job</span><span class="p">(</span><span class="n">rt</span><span class="p">,</span> <span class="n">record</span><span class="p">,</span> <span class="n">au_result</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">job</span><span class="o">.</span><span class="n">status</span> <span class="ow">in</span> <span class="p">(</span><span class="n">RUNNING</span><span class="p">,</span> <span class="n">CANCELLING</span><span class="p">)</span> <span class="ow">and</span> <span class="n">job</span><span class="o">.</span><span class="n">pct</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pct_floor&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">job</span><span class="o">.</span><span class="n">pct</span> <span class="o">&gt;</span> <span class="n">record</span><span class="p">[</span><span class="s2">&quot;pct_floor&quot;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"pct_floor"</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">job</span><span class="o">.</span><span class="n">pct</span> <span class="o">&gt;</span> <span class="n">record</span><span class="p">[</span><span class="s2">"pct_floor"</span><span class="p">]:</span>
             <span class="k">with</span> <span class="n">rt</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
                 <span class="n">_index_update_locked</span><span class="p">(</span><span class="n">rt</span><span class="p">,</span> <span class="n">job_id</span><span class="p">,</span> <span class="n">pct_floor</span><span class="o">=</span><span class="n">job</span><span class="o">.</span><span class="n">pct</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">job</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_maybe_reap</span><span class="p">(</span><span class="n">rt</span><span class="p">,</span> <span class="n">record</span><span class="p">,</span> <span class="n">au_result</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ComputationResult</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Reap a RUNNING record whose worker is gone (no live thread + stale start).&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Reap a RUNNING record whose worker is gone (no live thread + stale start)."""</span>
     <span class="k">if</span> <span class="n">au_result</span><span class="o">.</span><span class="n">status</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">ComputationStatus</span><span class="o">.</span><span class="n">RUNNING</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">au_result</span>
-    <span class="n">job_id</span> <span class="o">=</span> <span class="n">record</span><span class="p">[</span><span class="s2">&quot;job_id&quot;</span><span class="p">]</span>
+    <span class="n">job_id</span> <span class="o">=</span> <span class="n">record</span><span class="p">[</span><span class="s2">"job_id"</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">rt</span><span class="o">.</span><span class="n">middleware</span><span class="o">.</span><span class="n">is_running</span><span class="p">(</span><span class="n">job_id</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">au_result</span>  <span class="c1"># a live worker in this process is on it</span>
-    <span class="n">started</span> <span class="o">=</span> <span class="n">_parse_iso</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;started_at&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;created_at&quot;</span><span class="p">))</span>
+    <span class="n">started</span> <span class="o">=</span> <span class="n">_parse_iso</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"started_at"</span><span class="p">)</span> <span class="ow">or</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"created_at"</span><span class="p">))</span>
     <span class="k">if</span> <span class="p">(</span>
         <span class="n">started</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="ow">and</span> <span class="p">(</span><span class="n">_utcnow</span><span class="p">()</span> <span class="o">-</span> <span class="n">started</span><span class="p">)</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">config</span><span class="o">.</span><span class="n">stale_running_s</span>
@@ -1088,19 +1088,19 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_project_job</span><span class="p">(</span><span class="n">rt</span><span class="p">,</span> <span class="n">record</span><span class="p">,</span> <span class="n">au_result</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Job</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pure projection of an index record + au result into a :class:`Job`.&quot;&quot;&quot;</span>
-    <span class="n">cancel_requested</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cancel_requested&quot;</span><span class="p">))</span>
+<span class="w">    </span><span class="sd">"""Pure projection of an index record + au result into a :class:`Job`."""</span>
+    <span class="n">cancel_requested</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"cancel_requested"</span><span class="p">))</span>
     <span class="n">status</span> <span class="o">=</span> <span class="n">_normalize_status</span><span class="p">(</span><span class="n">au_result</span><span class="o">.</span><span class="n">status</span><span class="p">,</span> <span class="n">cancel_requested</span><span class="o">=</span><span class="n">cancel_requested</span><span class="p">)</span>
 
-    <span class="n">created_at</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;created_at&quot;</span><span class="p">)</span>
-    <span class="n">started_at</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;started_at&quot;</span><span class="p">)</span>
+    <span class="n">created_at</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"created_at"</span><span class="p">)</span>
+    <span class="n">started_at</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"started_at"</span><span class="p">)</span>
     <span class="c1"># Invariant (defense in depth): a job observable as running/cancelling/terminal</span>
     <span class="c1"># always has a started_at. The primary stamp is `before_compute`; here we</span>
-    <span class="c1"># derive it from au&#39;s RUNNING-record `created_at` for any backend that might</span>
+    <span class="c1"># derive it from au's RUNNING-record `created_at` for any backend that might</span>
     <span class="c1"># write RUNNING without the index having caught up.</span>
     <span class="k">if</span> <span class="n">started_at</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">status</span> <span class="o">!=</span> <span class="n">QUEUED</span> <span class="ow">and</span> <span class="n">au_result</span><span class="o">.</span><span class="n">created_at</span><span class="p">:</span>
         <span class="n">started_at</span> <span class="o">=</span> <span class="n">_iso</span><span class="p">(</span><span class="n">au_result</span><span class="o">.</span><span class="n">created_at</span><span class="p">)</span>
-    <span class="n">finished_at</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;finished_at&quot;</span><span class="p">)</span>
+    <span class="n">finished_at</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"finished_at"</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">finished_at</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">status</span> <span class="ow">in</span> <span class="n">TERMINAL_STATUSES</span> <span class="ow">and</span> <span class="n">au_result</span><span class="o">.</span><span class="n">completed_at</span><span class="p">:</span>
         <span class="n">finished_at</span> <span class="o">=</span> <span class="n">_iso</span><span class="p">(</span><span class="n">au_result</span><span class="o">.</span><span class="n">completed_at</span><span class="p">)</span>
 
@@ -1114,15 +1114,15 @@
     <span class="n">eta_ts</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">pct</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">confidence</span> <span class="o">=</span> <span class="n">label_hint</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">eta_candidates</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;eta_candidates&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+    <span class="n">eta_candidates</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"eta_candidates"</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
     <span class="n">eta_key</span> <span class="o">=</span> <span class="n">eta_candidates</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">eta_candidates</span> <span class="k">else</span> <span class="kc">None</span>
 
     <span class="k">if</span> <span class="n">status</span> <span class="ow">in</span> <span class="p">(</span><span class="n">RUNNING</span><span class="p">,</span> <span class="n">CANCELLING</span><span class="p">):</span>
         <span class="n">prediction</span> <span class="o">=</span> <span class="n">predict_total_s</span><span class="p">(</span>
             <span class="n">eta_candidates</span><span class="p">,</span>
-            <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;output_kind&quot;</span><span class="p">),</span>
+            <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"output_kind"</span><span class="p">),</span>
             <span class="n">durations</span><span class="o">=</span><span class="n">rt</span><span class="o">.</span><span class="n">durations</span><span class="p">,</span>
-            <span class="n">expected_cache_hit</span><span class="o">=</span><span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;expected_cache_hit&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+            <span class="n">expected_cache_hit</span><span class="o">=</span><span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"expected_cache_hit"</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
             <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">predicted_total_s</span> <span class="o">=</span> <span class="n">prediction</span><span class="o">.</span><span class="n">p50</span>
@@ -1138,26 +1138,26 @@
 
     <span class="n">result_payload</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">error</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">artifact_ref</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;artifact_ref&quot;</span><span class="p">)</span>
+    <span class="n">artifact_ref</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"artifact_ref"</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="n">SUCCEEDED</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">au_result</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
             <span class="n">result_payload</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">au_result</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">artifact_ref</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">artifact_ref</span> <span class="o">=</span> <span class="n">result_payload</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-                    <span class="s2">&quot;animatic_artifact_id&quot;</span>
-                <span class="p">)</span> <span class="ow">or</span> <span class="n">result_payload</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;artifact_id&quot;</span><span class="p">)</span>
+                    <span class="s2">"animatic_artifact_id"</span>
+                <span class="p">)</span> <span class="ow">or</span> <span class="n">result_payload</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"artifact_id"</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">status</span> <span class="o">==</span> <span class="n">FAILED</span><span class="p">:</span>
-        <span class="n">error</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">au_result</span><span class="o">.</span><span class="n">error</span><span class="p">)</span> <span class="k">if</span> <span class="n">au_result</span><span class="o">.</span><span class="n">error</span> <span class="k">else</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;error&quot;</span><span class="p">)</span>
+        <span class="n">error</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">au_result</span><span class="o">.</span><span class="n">error</span><span class="p">)</span> <span class="k">if</span> <span class="n">au_result</span><span class="o">.</span><span class="n">error</span> <span class="k">else</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"error"</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">status</span> <span class="o">==</span> <span class="n">CANCELLED</span><span class="p">:</span>
         <span class="n">error</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">return</span> <span class="n">Job</span><span class="p">(</span>
-        <span class="n">job_id</span><span class="o">=</span><span class="n">record</span><span class="p">[</span><span class="s2">&quot;job_id&quot;</span><span class="p">],</span>
-        <span class="n">kind</span><span class="o">=</span><span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;kind&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
-        <span class="n">label</span><span class="o">=</span><span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+        <span class="n">job_id</span><span class="o">=</span><span class="n">record</span><span class="p">[</span><span class="s2">"job_id"</span><span class="p">],</span>
+        <span class="n">kind</span><span class="o">=</span><span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"kind"</span><span class="p">,</span> <span class="s2">""</span><span class="p">),</span>
+        <span class="n">label</span><span class="o">=</span><span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"label"</span><span class="p">,</span> <span class="s2">""</span><span class="p">),</span>
         <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">,</span>
-        <span class="n">idempotency_key</span><span class="o">=</span><span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;idempotency_key&quot;</span><span class="p">,</span> <span class="n">record</span><span class="p">[</span><span class="s2">&quot;job_id&quot;</span><span class="p">]),</span>
-        <span class="n">params</span><span class="o">=</span><span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;params&quot;</span><span class="p">,</span> <span class="p">{}),</span>
+        <span class="n">idempotency_key</span><span class="o">=</span><span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"idempotency_key"</span><span class="p">,</span> <span class="n">record</span><span class="p">[</span><span class="s2">"job_id"</span><span class="p">]),</span>
+        <span class="n">params</span><span class="o">=</span><span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"params"</span><span class="p">,</span> <span class="p">{}),</span>
         <span class="n">created_at</span><span class="o">=</span><span class="n">created_at</span><span class="p">,</span>
         <span class="n">started_at</span><span class="o">=</span><span class="n">started_at</span><span class="p">,</span>
         <span class="n">finished_at</span><span class="o">=</span><span class="n">finished_at</span><span class="p">,</span>
@@ -1173,24 +1173,24 @@
         <span class="n">label_hint</span><span class="o">=</span><span class="n">label_hint</span><span class="p">,</span>
         <span class="n">eta_key</span><span class="o">=</span><span class="n">eta_key</span><span class="p">,</span>
         <span class="n">cost</span><span class="o">=</span><span class="n">cost</span><span class="p">,</span>
-        <span class="n">cached</span><span class="o">=</span><span class="nb">bool</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cached&quot;</span><span class="p">)),</span>
+        <span class="n">cached</span><span class="o">=</span><span class="nb">bool</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"cached"</span><span class="p">)),</span>
         <span class="n">artifact_ref</span><span class="o">=</span><span class="n">artifact_ref</span><span class="p">,</span>
         <span class="n">result</span><span class="o">=</span><span class="n">result_payload</span><span class="p">,</span>
         <span class="n">error</span><span class="o">=</span><span class="n">error</span><span class="p">,</span>
-        <span class="n">run_id</span><span class="o">=</span><span class="n">record</span><span class="p">[</span><span class="s2">&quot;job_id&quot;</span><span class="p">],</span>
-        <span class="n">last_event_id</span><span class="o">=</span><span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;last_event_id&quot;</span><span class="p">),</span>
+        <span class="n">run_id</span><span class="o">=</span><span class="n">record</span><span class="p">[</span><span class="s2">"job_id"</span><span class="p">],</span>
+        <span class="n">last_event_id</span><span class="o">=</span><span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"last_event_id"</span><span class="p">),</span>
     <span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_normalize_status</span><span class="p">(</span><span class="n">au_status</span><span class="p">:</span> <span class="n">ComputationStatus</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cancel_requested</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;au status ⊕ cancel intent → the 6-value job status.</span>
+<span class="w">    </span><span class="sd">"""au status ⊕ cancel intent → the 6-value job status.</span>
 
 <span class="sd">    ``cancel_requested`` is authoritative: once the user cancels, the job reads</span>
 <span class="sd">    ``cancelling`` (still in flight) → ``cancelled`` (terminal) regardless of</span>
 <span class="sd">    whether the ``ThreadBackend`` thread later clobbers the au record with</span>
 <span class="sd">    COMPLETED. A missing au key synthesizes PENDING → ``queued`` (membership is</span>
-<span class="sd">    the index&#39;s job, not the au store&#39;s).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    the index's job, not the au store's).</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">cancel_requested</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">au_status</span> <span class="ow">in</span> <span class="p">(</span>
             <span class="n">ComputationStatus</span><span class="o">.</span><span class="n">COMPLETED</span><span class="p">,</span>
@@ -1211,16 +1211,16 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_compute_pct_eta</span><span class="p">(</span><span class="n">elapsed_s</span><span class="p">,</span> <span class="n">prediction</span><span class="p">:</span> <span class="n">_Prediction</span><span class="p">,</span> <span class="n">record</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The §5.4 progress-% + remaining-seconds derivation (honest + monotonic).&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""The §5.4 progress-% + remaining-seconds derivation (honest + monotonic)."""</span>
     <span class="n">p50</span><span class="p">,</span> <span class="n">p90</span><span class="p">,</span> <span class="n">confidence</span> <span class="o">=</span> <span class="n">prediction</span><span class="o">.</span><span class="n">p50</span><span class="p">,</span> <span class="n">prediction</span><span class="o">.</span><span class="n">p90</span><span class="p">,</span> <span class="n">prediction</span><span class="o">.</span><span class="n">confidence</span>
     <span class="n">label_hint</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">if</span> <span class="n">confidence</span> <span class="o">==</span> <span class="s2">&quot;prior&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">confidence</span> <span class="o">==</span> <span class="s2">"prior"</span><span class="p">:</span>
         <span class="n">remaining</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">p50</span> <span class="o">-</span> <span class="n">elapsed_s</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="n">remaining</span><span class="p">,</span> <span class="s2">&quot;estimating…&quot;</span>
-    <span class="k">if</span> <span class="n">confidence</span> <span class="o">==</span> <span class="s2">&quot;exact&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="n">remaining</span><span class="p">,</span> <span class="s2">"estimating…"</span>
+    <span class="k">if</span> <span class="n">confidence</span> <span class="o">==</span> <span class="s2">"exact"</span><span class="p">:</span>
         <span class="n">remaining</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">p50</span> <span class="o">-</span> <span class="n">elapsed_s</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="n">remaining</span><span class="p">,</span> <span class="s2">&quot;cached · instant&quot;</span>
+        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="n">remaining</span><span class="p">,</span> <span class="s2">"cached · instant"</span>
 
     <span class="k">if</span> <span class="n">elapsed_s</span> <span class="o">&lt;=</span> <span class="n">p50</span><span class="p">:</span>
         <span class="n">pct</span> <span class="o">=</span> <span class="p">(</span>
@@ -1233,9 +1233,9 @@
         <span class="n">pct</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mf">90.0</span> <span class="o">+</span> <span class="mf">9.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">elapsed_s</span> <span class="o">-</span> <span class="n">p50</span><span class="p">)</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="n">p90</span> <span class="o">-</span> <span class="n">p50</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span> <span class="n">config</span><span class="o">.</span><span class="n">pct_ceil</span><span class="p">)</span>
         <span class="n">remaining</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">p90</span> <span class="o">-</span> <span class="n">elapsed_s</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">elapsed_s</span> <span class="o">&gt;</span> <span class="n">p90</span><span class="p">:</span>
-            <span class="n">pct</span><span class="p">,</span> <span class="n">label_hint</span><span class="p">,</span> <span class="n">remaining</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">pct_ceil</span><span class="p">),</span> <span class="s2">&quot;finishing…&quot;</span><span class="p">,</span> <span class="kc">None</span>
+            <span class="n">pct</span><span class="p">,</span> <span class="n">label_hint</span><span class="p">,</span> <span class="n">remaining</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">pct_ceil</span><span class="p">),</span> <span class="s2">"finishing…"</span><span class="p">,</span> <span class="kc">None</span>
 
-    <span class="n">floor</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;pct_floor&quot;</span><span class="p">)</span>
+    <span class="n">floor</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"pct_floor"</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">floor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">pct</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">pct</span><span class="p">,</span> <span class="n">floor</span><span class="p">)</span>
     <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">pct</span><span class="p">),</span> <span class="n">remaining</span><span class="p">,</span> <span class="n">label_hint</span>
@@ -1263,8 +1263,8 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_default_idempotency_key</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;``sha256(project:kind:basis)`` where basis is ``falaw.plan_hash`` of a</span>
-<span class="sd">    supplied ``params[&quot;plan&quot;]`` (plan-scoped dedup) or a stable hash of params.</span>
+<span class="w">    </span><span class="sd">"""``sha256(project:kind:basis)`` where basis is ``falaw.plan_hash`` of a</span>
+<span class="sd">    supplied ``params["plan"]`` (plan-scoped dedup) or a stable hash of params.</span>
 
 <span class="sd">    A plan that cannot be hashed is **not** silently deduped under a weaker,</span>
 <span class="sd">    plan-blind fallback (nw#41) — that used to swallow *any* ``plan_hash``</span>
@@ -1276,63 +1276,63 @@
 <span class="sd">    (falaw#17) ``plan_hash`` raises ``FalNonCanonicalArgument`` for a</span>
 <span class="sd">    genuinely non-canonicalisable argument, which made this reachable from</span>
 <span class="sd">    ordinary caller input rather than only from malformed test data. The fix</span>
-<span class="sd">    is the same &quot;refuse loudly&quot; contract falaw adopted: when a plan is</span>
+<span class="sd">    is the same "refuse loudly" contract falaw adopted: when a plan is</span>
 <span class="sd">    supplied, its hash IS the basis, unconditionally — a plan that cannot be</span>
 <span class="sd">    identified is not submittable, and the caller sees why.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">plan</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;plan&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+<span class="sd">    """</span>
+    <span class="n">plan</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"plan"</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="n">plan</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">falaw</span><span class="w"> </span><span class="kn">import</span> <span class="n">plan_hash</span>
 
         <span class="n">basis</span> <span class="o">=</span> <span class="n">plan_hash</span><span class="p">(</span><span class="n">plan</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">basis</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">_jsonable</span><span class="p">(</span><span class="n">params</span><span class="p">),</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
-    <span class="n">blob</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">Path</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">root</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">basis</span><span class="si">}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+    <span class="n">blob</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">Path</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">root</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">basis</span><span class="si">}</span><span class="s2">"</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">"utf-8"</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">(</span><span class="n">blob</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_jsonable</span><span class="p">(</span><span class="n">params</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Drop a non-serializable ``plan`` object from the params-hash basis (its</span>
-<span class="sd">    identity is already captured via ``plan_hash``).&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Drop a non-serializable ``plan`` object from the params-hash basis (its</span>
+<span class="sd">    identity is already captured via ``plan_hash``)."""</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="o">!=</span> <span class="s2">&quot;plan&quot;</span><span class="p">}</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">k</span> <span class="o">!=</span> <span class="s2">"plan"</span><span class="p">}</span>
     <span class="k">return</span> <span class="n">params</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_default_label</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="n">model</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;model&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;application&quot;</span><span class="p">)</span>
-    <span class="n">pretty</span> <span class="o">=</span> <span class="n">kind</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot; · &quot;</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"model"</span><span class="p">)</span> <span class="ow">or</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"application"</span><span class="p">)</span>
+    <span class="n">pretty</span> <span class="o">=</span> <span class="n">kind</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"_"</span><span class="p">,</span> <span class="s2">" "</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"."</span><span class="p">,</span> <span class="s2">" · "</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">model</span><span class="p">:</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pretty</span><span class="si">}</span><span class="s2"> · </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pretty</span><span class="si">}</span><span class="s2"> · </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">model</span><span class="p">)</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s1">'/'</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span>
     <span class="k">return</span> <span class="n">pretty</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_eta_candidates</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Ordered ``[(key, confidence), …]`` ETA-key candidates (most specific first)</span>
-<span class="sd">    plus the inferred output kind.&quot;&quot;&quot;</span>
-    <span class="n">app</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;model&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;application&quot;</span><span class="p">)</span>
-    <span class="n">tool</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;tool&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;operation&quot;</span><span class="p">)</span>
-    <span class="n">output_kind</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;output_kind&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">_infer_output_kind</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">app</span><span class="p">,</span> <span class="n">tool</span><span class="p">)</span>
-    <span class="n">dur_bucket</span> <span class="o">=</span> <span class="n">_dur_bucket</span><span class="p">(</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;duration_s&quot;</span><span class="p">),</span> <span class="n">config</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">"""Ordered ``[(key, confidence), …]`` ETA-key candidates (most specific first)</span>
+<span class="sd">    plus the inferred output kind."""</span>
+    <span class="n">app</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"model"</span><span class="p">)</span> <span class="ow">or</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"application"</span><span class="p">)</span>
+    <span class="n">tool</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"tool"</span><span class="p">)</span> <span class="ow">or</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"operation"</span><span class="p">)</span>
+    <span class="n">output_kind</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"output_kind"</span><span class="p">)</span> <span class="ow">or</span> <span class="n">_infer_output_kind</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">app</span><span class="p">,</span> <span class="n">tool</span><span class="p">)</span>
+    <span class="n">dur_bucket</span> <span class="o">=</span> <span class="n">_dur_bucket</span><span class="p">(</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"duration_s"</span><span class="p">),</span> <span class="n">config</span><span class="p">)</span>
 
     <span class="n">candidates</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">if</span> <span class="n">app</span> <span class="ow">and</span> <span class="n">tool</span> <span class="ow">and</span> <span class="n">dur_bucket</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">candidates</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">app</span><span class="si">}</span><span class="s2">|</span><span class="si">{</span><span class="n">tool</span><span class="si">}</span><span class="s2">|</span><span class="si">{</span><span class="n">dur_bucket</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;learned&quot;</span><span class="p">))</span>
+        <span class="n">candidates</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">app</span><span class="si">}</span><span class="s2">|</span><span class="si">{</span><span class="n">tool</span><span class="si">}</span><span class="s2">|</span><span class="si">{</span><span class="n">dur_bucket</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="s2">"learned"</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">app</span> <span class="ow">and</span> <span class="n">tool</span><span class="p">:</span>
-        <span class="n">candidates</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">app</span><span class="si">}</span><span class="s2">|</span><span class="si">{</span><span class="n">tool</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;learned&quot;</span><span class="p">))</span>
+        <span class="n">candidates</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">app</span><span class="si">}</span><span class="s2">|</span><span class="si">{</span><span class="n">tool</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="s2">"learned"</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">output_kind</span><span class="p">:</span>
-        <span class="n">candidates</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">output_kind</span><span class="p">,</span> <span class="s2">&quot;learned_coarse&quot;</span><span class="p">))</span>
+        <span class="n">candidates</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">output_kind</span><span class="p">,</span> <span class="s2">"learned_coarse"</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">candidates</span><span class="p">,</span> <span class="n">output_kind</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_infer_output_kind</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">app</span><span class="p">,</span> <span class="n">tool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">hay</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">(</span><span class="n">tool</span><span class="p">,</span> <span class="n">app</span><span class="p">,</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;kind&quot;</span><span class="p">))</span> <span class="k">if</span> <span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">w</span> <span class="ow">in</span> <span class="n">hay</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;video&quot;</span><span class="p">,</span> <span class="s2">&quot;animate&quot;</span><span class="p">,</span> <span class="s2">&quot;clip&quot;</span><span class="p">,</span> <span class="s2">&quot;motion&quot;</span><span class="p">,</span> <span class="s2">&quot;lipsync&quot;</span><span class="p">)):</span>
-        <span class="k">return</span> <span class="s2">&quot;video&quot;</span>
-    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">w</span> <span class="ow">in</span> <span class="n">hay</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;voice&quot;</span><span class="p">,</span> <span class="s2">&quot;audio&quot;</span><span class="p">,</span> <span class="s2">&quot;tts&quot;</span><span class="p">,</span> <span class="s2">&quot;narration&quot;</span><span class="p">,</span> <span class="s2">&quot;speech&quot;</span><span class="p">,</span> <span class="s2">&quot;music&quot;</span><span class="p">)):</span>
-        <span class="k">return</span> <span class="s2">&quot;audio&quot;</span>
-    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">w</span> <span class="ow">in</span> <span class="n">hay</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;image&quot;</span><span class="p">,</span> <span class="s2">&quot;panel&quot;</span><span class="p">,</span> <span class="s2">&quot;still&quot;</span><span class="p">,</span> <span class="s2">&quot;frame&quot;</span><span class="p">,</span> <span class="s2">&quot;picture&quot;</span><span class="p">)):</span>
-        <span class="k">return</span> <span class="s2">&quot;image&quot;</span>
+    <span class="n">hay</span> <span class="o">=</span> <span class="s2">" "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="p">(</span><span class="n">tool</span><span class="p">,</span> <span class="n">app</span><span class="p">,</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"kind"</span><span class="p">))</span> <span class="k">if</span> <span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">w</span> <span class="ow">in</span> <span class="n">hay</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"video"</span><span class="p">,</span> <span class="s2">"animate"</span><span class="p">,</span> <span class="s2">"clip"</span><span class="p">,</span> <span class="s2">"motion"</span><span class="p">,</span> <span class="s2">"lipsync"</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="s2">"video"</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">w</span> <span class="ow">in</span> <span class="n">hay</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"voice"</span><span class="p">,</span> <span class="s2">"audio"</span><span class="p">,</span> <span class="s2">"tts"</span><span class="p">,</span> <span class="s2">"narration"</span><span class="p">,</span> <span class="s2">"speech"</span><span class="p">,</span> <span class="s2">"music"</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="s2">"audio"</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">w</span> <span class="ow">in</span> <span class="n">hay</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"image"</span><span class="p">,</span> <span class="s2">"panel"</span><span class="p">,</span> <span class="s2">"still"</span><span class="p">,</span> <span class="s2">"frame"</span><span class="p">,</span> <span class="s2">"picture"</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="s2">"image"</span>
     <span class="k">return</span> <span class="kc">None</span>
 
 
@@ -1343,11 +1343,11 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">edges</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="n">duration_s</span> <span class="o">&lt;=</span> <span class="n">edges</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;=</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">edges</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="si">}</span><span class="s2">s&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"&lt;=</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">edges</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="si">}</span><span class="s2">s"</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">edges</span><span class="p">)):</span>
         <span class="k">if</span> <span class="n">duration_s</span> <span class="o">&lt;=</span> <span class="n">edges</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
-            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">edges</span><span class="p">[</span><span class="n">i</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">])</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">edges</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="si">}</span><span class="s2">s&quot;</span>
-    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&gt;</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">edges</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="si">}</span><span class="s2">s&quot;</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">edges</span><span class="p">[</span><span class="n">i</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">])</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">edges</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="si">}</span><span class="s2">s"</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">"&gt;</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">edges</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="si">}</span><span class="s2">s"</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_durations_get</span><span class="p">(</span><span class="n">durations</span><span class="p">:</span> <span class="n">MutableMapping</span><span class="p">,</span> <span class="n">eta_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
@@ -1355,22 +1355,22 @@
     <span class="c1"># atomically (reelee#298, :class:`_AtomicJsonFiles`) a reader cannot catch</span>
     <span class="c1"># a sample write half-done. The guard stays for what atomicity cannot</span>
     <span class="c1"># promise — a record written by a pre-atomic version mid-upgrade, or a</span>
-    <span class="c1"># hand-mangled file — where &quot;no history&quot; beats a crashed ETA query.</span>
+    <span class="c1"># hand-mangled file — where "no history" beats a crashed ETA query.</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">record</span> <span class="o">=</span> <span class="n">durations</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">_safe_key</span><span class="p">(</span><span class="n">eta_key</span><span class="p">))</span>
     <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">[]</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">record</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">[]</span>
-    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;samples&quot;</span><span class="p">,</span> <span class="p">[]))</span>
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"samples"</span><span class="p">,</span> <span class="p">[]))</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_durations_put</span><span class="p">(</span><span class="n">durations</span><span class="p">:</span> <span class="n">MutableMapping</span><span class="p">,</span> <span class="n">eta_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">samples</span><span class="p">:</span> <span class="nb">list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">durations</span><span class="p">[</span><span class="n">_safe_key</span><span class="p">(</span><span class="n">eta_key</span><span class="p">)]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;eta_key&quot;</span><span class="p">:</span> <span class="n">eta_key</span><span class="p">,</span> <span class="s2">&quot;samples&quot;</span><span class="p">:</span> <span class="n">samples</span><span class="p">}</span>
+    <span class="n">durations</span><span class="p">[</span><span class="n">_safe_key</span><span class="p">(</span><span class="n">eta_key</span><span class="p">)]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"eta_key"</span><span class="p">:</span> <span class="n">eta_key</span><span class="p">,</span> <span class="s2">"samples"</span><span class="p">:</span> <span class="n">samples</span><span class="p">}</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_safe_key</span><span class="p">(</span><span class="n">eta_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="k">return</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">quote</span><span class="p">(</span><span class="n">eta_key</span><span class="p">,</span> <span class="n">safe</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">quote</span><span class="p">(</span><span class="n">eta_key</span><span class="p">,</span> <span class="n">safe</span><span class="o">=</span><span class="s2">""</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_percentile</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
@@ -1386,39 +1386,39 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_progress_from</span><span class="p">(</span><span class="n">record</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JobProgress</span><span class="p">:</span>
-    <span class="n">p</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;progress&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"progress"</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
     <span class="k">return</span> <span class="n">JobProgress</span><span class="p">(</span>
-        <span class="n">stage_index</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;stage_index&quot;</span><span class="p">),</span>
-        <span class="n">stage_count</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;stage_count&quot;</span><span class="p">),</span>
-        <span class="n">current_transform</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;current_transform&quot;</span><span class="p">),</span>
-        <span class="n">fraction</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;fraction&quot;</span><span class="p">),</span>
+        <span class="n">stage_index</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"stage_index"</span><span class="p">),</span>
+        <span class="n">stage_count</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"stage_count"</span><span class="p">),</span>
+        <span class="n">current_transform</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"current_transform"</span><span class="p">),</span>
+        <span class="n">fraction</span><span class="o">=</span><span class="n">p</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"fraction"</span><span class="p">),</span>
     <span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_cost_from</span><span class="p">(</span><span class="n">record</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JobCost</span><span class="p">:</span>
-    <span class="n">c</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cost&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"cost"</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
     <span class="k">return</span> <span class="n">JobCost</span><span class="p">(</span>
-        <span class="n">estimated_usd</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;estimated_usd&quot;</span><span class="p">),</span>
-        <span class="n">actual_usd</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;actual_usd&quot;</span><span class="p">),</span>
-        <span class="n">cache_hit_savings_usd</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;cache_hit_savings_usd&quot;</span><span class="p">),</span>
+        <span class="n">estimated_usd</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"estimated_usd"</span><span class="p">),</span>
+        <span class="n">actual_usd</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"actual_usd"</span><span class="p">),</span>
+        <span class="n">cache_hit_savings_usd</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"cache_hit_savings_usd"</span><span class="p">),</span>
     <span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_stamp_correlation</span><span class="p">(</span><span class="n">ev</span><span class="p">,</span> <span class="n">job_id</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">fields</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ev</span><span class="p">,</span> <span class="s2">&quot;fields&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ev</span><span class="p">,</span> <span class="s2">"fields"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fields</span><span class="p">,</span> <span class="n">MutableMapping</span><span class="p">):</span>
-            <span class="n">fields</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;job_id&quot;</span><span class="p">,</span> <span class="n">job_id</span><span class="p">)</span>
-            <span class="n">fields</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;run_id&quot;</span><span class="p">,</span> <span class="n">job_id</span><span class="p">)</span>
+            <span class="n">fields</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">"job_id"</span><span class="p">,</span> <span class="n">job_id</span><span class="p">)</span>
+            <span class="n">fields</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">"run_id"</span><span class="p">,</span> <span class="n">job_id</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ev</span><span class="p">,</span> <span class="n">MutableMapping</span><span class="p">):</span>
-            <span class="n">ev</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;job_id&quot;</span><span class="p">,</span> <span class="n">job_id</span><span class="p">)</span>
-            <span class="n">ev</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;run_id&quot;</span><span class="p">,</span> <span class="n">job_id</span><span class="p">)</span>
+            <span class="n">ev</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">"job_id"</span><span class="p">,</span> <span class="n">job_id</span><span class="p">)</span>
+            <span class="n">ev</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">"run_id"</span><span class="p">,</span> <span class="n">job_id</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
         <span class="k">pass</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_event_fields</span><span class="p">(</span><span class="n">ev</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Mapping</span><span class="p">:</span>
-    <span class="n">fields</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ev</span><span class="p">,</span> <span class="s2">&quot;fields&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">fields</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ev</span><span class="p">,</span> <span class="s2">"fields"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fields</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">fields</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ev</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
@@ -1427,12 +1427,12 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_event_kind</span><span class="p">(</span><span class="n">ev</span><span class="p">):</span>
-    <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;kind&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"kind"</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">,</span> <span class="s2">"type"</span><span class="p">):</span>
         <span class="n">v</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ev</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">v</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ev</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;kind&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"kind"</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">,</span> <span class="s2">"type"</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ev</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">),</span> <span class="nb">str</span><span class="p">):</span>
                 <span class="k">return</span> <span class="n">ev</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
     <span class="k">return</span> <span class="kc">None</span>
@@ -1455,14 +1455,14 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">_iso</span><span class="p">(</span><span class="n">dt</span><span class="p">:</span> <span class="n">datetime</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">if</span> <span class="n">dt</span><span class="o">.</span><span class="n">tzinfo</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">dt</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">dt</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;+00:00&quot;</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dt</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"+00:00"</span><span class="p">,</span> <span class="s2">"Z"</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_parse_iso</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">s</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="s2">&quot;+00:00&quot;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"Z"</span><span class="p">,</span> <span class="s2">"+00:00"</span><span class="p">))</span>
     <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">None</span>
 

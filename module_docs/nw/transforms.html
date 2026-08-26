@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.transforms &mdash; nw 0.0.31 documentation</title>
+  <title>nw.transforms &mdash; nw 0.0.32 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=c5dbc6bb"></script>
+      <script src="../../_static/documentation_options.js?v=f2234cd1"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -170,8 +170,8 @@ them to the project graph, and returns a <a class="reference internal" href="#nw
 apps (<code class="docutils literal notranslate"><span class="pre">reelee</span></code>, <code class="docutils literal notranslate"><span class="pre">muvid</span></code>, …) add their own without modifying <code class="docutils literal notranslate"><span class="pre">nw</span></code>.</p>
 <p>Naming convention for <code class="docutils literal notranslate"><span class="pre">Transform.name</span></code>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">from_kind</span><span class="o">&gt;</span><span class="n">_to_</span><span class="o">&lt;</span><span class="n">to_kind</span><span class="o">&gt;</span><span class="p">[</span><span class="o">.&lt;</span><span class="n">flavor</span><span class="o">&gt;</span><span class="p">[</span><span class="o">.&lt;</span><span class="n">variant</span><span class="o">&gt;</span><span class="p">]]</span>
-<span class="n">e</span><span class="o">.</span><span class="n">g</span><span class="o">.</span> <span class="s2">&quot;beat_to_panel.llm.default&quot;</span><span class="p">,</span> <span class="s2">&quot;panel_to_image.fal.flux_kontext&quot;</span><span class="p">,</span>
-     <span class="s2">&quot;shot_to_render_result.fal.lipsync&quot;</span>
+<span class="n">e</span><span class="o">.</span><span class="n">g</span><span class="o">.</span> <span class="s2">"beat_to_panel.llm.default"</span><span class="p">,</span> <span class="s2">"panel_to_image.fal.flux_kontext"</span><span class="p">,</span>
+     <span class="s2">"shot_to_render_result.fal.lipsync"</span>
 </pre></div>
 </div>
 <p>Most Transforms subclass <a class="reference internal" href="#nw.transforms.BaseTransform" title="nw.transforms.BaseTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseTransform</span></code></a> (which supplies a default
@@ -438,13 +438,13 @@ gate in the federation is required to read.</p>
 <span class="sig-prename descclassname"><span class="pre">nw.transforms.</span></span><span class="sig-name descname"><span class="pre">register_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">impl</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nw.transforms.Transform" title="nw.transforms.Transform"><span class="pre">Transform</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nw.transforms.Transform" title="nw.transforms.Transform"><span class="pre">Transform</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">type</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">type</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nw/transforms.html#register_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.transforms.register_transform" title="Link to this definition"></a></dt>
 <dd><p>Register a Transform under <code class="docutils literal notranslate"><span class="pre">name</span></code>. Two forms:</p>
 <p>Direct — pass an instance:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">register_transform</span><span class="p">(</span><span class="s2">&quot;clips_to_animatic.ffmpeg&quot;</span><span class="p">,</span> <span class="n">ClipsToAnimatic</span><span class="p">())</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">register_transform</span><span class="p">(</span><span class="s2">"clips_to_animatic.ffmpeg"</span><span class="p">,</span> <span class="n">ClipsToAnimatic</span><span class="p">())</span>
 </pre></div>
 </div>
 <p>Decorator — decorate a class; it is instantiated and the <em>instance</em> is
 registered (so <a class="reference internal" href="#nw.transforms.get_transform" title="nw.transforms.get_transform"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_transform()</span></code></a> always returns something callable),
 and the class is returned unchanged:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@register_transform</span><span class="p">(</span><span class="s2">&quot;beat_to_panel.llm.default&quot;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@register_transform</span><span class="p">(</span><span class="s2">"beat_to_panel.llm.default"</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">BeatToPanelLLM</span><span class="p">(</span><span class="n">BaseTransform</span><span class="p">):</span>
     <span class="o">...</span>
 </pre></div>

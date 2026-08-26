@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.genres &mdash; nw 0.0.31 documentation</title>
+  <title>nw.genres &mdash; nw 0.0.32 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=c5dbc6bb"></script>
+      <script src="../../_static/documentation_options.js?v=f2234cd1"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -202,24 +202,24 @@ usable but unstable; <code class="docutils literal notranslate"><span class="pre
 <p>Pure data: it <em>references</em> substrate pieces by name rather than owning
 them, so declaring a genre never touches the engine.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">slideshow</span> <span class="o">=</span> <span class="n">Genre</span><span class="p">(</span>
-<span class="gp">... </span>    <span class="n">slug</span><span class="o">=</span><span class="s2">&quot;slideshow&quot;</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Slideshow&quot;</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Stills over narration, assembled to a video.&quot;</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="n">transform_names</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;clips_to_animatic.ffmpeg&quot;</span><span class="p">,),</span>
-<span class="gp">... </span>    <span class="n">projection_entrypoint</span><span class="o">=</span><span class="s2">&quot;clips_to_animatic.ffmpeg&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">slug</span><span class="o">=</span><span class="s2">"slideshow"</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">title</span><span class="o">=</span><span class="s2">"Slideshow"</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">description</span><span class="o">=</span><span class="s2">"Stills over narration, assembled to a video."</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">transform_names</span><span class="o">=</span><span class="p">(</span><span class="s2">"clips_to_animatic.ffmpeg"</span><span class="p">,),</span>
+<span class="gp">... </span>    <span class="n">projection_entrypoint</span><span class="o">=</span><span class="s2">"clips_to_animatic.ffmpeg"</span><span class="p">,</span>
 <span class="gp">... </span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">slideshow</span><span class="o">.</span><span class="n">title</span>
-<span class="go">&#39;Slideshow&#39;</span>
+<span class="go">'Slideshow'</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">slideshow</span><span class="o">.</span><span class="n">status</span>
-<span class="go">&#39;available&#39;</span>
+<span class="go">'available'</span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">projection_entrypoint</span></code>, when given, must be one of the genre’s own
 declared transforms or strategies:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Genre</span><span class="p">(</span><span class="n">slug</span><span class="o">=</span><span class="s2">&quot;bad&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Bad&quot;</span><span class="p">,</span> <span class="n">projection_entrypoint</span><span class="o">=</span><span class="s2">&quot;nope&quot;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Genre</span><span class="p">(</span><span class="n">slug</span><span class="o">=</span><span class="s2">"bad"</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">"Bad"</span><span class="p">,</span> <span class="n">projection_entrypoint</span><span class="o">=</span><span class="s2">"nope"</span><span class="p">)</span>
 <span class="gt">Traceback (most recent call last):</span>
 <span class="w">    </span><span class="o">...</span>
-<span class="gr">ValueError</span>: <span class="n">Genre &#39;bad&#39;: projection_entrypoint &#39;nope&#39; is not among its transform_names or strategy_names</span>
+<span class="gr">ValueError</span>: <span class="n">Genre 'bad': projection_entrypoint 'nope' is not among its transform_names or strategy_names</span>
 </pre></div>
 </div>
 <dl class="py attribute">
@@ -360,12 +360,12 @@ interpret. The app that owns the genre puts meaning in <code class="docutils lit
 and validates/resolves it. Frozen + hashable (<code class="docutils literal notranslate"><span class="pre">params</span></code> is excluded from
 identity and normalized to an immutable mapping), so a Template can live in a
 <code class="docutils literal notranslate"><span class="pre">Genre.templates</span></code> tuple without breaking the genre’s <code class="docutils literal notranslate"><span class="pre">__hash__</span></code>.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="n">slug</span><span class="o">=</span><span class="s2">&quot;cinematic_clip&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Cinematic clip&quot;</span><span class="p">,</span>
-<span class="gp">... </span>             <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;flavor&quot;</span><span class="p">:</span> <span class="s2">&quot;fal.cinematic&quot;</span><span class="p">})</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;flavor&quot;</span><span class="p">]</span>
-<span class="go">&#39;fal.cinematic&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()[</span><span class="s2">&quot;params&quot;</span><span class="p">]</span>
-<span class="go">{&#39;flavor&#39;: &#39;fal.cinematic&#39;}</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="n">slug</span><span class="o">=</span><span class="s2">"cinematic_clip"</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">"Cinematic clip"</span><span class="p">,</span>
+<span class="gp">... </span>             <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">"flavor"</span><span class="p">:</span> <span class="s2">"fal.cinematic"</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">"flavor"</span><span class="p">]</span>
+<span class="go">'fal.cinematic'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()[</span><span class="s2">"params"</span><span class="p">]</span>
+<span class="go">{'flavor': 'fal.cinematic'}</span>
 </pre></div>
 </div>
 <dl class="py method">
@@ -473,9 +473,9 @@ recorded envelope certifies a completed initialization, never a failed
 one. A <code class="docutils literal notranslate"><span class="pre">project</span></code> stand-in without a <code class="docutils literal notranslate"><span class="pre">graph</span></code> (a test double, a
 factory that returns no live project) skips the recording; read it back
 via <a class="reference internal" href="../nw.html#nw.Project.resolved_genre" title="nw.Project.resolved_genre"><code class="xref py py-meth docutils literal notranslate"><span class="pre">nw.Project.resolved_genre()</span></code></a>.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">register_genre</span><span class="p">(</span><span class="n">Genre</span><span class="p">(</span><span class="n">slug</span><span class="o">=</span><span class="s2">&quot;_noinit_demo&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Demo&quot;</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">initialize_genre</span><span class="p">(</span><span class="s2">&quot;_noinit_demo&quot;</span><span class="p">,</span> <span class="nb">object</span><span class="p">())</span>  <span class="c1"># no initializer -&gt; no seed</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">del</span> <span class="n">genres</span><span class="p">[</span><span class="s2">&quot;_noinit_demo&quot;</span><span class="p">]</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">register_genre</span><span class="p">(</span><span class="n">Genre</span><span class="p">(</span><span class="n">slug</span><span class="o">=</span><span class="s2">"_noinit_demo"</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">"Demo"</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">initialize_genre</span><span class="p">(</span><span class="s2">"_noinit_demo"</span><span class="p">,</span> <span class="nb">object</span><span class="p">())</span>  <span class="c1"># no initializer -&gt; no seed</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">del</span> <span class="n">genres</span><span class="p">[</span><span class="s2">"_noinit_demo"</span><span class="p">]</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -491,12 +491,12 @@ via <a class="reference internal" href="../nw.html#nw.Project.resolved_genre" ti
 <span class="sig-prename descclassname"><span class="pre">nw.genres.</span></span><span class="sig-name descname"><span class="pre">recommend_genre</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/nw/genres.html#recommend_genre"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.genres.recommend_genre" title="Link to this definition"></a></dt>
 <dd><p>The slug of the genre whose <code class="docutils literal notranslate"><span class="pre">intake_kinds</span></code> contains <code class="docutils literal notranslate"><span class="pre">kind</span></code> (first in slug
 order), or <code class="docutils literal notranslate"><span class="pre">None</span></code> when <code class="docutils literal notranslate"><span class="pre">kind</span></code> is falsy / unmatched.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">g</span> <span class="o">=</span> <span class="n">register_genre</span><span class="p">(</span><span class="n">Genre</span><span class="p">(</span><span class="n">slug</span><span class="o">=</span><span class="s2">&quot;_rec_demo&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Rec&quot;</span><span class="p">,</span> <span class="n">intake_kinds</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;essay&quot;</span><span class="p">,)))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">recommend_genre</span><span class="p">(</span><span class="s2">&quot;essay&quot;</span><span class="p">)</span>
-<span class="go">&#39;_rec_demo&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">recommend_genre</span><span class="p">(</span><span class="s2">&quot;nope&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">recommend_genre</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">g</span> <span class="o">=</span> <span class="n">register_genre</span><span class="p">(</span><span class="n">Genre</span><span class="p">(</span><span class="n">slug</span><span class="o">=</span><span class="s2">"_rec_demo"</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">"Rec"</span><span class="p">,</span> <span class="n">intake_kinds</span><span class="o">=</span><span class="p">(</span><span class="s2">"essay"</span><span class="p">,)))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">recommend_genre</span><span class="p">(</span><span class="s2">"essay"</span><span class="p">)</span>
+<span class="go">'_rec_demo'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">recommend_genre</span><span class="p">(</span><span class="s2">"nope"</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">recommend_genre</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">del</span> <span class="n">genres</span><span class="p">[</span><span class="s2">&quot;_rec_demo&quot;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">del</span> <span class="n">genres</span><span class="p">[</span><span class="s2">"_rec_demo"</span><span class="p">]</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -505,12 +505,12 @@ order), or <code class="docutils literal notranslate"><span class="pre">None</sp
 <dt class="sig sig-object py" id="nw.genres.register_genre">
 <span class="sig-prename descclassname"><span class="pre">nw.genres.</span></span><span class="sig-name descname"><span class="pre">register_genre</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">genre</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nw.genres.Genre" title="nw.genres.Genre"><span class="pre">Genre</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nw.genres.Genre" title="nw.genres.Genre"><span class="pre">Genre</span></a></span></span><a class="reference internal" href="../../_modules/nw/genres.html#register_genre"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.genres.register_genre" title="Link to this definition"></a></dt>
 <dd><p>Register a <a class="reference internal" href="#nw.genres.Genre" title="nw.genres.Genre"><code class="xref py py-class docutils literal notranslate"><span class="pre">Genre</span></code></a> under its <code class="docutils literal notranslate"><span class="pre">slug</span></code>; returns it for inline use.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">g</span> <span class="o">=</span> <span class="n">register_genre</span><span class="p">(</span><span class="n">Genre</span><span class="p">(</span><span class="n">slug</span><span class="o">=</span><span class="s2">&quot;doctest_demo&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Demo&quot;</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">get_genre</span><span class="p">(</span><span class="s2">&quot;doctest_demo&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">title</span>
-<span class="go">&#39;Demo&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="s2">&quot;doctest_demo&quot;</span> <span class="ow">in</span> <span class="n">list_genres</span><span class="p">()</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">g</span> <span class="o">=</span> <span class="n">register_genre</span><span class="p">(</span><span class="n">Genre</span><span class="p">(</span><span class="n">slug</span><span class="o">=</span><span class="s2">"doctest_demo"</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">"Demo"</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_genre</span><span class="p">(</span><span class="s2">"doctest_demo"</span><span class="p">)</span><span class="o">.</span><span class="n">title</span>
+<span class="go">'Demo'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s2">"doctest_demo"</span> <span class="ow">in</span> <span class="n">list_genres</span><span class="p">()</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">del</span> <span class="n">genres</span><span class="p">[</span><span class="s2">&quot;doctest_demo&quot;</span><span class="p">]</span>  <span class="c1"># keep the shared registry clean</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">del</span> <span class="n">genres</span><span class="p">[</span><span class="s2">"doctest_demo"</span><span class="p">]</span>  <span class="c1"># keep the shared registry clean</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -525,16 +525,16 @@ order), or <code class="docutils literal notranslate"><span class="pre">None</sp
 <a class="reference internal" href="#nw.genres.initialize_genre" title="nw.genres.initialize_genre"><code class="xref py py-func docutils literal notranslate"><span class="pre">initialize_genre()</span></code></a> dispatches to it. Independent of genre <em>registration
 order</em> (keyed by the slug string). A genre that seeds nothing on create needs
 no initializer at all.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">register_genre</span><span class="p">(</span><span class="n">Genre</span><span class="p">(</span><span class="n">slug</span><span class="o">=</span><span class="s2">&quot;_init_demo&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Demo&quot;</span><span class="p">,</span>
-<span class="gp">... </span>                         <span class="n">defaults</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;look&quot;</span><span class="p">:</span> <span class="s2">&quot;plain&quot;</span><span class="p">}))</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">register_genre</span><span class="p">(</span><span class="n">Genre</span><span class="p">(</span><span class="n">slug</span><span class="o">=</span><span class="s2">"_init_demo"</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">"Demo"</span><span class="p">,</span>
+<span class="gp">... </span>                         <span class="n">defaults</span><span class="o">=</span><span class="p">{</span><span class="s2">"look"</span><span class="p">:</span> <span class="s2">"plain"</span><span class="p">}))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">seen</span> <span class="o">=</span> <span class="p">{}</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="nf">_seed</span><span class="p">(</span><span class="n">genre</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
-<span class="gp">... </span>    <span class="n">seen</span><span class="p">[</span><span class="s2">&quot;applied&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">genre</span><span class="o">.</span><span class="n">slug</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">register_genre_initializer</span><span class="p">(</span><span class="s2">&quot;_init_demo&quot;</span><span class="p">,</span> <span class="n">_seed</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">initialize_genre</span><span class="p">(</span><span class="s2">&quot;_init_demo&quot;</span><span class="p">,</span> <span class="nb">object</span><span class="p">())</span>  <span class="c1"># params default to the genre&#39;s</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">seen</span><span class="p">[</span><span class="s2">&quot;applied&quot;</span><span class="p">]</span>
-<span class="go">(&#39;_init_demo&#39;, None, {&#39;look&#39;: &#39;plain&#39;})</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">del</span> <span class="n">genres</span><span class="p">[</span><span class="s2">&quot;_init_demo&quot;</span><span class="p">];</span> <span class="k">del</span> <span class="n">genre_initializers</span><span class="p">[</span><span class="s2">&quot;_init_demo&quot;</span><span class="p">]</span>
+<span class="gp">... </span>    <span class="n">seen</span><span class="p">[</span><span class="s2">"applied"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">genre</span><span class="o">.</span><span class="n">slug</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">register_genre_initializer</span><span class="p">(</span><span class="s2">"_init_demo"</span><span class="p">,</span> <span class="n">_seed</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">initialize_genre</span><span class="p">(</span><span class="s2">"_init_demo"</span><span class="p">,</span> <span class="nb">object</span><span class="p">())</span>  <span class="c1"># params default to the genre's</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">seen</span><span class="p">[</span><span class="s2">"applied"</span><span class="p">]</span>
+<span class="go">('_init_demo', None, {'look': 'plain'})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">del</span> <span class="n">genres</span><span class="p">[</span><span class="s2">"_init_demo"</span><span class="p">];</span> <span class="k">del</span> <span class="n">genre_initializers</span><span class="p">[</span><span class="s2">"_init_demo"</span><span class="p">]</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -546,18 +546,18 @@ no initializer at all.</p>
 <p>Called by the genre’s <strong>owning app</strong> so a host that aggregates the genre can create
 its projects via <a class="reference internal" href="#nw.genres.create_genre_project" title="nw.genres.create_genre_project"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_genre_project()</span></code></a> without knowing its storage. See
 <a class="reference internal" href="#nw.genres.GenreProjectFactory" title="nw.genres.GenreProjectFactory"><code class="xref py py-data docutils literal notranslate"><span class="pre">GenreProjectFactory</span></code></a> for the signature + the caller-space contract.</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">register_genre</span><span class="p">(</span><span class="n">Genre</span><span class="p">(</span><span class="n">slug</span><span class="o">=</span><span class="s2">&quot;_pf_demo&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Demo&quot;</span><span class="p">,</span>
-<span class="gp">... </span>                         <span class="n">defaults</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;format_id&quot;</span><span class="p">:</span> <span class="s2">&quot;solo&quot;</span><span class="p">}))</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">register_genre</span><span class="p">(</span><span class="n">Genre</span><span class="p">(</span><span class="n">slug</span><span class="o">=</span><span class="s2">"_pf_demo"</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">"Demo"</span><span class="p">,</span>
+<span class="gp">... </span>                         <span class="n">defaults</span><span class="o">=</span><span class="p">{</span><span class="s2">"format_id"</span><span class="p">:</span> <span class="s2">"solo"</span><span class="p">}))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">made</span> <span class="o">=</span> <span class="p">{}</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="nf">_f</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
 <span class="gp">... </span>    <span class="n">made</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">caller</span><span class="o">=</span><span class="n">caller</span><span class="p">,</span> <span class="n">project_id</span><span class="o">=</span><span class="n">project_id</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
-<span class="gp">... </span>    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;project&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;project_id&quot;</span><span class="p">:</span> <span class="n">project_id</span><span class="p">}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">register_genre_project_factory</span><span class="p">(</span><span class="s2">&quot;_pf_demo&quot;</span><span class="p">,</span> <span class="n">_f</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">create_genre_project</span><span class="p">(</span><span class="s2">&quot;_pf_demo&quot;</span><span class="p">,</span> <span class="s2">&quot;u@x.com&quot;</span><span class="p">,</span> <span class="s2">&quot;p1&quot;</span><span class="p">)[</span><span class="s2">&quot;project_id&quot;</span><span class="p">]</span>
-<span class="go">&#39;p1&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">made</span><span class="p">[</span><span class="s2">&quot;caller&quot;</span><span class="p">],</span> <span class="n">made</span><span class="p">[</span><span class="s2">&quot;params&quot;</span><span class="p">])</span>
-<span class="go">(&#39;u@x.com&#39;, {&#39;format_id&#39;: &#39;solo&#39;})</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">del</span> <span class="n">genres</span><span class="p">[</span><span class="s2">&quot;_pf_demo&quot;</span><span class="p">];</span> <span class="k">del</span> <span class="n">genre_project_factories</span><span class="p">[</span><span class="s2">&quot;_pf_demo&quot;</span><span class="p">]</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="p">{</span><span class="s2">"project"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">"project_id"</span><span class="p">:</span> <span class="n">project_id</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">register_genre_project_factory</span><span class="p">(</span><span class="s2">"_pf_demo"</span><span class="p">,</span> <span class="n">_f</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">create_genre_project</span><span class="p">(</span><span class="s2">"_pf_demo"</span><span class="p">,</span> <span class="s2">"u@x.com"</span><span class="p">,</span> <span class="s2">"p1"</span><span class="p">)[</span><span class="s2">"project_id"</span><span class="p">]</span>
+<span class="go">'p1'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">made</span><span class="p">[</span><span class="s2">"caller"</span><span class="p">],</span> <span class="n">made</span><span class="p">[</span><span class="s2">"params"</span><span class="p">])</span>
+<span class="go">('u@x.com', {'format_id': 'solo'})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">del</span> <span class="n">genres</span><span class="p">[</span><span class="s2">"_pf_demo"</span><span class="p">];</span> <span class="k">del</span> <span class="n">genre_project_factories</span><span class="p">[</span><span class="s2">"_pf_demo"</span><span class="p">]</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -570,13 +570,13 @@ its projects via <a class="reference internal" href="#nw.genres.create_genre_pro
 chosen template (or <code class="docutils literal notranslate"><span class="pre">None</span></code> for “start from scratch”) to that app’s bare params
 payload; <a class="reference internal" href="#nw.genres.resolve_genre" title="nw.genres.resolve_genre"><code class="xref py py-func docutils literal notranslate"><span class="pre">resolve_genre()</span></code></a> adds the <code class="docutils literal notranslate"><span class="pre">{genre,</span> <span class="pre">template,</span> <span class="pre">params}</span></code> envelope.
 Independent of genre <em>registration order</em> (keyed by the slug string).</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">register_genre</span><span class="p">(</span><span class="n">Genre</span><span class="p">(</span><span class="n">slug</span><span class="o">=</span><span class="s2">&quot;_resolver_demo&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Demo&quot;</span><span class="p">,</span>
-<span class="gp">... </span>                         <span class="n">defaults</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;look&quot;</span><span class="p">:</span> <span class="s2">&quot;plain&quot;</span><span class="p">}))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">register_genre_resolver</span><span class="p">(</span><span class="s2">&quot;_resolver_demo&quot;</span><span class="p">,</span>
-<span class="gp">... </span>    <span class="k">lambda</span> <span class="n">genre</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;look&quot;</span><span class="p">:</span> <span class="n">genre</span><span class="o">.</span><span class="n">defaults</span><span class="p">[</span><span class="s2">&quot;look&quot;</span><span class="p">],</span> <span class="s2">&quot;via&quot;</span><span class="p">:</span> <span class="s2">&quot;resolver&quot;</span><span class="p">})</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">resolve_genre</span><span class="p">(</span><span class="s2">&quot;_resolver_demo&quot;</span><span class="p">)</span>
-<span class="go">{&#39;genre&#39;: &#39;_resolver_demo&#39;, &#39;template&#39;: None, &#39;params&#39;: {&#39;look&#39;: &#39;plain&#39;, &#39;via&#39;: &#39;resolver&#39;}}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">del</span> <span class="n">genres</span><span class="p">[</span><span class="s2">&quot;_resolver_demo&quot;</span><span class="p">];</span> <span class="k">del</span> <span class="n">genre_resolvers</span><span class="p">[</span><span class="s2">&quot;_resolver_demo&quot;</span><span class="p">]</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">register_genre</span><span class="p">(</span><span class="n">Genre</span><span class="p">(</span><span class="n">slug</span><span class="o">=</span><span class="s2">"_resolver_demo"</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">"Demo"</span><span class="p">,</span>
+<span class="gp">... </span>                         <span class="n">defaults</span><span class="o">=</span><span class="p">{</span><span class="s2">"look"</span><span class="p">:</span> <span class="s2">"plain"</span><span class="p">}))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">register_genre_resolver</span><span class="p">(</span><span class="s2">"_resolver_demo"</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="k">lambda</span> <span class="n">genre</span><span class="p">,</span> <span class="n">template</span><span class="p">:</span> <span class="p">{</span><span class="s2">"look"</span><span class="p">:</span> <span class="n">genre</span><span class="o">.</span><span class="n">defaults</span><span class="p">[</span><span class="s2">"look"</span><span class="p">],</span> <span class="s2">"via"</span><span class="p">:</span> <span class="s2">"resolver"</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">resolve_genre</span><span class="p">(</span><span class="s2">"_resolver_demo"</span><span class="p">)</span>
+<span class="go">{'genre': '_resolver_demo', 'template': None, 'params': {'look': 'plain', 'via': 'resolver'}}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">del</span> <span class="n">genres</span><span class="p">[</span><span class="s2">"_resolver_demo"</span><span class="p">];</span> <span class="k">del</span> <span class="n">genre_resolvers</span><span class="p">[</span><span class="s2">"_resolver_demo"</span><span class="p">]</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -604,11 +604,11 @@ ONE stable contract for every host, regardless of whether the genre has a resolv
 <p>Raises <code class="xref py py-class docutils literal notranslate"><span class="pre">KeyError</span></code> on an unknown genre or — <strong>uniformly, resolver or not</strong> —
 an unknown <code class="docutils literal notranslate"><span class="pre">template</span></code> slug (the substrate owns template identity; a resolver only
 interprets params, it doesn’t get to invent template slugs).</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">register_genre</span><span class="p">(</span><span class="n">Genre</span><span class="p">(</span><span class="n">slug</span><span class="o">=</span><span class="s2">&quot;_rg_demo&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Demo&quot;</span><span class="p">,</span>
-<span class="gp">... </span>                         <span class="n">defaults</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;flavor&quot;</span><span class="p">:</span> <span class="s2">&quot;cinematic&quot;</span><span class="p">}))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">resolve_genre</span><span class="p">(</span><span class="s2">&quot;_rg_demo&quot;</span><span class="p">)</span>  <span class="c1"># no resolver registered -&gt; generic params</span>
-<span class="go">{&#39;genre&#39;: &#39;_rg_demo&#39;, &#39;template&#39;: None, &#39;params&#39;: {&#39;flavor&#39;: &#39;cinematic&#39;}}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">del</span> <span class="n">genres</span><span class="p">[</span><span class="s2">&quot;_rg_demo&quot;</span><span class="p">]</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">register_genre</span><span class="p">(</span><span class="n">Genre</span><span class="p">(</span><span class="n">slug</span><span class="o">=</span><span class="s2">"_rg_demo"</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">"Demo"</span><span class="p">,</span>
+<span class="gp">... </span>                         <span class="n">defaults</span><span class="o">=</span><span class="p">{</span><span class="s2">"flavor"</span><span class="p">:</span> <span class="s2">"cinematic"</span><span class="p">}))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">resolve_genre</span><span class="p">(</span><span class="s2">"_rg_demo"</span><span class="p">)</span>  <span class="c1"># no resolver registered -&gt; generic params</span>
+<span class="go">{'genre': '_rg_demo', 'template': None, 'params': {'flavor': 'cinematic'}}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">del</span> <span class="n">genres</span><span class="p">[</span><span class="s2">"_rg_demo"</span><span class="p">]</span>
 </pre></div>
 </div>
 </dd></dl>

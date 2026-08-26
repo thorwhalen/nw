@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.freshness &mdash; nw 0.0.31 documentation</title>
+  <title>nw.freshness &mdash; nw 0.0.32 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=c5dbc6bb"></script>
+      <script src="../../_static/documentation_options.js?v=f2234cd1"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -107,18 +107,18 @@
            <div itemprop="articleBody">
              
   <h1>Source code for nw.freshness</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Freshness with **early cutoff** — what is *actually* out of date.</span>
+<span></span><span class="sd">"""Freshness with **early cutoff** — what is *actually* out of date.</span>
 
-<span class="sd">``descendants_of`` answers a reachability question: &quot;what is downstream of</span>
-<span class="sd">this?&quot;. :func:`stale_after` answers a freshness question: &quot;what did this</span>
-<span class="sd">change actually invalidate?&quot;. Those are different questions, and until this</span>
+<span class="sd">``descendants_of`` answers a reachability question: "what is downstream of</span>
+<span class="sd">this?". :func:`stale_after` answers a freshness question: "what did this</span>
+<span class="sd">change actually invalidate?". Those are different questions, and until this</span>
 <span class="sd">module existed nw answered the second with the first — a one-line alias, so</span>
 <span class="sd">editing one beat in a 200-shot project reported every descendant stale</span>
 <span class="sd">whether or not anything about it had changed.</span>
 
 <span class="sd">In *Build Systems à la Carte* terms that is the **Make** cell: a dirty-bit</span>
-<span class="sd">rebuilder, &quot;early cutoff: no&quot;. This module upgrades it to a **verifying</span>
-<span class="sd">trace** rebuilder (Ninja, Shake, rustc/Salsa) using Salsa&#39;s *backdating*</span>
+<span class="sd">rebuilder, "early cutoff: no". This module upgrades it to a **verifying</span>
+<span class="sd">trace** rebuilder (Ninja, Shake, rustc/Salsa) using Salsa's *backdating*</span>
 <span class="sd">idea: compare the value you have against the value the consumer recorded,</span>
 <span class="sd">and stop when they agree. One 32-byte digest comparison replaces loading a</span>
 <span class="sd">40 MB video, which is what makes cutoff free rather than pointless.</span>
@@ -136,16 +136,16 @@
 
 <span class="sd">- no verifying trace was recorded for ``X`` (:mod:`nw.bodies.verifying_trace`),</span>
 <span class="sd">- the trace was written under a different digest scheme,</span>
-<span class="sd">- the trace&#39;s upstream set is not exactly ``X.provenance.was_derived_from``,</span>
+<span class="sd">- the trace's upstream set is not exactly ``X.provenance.was_derived_from``,</span>
 <span class="sd">- a recorded upstream annotation no longer exists,</span>
 <span class="sd">- a recorded upstream is **itself stale** — its value is about to change,</span>
-<span class="sd">- a recorded upstream&#39;s *current* value digest differs from the recorded one.</span>
+<span class="sd">- a recorded upstream's *current* value digest differs from the recorded one.</span>
 
 <span class="sd">Two consequences worth stating, because both are easy to get backwards:</span>
 
 <span class="sd">**The comparison lives on the edge, not on the node.** It is tempting to</span>
 <span class="sd">classify ``X`` as fresh and then prune the walk there. That is wrong: ``X``</span>
-<span class="sd">having up-to-date *inputs* says nothing about whether ``X``&#39;s own *value*</span>
+<span class="sd">having up-to-date *inputs* says nothing about whether ``X``'s own *value*</span>
 <span class="sd">still equals what its children recorded. Rewriting ``X`` in place makes</span>
 <span class="sd">``X`` fresh and its children stale at the same instant. So every reachable</span>
 <span class="sd">node is classified against **its own** recorded digests; the walk prunes</span>
@@ -166,13 +166,13 @@
 <span class="sd">Stated so nobody reads more into the number than is there:</span>
 
 <span class="sd">- **A changed Transform.** The trace records upstream *values*, not the</span>
-<span class="sd">  producing code. Bumping a Transform&#39;s implementation or prompt does not</span>
-<span class="sd">  move any digest. ``stale_after`` answers &quot;what did this *annotation* change</span>
-<span class="sd">  invalidate&quot;, not &quot;what did this *code* change invalidate&quot;.</span>
-<span class="sd">- **A hand-edited output.** Editing ``X``&#39;s body directly leaves its trace</span>
+<span class="sd">  producing code. Bumping a Transform's implementation or prompt does not</span>
+<span class="sd">  move any digest. ``stale_after`` answers "what did this *annotation* change</span>
+<span class="sd">  invalidate", not "what did this *code* change invalidate".</span>
+<span class="sd">- **A hand-edited output.** Editing ``X``'s body directly leaves its trace</span>
 <span class="sd">  matching its parents, so ``X`` reads fresh. That is the intended reading —</span>
 <span class="sd">  a deliberate override is not stale relative to its inputs — but it does</span>
-<span class="sd">  mean &quot;fresh&quot; is not &quot;would regenerate identically&quot;.</span>
+<span class="sd">  mean "fresh" is not "would regenerate identically".</span>
 <span class="sd">- **The plan → execute window.** The trace is written when the output is</span>
 <span class="sd">  *persisted*, so an upstream mutated between planning and writing is</span>
 <span class="sd">  recorded at its newer value. That needs a concurrent edit during a render.</span>
@@ -180,7 +180,7 @@
 <span class="sd">  is ``list[UUID]`` and cannot hold a 64-hex ``asset_id``, so artifact →</span>
 <span class="sd">  artifact lineage is unrepresentable (thorwhalen/lacing#14). This module is</span>
 <span class="sd">  the **annotation** tier only.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -200,17 +200,17 @@
 
 
 <span class="c1"># --- verdict reasons ---------------------------------------------------------</span>
-<span class="c1"># Stable strings: they surface in reelee&#39;s freshness UI and in test assertions.</span>
+<span class="c1"># Stable strings: they surface in reelee's freshness UI and in test assertions.</span>
 
-<span class="n">REASON_FRESH</span> <span class="o">=</span> <span class="s2">&quot;verified-fresh&quot;</span>
-<span class="n">REASON_NO_TRACE</span> <span class="o">=</span> <span class="s2">&quot;no-trace&quot;</span>
-<span class="n">REASON_SCHEME_CHANGED</span> <span class="o">=</span> <span class="s2">&quot;digest-scheme-changed&quot;</span>
-<span class="n">REASON_TRACE_PARENTS_DIFFER</span> <span class="o">=</span> <span class="s2">&quot;trace-parents-differ&quot;</span>
-<span class="n">REASON_TRACE_UNREADABLE</span> <span class="o">=</span> <span class="s2">&quot;trace-unreadable&quot;</span>
-<span class="n">REASON_UPSTREAM_MISSING</span> <span class="o">=</span> <span class="s2">&quot;upstream-missing&quot;</span>
-<span class="n">REASON_UPSTREAM_STALE</span> <span class="o">=</span> <span class="s2">&quot;upstream-stale&quot;</span>
-<span class="n">REASON_UPSTREAM_CHANGED</span> <span class="o">=</span> <span class="s2">&quot;upstream-changed&quot;</span>
-<span class="n">REASON_PROVENANCE_CYCLE</span> <span class="o">=</span> <span class="s2">&quot;provenance-cycle&quot;</span>
+<span class="n">REASON_FRESH</span> <span class="o">=</span> <span class="s2">"verified-fresh"</span>
+<span class="n">REASON_NO_TRACE</span> <span class="o">=</span> <span class="s2">"no-trace"</span>
+<span class="n">REASON_SCHEME_CHANGED</span> <span class="o">=</span> <span class="s2">"digest-scheme-changed"</span>
+<span class="n">REASON_TRACE_PARENTS_DIFFER</span> <span class="o">=</span> <span class="s2">"trace-parents-differ"</span>
+<span class="n">REASON_TRACE_UNREADABLE</span> <span class="o">=</span> <span class="s2">"trace-unreadable"</span>
+<span class="n">REASON_UPSTREAM_MISSING</span> <span class="o">=</span> <span class="s2">"upstream-missing"</span>
+<span class="n">REASON_UPSTREAM_STALE</span> <span class="o">=</span> <span class="s2">"upstream-stale"</span>
+<span class="n">REASON_UPSTREAM_CHANGED</span> <span class="o">=</span> <span class="s2">"upstream-changed"</span>
+<span class="n">REASON_PROVENANCE_CYCLE</span> <span class="o">=</span> <span class="s2">"provenance-cycle"</span>
 
 <span class="n">STALE_REASONS</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
     <span class="n">REASON_NO_TRACE</span><span class="p">,</span>
@@ -222,22 +222,22 @@
     <span class="n">REASON_UPSTREAM_CHANGED</span><span class="p">,</span>
     <span class="n">REASON_PROVENANCE_CYCLE</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="sd">&quot;&quot;&quot;Every reason that resolves to *stale*. :data:`REASON_FRESH` is the only</span>
-<span class="sd">verdict that does not, which is the invariant that keeps &quot;unverifiable means</span>
-<span class="sd">stale&quot; true by construction rather than by review.&quot;&quot;&quot;</span>
+<span class="sd">"""Every reason that resolves to *stale*. :data:`REASON_FRESH` is the only</span>
+<span class="sd">verdict that does not, which is the invariant that keeps "unverifiable means</span>
+<span class="sd">stale" true by construction rather than by review."""</span>
 
 
 <div class="viewcode-block" id="FreshnessVerdict">
 <a class="viewcode-back" href="../../module_docs/nw/freshness.html#nw.FreshnessVerdict">[docs]</a>
 <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">FreshnessVerdict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Why one reachable annotation was judged stale (or not).</span>
+<span class="w">    </span><span class="sd">"""Why one reachable annotation was judged stale (or not).</span>
 
 <span class="sd">    Emitted by :func:`stale_verdicts`. ``reason`` is one of the</span>
 <span class="sd">    ``REASON_*`` constants; ``upstream_id`` names the parent that decided it</span>
-<span class="sd">    when a single parent did, so &quot;why is this stale?&quot; has an answer that does</span>
+<span class="sd">    when a single parent did, so "why is this stale?" has an answer that does</span>
 <span class="sd">    not require re-deriving the walk by hand.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">annotation</span><span class="p">:</span> <span class="n">Annotation</span>
     <span class="n">is_stale</span><span class="p">:</span> <span class="nb">bool</span>
@@ -251,7 +251,7 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">stale_verdicts</span><span class="p">(</span>
     <span class="n">project_root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span> <span class="n">changed_id</span><span class="p">:</span> <span class="n">UUID</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">FreshnessVerdict</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Classify every annotation downstream of ``changed_id``.</span>
+<span class="w">    </span><span class="sd">"""Classify every annotation downstream of ``changed_id``.</span>
 
 <span class="sd">    The explained form of :func:`stale_after`: one verdict per reachable</span>
 <span class="sd">    annotation, stale or not, in a deterministic order (generation time, then</span>
@@ -262,7 +262,7 @@
 <span class="sd">    same walk with the fresh verdicts dropped;</span>
 <span class="sd">    :func:`stale_verdicts_all` is the same classification with no</span>
 <span class="sd">    ``changed_id`` — the whole-project snapshot.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">annotations</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">iter_all_annotations</span><span class="p">(</span><span class="n">project_root</span><span class="p">))</span>
     <span class="n">children</span> <span class="o">=</span> <span class="n">_children_index</span><span class="p">(</span><span class="n">annotations</span><span class="p">)</span>
     <span class="n">reachable</span> <span class="o">=</span> <span class="n">_reachable_from</span><span class="p">(</span><span class="n">changed_id</span><span class="p">,</span> <span class="n">children</span><span class="p">)</span>
@@ -273,10 +273,10 @@
 <div class="viewcode-block" id="stale_verdicts_all">
 <a class="viewcode-back" href="../../module_docs/nw/freshness.html#nw.stale_verdicts_all">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">stale_verdicts_all</span><span class="p">(</span><span class="n">project_root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">FreshnessVerdict</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Classify every derived annotation in the project — the snapshot form.</span>
+<span class="w">    </span><span class="sd">"""Classify every derived annotation in the project — the snapshot form.</span>
 
-<span class="sd">    The question a freshness *indicator* asks: &quot;what is stale in this</span>
-<span class="sd">    project right now?&quot;, with no ``changed_id`` to anchor on. Same</span>
+<span class="sd">    The question a freshness *indicator* asks: "what is stale in this</span>
+<span class="sd">    project right now?", with no ``changed_id`` to anchor on. Same</span>
 <span class="sd">    verifying-trace classification as :func:`stale_verdicts`, over a wider</span>
 <span class="sd">    frontier: every annotation with at least one provenance parent.</span>
 
@@ -298,7 +298,7 @@
 <span class="sd">    rewritten through the trace-writing path. A consumer replacing its own</span>
 <span class="sd">    weaker snapshot with this one is making a behavior change on pre-trace</span>
 <span class="sd">    projects, not installing a pure wrapper.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">annotations</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">iter_all_annotations</span><span class="p">(</span><span class="n">project_root</span><span class="p">))</span>
     <span class="n">derived</span> <span class="o">=</span> <span class="p">{</span><span class="n">a</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">annotations</span> <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">provenance</span><span class="o">.</span><span class="n">was_derived_from</span><span class="p">}</span>
     <span class="k">return</span> <span class="n">_verdicts_for</span><span class="p">(</span><span class="n">annotations</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="n">derived</span><span class="p">,</span> <span class="n">recursion_scope</span><span class="o">=</span><span class="n">derived</span><span class="p">)</span></div>
@@ -308,13 +308,13 @@
 <div class="viewcode-block" id="all_stale">
 <a class="viewcode-back" href="../../module_docs/nw/freshness.html#nw.all_stale">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">all_stale</span><span class="p">(</span><span class="n">project_root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Every annotation that is currently stale, regardless of cause.</span>
+<span class="w">    </span><span class="sd">"""Every annotation that is currently stale, regardless of cause.</span>
 
 <span class="sd">    :func:`stale_verdicts_all` with the fresh verdicts dropped — the</span>
 <span class="sd">    snapshot counterpart of :func:`stale_after`, and the primitive a</span>
-<span class="sd">    freshness indicator or a &quot;regenerate everything stale&quot; verb should sit</span>
+<span class="sd">    freshness indicator or a "regenerate everything stale" verb should sit</span>
 <span class="sd">    on instead of re-deriving its own definition of the word.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">v</span><span class="o">.</span><span class="n">annotation</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">stale_verdicts_all</span><span class="p">(</span><span class="n">project_root</span><span class="p">)</span> <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">is_stale</span><span class="p">]</span></div>
 
 
@@ -325,7 +325,7 @@
     <span class="n">scope</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="n">UUID</span><span class="p">],</span>
     <span class="n">recursion_scope</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="n">UUID</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">FreshnessVerdict</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Classify every annotation in ``scope``, in deterministic order.</span>
+<span class="w">    </span><span class="sd">"""Classify every annotation in ``scope``, in deterministic order.</span>
 
 <span class="sd">    ``recursion_scope`` bounds the ``REASON_UPSTREAM_STALE`` recursion: a</span>
 <span class="sd">    parent inside it is itself classified before the digest comparison; a</span>
@@ -333,14 +333,14 @@
 <span class="sd">    reachable set for both (outside it, a parent is unaffected by the</span>
 <span class="sd">    change); the whole-graph walk passes the derived set for both (a</span>
 <span class="sd">    parentless parent has no verdict to take — it is never stale).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">by_id</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">UUID</span><span class="p">,</span> <span class="n">Annotation</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">a</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">a</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">annotations</span><span class="p">}</span>
     <span class="n">traces</span> <span class="o">=</span> <span class="n">_traces_by_target</span><span class="p">(</span><span class="n">annotations</span><span class="p">)</span>
 
     <span class="n">digests</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">UUID</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">digest_of</span><span class="p">(</span><span class="n">ann</span><span class="p">:</span> <span class="n">Annotation</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Memoized value digest; ``None`` when the body cannot be digested.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Memoized value digest; ``None`` when the body cannot be digested."""</span>
         <span class="k">if</span> <span class="n">ann</span><span class="o">.</span><span class="n">id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">digests</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">digests</span><span class="p">[</span><span class="n">ann</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">annotation_value_digest</span><span class="p">(</span><span class="n">ann</span><span class="p">)</span>
@@ -348,9 +348,9 @@
                 <span class="c1"># A body outside the JSON contract (lacing raises</span>
                 <span class="c1"># NonStringBodyKeyError) cannot be compared. Catching is the</span>
                 <span class="c1"># load-bearing part — a read-only freshness query must not</span>
-                <span class="c1"># crash on one broken row. The sentinel&#39;s *value* is not: any</span>
+                <span class="c1"># crash on one broken row. The sentinel's *value* is not: any</span>
                 <span class="c1"># non-digest sentinel compares unequal to a recorded 64-hex</span>
-                <span class="c1"># digest, so the caller reads it as &quot;changed&quot; either way.</span>
+                <span class="c1"># digest, so the caller reads it as "changed" either way.</span>
                 <span class="n">digests</span><span class="p">[</span><span class="n">ann</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="n">digests</span><span class="p">[</span><span class="n">ann</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
 
@@ -389,7 +389,7 @@
         <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">FreshnessVerdict</span><span class="p">(</span><span class="n">ann</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">REASON_TRACE_UNREADABLE</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">recorded</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">set</span><span class="p">(</span><span class="n">parents</span><span class="p">):</span>
-            <span class="c1"># The trace does not describe this annotation&#39;s current parents —</span>
+            <span class="c1"># The trace does not describe this annotation's current parents —</span>
             <span class="c1"># a parent added, removed or rewritten since. Nothing to compare.</span>
             <span class="k">return</span> <span class="n">FreshnessVerdict</span><span class="p">(</span><span class="n">ann</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">REASON_TRACE_PARENTS_DIFFER</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">pid</span> <span class="ow">in</span> <span class="n">parents</span><span class="p">:</span>
@@ -401,7 +401,7 @@
                     <span class="c1"># `pid` is an ancestor still being classified, so this edge</span>
                     <span class="c1"># closes a provenance cycle — malformed data. Reported on</span>
                     <span class="c1"># the edge that closes it rather than swallowed as a</span>
-                    <span class="c1"># generic &quot;upstream is stale&quot;, which is what a re-entry</span>
+                    <span class="c1"># generic "upstream is stale", which is what a re-entry</span>
                     <span class="c1"># guard one level up would have produced (and which no</span>
                     <span class="c1"># caller could ever observe).</span>
                     <span class="k">return</span> <span class="n">FreshnessVerdict</span><span class="p">(</span><span class="n">ann</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">REASON_PROVENANCE_CYCLE</span><span class="p">,</span> <span class="n">pid</span><span class="p">)</span>
@@ -409,7 +409,7 @@
                     <span class="k">return</span> <span class="n">FreshnessVerdict</span><span class="p">(</span><span class="n">ann</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">REASON_UPSTREAM_STALE</span><span class="p">,</span> <span class="n">pid</span><span class="p">)</span>
             <span class="c1"># ``digest_of`` returns None for a body lacing refuses to digest.</span>
             <span class="c1"># None is never equal to a recorded 64-hex digest, so the</span>
-            <span class="c1"># undigestible case falls to &quot;changed&quot; by construction rather than</span>
+            <span class="c1"># undigestible case falls to "changed" by construction rather than</span>
             <span class="c1"># by a separate branch that no test could distinguish.</span>
             <span class="k">if</span> <span class="n">digest_of</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span> <span class="o">!=</span> <span class="n">recorded</span><span class="p">[</span><span class="n">pid</span><span class="p">]:</span>
                 <span class="k">return</span> <span class="n">FreshnessVerdict</span><span class="p">(</span><span class="n">ann</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">REASON_UPSTREAM_CHANGED</span><span class="p">,</span> <span class="n">pid</span><span class="p">)</span>
@@ -425,24 +425,24 @@
 <div class="viewcode-block" id="stale_after">
 <a class="viewcode-back" href="../../module_docs/nw/freshness.html#nw.stale_after">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">stale_after</span><span class="p">(</span><span class="n">project_root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span> <span class="n">changed_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return every annotation that ``changed_id`` actually invalidated.</span>
+<span class="w">    </span><span class="sd">"""Return every annotation that ``changed_id`` actually invalidated.</span>
 
-<span class="sd">    The freshness operation. ``changed_id``&#39;s descendants are walked and each</span>
+<span class="sd">    The freshness operation. ``changed_id``'s descendants are walked and each</span>
 <span class="sd">    is checked against the upstream value digests it recorded when it was</span>
 <span class="sd">    written (:mod:`nw.bodies.verifying_trace`). A descendant whose recorded</span>
 <span class="sd">    inputs still match the current ones is **not** returned — that is the</span>
 <span class="sd">    early cutoff, and it is why this is not ``descendants_of`` under another</span>
 <span class="sd">    name. The full rule, and the four things it deliberately does not catch,</span>
-<span class="sd">    are in this module&#39;s docstring.</span>
+<span class="sd">    are in this module's docstring.</span>
 
 <span class="sd">    The returned list does NOT include ``changed_id`` itself (it is the source</span>
 <span class="sd">    of the change, not a stale derivative).</span>
 
 <span class="sd">    ``descendants_of`` is unchanged and still answers the reachability</span>
-<span class="sd">    question — &quot;what is downstream of this?&quot; is legitimate and the two verbs</span>
+<span class="sd">    question — "what is downstream of this?" is legitimate and the two verbs</span>
 <span class="sd">    are no longer synonyms. Use :func:`stale_verdicts` when you need the</span>
 <span class="sd">    *reason* a given annotation is in (or out of) this set.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="p">[</span>
         <span class="n">v</span><span class="o">.</span><span class="n">annotation</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">stale_verdicts</span><span class="p">(</span><span class="n">project_root</span><span class="p">,</span> <span class="n">changed_id</span><span class="p">)</span> <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">is_stale</span>
     <span class="p">]</span></div>
@@ -455,12 +455,12 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">_traces_by_target</span><span class="p">(</span>
     <span class="n">annotations</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Annotation</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="n">UUID</span><span class="p">,</span> <span class="n">VerifyingTraceBodyV1</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Index verifying traces by the annotation each describes.</span>
+<span class="w">    </span><span class="sd">"""Index verifying traces by the annotation each describes.</span>
 
 <span class="sd">    When more than one trace names the same target (an annotation re-added</span>
 <span class="sd">    under the same id), the most recently generated one wins — it describes</span>
 <span class="sd">    the state that is actually on disk.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">best</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">UUID</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">VerifyingTraceBodyV1</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">annotations</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">ann</span><span class="o">.</span><span class="n">body_schema_uri</span> <span class="o">!=</span> <span class="n">VERIFYING_TRACE_BODY_SCHEMA_URI</span><span class="p">:</span>
@@ -478,7 +478,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_children_index</span><span class="p">(</span><span class="n">annotations</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Annotation</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="n">UUID</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">UUID</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;``parent_id -&gt; [child_id, ...]`` over ``provenance.was_derived_from``.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""``parent_id -&gt; [child_id, ...]`` over ``provenance.was_derived_from``."""</span>
     <span class="n">children</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">UUID</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">UUID</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">annotations</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">parent</span> <span class="ow">in</span> <span class="n">ann</span><span class="o">.</span><span class="n">provenance</span><span class="o">.</span><span class="n">was_derived_from</span><span class="p">:</span>
@@ -487,7 +487,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_reachable_from</span><span class="p">(</span><span class="n">ancestor_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">children</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">UUID</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">UUID</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="n">UUID</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Transitive closure of ``children`` from ``ancestor_id``, excluding it.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Transitive closure of ``children`` from ``ancestor_id``, excluding it."""</span>
     <span class="n">seen</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="n">UUID</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
     <span class="n">frontier</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">children</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ancestor_id</span><span class="p">,</span> <span class="p">()))</span>
     <span class="k">while</span> <span class="n">frontier</span><span class="p">:</span>

@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.storyboard &mdash; nw 0.0.31 documentation</title>
+  <title>nw.storyboard &mdash; nw 0.0.32 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=c5dbc6bb"></script>
+      <script src="../../_static/documentation_options.js?v=f2234cd1"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -107,32 +107,32 @@
            <div itemprop="articleBody">
              
   <h1>Source code for nw.storyboard</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Storyboard ↔ Project bridge.</span>
+<span></span><span class="sd">"""Storyboard ↔ Project bridge.</span>
 
 <span class="sd">A storyboard lives at ``&lt;project_root&gt;/storyboard.annot.sqlite`` (a lacing</span>
 <span class="sd">``SqliteStore``). Each panel is an ``annot://schema/storyboard-panel/v1``</span>
-<span class="sd">:class:`lacing.Annotation`; the storyboard&#39;s own asset_id is the project&#39;s</span>
-<span class="sd">song hash, so panels share an interval space with the project&#39;s shots and</span>
+<span class="sd">:class:`lacing.Annotation`; the storyboard's own asset_id is the project's</span>
+<span class="sd">song hash, so panels share an interval space with the project's shots and</span>
 <span class="sd">alignment.</span>
 
 <span class="sd">Public surface:</span>
 
-<span class="sd">- :func:`open_storyboard(project)` — load the project&#39;s storyboard, or return</span>
+<span class="sd">- :func:`open_storyboard(project)` — load the project's storyboard, or return</span>
 <span class="sd">  an empty one if none exists yet.</span>
 <span class="sd">- :func:`save_storyboard(project, sb, *, panel_intervals)` — persist panels</span>
-<span class="sd">  into the project&#39;s lacing store.</span>
+<span class="sd">  into the project's lacing store.</span>
 <span class="sd">- :func:`storyboard_from_shots(project)` — convenience: build a Storyboard</span>
 <span class="sd">  with one panel per shot, intervals matching the shots.</span>
 <span class="sd">- :func:`plan_render_panel_images(sb, *, quality, model_overrides)` — a</span>
-<span class="sd">  Plan with one ``generate_image`` call per panel that doesn&#39;t yet have a</span>
-<span class="sd">  ``role=&quot;seed&quot;`` image. Pure data; cost-aware.</span>
+<span class="sd">  Plan with one ``generate_image`` call per panel that doesn't yet have a</span>
+<span class="sd">  ``role="seed"`` image. Pure data; cost-aware.</span>
 <span class="sd">- :func:`execute_render_panel_images(project, sb, plan)` — execute the Plan,</span>
 <span class="sd">  download images into ``storyboard/`` under the project, return an updated</span>
-<span class="sd">  Storyboard with the new ``role=&quot;seed&quot;`` PanelImages attached.</span>
+<span class="sd">  Storyboard with the new ``role="seed"`` PanelImages attached.</span>
 
 <span class="sd">The artful package is the storyboard *data layer*; nw.storyboard wires it</span>
 <span class="sd">into a folder-backed nw project.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -165,7 +165,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">.transforms</span><span class="w"> </span><span class="kn">import</span> <span class="n">OnFailure</span>
 
 
-<span class="n">_STORYBOARD_DB_NAME</span> <span class="o">=</span> <span class="s2">&quot;storyboard.annot.sqlite&quot;</span>
+<span class="n">_STORYBOARD_DB_NAME</span> <span class="o">=</span> <span class="s2">"storyboard.annot.sqlite"</span>
 
 
 <span class="c1"># ---------------------------------------------------------------------------</span>
@@ -176,7 +176,7 @@
 <div class="viewcode-block" id="storyboard_db_path">
 <a class="viewcode-back" href="../../module_docs/nw/storyboard.html#nw.storyboard_db_path">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">storyboard_db_path</span><span class="p">(</span><span class="n">project</span><span class="p">:</span> <span class="n">Project</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the path to the project&#39;s storyboard SQLite store.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Return the path to the project's storyboard SQLite store."""</span>
     <span class="k">return</span> <span class="n">project</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="n">_STORYBOARD_DB_NAME</span></div>
 
 
@@ -184,13 +184,13 @@
 <div class="viewcode-block" id="project_asset_id">
 <a class="viewcode-back" href="../../module_docs/nw/storyboard.html#nw.project_asset_id">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">project_asset_id</span><span class="p">(</span><span class="n">project</span><span class="p">:</span> <span class="n">Project</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The asset_id used for storyboard panel references.</span>
+<span class="w">    </span><span class="sd">"""The asset_id used for storyboard panel references.</span>
 
-<span class="sd">    Uses the SHA-256 of the project&#39;s song bytes when available, so the</span>
+<span class="sd">    Uses the SHA-256 of the project's song bytes when available, so the</span>
 <span class="sd">    asset_id matches whatever a downstream consumer would compute via</span>
 <span class="sd">    :func:`lacing.hash_file`. Falls back to a stable derived id when the</span>
-<span class="sd">    song isn&#39;t available yet.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    song isn't available yet.</span>
+<span class="sd">    """</span>
     <span class="n">song</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">song_path</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">song</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">song</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">lacing</span><span class="w"> </span><span class="kn">import</span> <span class="n">hash_file</span>
@@ -198,7 +198,7 @@
         <span class="k">return</span> <span class="n">hash_file</span><span class="p">(</span><span class="n">song</span><span class="p">)</span>
     <span class="c1"># Stable fallback: derived from project root + title.</span>
     <span class="n">spec</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">read_spec</span><span class="p">()</span>
-    <span class="n">seed</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;nw:project:</span><span class="si">{</span><span class="n">project</span><span class="o">.</span><span class="n">root</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">spec</span><span class="o">.</span><span class="n">title</span><span class="si">}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
+    <span class="n">seed</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"nw:project:</span><span class="si">{</span><span class="n">project</span><span class="o">.</span><span class="n">root</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">spec</span><span class="o">.</span><span class="n">title</span><span class="si">}</span><span class="s2">"</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span></div>
 
 
@@ -206,14 +206,14 @@
 <div class="viewcode-block" id="open_storyboard">
 <a class="viewcode-back" href="../../module_docs/nw/storyboard.html#nw.open_storyboard">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">open_storyboard</span><span class="p">(</span><span class="n">project</span><span class="p">:</span> <span class="n">Project</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Storyboard</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Load the project&#39;s storyboard. Returns an empty one if not present.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Load the project's storyboard. Returns an empty one if not present."""</span>
     <span class="n">db</span> <span class="o">=</span> <span class="n">storyboard_db_path</span><span class="p">(</span><span class="n">project</span><span class="p">)</span>
     <span class="n">asset_id</span> <span class="o">=</span> <span class="n">project_asset_id</span><span class="p">(</span><span class="n">project</span><span class="p">)</span>
-    <span class="c1"># In SQLite mode an absent file means &quot;no storyboard yet&quot;. In Postgres mode</span>
+    <span class="c1"># In SQLite mode an absent file means "no storyboard yet". In Postgres mode</span>
     <span class="c1"># the file never exists; presence is a DB question, so we always open and</span>
     <span class="c1"># let load_storyboard return an empty Storyboard when the tenant has no</span>
     <span class="c1"># panels.</span>
-    <span class="k">if</span> <span class="n">selected_backend</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;sqlite&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">db</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">selected_backend</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"sqlite"</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">db</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
         <span class="k">return</span> <span class="n">Storyboard</span><span class="p">(</span><span class="n">asset_id</span><span class="o">=</span><span class="n">asset_id</span><span class="p">)</span>
     <span class="n">store</span> <span class="o">=</span> <span class="n">open_graph_store</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">asset_id</span><span class="o">=</span><span class="n">asset_id</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="n">SCOPE_STORYBOARD</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
@@ -230,22 +230,22 @@
     <span class="n">storyboard</span><span class="p">:</span> <span class="n">Storyboard</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">panel_intervals</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TimeInterval</span><span class="p">],</span>
-    <span class="n">was_attributed_to</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;user:nw&quot;</span><span class="p">,</span>
-    <span class="n">was_generated_by</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;agent:nw.storyboard&quot;</span><span class="p">,</span>
+    <span class="n">was_attributed_to</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"user:nw"</span><span class="p">,</span>
+    <span class="n">was_generated_by</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"agent:nw.storyboard"</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Persist a Storyboard into the project&#39;s SqliteStore.</span>
+<span class="w">    </span><span class="sd">"""Persist a Storyboard into the project's SqliteStore.</span>
 
 <span class="sd">    Wipes the existing storyboard panels (under the default tier) so the</span>
 <span class="sd">    save is idempotent — re-running with edited panels replaces them rather</span>
 <span class="sd">    than accumulating duplicates.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">db</span> <span class="o">=</span> <span class="n">storyboard_db_path</span><span class="p">(</span><span class="n">project</span><span class="p">)</span>
     <span class="n">asset_id</span> <span class="o">=</span> <span class="n">project_asset_id</span><span class="p">(</span><span class="n">project</span><span class="p">)</span>
     <span class="n">store</span> <span class="o">=</span> <span class="n">open_graph_store</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">asset_id</span><span class="o">=</span><span class="n">asset_id</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="n">SCOPE_STORYBOARD</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="c1"># The store enforces a foreign key on tier; register it first so the</span>
         <span class="c1"># save is not rejected. Idempotent — re-registering is a no-op in lacing.</span>
-        <span class="n">store</span><span class="o">.</span><span class="n">add_tier</span><span class="p">(</span><span class="n">Tier</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;storyboard&quot;</span><span class="p">,</span> <span class="n">stereotype</span><span class="o">=</span><span class="n">TierStereotype</span><span class="o">.</span><span class="n">NONE</span><span class="p">))</span>
+        <span class="n">store</span><span class="o">.</span><span class="n">add_tier</span><span class="p">(</span><span class="n">Tier</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"storyboard"</span><span class="p">,</span> <span class="n">stereotype</span><span class="o">=</span><span class="n">TierStereotype</span><span class="o">.</span><span class="n">NONE</span><span class="p">))</span>
         <span class="c1"># Drop any existing panels for this asset+tier so save is idempotent.</span>
         <span class="c1"># Their verifying traces go with them (nw#36): a re-saved panel is a</span>
         <span class="c1"># new row, and a trace describing the old one must not survive to</span>
@@ -254,8 +254,8 @@
         <span class="n">panel_ids</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">ann</span><span class="o">.</span><span class="n">id</span>
             <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">annotations</span>
-            <span class="k">if</span> <span class="n">ann</span><span class="o">.</span><span class="n">tier</span> <span class="o">==</span> <span class="s2">&quot;storyboard&quot;</span>
-            <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">reference</span><span class="p">,</span> <span class="s2">&quot;asset_id&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">==</span> <span class="n">storyboard</span><span class="o">.</span><span class="n">asset_id</span>
+            <span class="k">if</span> <span class="n">ann</span><span class="o">.</span><span class="n">tier</span> <span class="o">==</span> <span class="s2">"storyboard"</span>
+            <span class="ow">and</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">reference</span><span class="p">,</span> <span class="s2">"asset_id"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">==</span> <span class="n">storyboard</span><span class="o">.</span><span class="n">asset_id</span>
         <span class="p">}</span>
         <span class="n">remove_annotations_with_traces</span><span class="p">(</span><span class="n">store</span><span class="p">,</span> <span class="n">panel_ids</span><span class="p">,</span> <span class="n">annotations</span><span class="o">=</span><span class="n">annotations</span><span class="p">)</span>
 
@@ -269,7 +269,7 @@
     <span class="k">finally</span><span class="p">:</span>
         <span class="n">_close_if_possible</span><span class="p">(</span><span class="n">store</span><span class="p">)</span>
     <span class="n">project</span><span class="o">.</span><span class="n">log_decision</span><span class="p">(</span>
-        <span class="s2">&quot;save_storyboard&quot;</span><span class="p">,</span>
+        <span class="s2">"save_storyboard"</span><span class="p">,</span>
         <span class="n">panel_count</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">storyboard</span><span class="o">.</span><span class="n">panels</span><span class="p">),</span>
         <span class="n">title</span><span class="o">=</span><span class="n">storyboard</span><span class="o">.</span><span class="n">title</span><span class="p">,</span>
     <span class="p">)</span></div>
@@ -277,7 +277,7 @@
 
 
 <span class="c1"># ---------------------------------------------------------------------------</span>
-<span class="c1"># Build a Storyboard from a project&#39;s shots</span>
+<span class="c1"># Build a Storyboard from a project's shots</span>
 <span class="c1"># ---------------------------------------------------------------------------</span>
 
 
@@ -289,16 +289,16 @@
     <span class="n">title</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">style</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Storyboard</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TimeInterval</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build a one-panel-per-shot draft Storyboard from a project&#39;s shots.</span>
+<span class="w">    </span><span class="sd">"""Build a one-panel-per-shot draft Storyboard from a project's shots.</span>
 
-<span class="sd">    Each panel&#39;s caption defaults to the shot&#39;s description, framing and</span>
-<span class="sd">    camera carry over, and the panel&#39;s ``shot_id`` points back at the shot.</span>
+<span class="sd">    Each panel's caption defaults to the shot's description, framing and</span>
+<span class="sd">    camera carry over, and the panel's ``shot_id`` points back at the shot.</span>
 <span class="sd">    No images are attached yet — use :func:`plan_render_panel_images` to</span>
 <span class="sd">    generate them.</span>
 
 <span class="sd">    Returns ``(storyboard, panel_intervals)`` so the caller can feed both</span>
 <span class="sd">    into :func:`save_storyboard`.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">spec</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">read_spec</span><span class="p">()</span>
     <span class="n">asset_id</span> <span class="o">=</span> <span class="n">project_asset_id</span><span class="p">(</span><span class="n">project</span><span class="p">)</span>
 
@@ -315,7 +315,7 @@
                 <span class="n">caption</span><span class="o">=</span><span class="n">shot</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
                 <span class="n">framing</span><span class="o">=</span><span class="n">shot</span><span class="o">.</span><span class="n">framing</span><span class="p">,</span>
                 <span class="n">camera</span><span class="o">=</span><span class="n">shot</span><span class="o">.</span><span class="n">camera</span><span class="p">,</span>
-                <span class="n">transition_in</span><span class="o">=</span><span class="s2">&quot;cut&quot;</span><span class="p">,</span>
+                <span class="n">transition_in</span><span class="o">=</span><span class="s2">"cut"</span><span class="p">,</span>
                 <span class="n">notes</span><span class="o">=</span><span class="n">shot</span><span class="o">.</span><span class="n">notes</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="p">)</span>
@@ -325,7 +325,7 @@
         <span class="n">asset_id</span><span class="o">=</span><span class="n">asset_id</span><span class="p">,</span>
         <span class="n">panels</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">panels</span><span class="p">),</span>
         <span class="n">style</span><span class="o">=</span><span class="n">style</span> <span class="k">if</span> <span class="n">style</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">spec</span><span class="o">.</span><span class="n">global_style</span><span class="p">,</span>
-        <span class="n">aspect</span><span class="o">=</span><span class="s2">&quot;16:9&quot;</span><span class="p">,</span>
+        <span class="n">aspect</span><span class="o">=</span><span class="s2">"16:9"</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">intervals</span> <span class="o">=</span> <span class="n">_panel_intervals_from_panels</span><span class="p">(</span><span class="n">panel_specs</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">sb</span><span class="p">,</span> <span class="n">intervals</span></div>
@@ -342,36 +342,36 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">plan_render_panel_images</span><span class="p">(</span>
     <span class="n">storyboard</span><span class="p">:</span> <span class="n">Storyboard</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
-    <span class="n">quality</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;balanced&quot;</span><span class="p">,</span>
-    <span class="n">image_size</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;landscape_16_9&quot;</span><span class="p">,</span>
+    <span class="n">quality</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"balanced"</span><span class="p">,</span>
+    <span class="n">image_size</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"landscape_16_9"</span><span class="p">,</span>
     <span class="n">model_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">only_missing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Plan</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build a Plan that generates a seed image for each panel that lacks one.</span>
+<span class="w">    </span><span class="sd">"""Build a Plan that generates a seed image for each panel that lacks one.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        storyboard: The :class:`artful.Storyboard`.</span>
 <span class="sd">        quality: image-gen quality tier.</span>
-<span class="sd">        image_size: &quot;landscape_16_9&quot; by default; respects the storyboard&#39;s</span>
+<span class="sd">        image_size: "landscape_16_9" by default; respects the storyboard's</span>
 <span class="sd">            aspect when it can be mapped to a falaw size, otherwise uses</span>
 <span class="sd">            this default.</span>
 <span class="sd">        model_id: Override the image-gen model. Defaults to whatever</span>
-<span class="sd">            ``falaw.pick_model(category=&quot;image&quot;, quality_tier=quality)``</span>
+<span class="sd">            ``falaw.pick_model(category="image", quality_tier=quality)``</span>
 <span class="sd">            picks (e.g. flux/dev at balanced).</span>
 <span class="sd">        only_missing: When True (default), skip panels that already have a</span>
-<span class="sd">            ``role=&quot;seed&quot;`` image. When False, plan one call per panel</span>
+<span class="sd">            ``role="seed"`` image. When False, plan one call per panel</span>
 <span class="sd">            regardless.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        ``(plan, panel_ids)`` — the Plan, and the panel ids in the same</span>
-<span class="sd">        order as the Plan&#39;s calls (so :func:`execute_render_panel_images`</span>
+<span class="sd">        order as the Plan's calls (so :func:`execute_render_panel_images`</span>
 <span class="sd">        knows which panel each artifact belongs to).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">calls</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">panel_ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="k">for</span> <span class="n">panel</span> <span class="ow">in</span> <span class="n">storyboard</span><span class="o">.</span><span class="n">panels</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">only_missing</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">role</span> <span class="o">==</span> <span class="s2">&quot;seed&quot;</span> <span class="k">for</span> <span class="n">img</span> <span class="ow">in</span> <span class="n">panel</span><span class="o">.</span><span class="n">images</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">only_missing</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">role</span> <span class="o">==</span> <span class="s2">"seed"</span> <span class="k">for</span> <span class="n">img</span> <span class="ow">in</span> <span class="n">panel</span><span class="o">.</span><span class="n">images</span><span class="p">):</span>
             <span class="k">continue</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">panel</span><span class="o">.</span><span class="n">caption</span><span class="p">:</span>
             <span class="c1"># Skip panels with no prompt — the user has to fill the caption.</span>
@@ -379,11 +379,11 @@
 
         <span class="n">prompt</span> <span class="o">=</span> <span class="n">panel</span><span class="o">.</span><span class="n">caption</span>
         <span class="k">if</span> <span class="n">storyboard</span><span class="o">.</span><span class="n">style</span><span class="p">:</span>
-            <span class="n">prompt</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="s2"> | style: </span><span class="si">{</span><span class="n">storyboard</span><span class="o">.</span><span class="n">style</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">prompt</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="s2"> | style: </span><span class="si">{</span><span class="n">storyboard</span><span class="o">.</span><span class="n">style</span><span class="si">}</span><span class="s2">"</span>
         <span class="k">if</span> <span class="n">panel</span><span class="o">.</span><span class="n">framing</span><span class="p">:</span>
-            <span class="n">prompt</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="s2"> | framing: </span><span class="si">{</span><span class="n">panel</span><span class="o">.</span><span class="n">framing</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">prompt</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="s2"> | framing: </span><span class="si">{</span><span class="n">panel</span><span class="o">.</span><span class="n">framing</span><span class="si">}</span><span class="s2">"</span>
         <span class="k">if</span> <span class="n">panel</span><span class="o">.</span><span class="n">camera</span><span class="p">:</span>
-            <span class="n">prompt</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="s2"> | camera: </span><span class="si">{</span><span class="n">panel</span><span class="o">.</span><span class="n">camera</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">prompt</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">prompt</span><span class="si">}</span><span class="s2"> | camera: </span><span class="si">{</span><span class="n">panel</span><span class="o">.</span><span class="n">camera</span><span class="si">}</span><span class="s2">"</span>
 
         <span class="n">call</span> <span class="o">=</span> <span class="n">plan_generate_image</span><span class="p">(</span>
             <span class="n">prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span>
@@ -391,9 +391,9 @@
             <span class="n">image_size</span><span class="o">=</span><span class="n">_image_size_for_aspect</span><span class="p">(</span><span class="n">storyboard</span><span class="o">.</span><span class="n">aspect</span><span class="p">,</span> <span class="n">image_size</span><span class="p">),</span>
             <span class="n">model_id</span><span class="o">=</span><span class="n">model_id</span><span class="p">,</span>
             <span class="n">metadata</span><span class="o">=</span><span class="p">{</span>
-                <span class="s2">&quot;panel_id&quot;</span><span class="p">:</span> <span class="n">panel</span><span class="o">.</span><span class="n">panel_id</span><span class="p">,</span>
-                <span class="s2">&quot;shot_id&quot;</span><span class="p">:</span> <span class="n">panel</span><span class="o">.</span><span class="n">shot_id</span> <span class="ow">or</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;kind&quot;</span><span class="p">:</span> <span class="s2">&quot;storyboard_panel_seed&quot;</span><span class="p">,</span>
+                <span class="s2">"panel_id"</span><span class="p">:</span> <span class="n">panel</span><span class="o">.</span><span class="n">panel_id</span><span class="p">,</span>
+                <span class="s2">"shot_id"</span><span class="p">:</span> <span class="n">panel</span><span class="o">.</span><span class="n">shot_id</span> <span class="ow">or</span> <span class="s2">""</span><span class="p">,</span>
+                <span class="s2">"kind"</span><span class="p">:</span> <span class="s2">"storyboard_panel_seed"</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">)</span>
         <span class="n">calls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">call</span><span class="p">)</span>
@@ -413,50 +413,50 @@
     <span class="o">*</span><span class="p">,</span>
     <span class="n">on_event</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">use_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="n">on_failure</span><span class="p">:</span> <span class="n">OnFailure</span> <span class="o">=</span> <span class="s2">&quot;halt&quot;</span><span class="p">,</span>
+    <span class="n">on_failure</span><span class="p">:</span> <span class="n">OnFailure</span> <span class="o">=</span> <span class="s2">"halt"</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Storyboard</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Execute ``plan``, download each artifact, attach a PanelImage.</span>
+<span class="w">    </span><span class="sd">"""Execute ``plan``, download each artifact, attach a PanelImage.</span>
 
 <span class="sd">    Returns a NEW :class:`Storyboard` (input ``storyboard`` is unchanged) with</span>
-<span class="sd">    the materialized seed images attached as ``role=&quot;seed&quot;`` PanelImages.</span>
+<span class="sd">    the materialized seed images attached as ``role="seed"`` PanelImages.</span>
 
 <span class="sd">    Files land under ``&lt;project_root&gt;/storyboard/&lt;panel_id&gt;.png``. The</span>
 <span class="sd">    PanelImage record stores both the project-relative path and the</span>
 <span class="sd">    artifact_id (content hash via lacing.Artifact), so downstream consumers</span>
 <span class="sd">    can prefer one or the other.</span>
 
-<span class="sd">    ``on_failure`` is nw#25&#39;s policy, and this is the function the issue names</span>
-<span class="sd">    as **nw&#39;s real fan-out shape** — one ``generate_image`` per panel. Under</span>
-<span class="sd">    ``&quot;isolate&quot;`` a panel whose call failed is simply left without a seed image;</span>
+<span class="sd">    ``on_failure`` is nw#25's policy, and this is the function the issue names</span>
+<span class="sd">    as **nw's real fan-out shape** — one ``generate_image`` per panel. Under</span>
+<span class="sd">    ``"isolate"`` a panel whose call failed is simply left without a seed image;</span>
 <span class="sd">    every panel that rendered keeps its own, instead of one content-filtered</span>
-<span class="sd">    panel discarding the whole batch. ``&quot;halt&quot;`` is the default and unchanged.</span>
+<span class="sd">    panel discarding the whole batch. ``"halt"`` is the default and unchanged.</span>
 
 <span class="sd">    Panels are matched to outcomes **by index into the plan**, never by position</span>
-<span class="sd">    in a shortened artifact list — the latter attaches panel 48&#39;s image to panel</span>
+<span class="sd">    in a shortened artifact list — the latter attaches panel 48's image to panel</span>
 <span class="sd">    47 the moment one call drops out.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">plan</span><span class="o">.</span><span class="n">calls</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">panel_ids</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;plan has </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">plan</span><span class="o">.</span><span class="n">calls</span><span class="p">)</span><span class="si">}</span><span class="s2"> calls but panel_ids has </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">panel_ids</span><span class="p">)</span><span class="si">}</span><span class="s2"> &quot;</span>
-            <span class="s2">&quot;ids; pass the same panel_ids returned by plan_render_panel_images.&quot;</span>
+            <span class="sa">f</span><span class="s2">"plan has </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">plan</span><span class="o">.</span><span class="n">calls</span><span class="p">)</span><span class="si">}</span><span class="s2"> calls but panel_ids has </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">panel_ids</span><span class="p">)</span><span class="si">}</span><span class="s2"> "</span>
+            <span class="s2">"ids; pass the same panel_ids returned by plan_render_panel_images."</span>
         <span class="p">)</span>
-    <span class="k">if</span> <span class="n">on_failure</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;halt&quot;</span><span class="p">,</span> <span class="s2">&quot;isolate&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">on_failure</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"halt"</span><span class="p">,</span> <span class="s2">"isolate"</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;execute_render_panel_images: on_failure must be &#39;halt&#39; or &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;&#39;isolate&#39;, got </span><span class="si">{</span><span class="n">on_failure</span><span class="si">!r}</span><span class="s2">.&quot;</span>
+            <span class="sa">f</span><span class="s2">"execute_render_panel_images: on_failure must be 'halt' or "</span>
+            <span class="sa">f</span><span class="s2">"'isolate', got </span><span class="si">{</span><span class="n">on_failure</span><span class="si">!r}</span><span class="s2">."</span>
         <span class="p">)</span>
 
     <span class="n">report</span> <span class="o">=</span> <span class="n">execute_plan_isolated</span><span class="p">(</span>
         <span class="n">plan</span><span class="p">,</span>
         <span class="n">on_event</span><span class="o">=</span><span class="n">on_event</span><span class="p">,</span>
         <span class="n">use_cache</span><span class="o">=</span><span class="n">use_cache</span><span class="p">,</span>
-        <span class="n">halt_on_failure</span><span class="o">=</span><span class="n">on_failure</span> <span class="o">==</span> <span class="s2">&quot;halt&quot;</span><span class="p">,</span>
+        <span class="n">halt_on_failure</span><span class="o">=</span><span class="n">on_failure</span> <span class="o">==</span> <span class="s2">"halt"</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="k">if</span> <span class="n">on_failure</span> <span class="o">==</span> <span class="s2">&quot;halt&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">on_failure</span> <span class="o">==</span> <span class="s2">"halt"</span><span class="p">:</span>
         <span class="n">report</span><span class="o">.</span><span class="n">artifacts_or_raise</span><span class="p">()</span>
     <span class="n">artifacts</span> <span class="o">=</span> <span class="p">[</span><span class="n">o</span><span class="o">.</span><span class="n">artifact</span> <span class="k">if</span> <span class="n">o</span><span class="o">.</span><span class="n">ok</span> <span class="k">else</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">report</span><span class="o">.</span><span class="n">outcomes</span><span class="p">]</span>
 
-    <span class="n">storyboard_dir</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="s2">&quot;storyboard&quot;</span>
+    <span class="n">storyboard_dir</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="s2">"storyboard"</span>
     <span class="n">storyboard_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="c1"># Build a mutable map panel_id -&gt; updated PanelBody.</span>
@@ -467,7 +467,7 @@
             <span class="k">continue</span>  <span class="c1"># this call failed or was blocked; the panel keeps no seed</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">artifact</span><span class="o">.</span><span class="n">url</span><span class="p">:</span>
             <span class="k">continue</span>  <span class="c1"># silently skip; rare but safer than failing the batch</span>
-        <span class="n">local</span> <span class="o">=</span> <span class="n">storyboard_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">panel_id</span><span class="si">}</span><span class="s2">.png&quot;</span>
+        <span class="n">local</span> <span class="o">=</span> <span class="n">storyboard_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">panel_id</span><span class="si">}</span><span class="s2">.png"</span>
         <span class="n">_download_to</span><span class="p">(</span><span class="n">artifact</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">local</span><span class="p">)</span>
 
         <span class="n">panel</span> <span class="o">=</span> <span class="n">new_panels</span><span class="p">[</span><span class="n">panel_id</span><span class="p">]</span>
@@ -485,17 +485,17 @@
             <span class="n">artifact_id</span><span class="o">=</span><span class="n">true_artifact_id</span><span class="p">,</span>
             <span class="n">path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">local</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">root</span><span class="p">)),</span>
             <span class="n">url</span><span class="o">=</span><span class="n">artifact</span><span class="o">.</span><span class="n">url</span><span class="p">,</span>
-            <span class="n">role</span><span class="o">=</span><span class="s2">&quot;seed&quot;</span><span class="p">,</span>
+            <span class="n">role</span><span class="o">=</span><span class="s2">"seed"</span><span class="p">,</span>
             <span class="n">caption</span><span class="o">=</span><span class="n">panel</span><span class="o">.</span><span class="n">caption</span><span class="p">[:</span><span class="mi">80</span><span class="p">],</span>
         <span class="p">)</span>
         <span class="c1"># Replace any existing seed image; keep non-seed images.</span>
-        <span class="n">non_seed</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">img</span> <span class="k">for</span> <span class="n">img</span> <span class="ow">in</span> <span class="n">panel</span><span class="o">.</span><span class="n">images</span> <span class="k">if</span> <span class="n">img</span><span class="o">.</span><span class="n">role</span> <span class="o">!=</span> <span class="s2">&quot;seed&quot;</span><span class="p">)</span>
+        <span class="n">non_seed</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">img</span> <span class="k">for</span> <span class="n">img</span> <span class="ow">in</span> <span class="n">panel</span><span class="o">.</span><span class="n">images</span> <span class="k">if</span> <span class="n">img</span><span class="o">.</span><span class="n">role</span> <span class="o">!=</span> <span class="s2">"seed"</span><span class="p">)</span>
         <span class="n">new_panels</span><span class="p">[</span><span class="n">panel_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">panel</span><span class="o">.</span><span class="n">model_copy</span><span class="p">(</span>
-            <span class="n">update</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;images&quot;</span><span class="p">:</span> <span class="n">non_seed</span> <span class="o">+</span> <span class="p">(</span><span class="n">new_image</span><span class="p">,)}</span>
+            <span class="n">update</span><span class="o">=</span><span class="p">{</span><span class="s2">"images"</span><span class="p">:</span> <span class="n">non_seed</span> <span class="o">+</span> <span class="p">(</span><span class="n">new_image</span><span class="p">,)}</span>
         <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">storyboard</span><span class="o">.</span><span class="n">model_copy</span><span class="p">(</span>
-        <span class="n">update</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;panels&quot;</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">new_panels</span><span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">panel_id</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">storyboard</span><span class="o">.</span><span class="n">panels</span><span class="p">)}</span>
+        <span class="n">update</span><span class="o">=</span><span class="p">{</span><span class="s2">"panels"</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">new_panels</span><span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">panel_id</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">storyboard</span><span class="o">.</span><span class="n">panels</span><span class="p">)}</span>
     <span class="p">)</span></div>
 
 
@@ -506,14 +506,14 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_image_size_for_aspect</span><span class="p">(</span><span class="n">aspect</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Map &quot;16:9&quot; / &quot;9:16&quot; / &quot;1:1&quot; / &quot;4:3&quot; / &quot;3:4&quot; to falaw image_size names.</span>
-<span class="sd">    Falls back to ``default`` for anything unrecognized.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Map "16:9" / "9:16" / "1:1" / "4:3" / "3:4" to falaw image_size names.</span>
+<span class="sd">    Falls back to ``default`` for anything unrecognized."""</span>
     <span class="k">return</span> <span class="p">{</span>
-        <span class="s2">&quot;16:9&quot;</span><span class="p">:</span> <span class="s2">&quot;landscape_16_9&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;9:16&quot;</span><span class="p">:</span> <span class="s2">&quot;portrait_16_9&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;1:1&quot;</span><span class="p">:</span> <span class="s2">&quot;square_hd&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;4:3&quot;</span><span class="p">:</span> <span class="s2">&quot;landscape_4_3&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;3:4&quot;</span><span class="p">:</span> <span class="s2">&quot;portrait_4_3&quot;</span><span class="p">,</span>
+        <span class="s2">"16:9"</span><span class="p">:</span> <span class="s2">"landscape_16_9"</span><span class="p">,</span>
+        <span class="s2">"9:16"</span><span class="p">:</span> <span class="s2">"portrait_16_9"</span><span class="p">,</span>
+        <span class="s2">"1:1"</span><span class="p">:</span> <span class="s2">"square_hd"</span><span class="p">,</span>
+        <span class="s2">"4:3"</span><span class="p">:</span> <span class="s2">"landscape_4_3"</span><span class="p">,</span>
+        <span class="s2">"3:4"</span><span class="p">:</span> <span class="s2">"portrait_4_3"</span><span class="p">,</span>
     <span class="p">}</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">aspect</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
 
 
@@ -526,7 +526,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_close_if_possible</span><span class="p">(</span><span class="n">store</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">close</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">store</span><span class="p">,</span> <span class="s2">&quot;close&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">close</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">store</span><span class="p">,</span> <span class="s2">"close"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">close</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">close</span><span class="p">()</span>

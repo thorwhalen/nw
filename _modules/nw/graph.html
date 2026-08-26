@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.graph &mdash; nw 0.0.31 documentation</title>
+  <title>nw.graph &mdash; nw 0.0.32 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=c5dbc6bb"></script>
+      <script src="../../_static/documentation_options.js?v=f2234cd1"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -107,12 +107,12 @@
            <div itemprop="articleBody">
              
   <h1>Source code for nw.graph</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;The project annotation graph — read/write helpers + reelee-style traversals.</span>
+<span></span><span class="sd">"""The project annotation graph — read/write helpers + reelee-style traversals.</span>
 
-<span class="sd">A nw project&#39;s SSOT for sections, shots, character/environment refs, and</span>
+<span class="sd">A nw project's SSOT for sections, shots, character/environment refs, and</span>
 <span class="sd">decisions is a per-project lacing :class:`SqliteStore` at</span>
 <span class="sd">``project.annot.sqlite``. This module wraps that store with typed helpers</span>
-<span class="sd">so the rest of nw doesn&#39;t need to know about tier names, MediaRef</span>
+<span class="sd">so the rest of nw doesn't need to know about tier names, MediaRef</span>
 <span class="sd">construction, or annotation envelopes.</span>
 
 <span class="sd">Usage from inside the package:</span>
@@ -123,14 +123,14 @@
 <span class="sd">    &gt;&gt;&gt; for shot in g.shots():</span>
 <span class="sd">    ...     ...</span>
 
-<span class="sd">For reelee&#39;s freshness analysis (planned in §7 of the system overview),</span>
+<span class="sd">For reelee's freshness analysis (planned in §7 of the system overview),</span>
 <span class="sd">:func:`derived_from` and :func:`descendants_of` walk the</span>
 <span class="sd">``provenance.was_derived_from`` edges across **all** stores in a project</span>
 <span class="sd">(project graph + storyboard + alignment). Those are *reachability* queries.</span>
 <span class="sd">The freshness query that compares content — ``nw.stale_after`` — lives in</span>
 <span class="sd">:mod:`nw.freshness`; this module is where its input, the verifying trace, is</span>
 <span class="sd">written (see :meth:`ProjectGraph.add_annotation`).</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -245,13 +245,13 @@
 <div class="viewcode-block" id="ProjectGraph">
 <a class="viewcode-back" href="../../module_docs/nw/graph.html#nw.ProjectGraph">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ProjectGraph</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Typed read/write facade over the project&#39;s lacing graph store.</span>
+<span class="w">    </span><span class="sd">"""Typed read/write facade over the project's lacing graph store.</span>
 
 <span class="sd">    Use :meth:`Project.graph` to get one rather than constructing directly.</span>
 <span class="sd">    Each method opens-and-closes the underlying store so concurrent</span>
 <span class="sd">    reads/writes from different processes are safe (SqliteStore is</span>
 <span class="sd">    file-locked).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">project_root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">project_root</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
@@ -265,7 +265,7 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="k">yield</span> <span class="n">store</span>
         <span class="k">finally</span><span class="p">:</span>
-            <span class="n">close</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">store</span><span class="p">,</span> <span class="s2">&quot;close&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">close</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">store</span><span class="p">,</span> <span class="s2">"close"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">close</span><span class="p">):</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">close</span><span class="p">()</span>
@@ -294,12 +294,12 @@
         <span class="n">body</span><span class="p">:</span> <span class="n">SectionBodyV1</span><span class="p">,</span>
         <span class="n">interval</span><span class="p">:</span> <span class="n">TimeInterval</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
-        <span class="n">was_attributed_to</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;user:nw&quot;</span><span class="p">,</span>
+        <span class="n">was_attributed_to</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"user:nw"</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UUID</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Insert-or-update the section with this ``section_id``; return its id.</span>
+<span class="w">        </span><span class="sd">"""Insert-or-update the section with this ``section_id``; return its id.</span>
 
 <span class="sd">        The id is *stable* across edits — see :func:`_upsert`.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open</span><span class="p">()</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">_upsert</span><span class="p">(</span>
                 <span class="n">store</span><span class="p">,</span>
@@ -309,7 +309,7 @@
                 <span class="n">interval</span><span class="o">=</span><span class="n">interval</span><span class="p">,</span>
                 <span class="n">asset_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asset_id</span><span class="p">,</span>
                 <span class="n">was_attributed_to</span><span class="o">=</span><span class="n">was_attributed_to</span><span class="p">,</span>
-                <span class="n">identity_key</span><span class="o">=</span><span class="s2">&quot;section_id&quot;</span><span class="p">,</span>
+                <span class="n">identity_key</span><span class="o">=</span><span class="s2">"section_id"</span><span class="p">,</span>
                 <span class="n">identity_value</span><span class="o">=</span><span class="n">body</span><span class="o">.</span><span class="n">section_id</span><span class="p">,</span>
             <span class="p">)</span></div>
 
@@ -336,12 +336,12 @@
         <span class="n">body</span><span class="p">:</span> <span class="n">ShotBodyV1</span><span class="p">,</span>
         <span class="n">interval</span><span class="p">:</span> <span class="n">TimeInterval</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
-        <span class="n">was_attributed_to</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;user:nw&quot;</span><span class="p">,</span>
+        <span class="n">was_attributed_to</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"user:nw"</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UUID</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Insert-or-update the shot with this ``shot_id``; return its id.</span>
+<span class="w">        </span><span class="sd">"""Insert-or-update the shot with this ``shot_id``; return its id.</span>
 
 <span class="sd">        The id is *stable* across edits — see :func:`_upsert`.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open</span><span class="p">()</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">_upsert</span><span class="p">(</span>
                 <span class="n">store</span><span class="p">,</span>
@@ -351,7 +351,7 @@
                 <span class="n">interval</span><span class="o">=</span><span class="n">interval</span><span class="p">,</span>
                 <span class="n">asset_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asset_id</span><span class="p">,</span>
                 <span class="n">was_attributed_to</span><span class="o">=</span><span class="n">was_attributed_to</span><span class="p">,</span>
-                <span class="n">identity_key</span><span class="o">=</span><span class="s2">&quot;shot_id&quot;</span><span class="p">,</span>
+                <span class="n">identity_key</span><span class="o">=</span><span class="s2">"shot_id"</span><span class="p">,</span>
                 <span class="n">identity_value</span><span class="o">=</span><span class="n">body</span><span class="o">.</span><span class="n">shot_id</span><span class="p">,</span>
             <span class="p">)</span></div>
 
@@ -377,12 +377,12 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">body</span><span class="p">:</span> <span class="n">CharacterRefBodyV1</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
-        <span class="n">was_attributed_to</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;user:nw&quot;</span><span class="p">,</span>
+        <span class="n">was_attributed_to</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"user:nw"</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UUID</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Insert-or-update the character ref with this ``name``; return its id.</span>
+<span class="w">        </span><span class="sd">"""Insert-or-update the character ref with this ``name``; return its id.</span>
 
 <span class="sd">        The id is *stable* across edits — see :func:`_upsert`.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open</span><span class="p">()</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">_upsert</span><span class="p">(</span>
                 <span class="n">store</span><span class="p">,</span>
@@ -392,7 +392,7 @@
                 <span class="n">interval</span><span class="o">=</span><span class="n">TimeInterval</span><span class="o">.</span><span class="n">from_seconds</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
                 <span class="n">asset_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asset_id</span><span class="p">,</span>
                 <span class="n">was_attributed_to</span><span class="o">=</span><span class="n">was_attributed_to</span><span class="p">,</span>
-                <span class="n">identity_key</span><span class="o">=</span><span class="s2">&quot;name&quot;</span><span class="p">,</span>
+                <span class="n">identity_key</span><span class="o">=</span><span class="s2">"name"</span><span class="p">,</span>
                 <span class="n">identity_value</span><span class="o">=</span><span class="n">body</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
             <span class="p">)</span></div>
 
@@ -416,12 +416,12 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">body</span><span class="p">:</span> <span class="n">EnvironmentRefBodyV1</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
-        <span class="n">was_attributed_to</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;user:nw&quot;</span><span class="p">,</span>
+        <span class="n">was_attributed_to</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"user:nw"</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UUID</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Insert-or-update the environment ref with this ``name``; return its id.</span>
+<span class="w">        </span><span class="sd">"""Insert-or-update the environment ref with this ``name``; return its id.</span>
 
 <span class="sd">        The id is *stable* across edits — see :func:`_upsert`.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open</span><span class="p">()</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">_upsert</span><span class="p">(</span>
                 <span class="n">store</span><span class="p">,</span>
@@ -431,7 +431,7 @@
                 <span class="n">interval</span><span class="o">=</span><span class="n">TimeInterval</span><span class="o">.</span><span class="n">from_seconds</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
                 <span class="n">asset_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asset_id</span><span class="p">,</span>
                 <span class="n">was_attributed_to</span><span class="o">=</span><span class="n">was_attributed_to</span><span class="p">,</span>
-                <span class="n">identity_key</span><span class="o">=</span><span class="s2">&quot;name&quot;</span><span class="p">,</span>
+                <span class="n">identity_key</span><span class="o">=</span><span class="s2">"name"</span><span class="p">,</span>
                 <span class="n">identity_value</span><span class="o">=</span><span class="n">body</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
             <span class="p">)</span></div>
 
@@ -455,13 +455,13 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">body</span><span class="p">:</span> <span class="n">DecisionBodyV1</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
-        <span class="n">was_attributed_to</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;user:nw&quot;</span><span class="p">,</span>
+        <span class="n">was_attributed_to</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"user:nw"</span><span class="p">,</span>
         <span class="n">was_derived_from</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">UUID</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UUID</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Append a decision; never replaces an existing one (the log is append-only).&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Append a decision; never replaces an existing one (the log is append-only)."""</span>
         <span class="n">new_id</span> <span class="o">=</span> <span class="n">uuid4</span><span class="p">()</span>
         <span class="c1"># Resolve upstream digests *before* opening the store — the lookup</span>
-        <span class="c1"># walks every scope and must not nest inside this store&#39;s context.</span>
+        <span class="c1"># walks every scope and must not nest inside this store's context.</span>
         <span class="n">trace</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_verifying_trace_for</span><span class="p">(</span><span class="n">new_id</span><span class="p">,</span> <span class="n">was_derived_from</span><span class="p">)</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open</span><span class="p">()</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
             <span class="n">_put</span><span class="p">(</span>
@@ -487,15 +487,15 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">body</span><span class="p">:</span> <span class="n">GenreEnvelopeBodyV1</span><span class="p">,</span>
         <span class="o">*</span><span class="p">,</span>
-        <span class="n">was_attributed_to</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;agent:nw.genres&quot;</span><span class="p">,</span>
+        <span class="n">was_attributed_to</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"agent:nw.genres"</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UUID</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Record the resolved ``{genre, template, params}`` envelope; return its id.</span>
+<span class="w">        </span><span class="sd">"""Record the resolved ``{genre, template, params}`` envelope; return its id.</span>
 
 <span class="sd">        Singleton per project (nw#32): the tier is the identity, so</span>
 <span class="sd">        re-initializing replaces the recorded envelope in place — the</span>
 <span class="sd">        annotation id is stable across replacements, like every entity</span>
 <span class="sd">        upsert. A no-op write (same envelope) writes nothing.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">lacing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tier</span><span class="p">,</span> <span class="n">TierStereotype</span>
 
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open</span><span class="p">()</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
@@ -516,12 +516,12 @@
 <div class="viewcode-block" id="ProjectGraph.genre_envelope">
 <a class="viewcode-back" href="../../module_docs/nw/graph.html#nw.ProjectGraph.genre_envelope">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">genre_envelope</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">GenreEnvelopeBodyV1</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The recorded genre envelope, or ``None`` for a genre-less project.</span>
+<span class="w">        </span><span class="sd">"""The recorded genre envelope, or ``None`` for a genre-less project.</span>
 
 <span class="sd">        The read half of :meth:`set_genre_envelope`; consumers should reach</span>
 <span class="sd">        it through :meth:`nw.Project.resolved_genre`, which returns the</span>
 <span class="sd">        plain-dict envelope shape :func:`nw.genres.resolve_genre` produces.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open</span><span class="p">()</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">store</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
                 <span class="k">if</span> <span class="p">(</span>
@@ -535,14 +535,14 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
 
-    <span class="c1"># -- arbitrary annotations (for things that don&#39;t fit a typed bucket) ----</span>
+    <span class="c1"># -- arbitrary annotations (for things that don't fit a typed bucket) ----</span>
 
 <div class="viewcode-block" id="ProjectGraph.add_annotation">
 <a class="viewcode-back" href="../../module_docs/nw/graph.html#nw.ProjectGraph.add_annotation">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_annotation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ann</span><span class="p">:</span> <span class="n">Annotation</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Write one annotation to the project graph, plus its verifying trace.</span>
+<span class="w">        </span><span class="sd">"""Write one annotation to the project graph, plus its verifying trace.</span>
 
-<span class="sd">        Registers ``ann.tier`` if it isn&#39;t a known tier yet — ``SqliteStore``</span>
+<span class="sd">        Registers ``ann.tier`` if it isn't a known tier yet — ``SqliteStore``</span>
 <span class="sd">        enforces a foreign key on ``tier``, so writing under a fresh tier</span>
 <span class="sd">        (e.g. a Transform output kind) would otherwise fail. ``add_tier`` is</span>
 <span class="sd">        idempotent, so this is a no-op for the built-in project tiers.</span>
@@ -556,8 +556,8 @@
 <span class="sd">        also covers the paths that build a ``Provenance`` by hand.</span>
 
 <span class="sd">        Annotations with no ``was_derived_from`` parents get no trace — there</span>
-<span class="sd">        is nothing to verify, and they are nobody&#39;s descendant.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        is nothing to verify, and they are nobody's descendant.</span>
+<span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">lacing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tier</span><span class="p">,</span> <span class="n">TierStereotype</span>
 
         <span class="n">trace</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_verifying_trace_for</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">ann</span><span class="o">.</span><span class="n">provenance</span><span class="o">.</span><span class="n">was_derived_from</span><span class="p">)</span>
@@ -570,7 +570,7 @@
 <div class="viewcode-block" id="ProjectGraph.remove_annotation">
 <a class="viewcode-back" href="../../module_docs/nw/graph.html#nw.ProjectGraph.remove_annotation">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">remove_annotation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">annotation_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Remove one annotation from the project graph, with its verifying traces.</span>
+<span class="w">        </span><span class="sd">"""Remove one annotation from the project graph, with its verifying traces.</span>
 
 <span class="sd">        The delete counterpart of :meth:`add_annotation` (nw#36): every trace</span>
 <span class="sd">        whose ``for_annotation_id`` names ``annotation_id`` goes with it, so a</span>
@@ -587,7 +587,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            Whether ``annotation_id`` itself was present (its traces are</span>
 <span class="sd">            removed either way).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open</span><span class="p">()</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
             <span class="n">removed</span> <span class="o">=</span> <span class="n">remove_annotations_with_traces</span><span class="p">(</span><span class="n">store</span><span class="p">,</span> <span class="p">(</span><span class="n">annotation_id</span><span class="p">,))</span>
         <span class="k">return</span> <span class="n">annotation_id</span> <span class="ow">in</span> <span class="n">removed</span></div>
@@ -598,13 +598,13 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_verifying_trace_for</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">annotation_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">parent_ids</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">UUID</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Build the verifying trace for a derived annotation, or ``None``.</span>
+<span class="w">        </span><span class="sd">"""Build the verifying trace for a derived annotation, or ``None``.</span>
 
 <span class="sd">        ``None`` whenever the trace would be incomplete — no parents, or a</span>
 <span class="sd">        parent that cannot be resolved. :mod:`nw.freshness` reads a missing</span>
 <span class="sd">        trace as *unverifiable*, i.e. stale, so an incomplete record is never</span>
 <span class="sd">        preferable to none.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">wanted</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">parent_ids</span><span class="p">))</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">wanted</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
@@ -616,13 +616,13 @@
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_resolve_annotations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ids</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">UUID</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Fetch ``ids`` from the project&#39;s stores, stopping once all are found.</span>
+<span class="w">        </span><span class="sd">"""Fetch ``ids`` from the project's stores, stopping once all are found.</span>
 
-<span class="sd">        lacing&#39;s store protocol has no point lookup by annotation id (its</span>
+<span class="sd">        lacing's store protocol has no point lookup by annotation id (its</span>
 <span class="sd">        ``__getitem__`` is keyed by :class:`~lacing.TimeInterval`), so this is</span>
 <span class="sd">        a scan. It runs once per *derived* write and short-circuits on the</span>
 <span class="sd">        last hit; entity upserts and other parentless writes never reach it.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">wanted</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">ids</span><span class="p">)</span>
         <span class="n">found</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">iter_all_annotations</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_root</span><span class="p">):</span>
@@ -641,30 +641,30 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_scope_paths</span><span class="p">(</span><span class="n">project_root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The ``{scope_name: legacy_sqlite_path}`` map for a project&#39;s stores.</span>
+<span class="w">    </span><span class="sd">"""The ``{scope_name: legacy_sqlite_path}`` map for a project's stores.</span>
 
 <span class="sd">    The legacy per-scope SQLite layout (graph + storyboard + alignment). The</span>
 <span class="sd">    backend seam (:mod:`nw.graph_backend`) uses the scope names to address the</span>
 <span class="sd">    same stores in Postgres mode.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">p</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">project_root</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">{</span>
         <span class="n">SCOPE_GRAPH</span><span class="p">:</span> <span class="n">p</span> <span class="o">/</span> <span class="n">_PROJECT_GRAPH_DB_NAME</span><span class="p">,</span>
-        <span class="n">SCOPE_STORYBOARD</span><span class="p">:</span> <span class="n">p</span> <span class="o">/</span> <span class="s2">&quot;storyboard.annot.sqlite&quot;</span><span class="p">,</span>
-        <span class="n">SCOPE_ALIGNMENT</span><span class="p">:</span> <span class="n">p</span> <span class="o">/</span> <span class="s2">&quot;lyrics&quot;</span> <span class="o">/</span> <span class="s2">&quot;alignment.annot&quot;</span><span class="p">,</span>
+        <span class="n">SCOPE_STORYBOARD</span><span class="p">:</span> <span class="n">p</span> <span class="o">/</span> <span class="s2">"storyboard.annot.sqlite"</span><span class="p">,</span>
+        <span class="n">SCOPE_ALIGNMENT</span><span class="p">:</span> <span class="n">p</span> <span class="o">/</span> <span class="s2">"lyrics"</span> <span class="o">/</span> <span class="s2">"alignment.annot"</span><span class="p">,</span>
     <span class="p">}</span>
 
 
 <div class="viewcode-block" id="all_project_stores">
 <a class="viewcode-back" href="../../module_docs/nw/graph.html#nw.all_project_stores">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">all_project_stores</span><span class="p">(</span><span class="n">project_root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Path</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the **existing** lacing-store file paths under a project.</span>
+<span class="w">    </span><span class="sd">"""Return the **existing** lacing-store file paths under a project.</span>
 
 <span class="sd">    SQLite-mode only — these are filesystem paths. Code that walks or mutates</span>
 <span class="sd">    project stores should route through :func:`open_project_stores` (which</span>
 <span class="sd">    honours the backend seam) rather than opening these paths directly, so it</span>
 <span class="sd">    keeps working when the backend is Postgres.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">_scope_paths</span><span class="p">(</span><span class="n">project_root</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">exists</span><span class="p">()]</span></div>
 
 
@@ -675,16 +675,16 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">open_project_stores</span><span class="p">(</span>
     <span class="n">project_root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Iterator</span><span class="p">[</span><span class="n">IntervalAnnotationStore</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Yield an iterator of open stores, one per scope, honouring the backend.</span>
+<span class="w">    </span><span class="sd">"""Yield an iterator of open stores, one per scope, honouring the backend.</span>
 
 <span class="sd">    The backend-aware replacement for ``for p in all_project_stores(...):</span>
 <span class="sd">    SqliteStore(p)``. Under SQLite it visits each existing per-scope file;</span>
-<span class="sd">    under Postgres it visits each scope&#39;s tenant in the shared DB. Use it for</span>
+<span class="sd">    under Postgres it visits each scope's tenant in the shared DB. Use it for</span>
 <span class="sd">    both reads (walk ``.all()``) and writes (``.remove`` / ``.add``).</span>
 
-<span class="sd">    Each store is closed before the next opens, so consume each store&#39;s</span>
+<span class="sd">    Each store is closed before the next opens, so consume each store's</span>
 <span class="sd">    annotations before advancing.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">asset_id</span> <span class="o">=</span> <span class="n">project_asset_id</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">project_root</span><span class="p">))</span>
     <span class="k">with</span> <span class="n">iter_scope_stores</span><span class="p">(</span><span class="n">_scope_paths</span><span class="p">(</span><span class="n">project_root</span><span class="p">),</span> <span class="n">asset_id</span><span class="o">=</span><span class="n">asset_id</span><span class="p">)</span> <span class="k">as</span> <span class="n">stores</span><span class="p">:</span>
         <span class="k">yield</span> <span class="n">stores</span></div>
@@ -694,7 +694,7 @@
 <div class="viewcode-block" id="iter_all_annotations">
 <a class="viewcode-back" href="../../module_docs/nw/graph.html#nw.iter_all_annotations">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">iter_all_annotations</span><span class="p">(</span><span class="n">project_root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Walk every annotation in every store under a project (any backend).&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Walk every annotation in every store under a project (any backend)."""</span>
     <span class="k">with</span> <span class="n">open_project_stores</span><span class="p">(</span><span class="n">project_root</span><span class="p">)</span> <span class="k">as</span> <span class="n">stores</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">store</span> <span class="ow">in</span> <span class="n">stores</span><span class="p">:</span>
             <span class="k">yield from</span> <span class="n">store</span><span class="o">.</span><span class="n">all</span><span class="p">()</span></div>
@@ -704,18 +704,18 @@
 <div class="viewcode-block" id="descendants_of">
 <a class="viewcode-back" href="../../module_docs/nw/graph.html#nw.descendants_of">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">descendants_of</span><span class="p">(</span><span class="n">project_root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span> <span class="n">ancestor_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return every annotation whose provenance chain leads back to ``ancestor_id``.</span>
+<span class="w">    </span><span class="sd">"""Return every annotation whose provenance chain leads back to ``ancestor_id``.</span>
 
 <span class="sd">    Walks ``provenance.was_derived_from`` *transitively* across all of the</span>
-<span class="sd">    project&#39;s lacing stores. This is the operation reelee&#39;s freshness</span>
+<span class="sd">    project's lacing stores. This is the operation reelee's freshness</span>
 <span class="sd">    analysis is built on (system overview §7): when a node changes, every</span>
-<span class="sd">    annotation in the closure of this set is &quot;downstream of the change.&quot;</span>
+<span class="sd">    annotation in the closure of this set is "downstream of the change."</span>
 
 <span class="sd">    Deterministic order: (generation time, id) — the same public ordering</span>
 <span class="sd">    contract as :func:`nw.freshness.stale_verdicts`. The closure used to be</span>
 <span class="sd">    returned in set-iteration (hash-derived) order, which leaked into every</span>
-<span class="sd">    consumer&#39;s output (nw#39).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    consumer's output (nw#39).</span>
+<span class="sd">    """</span>
     <span class="c1"># Collect once so we can do multi-hop closure without re-opening stores.</span>
     <span class="n">all_anns</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">iter_all_annotations</span><span class="p">(</span><span class="n">project_root</span><span class="p">))</span>
     <span class="n">by_id</span> <span class="o">=</span> <span class="p">{</span><span class="n">ann</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">ann</span> <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">all_anns</span><span class="p">}</span>
@@ -746,11 +746,11 @@
 <div class="viewcode-block" id="derived_from">
 <a class="viewcode-back" href="../../module_docs/nw/graph.html#nw.derived_from">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">derived_from</span><span class="p">(</span><span class="n">project_root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span> <span class="n">annotation_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the annotations this one was directly derived from.</span>
+<span class="w">    </span><span class="sd">"""Return the annotations this one was directly derived from.</span>
 
 <span class="sd">    Walks ``provenance.was_derived_from`` *one hop only* across all of the</span>
-<span class="sd">    project&#39;s stores.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    project's stores.</span>
+<span class="sd">    """</span>
     <span class="n">all_anns</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">iter_all_annotations</span><span class="p">(</span><span class="n">project_root</span><span class="p">))</span>
     <span class="n">by_id</span> <span class="o">=</span> <span class="p">{</span><span class="n">ann</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">ann</span> <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">all_anns</span><span class="p">}</span>
     <span class="n">target</span> <span class="o">=</span> <span class="n">by_id</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">annotation_id</span><span class="p">)</span>
@@ -763,13 +763,13 @@
 <div class="viewcode-block" id="annotations_at_tier">
 <a class="viewcode-back" href="../../module_docs/nw/graph.html#nw.annotations_at_tier">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">annotations_at_tier</span><span class="p">(</span><span class="n">project_root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span> <span class="n">tier</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return every annotation at the given tier across all of the project&#39;s stores.</span>
+<span class="w">    </span><span class="sd">"""Return every annotation at the given tier across all of the project's stores.</span>
 
 <span class="sd">    Useful for reelee views that lens on a single annotation kind:</span>
-<span class="sd">    ``annotations_at_tier(root, &quot;shot&quot;)`` returns every shot annotation</span>
+<span class="sd">    ``annotations_at_tier(root, "shot")`` returns every shot annotation</span>
 <span class="sd">    regardless of which store it lives in (project graph vs. storyboard</span>
 <span class="sd">    vs. alignment).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">ann</span> <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">iter_all_annotations</span><span class="p">(</span><span class="n">project_root</span><span class="p">)</span> <span class="k">if</span> <span class="n">ann</span><span class="o">.</span><span class="n">tier</span> <span class="o">==</span> <span class="n">tier</span><span class="p">]</span></div>
 
 
@@ -787,10 +787,10 @@
     <span class="o">*</span><span class="p">,</span>
     <span class="n">annotations</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="n">UUID</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Remove annotations from ``store``, plus every trace in it naming them.</span>
+<span class="w">    </span><span class="sd">"""Remove annotations from ``store``, plus every trace in it naming them.</span>
 
 <span class="sd">    The store-level primitive behind every nw deletion path</span>
-<span class="sd">    (:meth:`ProjectGraph.remove_annotation`, ``write_spec``&#39;s entity</span>
+<span class="sd">    (:meth:`ProjectGraph.remove_annotation`, ``write_spec``'s entity</span>
 <span class="sd">    reconciliation, the storyboard wipe). A verifying trace is a sidecar of</span>
 <span class="sd">    the annotation it describes; removing one without the other leaks an</span>
 <span class="sd">    inert row per deletion, forever (nw#36).</span>
@@ -798,13 +798,13 @@
 <span class="sd">    Args:</span>
 <span class="sd">        store: An **open** store — the caller owns its lifecycle.</span>
 <span class="sd">        annotation_ids: Ids to remove. Missing ids are ignored.</span>
-<span class="sd">        annotations: The store&#39;s annotations, if the caller already</span>
+<span class="sd">        annotations: The store's annotations, if the caller already</span>
 <span class="sd">            materialized ``list(store.all())`` — avoids a second scan.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        The subset of ``annotation_ids`` that was actually present. Trace</span>
 <span class="sd">        removals are not reported: they are bookkeeping, not content.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">wanted</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">annotation_ids</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">wanted</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">set</span><span class="p">()</span>
@@ -828,7 +828,7 @@
 <div class="viewcode-block" id="collect_orphan_traces">
 <a class="viewcode-back" href="../../module_docs/nw/graph.html#nw.collect_orphan_traces">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">collect_orphan_traces</span><span class="p">(</span><span class="n">project_root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">UUID</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Drop verifying traces whose target annotation no longer exists.</span>
+<span class="w">    </span><span class="sd">"""Drop verifying traces whose target annotation no longer exists.</span>
 
 <span class="sd">    The backstop for deletion paths that do not (or cannot) go through</span>
 <span class="sd">    :func:`remove_annotations_with_traces` — a direct ``store.remove``, an</span>
@@ -844,7 +844,7 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        The ids of the trace annotations removed, in store order.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">existing</span> <span class="o">=</span> <span class="p">{</span><span class="n">ann</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">iter_all_annotations</span><span class="p">(</span><span class="n">project_root</span><span class="p">)}</span>
     <span class="n">removed</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">UUID</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">with</span> <span class="n">open_project_stores</span><span class="p">(</span><span class="n">project_root</span><span class="p">)</span> <span class="k">as</span> <span class="n">stores</span><span class="p">:</span>
@@ -867,24 +867,24 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_trace_target</span><span class="p">(</span><span class="n">ann</span><span class="p">:</span> <span class="n">Annotation</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UUID</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The annotation id a verifying trace describes, or ``None``.</span>
+<span class="w">    </span><span class="sd">"""The annotation id a verifying trace describes, or ``None``.</span>
 
 <span class="sd">    ``None`` for anything that is not a readable verifying trace — the same</span>
-<span class="sd">    &quot;when in doubt, leave it alone&quot; reading :func:`nw.freshness` applies on</span>
+<span class="sd">    "when in doubt, leave it alone" reading :func:`nw.freshness` applies on</span>
 <span class="sd">    the query side, applied to deletion.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">ann</span><span class="o">.</span><span class="n">body_schema_uri</span> <span class="o">!=</span> <span class="n">VERIFYING_TRACE_BODY_SCHEMA_URI</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">body</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">None</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">UUID</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;for_annotation_id&quot;</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">UUID</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"for_annotation_id"</span><span class="p">)))</span>
     <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">None</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_add_trace</span><span class="p">(</span><span class="n">store</span><span class="p">:</span> <span class="n">IntervalAnnotationStore</span><span class="p">,</span> <span class="n">trace</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Annotation</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Write a verifying trace (registering its tier), or do nothing for ``None``.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""Write a verifying trace (registering its tier), or do nothing for ``None``."""</span>
     <span class="k">if</span> <span class="n">trace</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">lacing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tier</span><span class="p">,</span> <span class="n">TierStereotype</span>
@@ -905,21 +905,21 @@
     <span class="n">identity_key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">identity_value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UUID</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Insert-or-update one *entity* annotation, preserving its identity.</span>
+<span class="w">    </span><span class="sd">"""Insert-or-update one *entity* annotation, preserving its identity.</span>
 
 <span class="sd">    An entity (a shot, a section, a character/environment ref) is identified</span>
 <span class="sd">    by a natural key in its body — ``shot_id``, ``section_id``, ``name``.</span>
 <span class="sd">    ``identity_key=None`` means the **tier itself** is the identity: at most</span>
 <span class="sd">    one annotation lives at that tier (e.g. the genre envelope), and an</span>
 <span class="sd">    upsert replaces it whatever its body says.</span>
-<span class="sd">    The annotation id is that entity&#39;s identity **in the provenance graph**,</span>
+<span class="sd">    The annotation id is that entity's identity **in the provenance graph**,</span>
 <span class="sd">    so it must survive an edit:</span>
 
 <span class="sd">    - Minting a fresh ``uuid4`` on every edit orphans every</span>
 <span class="sd">      ``was_derived_from`` edge pointing at the entity. Because</span>
 <span class="sd">      :func:`descendants_of` walks those edges, the freshness walk then</span>
-<span class="sd">      returns *nothing* for the single most common edit (&quot;change the</span>
-<span class="sd">      costume, re-render everything showing them&quot;) — under-reporting to</span>
+<span class="sd">      returns *nothing* for the single most common edit ("change the</span>
+<span class="sd">      costume, re-render everything showing them") — under-reporting to</span>
 <span class="sd">      zero, silently. This is the bug that made every freshness-derived</span>
 <span class="sd">      number in :meth:`nw.Project.resumption_brief` structurally dead.</span>
 <span class="sd">    - ``write_spec`` re-upserts every entity on *any* spec write, so under</span>
@@ -927,14 +927,14 @@
 <span class="sd">      graph.</span>
 
 <span class="sd">    An edit that changes nothing writes nothing, so ``generated_at_time``</span>
-<span class="sd">    marks a *real* change and &quot;the last thing the user edited&quot; is a</span>
+<span class="sd">    marks a *real* change and "the last thing the user edited" is a</span>
 <span class="sd">    meaningful question.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># ``mode=&quot;json&quot;`` is what round-trips through the store: a tuple field</span>
+<span class="sd">    """</span>
+    <span class="c1"># ``mode="json"`` is what round-trips through the store: a tuple field</span>
     <span class="c1"># dumps to a tuple in python mode but reads back as a list, so comparing</span>
     <span class="c1"># python-mode dumps would report every no-op edit as a change.</span>
     <span class="n">body_dict</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">body</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="s2">&quot;model_dump&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="nb">dict</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>
+        <span class="n">body</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"json"</span><span class="p">)</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="s2">"model_dump"</span><span class="p">)</span> <span class="k">else</span> <span class="nb">dict</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>
     <span class="p">)</span>
     <span class="n">existing</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
         <span class="p">(</span>
@@ -974,24 +974,24 @@
     <span class="n">was_derived_from</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">UUID</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
     <span class="n">annotation_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UUID</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UUID</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Insert one annotation; return its UUID.</span>
+<span class="w">    </span><span class="sd">"""Insert one annotation; return its UUID.</span>
 
 <span class="sd">    ``annotation_id`` reuses an existing id (see :func:`_upsert`); omit it to</span>
 <span class="sd">    mint a fresh one.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">new_id</span> <span class="o">=</span> <span class="n">annotation_id</span> <span class="k">if</span> <span class="n">annotation_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">uuid4</span><span class="p">()</span>
     <span class="n">ann</span> <span class="o">=</span> <span class="n">Annotation</span><span class="p">(</span>
         <span class="nb">id</span><span class="o">=</span><span class="n">new_id</span><span class="p">,</span>
         <span class="n">tier</span><span class="o">=</span><span class="n">tier</span><span class="p">,</span>
         <span class="n">reference</span><span class="o">=</span><span class="n">MediaRef</span><span class="p">(</span><span class="n">asset_id</span><span class="o">=</span><span class="n">asset_id</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="n">interval</span><span class="p">),</span>
-        <span class="n">body</span><span class="o">=</span><span class="n">body</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="s2">&quot;model_dump&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="nb">dict</span><span class="p">(</span><span class="n">body</span><span class="p">),</span>
+        <span class="n">body</span><span class="o">=</span><span class="n">body</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="s2">"model_dump"</span><span class="p">)</span> <span class="k">else</span> <span class="nb">dict</span><span class="p">(</span><span class="n">body</span><span class="p">),</span>
         <span class="n">body_schema_uri</span><span class="o">=</span><span class="n">schema_uri</span><span class="p">,</span>
         <span class="n">provenance</span><span class="o">=</span><span class="n">Provenance</span><span class="p">(</span>
-            <span class="n">was_generated_by</span><span class="o">=</span><span class="s2">&quot;agent:nw.graph&quot;</span><span class="p">,</span>
+            <span class="n">was_generated_by</span><span class="o">=</span><span class="s2">"agent:nw.graph"</span><span class="p">,</span>
             <span class="n">was_attributed_to</span><span class="o">=</span><span class="n">was_attributed_to</span><span class="p">,</span>
             <span class="n">was_derived_from</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">was_derived_from</span><span class="p">),</span>
             <span class="n">generated_at_time</span><span class="o">=</span><span class="n">_now_rt</span><span class="p">(),</span>
-            <span class="n">activity</span><span class="o">=</span><span class="s2">&quot;create&quot;</span><span class="p">,</span>
+            <span class="n">activity</span><span class="o">=</span><span class="s2">"create"</span><span class="p">,</span>
         <span class="p">),</span>
     <span class="p">)</span>
     <span class="n">store</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ann</span><span class="p">)</span>
