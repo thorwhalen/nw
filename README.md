@@ -134,9 +134,11 @@ server or a CLI a JSON Schema for the Transform for free.
 ## prepare → plan → execute, with a budget gate
 
 The **shot** render unit makes the same split concrete, and it is why cost is
-knowable before the network goes near a credit card. It is shot-only by
-construction (`ShotSpec` in, `output.mp4` out) and is **not** the extension
-point for a new render kind — register a `Transform` for that. See
+knowable before the network goes near a credit card. It is shot-typed by
+construction (`ShotSpec` in, `output.mp4` out), so it is **not** the extension
+point for a new render *kind* — register a `Transform` for that. A new way to
+render a *shot* still belongs here, and is adapted into a Transform for free
+(see "Render strategies" below). Details:
 `misc/docs/Rendering Provenance and Partial Re-render.md`.
 
 1. **prepare** (`nw.prepare_shot`) — local work: audio slice, anchor resolution,

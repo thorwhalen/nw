@@ -1,11 +1,25 @@
-"""Render strategies — pluggable, plan-producing, **shot-only**.
+"""Render strategies — pluggable, plan-producing, **shot-typed**.
 
 **Scope.** A Strategy is the plug-in point of the *shot* render unit
-(:mod:`nw.workflow`), not of the general engine. It is typed to a
-:class:`nw.workflow.ShotPreparation` in and an ``output.mp4`` out, so it cannot
-express a non-video render. A new render kind — audio weave, slideshow,
-anything — registers a :class:`nw.transforms.Transform` instead; that registry
-is the render-kind-agnostic one. See nw#9.
+(:mod:`nw.workflow`) — and, through the adapter in
+``nw/transforms/_adapters/render_strategy.py``, of the **general engine too**.
+That adapter wraps *every* registered strategy at import time, so registering
+one here publishes a ``shot_to_render_result.fal.<name>`` Transform for free,
+and :class:`nw.genres.Genre` validates a genre's ``strategy_names`` against
+this registry. The two registries are one pipeline with two front doors, not
+two pipelines — the README says the same thing under "Render strategies".
+
+What a Strategy **cannot** express is a render that is not a video shot: it is
+typed to a :class:`nw.workflow.ShotPreparation` in and an ``output.mp4`` out.
+So the split is by render *kind*, not by registry:
+
+- a new way to render a **shot** → register a Strategy here, and get the
+  Transform adaptation for free;
+- a new render **kind** — audio weave, slideshow, anything whose input is not a
+  shot — → register a :class:`nw.transforms.Transform` directly; that registry
+  is the render-kind-agnostic one.
+
+See nw#9.
 
 A *strategy* knows how to turn a :class:`nw.workflow.ShotPreparation` into:
 

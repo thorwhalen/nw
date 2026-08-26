@@ -89,13 +89,26 @@ implementations it dispatches to (`lipsync`, `image_to_video`, `text_to_video`,
 statement of it.
 
 It is **deliberately retained** as the shot render unit, and it is **not** the
-thing to generalize. Measured at HEAD (2026-08-27), `prepare_shot`,
-`plan_render_shot`, `execute_render`, `ShotSpec` and `get_strategy` have **zero**
-call sites outside nw — a grep across reelee, muvid and braidio finds none.
-(muvid was previously named as its consumer; it is not. muvid has its own
-`muvid.schema.ShotSpec` and its own ffmpeg strategies, and says so in
-`muvid/genre.py`: "not `nw.renderers` strategies".) The only callers are nw's own
-tests. A new render kind should register Transforms, not extend `workflow.py`.
+thing to generalize into a new render kind. Measured at HEAD (2026-08-27),
+`prepare_shot`, `plan_render_shot`, `execute_render`, `ShotSpec` and
+`get_strategy` have **zero** call sites outside nw — a grep across reelee, muvid
+and braidio finds none. (muvid was previously named as its consumer; it is not.
+muvid has its own `muvid.schema.ShotSpec` and its own ffmpeg strategies, and
+says so in `muvid/genre.py`: "not `nw.renderers` strategies".)
+
+**"Legacy" here means "not an entry point", not "unreferenced" — and the two
+layers are stacked, not parallel.** Inside nw this path is load-bearing for the
+engine itself: `nw/transforms/_adapters/render_strategy.py` wraps every
+registered `Strategy` as a `shot_to_render_result.fal.<name>` Transform at
+import time, and that Transform calls `prepare_shot` in both its `plan`
+(`upload=params.upload`) and its `execute` (`upload=False`); `plan_render_shot`
+and `execute_render` in turn call `nw.renderers.get_strategy`; and
+`nw.genres.Genre.missing_strategies()` validates a genre's `strategy_names`
+against `nw.renderers`. So the engine's *shot* arrow is built **on top of** the
+path this section calls legacy. Deleting `workflow.py` as dead code, or changing
+a signature in it, breaks the Transform path — which is the path this document
+recommends. A new render *kind* registers Transforms; a new way to render a
+*shot* is still at home here, and gets its Transform adaptation for free.
 
 ### Freshness
 
@@ -109,8 +122,9 @@ tests. A new render kind should register Transforms, not extend `workflow.py`.
   artifact yet, with a cost estimate) exists before any money is spent;
   `execute` fills in the artifact. Cache keys are derived from *stable* inputs
   (uploaded URLs, content hashes) so a cache hit is honest (see "Status check"
-  below — true of execution since falaw 0.0.24; the plan-time cost preview still
-  keys differently).
+  below — true of execution since falaw 0.0.24, and of the plan-time preview
+  since thorwhalen/falaw#15 closed on 2026-08-11: a *chained* call is no longer
+  peeked with a key nothing writes, it reports `cache_status="unknown"`).
 
 ## Status check (2026-08): what is implemented, and what this document over-claims
 
@@ -166,9 +180,10 @@ is the intended reading); an upstream mutated inside the **plan → execute
 window**; and the **artifact tier**, which needs step 3 below.
 
 **"Cache keys are derived from *stable* inputs (uploaded URLs, content hashes)
-so a cache hit is honest" — ~~the opposite is true today~~ true of *execution*
-since falaw 0.0.24 (thorwhalen/falaw#14); the plan-time preview still keys
-differently.**
+so a cache hit is honest" — ~~the opposite is true today~~ shipped, in two
+passes: *execution* since falaw 0.0.24 (thorwhalen/falaw#14, closed
+2026-08-06), and the *plan-time* preview since thorwhalen/falaw#15 (closed
+2026-08-11).**
 
 *What was wrong.* `falaw`'s per-call key is `sha256({app, args})`
 (`falaw/cache.py::_key`) over the **resolved** arguments, and resolution
@@ -194,12 +209,21 @@ a *wrong* hit. Materializing those bytes is also what makes `Artifact.asset_id`
 the SHA-256 of the media, honouring lacing's contract, instead of the SHA-256
 of a URL.
 
-*What is still open.* The plan-time cache peek keys on *unresolved* arguments
-while execution keys on *resolved* ones, so `cache_status`,
-`cache_hit_savings_usd` and the cost gate are computed against a key that is
-never used (thorwhalen/falaw#15). Key composition still goes through
-`json.dumps(..., default=str)` and can silently collide
-(thorwhalen/falaw#17).
+*The plan-time half, closed 2026-08-11 (falaw#15 / falaw#17 — both CLOSED; do
+not act on this paragraph as if they were open).* The plan-time cache peek used
+to key on *unresolved* arguments while execution keys on *resolved* ones, so
+`cache_status`, `cache_hit_savings_usd` and the cost gate were computed against
+a key nothing ever writes — a guaranteed false `"miss"` on every **chained**
+call, which under prepaid billing (a quote that may be *deducted*) is a billing
+bug. `falaw.make_call_plan` now **declines to peek** a call whose arguments
+still hold a `"<from N>"` placeholder, and reports `cache_status="unknown"`
+instead (`falaw/plan.py`, falaw 0.0.40) — the honest answer, and exactly the
+case `CacheStatus` documents `"unknown"` for. **Unknown is not zero:** a
+consumer's cost gate must read it as *not yet knowable* and force approval,
+never as free. Key composition no longer goes through
+`json.dumps(..., default=str)` either: `ensure_canonical` raises
+`FalNonCanonicalArgument` while planning is still free, rather than silently
+colliding on the way to the network (thorwhalen/falaw#17).
 
 **What this costs.** For a 200-shot fan-out, a re-run without early cutoff is
 the difference between free and several hundred dollars. That is why the
@@ -295,17 +319,25 @@ video via reelee, a commentary-talk episode via braidio, an audiobook explainer)
 supply its own render-node body schemas + Transforms. Explicitly **not**
 recommended: generalizing `render-result/v1` into a universal render body — a
 per-app render body is the better shape, and braidio's `episode-render/v1` is
-the worked example. `nw.workflow` / `nw.renderers` stay as the shot render unit
-and are not the extension point.
+the worked example. `nw.workflow` / `nw.renderers` stay as the shot render unit:
+they are not the extension point for a new render *kind*, but they remain the
+right place for a new *shot* strategy — which the adapter then publishes as a
+Transform automatically.
 
 ## Related
 
 - lacing: `Artifact`, `Provenance`, content addressing — the storage/graph layer.
 - reelee: a consumer that already uses `descendants_of` / `stale_after` for
   freshness.
-- braidio: the first **audio** consumer, riding `nw.transforms` with its own
-  body schemas (`braidio/bodies/_render_nodes.py`) and Transforms
+- braidio: the first **shipped** audio consumer, riding `nw.transforms` with its
+  own body schemas (`braidio/bodies/_render_nodes.py`) and Transforms
   (`braidio/transforms/`). The node model above is braidio's.
+- The Hamilton lyrics-podcast (thorwhalen/Hamilton epic #18, still open): the
+  audio consumer this document was originally written for, and the only place
+  the *weave-specific* node model is described at length — its
+  `docs/design/render-provenance.md`. braidio is where that weaving engine
+  graduates into a package; the pointer is kept because braidio's schema list
+  above is not a substitute for that description.
 - `misc/docs/Execution Semantics and Fan-out.md` — the companion doc: how work is
   scheduled, fanned out, isolated on failure, and made discoverable to an agent.
   This document owns *why* choices are recorded as linked artifacts; that one

@@ -4,17 +4,28 @@
 :mod:`nw.renderers` are the *shot* render unit: they bake in
 :class:`nw.schema.ShotSpec`, an open-string ``render_strategy``, and an
 ``output.mp4``. They are **not** the render-kind-agnostic engine, and they are
-**not** the place to add a new render kind. That engine is
+**not** the place to add a new render *kind*. That engine is
 :mod:`nw.transforms`, whose ``plan``/``execute`` split is the same shape over
 arbitrary annotation kinds — it is what reelee's production video path and
-braidio's audio-weave path both ride, neither of them touching this module.
+braidio's audio-weave path both ride.
 
-This path is deliberately retained rather than deleted, but its reach is
-smaller than it looks: measured 2026-08-27, :func:`prepare_shot`,
-:func:`plan_render_shot`, :func:`execute_render` and
-:func:`nw.renderers.get_strategy` have **zero** call sites outside nw (muvid
-has its own ``muvid.schema.ShotSpec`` and its own ffmpeg strategies). The only
-callers are nw's own tests. See ``misc/docs/Rendering Provenance and Partial
+**This is a layer *under* that engine, not a path parallel to it — and it is
+not dead code.** The engine's shot arrow is built on top of this module:
+``nw/transforms/_adapters/render_strategy.py``, which publishes every
+``shot_to_render_result.fal.<strategy>`` Transform, calls :func:`prepare_shot`
+in both its ``plan`` (``upload=params.upload``) and its ``execute``
+(``upload=False``); and :func:`plan_render_shot` / :func:`execute_render` both
+call :func:`nw.renderers.get_strategy`. So a "cleanup" here — dropping
+:func:`prepare_shot`'s ``upload=`` keyword, deleting this module as unused —
+silently breaks the Transform path that the docs hold up as the correct one.
+
+What is true, and narrower than "legacy" sounds, is a statement about *entry
+points*: measured 2026-08-27, :func:`prepare_shot`, :func:`plan_render_shot`,
+:func:`execute_render` and :func:`nw.renderers.get_strategy` have **zero** call
+sites outside nw (muvid has its own ``muvid.schema.ShotSpec`` and its own
+ffmpeg strategies). Nothing downstream drives these functions *directly* today,
+and new callers should go through the Transform registry instead — but inside
+nw they are load-bearing. See ``misc/docs/Rendering Provenance and Partial
 Re-render.md`` and nw#9.
 
 The render pipeline has three phases, each cleanly separable:
