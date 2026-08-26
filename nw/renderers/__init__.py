@@ -1,4 +1,11 @@
-"""Render strategies — pluggable, plan-producing.
+"""Render strategies — pluggable, plan-producing, **shot-only**.
+
+**Scope.** A Strategy is the plug-in point of the *shot* render unit
+(:mod:`nw.workflow`), not of the general engine. It is typed to a
+:class:`nw.workflow.ShotPreparation` in and an ``output.mp4`` out, so it cannot
+express a non-video render. A new render kind — audio weave, slideshow,
+anything — registers a :class:`nw.transforms.Transform` instead; that registry
+is the render-kind-agnostic one. See nw#9.
 
 A *strategy* knows how to turn a :class:`nw.workflow.ShotPreparation` into:
 

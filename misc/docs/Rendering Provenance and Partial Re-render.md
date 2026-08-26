@@ -50,36 +50,74 @@ parameters that produced it.
    config snapshot*. Same inputs → same output, modulo model nondeterminism,
    which we pin behind content-addressed caches.
 
-## How nw implements it today (video shots)
+## How nw implements it today
 
-- **lacing** is the substrate: content-addressed `Artifact`s (immutable, hashed
-  media), a `Provenance` DAG (`was_derived_from`), typed annotation bodies,
-  rational-time intervals.
-- **nw.workflow** splits a render into `prepare_shot` → `plan_render_shot`
-  (pure data — inspect cost, no billing) → `execute_render` (the only billable
-  phase). `execute` records a `render-result/v1` annotation whose
-  `was_derived_from` includes the shot's id, and whose heavy output (the mp4) is
-  a referenced `Artifact`, not inline.
+Read this section as **two** layers, because the document used to conflate them
+and that conflation is what nw#9 was filed against. One is the general engine;
+the other is a shot-only path that predates it.
+
+**The substrate.** **lacing** provides content-addressed `Artifact`s (immutable,
+hashed media), a `Provenance` DAG (`was_derived_from`), typed annotation bodies,
+and rational-time intervals.
+
+### The engine: `nw.transforms` — render-kind-agnostic
+
+A `Transform` is the "A-annotation → B-annotation" arrow, split the same two
+ways: `plan()` is **pure data** (a `falaw.Plan` plus *skeleton* output
+annotations that already carry provenance, so a dry run shows what will be
+produced, from what, and at what cost — no billable calls), and `execute()`
+runs the Plan, completes the skeletons with real artifact references, and
+writes them **through `ProjectGraph.add_annotation`**, which is what records the
+verifying trace.
+
+Nothing in that contract mentions video. `input_kinds` / `output_kind` are body
+schema URIs the *app* owns; the registry (`xdol.Registry`, keyed by
+`<from_kind>_to_<to_kind>[.<flavor>[.<variant>]]`) is open-closed, so an app adds
+its arrows without touching nw. This is the layer reelee's production
+`narrative_video` rides, and — since nw#9 was filed — the layer **braidio's audio
+weave rides too** (see "Generalizing beyond shots" below). The generalization
+this document once described as future work is therefore *demonstrated*, not
+merely designed.
+
+### The legacy path: `nw.workflow` + `nw.renderers` — shot-only, retained
+
+`prepare_shot` → `plan_render_shot` → `execute_render` splits a **video shot**
+render the same three ways, and `nw.renderers` holds the five `Strategy`
+implementations it dispatches to (`lipsync`, `image_to_video`, `text_to_video`,
+`still`, `composite_lipsync`). It bakes in `ShotSpec`, `render_strategy`, and an
+`output.mp4`: this path genuinely does assume video, and that is the honest
+statement of it.
+
+It is **deliberately retained** as the shot render unit, and it is **not** the
+thing to generalize. Measured at HEAD (2026-08-27), `prepare_shot`,
+`plan_render_shot`, `execute_render`, `ShotSpec` and `get_strategy` have **zero**
+call sites outside nw — a grep across reelee, muvid and braidio finds none.
+(muvid was previously named as its consumer; it is not. muvid has its own
+`muvid.schema.ShotSpec` and its own ffmpeg strategies, and says so in
+`muvid/genre.py`: "not `nw.renderers` strategies".) The only callers are nw's own
+tests. A new render kind should register Transforms, not extend `workflow.py`.
+
+### Freshness
+
 - **nw.graph** exposes the reachability queries — `derived_from` (one hop),
   `descendants_of` (transitive closure) — and records the verifying trace on
   every derived write. **nw.freshness** exposes `stale_after` / `stale_verdicts`:
   the same walk, with each node checked against the upstream digests it
   recorded. `stale_after(changed_id)` *is* the partial-re-render frontier —
   everything downstream of a change **that the change actually invalidated**.
-- The **plan/execute** separation means a skeleton `render-result` (no artifact
-  yet, with a cost estimate) exists before any money is spent; `execute` fills
-  in the artifact. Cache keys are derived from *stable* inputs (uploaded URLs,
-  content hashes) so a cache hit is honest (see "Status check" below — true of
-  execution since falaw 0.0.24; the plan-time cost preview still keys
-  differently).
-
-This is already a rendering-provenance + partial-re-render engine. It is just
-currently shaped around **video shots** (`ShotSpec`, `render-strategy` → mp4).
+- The **plan/execute** separation means a skeleton output annotation (no
+  artifact yet, with a cost estimate) exists before any money is spent;
+  `execute` fills in the artifact. Cache keys are derived from *stable* inputs
+  (uploaded URLs, content hashes) so a cache hit is honest (see "Status check"
+  below — true of execution since falaw 0.0.24; the plan-time cost preview still
+  keys differently).
 
 ## Status check (2026-08): what is implemented, and what this document over-claims
 
-Two claims above are aspirational rather than descriptive. They are corrected
-here rather than deleted, because the design they describe is still the target.
+Two claims above were aspirational rather than descriptive when this document
+was written. Both have since been fixed in code; the history is kept rather
+than deleted, because knowing *what the bug was* is what stops it being
+reintroduced.
 
 **"`stale_after(changed_id)` returns exactly the set to recompute" — ~~not
 yet~~ shipped at the annotation tier (nw#24, 2026-08-06), with the four
@@ -177,16 +215,23 @@ freshness work is sequenced *before* any fan-out primitive.
 2. ~~**`nw`: `stale_after` stops being an alias**~~ **shipped** —
    `nw.freshness` (nw#24). Compares recorded upstream value digests against
    current ones. The *annotation* tier, needing only step 1.
-3. **`lacing`: widen `Provenance.was_derived_from`** (thorwhalen/lacing#14). It
-   is typed `list[UUID]` (`lacing/model.py:86`), so it cannot hold a 64-char hex
-   `asset_id`, and artifact-to-artifact lineage is therefore structurally
-   unrepresentable and always empty. Required for the *artifact* tier, and the
-   only step needing a real on-disk migration.
+3. ~~**`lacing`: widen `Provenance.was_derived_from`**~~ **shipped in lacing,
+   not yet used in nw** — thorwhalen/lacing#14 (defect D5), landed 2026-08-16
+   with a real store migration. `was_derived_from` is now
+   `list[ProvenanceRef]` where `ProvenanceRef = UUID | AssetId`, the two being
+   format-disjoint; `lacing.partition_provenance_refs` is the one discriminator
+   every lineage walker should use rather than re-deriving the union rule. This
+   was the only step needing a real on-disk migration, and nw opens project
+   stores with `migrate=True` so pre-D5 v1 files upgrade rather than refuse
+   (nw#53).
 
-**Steps 1–2 are independent of step 3.** The lineage graph is complete at the
-annotation tier today (`nw/transforms/_provenance.py:18` `derive_provenance`
-populates `was_derived_from` on every Transform output) and empty at the
-artifact tier — which is precisely the tier where the expensive things live.
+**The artifact tier is now *representable* but still *empty*.** The lineage
+graph is complete at the annotation tier (`nw/transforms/_provenance.py`
+`derive_provenance` populates `was_derived_from` on every Transform output) —
+but it populates **annotation ids only**. Nothing in nw yet emits an
+artifact→artifact `AssetId` edge, so the tier where the expensive things live
+still has no lineage. The blocker moved from lacing to nw; that remaining work
+is tracked separately and is not part of nw#9.
 
 ### Two verbs, not one
 
@@ -198,43 +243,69 @@ already claimed. `nw.stale_verdicts` returns the same walk with a `reason` per
 annotation, because a freshness number nobody can interrogate is a number
 nobody trusts.
 
-## Generalizing beyond shots (audio weaving, and any render)
+## Generalizing beyond shots (audio weaving, and any render) — done
 
 The same pattern applies to **any** projection, including an audio podcast that
 weaves narration (TTS) with extracted audio segments (music, audiobook, news,
 SFX). The render *choices* there are things like: voice / delivery preset,
-multi-voice turn grouping, speed jitter, clip extraction padding, ducking depth,
-crossfades, loudness target (a `WeaveConfig`). To get trace + tune + partial
-re-render for audio, model those choices as nodes with provenance, exactly as
-nw does for shots:
+multi-voice turn grouping, speed jitter, segment extraction padding, ducking
+depth, crossfades, loudness target (a `WeaveConfig`).
 
-| Node (body schema) | Records | `was_derived_from` |
-|---|---|---|
-| `render-config/v1` | a frozen config snapshot (all params) | — (a root input) |
-| `voice-assignment/v1` | which voice a turn got (+ pool, seed) | the narrative beat(s) |
-| `narration-render/v1` | the audio `Artifact` for one turn | beat text · voice-assignment · render-config |
-| `clip-extraction/v1` | the cut segment `Artifact` (padded interval) | audio-clip node · source asset · render-config |
-| `episode-render/v1` | the assembled output `Artifact` | ordered member renders · render-config |
+**This is no longer a sketch.** `braidio` — the commentary-talk audio package —
+is the first audio consumer, and it got there **without a single change to nw**:
+it declares its own body schemas (`braidio/bodies/_render_nodes.py`) and
+registers its own Transforms (`braidio/transforms/`) into `nw.transforms`,
+exactly as reelee's `panel_to_clip.fal.default` does. That is the seam working
+as designed, and it is the evidence for the "keep the engine render-kind-agnostic"
+stance below.
 
-Partial re-render then falls out of the existing machinery: compute each output
-node's cache key from its inputs' hashes + the config; reuse the `Artifact` if
-the key is unchanged, otherwise regenerate; re-assemble only when membership or
-keys change. A change to one beat or one parameter scopes the recompute via
-`stale_after`.
+The node model braidio actually ships (names are **braidio's**, which is what
+this table is for — an earlier draft named a `render-config/v1` and a
+`clip-extraction/v1` that were never built):
 
-**Design stance:** keep the render-provenance engine (`prepare/plan/execute`,
-`render-result`, freshness queries) **render-kind-agnostic** in nw, and let each
-app (a music video via reelee, a lyrics podcast, an audiobook explainer) supply
-its own render-node body schemas + Transforms. See the tracking issue for the
-audio/weave generalization.
+| Node (body schema) | Records | Produced by | `was_derived_from` |
+|---|---|---|---|
+| `weave-config/v1` | a frozen `WeaveConfig` snapshot (all params) | ingest | — (a root input) |
+| `source-media/v1` | an imported source asset + its rights posture | ingest | — (a root input) |
+| `voice-assignment/v1` | which voice a turn got (+ pool, seed) | `beat_to_voice_assignment.default` | narrative beat · weave-config |
+| `narration-render/v1` | the audio `Artifact` for one turn (+ `cache_key`) | `narration_render.tts` | beat · voice-assignment · weave-config |
+| `segment-extraction/v1` | the cut+padded segment `Artifact` (+ `cache_key`) | `segment_extraction.ffmpeg` | audio-clip · source-media · weave-config |
+| `episode-render/v1` | the assembled output `Artifact` (+ ordered members) | `weave_to_episode.default` (batch) | ordered member renders · weave-config |
+
+Partial re-render falls out of the existing machinery: each output node's cache
+key is computed from its inputs' hashes + the config; the `Artifact` is reused
+if the key is unchanged, otherwise regenerated; re-assembly happens only when
+membership or keys change. A change to one beat or one parameter scopes the
+recompute via `stale_after`, because every one of those writes goes through
+`ProjectGraph.add_annotation`.
+
+**One thing that is *not* shared, and should be.** falaw's content-addressed
+cache covers fal calls. braidio's two expensive non-fal Transforms (ElevenLabs
+TTS, ffmpeg extraction) are outside it, so each carries an explicit `cache_key`
+field on its body and does its own compare-and-skip — via a local
+`cached_output()` helper and a hash function imported from
+**`mixing._cache`, a private module of another package**. That is item (b) of
+nw#9 ("a small shared `cache_key` helper for non-fal Transforms") still open,
+and it is now a concrete cross-package smell rather than a nice-to-have. Tracked
+separately; not resolved by this document.
+
+**Design stance (unchanged, now with evidence):** keep the render-provenance
+engine **render-kind-agnostic** in `nw.transforms`, and let each app (a music
+video via reelee, a commentary-talk episode via braidio, an audiobook explainer)
+supply its own render-node body schemas + Transforms. Explicitly **not**
+recommended: generalizing `render-result/v1` into a universal render body — a
+per-app render body is the better shape, and braidio's `episode-render/v1` is
+the worked example. `nw.workflow` / `nw.renderers` stay as the shot render unit
+and are not the extension point.
 
 ## Related
 
 - lacing: `Artifact`, `Provenance`, content addressing — the storage/graph layer.
 - reelee: a consumer that already uses `descendants_of` / `stale_after` for
   freshness.
-- The Hamilton lyrics-podcast: the first **audio** consumer; its
-  `docs/design/render-provenance.md` describes the weave-specific node model.
+- braidio: the first **audio** consumer, riding `nw.transforms` with its own
+  body schemas (`braidio/bodies/_render_nodes.py`) and Transforms
+  (`braidio/transforms/`). The node model above is braidio's.
 - `misc/docs/Execution Semantics and Fan-out.md` — the companion doc: how work is
   scheduled, fanned out, isolated on failure, and made discoverable to an agent.
   This document owns *why* choices are recorded as linked artifacts; that one

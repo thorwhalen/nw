@@ -1,4 +1,21 @@
-"""Workflow: prepare → plan → execute, the architectural pivot.
+"""Workflow: prepare → plan → execute, for a **video shot**.
+
+**Scope — read this before extending anything here.** This module and
+:mod:`nw.renderers` are the *shot* render unit: they bake in
+:class:`nw.schema.ShotSpec`, an open-string ``render_strategy``, and an
+``output.mp4``. They are **not** the render-kind-agnostic engine, and they are
+**not** the place to add a new render kind. That engine is
+:mod:`nw.transforms`, whose ``plan``/``execute`` split is the same shape over
+arbitrary annotation kinds — it is what reelee's production video path and
+braidio's audio-weave path both ride, neither of them touching this module.
+
+This path is deliberately retained rather than deleted, but its reach is
+smaller than it looks: measured 2026-08-27, :func:`prepare_shot`,
+:func:`plan_render_shot`, :func:`execute_render` and
+:func:`nw.renderers.get_strategy` have **zero** call sites outside nw (muvid
+has its own ``muvid.schema.ShotSpec`` and its own ffmpeg strategies). The only
+callers are nw's own tests. See ``misc/docs/Rendering Provenance and Partial
+Re-render.md`` and nw#9.
 
 The render pipeline has three phases, each cleanly separable:
 
