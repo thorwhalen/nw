@@ -1,0 +1,354 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>nw.delivery &mdash; nw 0.0.33 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=565bc8c8"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="nw.experiment" href="experiment.html" />
+    <link rel="prev" title="nw.bodies.verifying_trace" href="bodies/verifying_trace.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            nw
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../nw.html">nw</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies.html">nw.bodies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/character_ref.html">nw.bodies.character_ref</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/decision.html">nw.bodies.decision</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/environment_ref.html">nw.bodies.environment_ref</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/genre_envelope.html">nw.bodies.genre_envelope</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/render_result.html">nw.bodies.render_result</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/section.html">nw.bodies.section</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/shot.html">nw.bodies.shot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/verifying_trace.html">nw.bodies.verifying_trace</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">nw.delivery</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#why-this-module-exists-at-all">Why this module exists at all</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-speakable-reference">The speakable reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#authorization-is-the-genre-s-job-and-it-is-not-optional">Authorization is the genre’s job, and it is not optional</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.delivery.Deliverable"><code class="docutils literal notranslate"><span class="pre">Deliverable</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#nw.delivery.Deliverable.kind"><code class="docutils literal notranslate"><span class="pre">Deliverable.kind</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.delivery.Deliverable.label"><code class="docutils literal notranslate"><span class="pre">Deliverable.label</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.delivery.Deliverable.meta"><code class="docutils literal notranslate"><span class="pre">Deliverable.meta</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.delivery.Lister"><code class="docutils literal notranslate"><span class="pre">Lister</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.delivery.REF_WORD"><code class="docutils literal notranslate"><span class="pre">REF_WORD</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.delivery.Resolver"><code class="docutils literal notranslate"><span class="pre">Resolver</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.delivery.format_ref"><code class="docutils literal notranslate"><span class="pre">format_ref()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.delivery.parse_ref"><code class="docutils literal notranslate"><span class="pre">parse_ref()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="experiment.html">nw.experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="freshness.html">nw.freshness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="genres.html">nw.genres</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graph.html">nw.graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="graph_backend.html">nw.graph_backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="inspect.html">nw.inspect</a></li>
+<li class="toctree-l1"><a class="reference internal" href="jobs.html">nw.jobs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrate.html">nw.migrate</a></li>
+<li class="toctree-l1"><a class="reference internal" href="project.html">nw.project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers.html">nw.renderers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/_common.html">nw.renderers._common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/composite_lipsync.html">nw.renderers.composite_lipsync</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/image_to_video.html">nw.renderers.image_to_video</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/lipsync.html">nw.renderers.lipsync</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/still.html">nw.renderers.still</a></li>
+<li class="toctree-l1"><a class="reference internal" href="renderers/text_to_video.html">nw.renderers.text_to_video</a></li>
+<li class="toctree-l1"><a class="reference internal" href="schema.html">nw.schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="script_segmentation.html">nw.script_segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="storyboard.html">nw.storyboard</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms.html">nw.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms/_adapters.html">nw.transforms._adapters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms/_adapters/render_strategy.html">nw.transforms._adapters.render_strategy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms/_provenance.html">nw.transforms._provenance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="workflow.html">nw.workflow</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">nw</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">nw.delivery</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/module_docs/nw/delivery.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-nw.delivery">
+<span id="nw-delivery"></span><h1>nw.delivery<a class="headerlink" href="#module-nw.delivery" title="Link to this heading"></a></h1>
+<p>What a genre hands back when a human wants to <em>hold</em> what it made.</p>
+<p>Every genre in the federation renders something a person eventually wants to watch,
+hear, or send to a client. Getting those bytes from the server to that person is
+split along ownership lines, and this module owns the vocabulary in the middle:</p>
+<ul class="simple">
+<li><p><strong>The genre owns resolution.</strong> Given a caller and an artifact reference, which
+file is it, and is it theirs? Only the genre knows its own workspace layout.</p></li>
+<li><p><strong>The host owns transport.</strong> Signing, expiry, streaming, the watch page. Only
+the host knows its public URL, its secret, and its route.</p></li>
+<li><p><strong>This module owns the noun they exchange</strong> — <a class="reference internal" href="#nw.delivery.Deliverable" title="nw.delivery.Deliverable"><code class="xref py py-class docutils literal notranslate"><span class="pre">Deliverable</span></code></a> — plus the
+two Protocols that pin the seam: <a class="reference internal" href="#nw.delivery.Resolver" title="nw.delivery.Resolver"><code class="xref py py-data docutils literal notranslate"><span class="pre">Resolver</span></code></a> and <a class="reference internal" href="#nw.delivery.Lister" title="nw.delivery.Lister"><code class="xref py py-data docutils literal notranslate"><span class="pre">Lister</span></code></a>.</p></li>
+</ul>
+<p>nw is where this belongs because it is the one package every genre already
+reaches and which reaches none of them: <code class="docutils literal notranslate"><span class="pre">muvid</span></code>, <code class="docutils literal notranslate"><span class="pre">braidio</span></code> and <code class="docutils literal notranslate"><span class="pre">reelee</span></code> all
+depend on nw, and nw imports no genre. A type owned by any one of them would make
+the other two depend sideways.</p>
+<section id="why-this-module-exists-at-all">
+<h2>Why this module exists at all<a class="headerlink" href="#why-this-module-exists-at-all" title="Link to this heading"></a></h2>
+<p>It is the repair for a defect that shipped, and the shape of the defect is the
+argument for the module. reelee typed its resolver seam <code class="docutils literal notranslate"><span class="pre">-&gt;</span> <span class="pre">Path</span></code>; muvid’s
+resolver returned its own <code class="docutils literal notranslate"><span class="pre">ResolvedArtifact</span></code> dataclass carrying the content
+type and a human filename. Both were reasonable in isolation, both were tested,
+and both test suites were green — because each tested only its own side. In
+production the host did <code class="docutils literal notranslate"><span class="pre">Path(resolved).suffix</span></code> on muvid’s dataclass and raised
+<code class="docutils literal notranslate"><span class="pre">TypeError</span></code>, so <strong>every music-video download 500’d, and had since the day it
+was registered.</strong> Nobody saw it, because a separate gap meant no caller could
+obtain a token for that genre in the first place: the failure was unreachable,
+so it was invisible, so it persisted while a paying user rendered five videos he
+could never retrieve.</p>
+<p>Two rules follow, and they are the module’s whole reason to be:</p>
+<ol class="arabic simple">
+<li><p><strong>One type, defined once, imported by both sides.</strong> A seam described in two
+places is two seams that agree by luck.</p></li>
+<li><p><strong>The richer half wins.</strong> muvid returned <code class="docutils literal notranslate"><span class="pre">content_type</span></code> and <code class="docutils literal notranslate"><span class="pre">filename</span></code>
+because the transport genuinely needs both — a bare <code class="docutils literal notranslate"><span class="pre">Path</span></code> forces the host
+to re-derive a media type it was already told, and to name the download after
+an opaque id. <a class="reference internal" href="#nw.delivery.Deliverable" title="nw.delivery.Deliverable"><code class="xref py py-class docutils literal notranslate"><span class="pre">Deliverable</span></code></a> keeps them.</p></li>
+</ol>
+</section>
+<section id="the-speakable-reference">
+<h2>The speakable reference<a class="headerlink" href="#the-speakable-reference" title="Link to this heading"></a></h2>
+<p><code class="xref py py-attr docutils literal notranslate"><span class="pre">Deliverable.ref</span></code> is the field a human says out loud. A render id like
+<code class="docutils literal notranslate"><span class="pre">b02fc05417ea</span></code> is unusable in conversation — you cannot ask for “a bit less
+reverb on b02fc05417ea” — so a genre assigns each deliverable a short label like
+<code class="docutils literal notranslate"><span class="pre">cut</span> <span class="pre">4</span></code>, stable for the life of the artifact, and accepts it anywhere the raw
+id is accepted. <a class="reference internal" href="#nw.delivery.parse_ref" title="nw.delivery.parse_ref"><code class="xref py py-func docutils literal notranslate"><span class="pre">parse_ref()</span></code></a> is the shared parser so every genre reads the
+same spellings (<code class="docutils literal notranslate"><span class="pre">4</span></code>, <code class="docutils literal notranslate"><span class="pre">cut</span> <span class="pre">4</span></code>, <code class="docutils literal notranslate"><span class="pre">cut-4</span></code>, <code class="docutils literal notranslate"><span class="pre">#4</span></code>) rather than each inventing
+its own near-miss.</p>
+<p>The reference is <em>per project</em>, not global: it rides alongside a <code class="docutils literal notranslate"><span class="pre">project_id</span></code>
+everywhere it is used, which is what keeps it short enough to say.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">parse_ref</span><span class="p">(</span><span class="s2">"cut 4"</span><span class="p">)</span>
+<span class="go">4</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parse_ref</span><span class="p">(</span><span class="s2">"cut-12"</span><span class="p">),</span> <span class="n">parse_ref</span><span class="p">(</span><span class="s2">"#3"</span><span class="p">),</span> <span class="n">parse_ref</span><span class="p">(</span><span class="s2">"7"</span><span class="p">)</span>
+<span class="go">(12, 3, 7)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parse_ref</span><span class="p">(</span><span class="s2">"b02fc05417ea"</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span>    <span class="c1"># a raw id, not an ordinal</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">format_ref</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="go">'cut 4'</span>
+</pre></div>
+</div>
+</section>
+<section id="authorization-is-the-genre-s-job-and-it-is-not-optional">
+<h2>Authorization is the genre’s job, and it is not optional<a class="headerlink" href="#authorization-is-the-genre-s-job-and-it-is-not-optional" title="Link to this heading"></a></h2>
+<p>A <a class="reference internal" href="#nw.delivery.Resolver" title="nw.delivery.Resolver"><code class="xref py py-data docutils literal notranslate"><span class="pre">Resolver</span></code></a> receives the caller’s email and MUST refuse anything that is
+not that caller’s. It raises <code class="docutils literal notranslate"><span class="pre">KeyError</span></code> for “no such artifact” and, where the
+distinction is safe to reveal, <code class="docutils literal notranslate"><span class="pre">PermissionError</span></code> for “not yours”. Where the
+workspace is already email-scoped the two are indistinguishable and <code class="docutils literal notranslate"><span class="pre">KeyError</span></code>
+is the right answer for both — saying which would leak the existence of another
+tenant’s work.</p>
+<p>A resolver that forgets this turns a signed-URL route into a cross-tenant read
+primitive, which is why the Protocol takes <code class="docutils literal notranslate"><span class="pre">email</span></code> as its first argument rather
+than letting the host pass it as an afterthought.</p>
+</section>
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.delivery.Deliverable">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.delivery.</span></span><span class="sig-name descname"><span class="pre">Deliverable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artifact_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">genre</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration_s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size_bytes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">created_at</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nw/delivery.html#Deliverable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.delivery.Deliverable" title="Link to this definition"></a></dt>
+<dd><p>A finished thing a person can watch, hear, or download.</p>
+<p><code class="docutils literal notranslate"><span class="pre">path</span></code> is server-side and never leaves the host; it is what the transport
+streams. Everything else exists so the host does not have to guess:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">content_type</span></code> — what to serve it as. The genre knows; the host would
+otherwise re-derive it from a suffix.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">filename</span></code> — what it should be called when it lands in someone’s
+Downloads folder. <code class="docutils literal notranslate"><span class="pre">music_video_test_02-cut-4.mp4</span></code> beats <code class="docutils literal notranslate"><span class="pre">b02fc05417ea</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ref</span></code> — the speakable label (see <a class="reference internal" href="#nw.delivery.format_ref" title="nw.delivery.format_ref"><code class="xref py py-func docutils literal notranslate"><span class="pre">format_ref()</span></code></a>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">artifact_id</span></code> — the stable, unambiguous id. <code class="docutils literal notranslate"><span class="pre">ref</span></code> is the convenience;
+this is the truth, and it is what a signed token is minted against.</p></li>
+</ul>
+<p>The optional descriptive fields are what a listing surface renders, and what
+lets a watch page say “10 seconds, 4.4 MB, made yesterday” without opening
+the file.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="nw.delivery.Deliverable.kind">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">kind</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#nw.delivery.Deliverable.kind" title="Link to this definition"></a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">'video'</span></code>, <code class="docutils literal notranslate"><span class="pre">'audio'</span></code>, <code class="docutils literal notranslate"><span class="pre">'image'</span></code> or <code class="docutils literal notranslate"><span class="pre">'file'</span></code> — how to present it.</p>
+<p>Derived from <code class="docutils literal notranslate"><span class="pre">content_type</span></code> so a genre never has to declare it twice.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Deliverable</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s1">'a.mp4'</span><span class="p">),</span> <span class="s1">'video/mp4'</span><span class="p">,</span> <span class="s1">'a.mp4'</span><span class="p">)</span><span class="o">.</span><span class="n">kind</span>
+<span class="go">'video'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Deliverable</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s1">'a.mp3'</span><span class="p">),</span> <span class="s1">'audio/mpeg'</span><span class="p">,</span> <span class="s1">'a.mp3'</span><span class="p">)</span><span class="o">.</span><span class="n">kind</span>
+<span class="go">'audio'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Deliverable</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s1">'a.pdf'</span><span class="p">),</span> <span class="s1">'application/pdf'</span><span class="p">,</span> <span class="s1">'a.pdf'</span><span class="p">)</span><span class="o">.</span><span class="n">kind</span>
+<span class="go">'file'</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nw.delivery.Deliverable.label">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">label</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#nw.delivery.Deliverable.label" title="Link to this definition"></a></dt>
+<dd><p>The best short name for a human — the ref if it has one, else the id.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Deliverable</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s1">'a.mp4'</span><span class="p">),</span> <span class="s1">'video/mp4'</span><span class="p">,</span> <span class="s1">'a.mp4'</span><span class="p">,</span> <span class="n">ref</span><span class="o">=</span><span class="s1">'cut 4'</span><span class="p">)</span><span class="o">.</span><span class="n">label</span>
+<span class="go">'cut 4'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Deliverable</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s1">'a.mp4'</span><span class="p">),</span> <span class="s1">'video/mp4'</span><span class="p">,</span> <span class="s1">'a.mp4'</span><span class="p">,</span> <span class="n">artifact_id</span><span class="o">=</span><span class="s1">'b02f'</span><span class="p">)</span><span class="o">.</span><span class="n">label</span>
+<span class="go">'b02f'</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.delivery.Deliverable.meta">
+<span class="sig-name descname"><span class="pre">meta</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span></span><a class="headerlink" href="#nw.delivery.Deliverable.meta" title="Link to this definition"></a></dt>
+<dd><p>Genre-specific extras a listing or watch page may show. Free-form on
+purpose — the host renders what it recognises and ignores the rest, so a
+genre can enrich its own surface without a change here.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="nw.delivery.Lister">
+<span class="sig-prename descclassname"><span class="pre">nw.delivery.</span></span><span class="sig-name descname"><span class="pre">Lister</span></span><a class="headerlink" href="#nw.delivery.Lister" title="Link to this definition"></a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">list_deliverables(email,</span> <span class="pre">project_id=None)</span> <span class="pre">-&gt;</span> <span class="pre">list[Deliverable]</span></code> — the other
+half of “give me my work”. Without it a reference is undiscoverable: the user
+can only name a deliverable they still remember. <code class="docutils literal notranslate"><span class="pre">project_id=None</span></code> means
+every project of that caller’s in this genre.</p>
+<p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">Callable</span></code>[[…], <code class="xref py py-class docutils literal notranslate"><span class="pre">list[Deliverable]</span></code>]</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="nw.delivery.REF_WORD">
+<span class="sig-prename descclassname"><span class="pre">nw.delivery.</span></span><span class="sig-name descname"><span class="pre">REF_WORD</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cut'</span></span><a class="headerlink" href="#nw.delivery.REF_WORD" title="Link to this definition"></a></dt>
+<dd><p>The noun a genre uses when it labels a deliverable for a human (“cut 4”).
+One word, so the label stays short enough to say in the middle of a sentence.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.delivery.Resolver">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.delivery.</span></span><span class="sig-name descname"><span class="pre">Resolver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nw/delivery.html#Resolver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.delivery.Resolver" title="Link to this definition"></a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">resolve(email,</span> <span class="pre">project_id,</span> <span class="pre">artifact_id)</span> <span class="pre">-&gt;</span> <span class="pre">Deliverable</span></code> — a genre’s half.</p>
+<p><code class="docutils literal notranslate"><span class="pre">artifact_id</span></code> may be a raw id OR a reference the genre accepts (see
+<a class="reference internal" href="#nw.delivery.parse_ref" title="nw.delivery.parse_ref"><code class="xref py py-func docutils literal notranslate"><span class="pre">parse_ref()</span></code></a>); resolving both is the genre’s job, because only it knows
+the ordering that gives <code class="docutils literal notranslate"><span class="pre">cut</span> <span class="pre">4</span></code> its meaning.</p>
+<p>Raises <code class="docutils literal notranslate"><span class="pre">KeyError</span></code> when nothing resolves (the host answers 404) and
+<code class="docutils literal notranslate"><span class="pre">PermissionError</span></code> when it resolves but is not the caller’s (403). Never
+let a server path escape in the message.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.delivery.format_ref">
+<span class="sig-prename descclassname"><span class="pre">nw.delivery.</span></span><span class="sig-name descname"><span class="pre">format_ref</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/nw/delivery.html#format_ref"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.delivery.format_ref" title="Link to this definition"></a></dt>
+<dd><p>The one spelling we print. Input is permissive; output never varies.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">format_ref</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">format_ref</span><span class="p">(</span><span class="mi">42</span><span class="p">)</span>
+<span class="go">('cut 1', 'cut 42')</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.delivery.parse_ref">
+<span class="sig-prename descclassname"><span class="pre">nw.delivery.</span></span><span class="sig-name descname"><span class="pre">parse_ref</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/nw/delivery.html#parse_ref"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.delivery.parse_ref" title="Link to this definition"></a></dt>
+<dd><p>The ordinal in a spoken reference, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if it isn’t one.</p>
+<p><code class="docutils literal notranslate"><span class="pre">None</span></code> is the signal to fall through to treating the input as a raw
+artifact id — which is why this never raises: “not an ordinal” is an
+ordinary, expected answer, not an error.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">parse_ref</span><span class="p">(</span><span class="s2">"cut 4"</span><span class="p">),</span> <span class="n">parse_ref</span><span class="p">(</span><span class="s2">"CUT4"</span><span class="p">),</span> <span class="n">parse_ref</span><span class="p">(</span><span class="s2">" cut - 4 "</span><span class="p">)</span>
+<span class="go">(4, 4, 4)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parse_ref</span><span class="p">(</span><span class="s2">"#11"</span><span class="p">),</span> <span class="n">parse_ref</span><span class="p">(</span><span class="s2">"11"</span><span class="p">)</span>
+<span class="go">(11, 11)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parse_ref</span><span class="p">(</span><span class="s2">"b02fc05417ea"</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">,</span> <span class="n">parse_ref</span><span class="p">(</span><span class="s2">""</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span>
+<span class="go">(True, True)</span>
+</pre></div>
+</div>
+<p>Zero and negatives are not references — deliverables are numbered from 1, so
+accepting <code class="docutils literal notranslate"><span class="pre">cut</span> <span class="pre">0</span></code> would resolve to a neighbour under a naive index:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">parse_ref</span><span class="p">(</span><span class="s2">"cut 0"</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="bodies/verifying_trace.html" class="btn btn-neutral float-left" title="nw.bodies.verifying_trace" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="experiment.html" class="btn btn-neutral float-right" title="nw.experiment" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -12,6 +12,7 @@
    module_docs/nw/bodies/section
    module_docs/nw/bodies/shot
    module_docs/nw/bodies/verifying_trace
+   module_docs/nw/delivery
    module_docs/nw/experiment
    module_docs/nw/freshness
    module_docs/nw/genres

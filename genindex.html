@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; nw 0.0.32 documentation</title>
+  <title>Index &mdash; nw 0.0.33 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=f2234cd1"></script>
+      <script src="_static/documentation_options.js?v=565bc8c8"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -56,6 +56,7 @@
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/section.html">nw.bodies.section</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/shot.html">nw.bodies.shot</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/verifying_trace.html">nw.bodies.verifying_trace</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/delivery.html">nw.delivery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/experiment.html">nw.experiment</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/freshness.html">nw.freshness</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/genres.html">nw.genres</a></li>
@@ -119,6 +120,7 @@
  | <a href="#H"><strong>H</strong></a>
  | <a href="#I"><strong>I</strong></a>
  | <a href="#J"><strong>J</strong></a>
+ | <a href="#K"><strong>K</strong></a>
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
  | <a href="#N"><strong>N</strong></a>
@@ -353,16 +355,22 @@
         <li><a href="module_docs/nw/genres.html#nw.genres.Genre.defaults">(nw.genres.Genre attribute)</a>
 </li>
       </ul></li>
+      <li><a href="module_docs/nw.html#nw.Deliverable">Deliverable (class in nw)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/delivery.html#nw.delivery.Deliverable">(class in nw.delivery)</a>
+</li>
+      </ul></li>
       <li><a href="module_docs/nw/transforms/_provenance.html#nw.transforms._provenance.derive_provenance">derive_provenance() (in module nw.transforms._provenance)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module_docs/nw.html#nw.derived_from">derived_from() (in module nw)</a>
 
       <ul>
         <li><a href="module_docs/nw/graph.html#nw.graph.derived_from">(in module nw.graph)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module_docs/nw.html#nw.descendants_of">descendants_of() (in module nw)</a>
 
       <ul>
@@ -455,6 +463,12 @@
       </ul></li>
       <li><a href="module_docs/nw.html#nw.FailedOutput">FailedOutput (class in nw)</a>
 </li>
+      <li><a href="module_docs/nw.html#nw.format_ref">format_ref() (in module nw)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/delivery.html#nw.delivery.format_ref">(in module nw.delivery)</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module_docs/nw.html#nw.FreshnessVerdict">FreshnessVerdict (class in nw)</a>
@@ -672,9 +686,27 @@
   </ul></td>
 </tr></table>
 
+<h2 id="K">K</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="module_docs/nw.html#nw.Deliverable.kind">kind (nw.Deliverable property)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/delivery.html#nw.delivery.Deliverable.kind">(nw.delivery.Deliverable property)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="module_docs/nw.html#nw.Deliverable.label">label (nw.Deliverable property)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/delivery.html#nw.delivery.Deliverable.label">(nw.delivery.Deliverable property)</a>
+</li>
+      </ul></li>
       <li><a href="module_docs/nw/renderers/lipsync.html#nw.renderers.lipsync.LipsyncStrategy">LipsyncStrategy (class in nw.renderers.lipsync)</a>
 </li>
       <li><a href="module_docs/nw.html#nw.Project.list_character_images">list_character_images() (nw.Project method)</a>
@@ -697,20 +729,22 @@
         <li><a href="module_docs/nw/renderers.html#nw.renderers.list_strategies">(in module nw.renderers)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module_docs/nw.html#nw.Genre.list_templates">list_templates() (nw.Genre method)</a>
 
       <ul>
         <li><a href="module_docs/nw/genres.html#nw.genres.Genre.list_templates">(nw.genres.Genre method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module_docs/nw.html#nw.list_transforms">list_transforms() (in module nw)</a>
 
       <ul>
         <li><a href="module_docs/nw/transforms.html#nw.transforms.list_transforms">(in module nw.transforms)</a>
 </li>
       </ul></li>
+      <li><a href="module_docs/nw/delivery.html#nw.delivery.Lister">Lister (in module nw.delivery)</a>
+</li>
       <li><a href="module_docs/nw/script_segmentation.html#nw.script_segmentation.LLM">LLM (in module nw.script_segmentation)</a>
 </li>
       <li><a href="module_docs/nw.html#nw.Project.log_decision">log_decision() (nw.Project method)</a>
@@ -737,6 +771,12 @@
 
       <ul>
         <li><a href="module_docs/nw.html#nw.Strategy.materialize">(nw.Strategy method)</a>
+</li>
+      </ul></li>
+      <li><a href="module_docs/nw.html#nw.Deliverable.meta">meta (nw.Deliverable attribute)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/delivery.html#nw.delivery.Deliverable.meta">(nw.delivery.Deliverable attribute)</a>
 </li>
       </ul></li>
       <li><a href="module_docs/nw.html#nw.migrate_to_graph">migrate_to_graph() (in module nw)</a>
@@ -877,6 +917,8 @@
 </li>
         <li><a href="module_docs/nw/bodies/verifying_trace.html#module-nw.bodies.verifying_trace">nw.bodies.verifying_trace</a>
 </li>
+        <li><a href="module_docs/nw/delivery.html#module-nw.delivery">nw.delivery</a>
+</li>
         <li><a href="module_docs/nw/experiment.html#module-nw.experiment">nw.experiment</a>
 </li>
         <li><a href="module_docs/nw/freshness.html#module-nw.freshness">nw.freshness</a>
@@ -1008,6 +1050,13 @@
 
       <ul>
         <li><a href="module_docs/nw/bodies/verifying_trace.html#module-nw.bodies.verifying_trace">module</a>
+</li>
+      </ul></li>
+      <li>
+    nw.delivery
+
+      <ul>
+        <li><a href="module_docs/nw/delivery.html#module-nw.delivery">module</a>
 </li>
       </ul></li>
       <li>
@@ -1234,6 +1283,12 @@
         <li><a href="module_docs/nw/transforms.html#nw.transforms.Transform.params_model">(nw.transforms.Transform attribute)</a>
 </li>
       </ul></li>
+      <li><a href="module_docs/nw.html#nw.parse_ref">parse_ref() (in module nw)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/delivery.html#nw.delivery.parse_ref">(in module nw.delivery)</a>
+</li>
+      </ul></li>
       <li><a href="module_docs/nw/jobs.html#nw.jobs.JobsConfig.pct_ceil">pct_ceil (nw.jobs.JobsConfig attribute)</a>
 </li>
       <li><a href="module_docs/nw/renderers.html#nw.renderers.Strategy.plan">plan() (nw.renderers.Strategy method)</a>
@@ -1328,6 +1383,8 @@
         <li><a href="module_docs/nw/genres.html#nw.genres.recommend_genre">(in module nw.genres)</a>
 </li>
       </ul></li>
+      <li><a href="module_docs/nw/delivery.html#nw.delivery.REF_WORD">REF_WORD (in module nw.delivery)</a>
+</li>
       <li><a href="module_docs/nw.html#nw.register_genre">register_genre() (in module nw)</a>
 
       <ul>
@@ -1400,6 +1457,12 @@
 
       <ul>
         <li><a href="module_docs/nw/project.html#nw.project.Project.resolved_genre">(nw.project.Project method)</a>
+</li>
+      </ul></li>
+      <li><a href="module_docs/nw.html#nw.Resolver">Resolver (class in nw)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/delivery.html#nw.delivery.Resolver">(class in nw.delivery)</a>
 </li>
       </ul></li>
       <li><a href="module_docs/nw.html#nw.Project.resumption_brief">resumption_brief() (nw.Project method)</a>
