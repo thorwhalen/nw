@@ -98,6 +98,8 @@ from .transforms import (
     transform_catalog,
     transforms,
 )
+from . import delivery  # noqa: F401  — `nw.delivery.Deliverable` (the genre->host seam)
+from .delivery import Deliverable, Lister, Resolver, format_ref, parse_ref
 from .genres import (
     GENRE_STATUSES,
     Genre,
@@ -144,6 +146,11 @@ from .workflow import (
 )
 
 __all__ = [
+    "Deliverable",
+    "Resolver",
+    "Lister",
+    "parse_ref",
+    "format_ref",
     "SCHEMA_VERSION",
     "BaseTransform",
     "CharacterImage",
