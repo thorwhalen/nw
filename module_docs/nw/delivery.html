@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.delivery &mdash; nw 0.0.33 documentation</title>
+  <title>nw.delivery &mdash; nw 0.0.34 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=565bc8c8"></script>
+      <script src="../../_static/documentation_options.js?v=9dd25805"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -63,6 +63,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#why-this-module-exists-at-all">Why this module exists at all</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#the-speakable-reference">The speakable reference</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#authorization-is-the-genre-s-job-and-it-is-not-optional">Authorization is the genre’s job, and it is not optional</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.delivery.DELIVERY_FUNCTIONS"><code class="docutils literal notranslate"><span class="pre">DELIVERY_FUNCTIONS</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.delivery.Deliverable"><code class="docutils literal notranslate"><span class="pre">Deliverable</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#nw.delivery.Deliverable.kind"><code class="docutils literal notranslate"><span class="pre">Deliverable.kind</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.delivery.Deliverable.label"><code class="docutils literal notranslate"><span class="pre">Deliverable.label</span></code></a></li>
@@ -70,10 +71,21 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.delivery.Lister"><code class="docutils literal notranslate"><span class="pre">Lister</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.delivery.MAX_TITLE_LEN"><code class="docutils literal notranslate"><span class="pre">MAX_TITLE_LEN</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.delivery.Organiser"><code class="docutils literal notranslate"><span class="pre">Organiser</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.delivery.ProjectLister"><code class="docutils literal notranslate"><span class="pre">ProjectLister</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.delivery.ProjectSummary"><code class="docutils literal notranslate"><span class="pre">ProjectSummary</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#nw.delivery.ProjectSummary.label"><code class="docutils literal notranslate"><span class="pre">ProjectSummary.label</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.delivery.REF_WORD"><code class="docutils literal notranslate"><span class="pre">REF_WORD</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.delivery.Resolver"><code class="docutils literal notranslate"><span class="pre">Resolver</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.delivery.caller_key"><code class="docutils literal notranslate"><span class="pre">caller_key()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.delivery.check_delivery_source"><code class="docutils literal notranslate"><span class="pre">check_delivery_source()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.delivery.check_title"><code class="docutils literal notranslate"><span class="pre">check_title()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.delivery.format_ref"><code class="docutils literal notranslate"><span class="pre">format_ref()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.delivery.parse_ref"><code class="docutils literal notranslate"><span class="pre">parse_ref()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.delivery.safe_message"><code class="docutils literal notranslate"><span class="pre">safe_message()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="experiment.html">nw.experiment</a></li>
@@ -137,8 +149,12 @@ split along ownership lines, and this module owns the vocabulary in the middle:<
 file is it, and is it theirs? Only the genre knows its own workspace layout.</p></li>
 <li><p><strong>The host owns transport.</strong> Signing, expiry, streaming, the watch page. Only
 the host knows its public URL, its secret, and its route.</p></li>
-<li><p><strong>This module owns the noun they exchange</strong> — <a class="reference internal" href="#nw.delivery.Deliverable" title="nw.delivery.Deliverable"><code class="xref py py-class docutils literal notranslate"><span class="pre">Deliverable</span></code></a> — plus the
-two Protocols that pin the seam: <a class="reference internal" href="#nw.delivery.Resolver" title="nw.delivery.Resolver"><code class="xref py py-data docutils literal notranslate"><span class="pre">Resolver</span></code></a> and <a class="reference internal" href="#nw.delivery.Lister" title="nw.delivery.Lister"><code class="xref py py-data docutils literal notranslate"><span class="pre">Lister</span></code></a>.</p></li>
+<li><p><strong>This module owns the noun they exchange</strong> — <a class="reference internal" href="#nw.delivery.Deliverable" title="nw.delivery.Deliverable"><code class="xref py py-class docutils literal notranslate"><span class="pre">Deliverable</span></code></a> (and its
+sibling <a class="reference internal" href="#nw.delivery.ProjectSummary" title="nw.delivery.ProjectSummary"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProjectSummary</span></code></a>) — plus the four functions that pin the seam:
+<a class="reference internal" href="#nw.delivery.Resolver" title="nw.delivery.Resolver"><code class="xref py py-data docutils literal notranslate"><span class="pre">Resolver</span></code></a>, <a class="reference internal" href="#nw.delivery.Lister" title="nw.delivery.Lister"><code class="xref py py-data docutils literal notranslate"><span class="pre">Lister</span></code></a>, <a class="reference internal" href="#nw.delivery.ProjectLister" title="nw.delivery.ProjectLister"><code class="xref py py-data docutils literal notranslate"><span class="pre">ProjectLister</span></code></a> and
+<a class="reference internal" href="#nw.delivery.Organiser" title="nw.delivery.Organiser"><code class="xref py py-class docutils literal notranslate"><span class="pre">Organiser</span></code></a>. A genre registers the ones it offers
+(<code class="docutils literal notranslate"><span class="pre">resolve</span></code> is mandatory; see <a class="reference internal" href="#nw.delivery.check_delivery_source" title="nw.delivery.check_delivery_source"><code class="xref py py-func docutils literal notranslate"><span class="pre">check_delivery_source()</span></code></a>), and absence
+of the rest is a capability declaration, never an error.</p></li>
 </ul>
 <p>nw is where this belongs because it is the one package every genre already
 reaches and which reaches none of them: <code class="docutils literal notranslate"><span class="pre">muvid</span></code>, <code class="docutils literal notranslate"><span class="pre">braidio</span></code> and <code class="docutils literal notranslate"><span class="pre">reelee</span></code> all
@@ -201,6 +217,17 @@ tenant’s work.</p>
 primitive, which is why the Protocol takes <code class="docutils literal notranslate"><span class="pre">email</span></code> as its first argument rather
 than letting the host pass it as an afterthought.</p>
 </section>
+<dl class="py data">
+<dt class="sig sig-object py" id="nw.delivery.DELIVERY_FUNCTIONS">
+<span class="sig-prename descclassname"><span class="pre">nw.delivery.</span></span><span class="sig-name descname"><span class="pre">DELIVERY_FUNCTIONS</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('resolve',</span> <span class="pre">'list',</span> <span class="pre">'list_projects',</span> <span class="pre">'organise')</span></span><a class="headerlink" href="#nw.delivery.DELIVERY_FUNCTIONS" title="Link to this definition"></a></dt>
+<dd><p>The four halves a genre may register, in the order a capability report
+prints. <code class="docutils literal notranslate"><span class="pre">resolve</span></code> is mandatory — a genre that cannot resolve a claim
+cannot be served at all. The rest are optional, and ABSENCE IS A CAPABILITY
+DECLARATION, not a hole: the host answers “this genre does not support
+that” (and may report it), never errors on it, and NEVER falls back to a
+store of its own.</p>
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="nw.delivery.Deliverable">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.delivery.</span></span><span class="sig-name descname"><span class="pre">Deliverable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artifact_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">genre</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration_s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size_bytes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">created_at</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nw/delivery.html#Deliverable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.delivery.Deliverable" title="Link to this definition"></a></dt>
@@ -267,6 +294,126 @@ every project of that caller’s in this genre.</p>
 </dd></dl>
 
 <dl class="py data">
+<dt class="sig sig-object py" id="nw.delivery.MAX_TITLE_LEN">
+<span class="sig-prename descclassname"><span class="pre">nw.delivery.</span></span><span class="sig-name descname"><span class="pre">MAX_TITLE_LEN</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">120</span></span><a class="headerlink" href="#nw.delivery.MAX_TITLE_LEN" title="Link to this definition"></a></dt>
+<dd><p>The longest title <a class="reference internal" href="#nw.delivery.check_title" title="nw.delivery.check_title"><code class="xref py py-func docutils literal notranslate"><span class="pre">check_title()</span></code></a> accepts. Long enough for a real
+episode title, short enough to render in one listing row.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.delivery.Organiser">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.delivery.</span></span><span class="sig-name descname"><span class="pre">Organiser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nw/delivery.html#Organiser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.delivery.Organiser" title="Link to this definition"></a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">organise(email,</span> <span class="pre">project_id,</span> <span class="pre">artifact_id,</span> <span class="pre">*,</span> <span class="pre">title=…,</span> <span class="pre">tags=…,</span> <span class="pre">note=…)</span> <span class="pre">-&gt;</span> <span class="pre">Deliverable</span></code></p>
+<p>The seam’s fourth function: rename, tag and annotate a DELIVERABLE, owned
+by whoever assigns <code class="xref py py-attr docutils literal notranslate"><span class="pre">Deliverable.ref</span></code> — never by the host. A
+host-owned label store is refused on the record (the asset-surfaces ADR
+§3.3): it mints a second naming vocabulary the resolvers cannot resolve,
+so the very name a page taught the user would fail in the download tool.
+Keeping naming genre-side is what makes names resolvable, because the same
+code owns the write and the lookup.</p>
+<p>This function arrives ONLY on the authenticated tool path. The signed
+download token stays read-only (ADR §3.4) — it is a forwardable bearer
+credential, safe precisely because it authorises reading one artifact and
+nothing else. Which is why the Protocol takes <code class="docutils literal notranslate"><span class="pre">email</span></code> first and
+authorizes exactly as <a class="reference internal" href="#nw.delivery.Resolver" title="nw.delivery.Resolver"><code class="xref py py-data docutils literal notranslate"><span class="pre">Resolver</span></code></a> does, before anything is written.</p>
+<p>The durability contract — each guarantee one a real genre can keep:</p>
+<ul class="simple">
+<li><p><strong>``artifact_id`` never changes, and files are never renamed or
+moved.</strong> The id is what a signed token is minted against, and some
+locations are load-bearing (braidio’s episode path is recorded in the
+annotation graph). A flat-set genre whose id is the file stem persists
+naming in a genre-owned sidecar, NOT by renaming the file — a rename is
+also how naming becomes destruction (<code class="docutils literal notranslate"><span class="pre">os.rename</span></code> silently replaces an
+existing target).</p></li>
+<li><p><strong>An accepted title resolves.</strong> After <code class="docutils literal notranslate"><span class="pre">organise(...,</span> <span class="pre">title=T)</span></code>
+succeeds, the genre’s own <code class="docutils literal notranslate"><span class="pre">resolve</span></code> accepts <code class="docutils literal notranslate"><span class="pre">T</span></code> for this
+deliverable. Titles pass <a class="reference internal" href="#nw.delivery.check_title" title="nw.delivery.check_title"><code class="xref py py-func docutils literal notranslate"><span class="pre">check_title()</span></code></a>, and a collision with an
+existing name in the genre’s namespace raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> naming the
+holder. A genre whose <code class="docutils literal notranslate"><span class="pre">ref</span></code> IS its title mirrors the accepted title
+into <code class="docutils literal notranslate"><span class="pre">ref</span></code> — the label follows the rename; the id still does not.</p></li>
+<li><p><strong>Partial update, all-or-nothing.</strong> <code class="docutils literal notranslate"><span class="pre">None</span></code> means “leave unchanged”;
+<code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code> clears the title or note, <code class="docutils literal notranslate"><span class="pre">[]</span></code> clears tags (replaced whole,
+never merged — read-modify-write is the caller’s). A field the genre
+cannot persist raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> naming it, and nothing is written.</p></li>
+<li><p><strong>The return is a receipt, not an echo</strong>: the Deliverable AS RE-READ
+from storage after the write, so the caller sees exactly what every
+later listing will — a genre that cannot re-read its own write has a
+durability bug this makes visible immediately.</p></li>
+<li><p><strong>``tags`` and ``note`` surface in the returned Deliverable’s ``meta``
+under the parameter’s own names</strong> (<code class="docutils literal notranslate"><span class="pre">meta[&quot;tags&quot;]</span></code>, <code class="docutils literal notranslate"><span class="pre">meta[&quot;note&quot;]</span></code>).
+The spelling is pinned HERE, in the seam, so the write side and every
+listing renderer read one vocabulary.</p></li>
+</ul>
+<p>Raises <code class="docutils literal notranslate"><span class="pre">KeyError</span></code> (host: 404) when nothing resolves, <code class="docutils literal notranslate"><span class="pre">PermissionError</span></code>
+(403) where “not yours” is safe to reveal, <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> (400) when a
+requested change is refused. Deliberately NO delete: retrievability, cost
+and destruction are three separate predicates, and destruction does not
+ride a naming function — it would be a separately gated fifth function.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="nw.delivery.ProjectLister">
+<span class="sig-prename descclassname"><span class="pre">nw.delivery.</span></span><span class="sig-name descname"><span class="pre">ProjectLister</span></span><a class="headerlink" href="#nw.delivery.ProjectLister" title="Link to this definition"></a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">list_projects(email)</span> <span class="pre">-&gt;</span> <span class="pre">list[ProjectSummary]</span></code> — every project of this
+caller’s in the genre, newest-modified first, INCLUDING projects that have
+never rendered. The genre is implicit: registration is per-genre, and the
+host stamps the registry key onto any row whose <code class="docutils literal notranslate"><span class="pre">genre</span></code> arrives blank.</p>
+<p>The error contract, stated once so no genre re-invents it: an empty list is
+a POSITIVE CLAIM — “nothing exists under this exact <a class="reference internal" href="#nw.delivery.caller_key" title="nw.delivery.caller_key"><code class="xref py py-func docutils literal notranslate"><span class="pre">caller_key()</span></code></a>” —
+and an infrastructure failure must RAISE. The host surfaces a raise as a
+per-genre problems entry; it never folds one into an empty result, because
+a listing that silently omits a genre can honestly report “you have made
+nothing” to a caller with work on disk (the <code class="docutils literal notranslate"><span class="pre">except:</span> <span class="pre">continue</span></code> defect).
+A lister that degrades its own errors to <code class="docutils literal notranslate"><span class="pre">[]</span></code> rebuilds that defect one
+layer down, where the host can no longer see it.</p>
+<p>Two boundaries a lister must keep: it MUST NOT create a workspace directory
+just to list it — emptiness is the only signal there is, and minting the
+directory corrupts it (whether an empty answer means “no work” or “never
+seen this caller” is the HOST’s copy to write, with the host’s knowledge of
+the allowlist). And rows are the caller’s OWN projects; a genre MAY include
+rows shared with the caller if it marks them (<code class="docutils literal notranslate"><span class="pre">meta[&quot;access&quot;]=&quot;shared&quot;</span></code>).</p>
+<p>The keyword <code class="docutils literal notranslate"><span class="pre">after=</span></code> is RESERVED for a future pagination cursor — a genre
+must not define it to mean anything else.</p>
+<p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">Callable</span></code>[[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">list[ProjectSummary]</span></code>]</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.delivery.ProjectSummary">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.delivery.</span></span><span class="sig-name descname"><span class="pre">ProjectSummary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">genre</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">created_at</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modified_at</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deliverable_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nw/delivery.html#ProjectSummary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.delivery.ProjectSummary" title="Link to this definition"></a></dt>
+<dd><p>A project a caller has — whether or not it has ever rendered.</p>
+<p><a class="reference internal" href="#nw.delivery.Lister" title="nw.delivery.Lister"><code class="xref py py-data docutils literal notranslate"><span class="pre">Lister</span></code></a> enumerates finished work, which means a footage project
+with a song and twelve clips and no cut yet is invisible to every surface
+in the system (reelee#333). This is the row that makes it findable.</p>
+<p>Every existing workspace lister computes an mtime to sort by and then
+throws it away — forcing a host that merges several genres’ listings to
+re-guess an order it was already told. The richer half wins, so
+<code class="docutils literal notranslate"><span class="pre">modified_at</span></code> stays, and <code class="docutils literal notranslate"><span class="pre">created_at</span></code> with it (every manifest already
+records it; only the row dropped it).</p>
+<p><code class="docutils literal notranslate"><span class="pre">deliverable_count</span></code> is three-valued on purpose: <code class="docutils literal notranslate"><span class="pre">None</span></code> means “not
+counted” (counting may cost a walk the genre chose not to pay), <code class="docutils literal notranslate"><span class="pre">0</span></code>
+means counted and genuinely renderless — the project a surface must show
+as “no cut yet” rather than omit. <code class="docutils literal notranslate"><span class="pre">meta</span></code> is the same escape valve
+<a class="reference internal" href="#nw.delivery.Deliverable.meta" title="nw.delivery.Deliverable.meta"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Deliverable.meta</span></code></a> is: the host renders what it recognises and
+ignores the rest. A genre with internal drawers stamps a disambiguator
+there (muvid: <code class="docutils literal notranslate"><span class="pre">{&quot;muvid_genre&quot;:</span> <span class="pre">&quot;footage&quot;}</span></code>), because one genre
+registration may span several workspaces and a <code class="docutils literal notranslate"><span class="pre">project_id</span></code> may appear
+in more than one — hosts must not key merged rows by
+<code class="docutils literal notranslate"><span class="pre">(genre,</span> <span class="pre">project_id)</span></code> alone.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="nw.delivery.ProjectSummary.label">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">label</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#nw.delivery.ProjectSummary.label" title="Link to this definition"></a></dt>
+<dd><p>The best short name for a human — the title if it has one, else the id.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ProjectSummary</span><span class="p">(</span><span class="s2">"we_ll_see"</span><span class="p">,</span> <span class="s2">"We'll See"</span><span class="p">)</span><span class="o">.</span><span class="n">label</span>
+<span class="go">"We'll See"</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ProjectSummary</span><span class="p">(</span><span class="s2">"we_ll_see"</span><span class="p">)</span><span class="o">.</span><span class="n">label</span>
+<span class="go">'we_ll_see'</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py data">
 <dt class="sig sig-object py" id="nw.delivery.REF_WORD">
 <span class="sig-prename descclassname"><span class="pre">nw.delivery.</span></span><span class="sig-name descname"><span class="pre">REF_WORD</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cut'</span></span><a class="headerlink" href="#nw.delivery.REF_WORD" title="Link to this definition"></a></dt>
 <dd><p>The noun a genre uses when it labels a deliverable for a human (“cut 4”).
@@ -283,6 +430,96 @@ the ordering that gives <code class="docutils literal notranslate"><span class="
 <p>Raises <code class="docutils literal notranslate"><span class="pre">KeyError</span></code> when nothing resolves (the host answers 404) and
 <code class="docutils literal notranslate"><span class="pre">PermissionError</span></code> when it resolves but is not the caller’s (403). Never
 let a server path escape in the message.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.delivery.caller_key">
+<span class="sig-prename descclassname"><span class="pre">nw.delivery.</span></span><span class="sig-name descname"><span class="pre">caller_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">email</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/nw/delivery.html#caller_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.delivery.caller_key" title="Link to this definition"></a></dt>
+<dd><p>The one normalisation of a caller identity, applied at the seam.</p>
+<p>Bucket keys are lowercased OAuth emails, and workspaces are created
+lazily — so a caller who arrives as <code class="docutils literal notranslate"><span class="pre">Noel&#64;Example.com</span></code> after months as
+<code class="docutils literal notranslate"><span class="pre">noel&#64;example.com</span></code> would silently mint a second, empty bucket, and their
+entire body of work would vanish from every listing with no error. Two
+normalisations that almost agree are two buckets; this is the one.</p>
+<p>Hosts SHOULD route every seam call through it. It is offered, not
+retroactively demanded: existing callers normalise where they already do,
+and converge here as they touch those sites.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">caller_key</span><span class="p">(</span><span class="s2">"  Noel@Example.COM "</span><span class="p">)</span>
+<span class="go">'noel@example.com'</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.delivery.check_delivery_source">
+<span class="sig-prename descclassname"><span class="pre">nw.delivery.</span></span><span class="sig-name descname"><span class="pre">check_delivery_source</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">genre</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">entry</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../../_modules/nw/delivery.html#check_delivery_source"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.delivery.check_delivery_source" title="Link to this definition"></a></dt>
+<dd><p>Refuse a malformed registration at wiring time, not at first call.</p>
+<p>The registration map — <code class="docutils literal notranslate"><span class="pre">{genre:</span> <span class="pre">{&quot;resolve&quot;:</span> <span class="pre">fn,</span> <span class="pre">&quot;list&quot;:</span> <span class="pre">fn,</span>
+<span class="pre">&quot;list_projects&quot;:</span> <span class="pre">fn,</span> <span class="pre">&quot;organise&quot;:</span> <span class="pre">fn}}</span></code> — is assembled by hand in the
+deployment repo, which makes it the luckiest point of the whole seam: a
+key typo’d <code class="docutils literal notranslate"><span class="pre">&quot;list_project&quot;</span></code> does not fail, it silently disables the
+capability for that genre, and an unreachable failure is an invisible one
+(this module’s founding story). Call this on each entry when building the
+map; it returns the entry unchanged so it composes inline.</p>
+<p><strong>This is a pure shape check and must stay one</strong> — no I/O, no imports, no
+runtime state — so a deployment repo’s CI can run it over the assembled
+map and catch the typo <em>before</em> the boot-time raise ever fires. The raise
+is the backstop, not the detector; growing a check here that needs a live
+store would put the whole-connector blast radius back.</p>
+<p>Release-ordering corollary: a new key ships HERE before any genre
+registers it, or an older nw on the box refuses a newer genre’s honest
+registration.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">entry</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"resolve"</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">e</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">a</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">check_delivery_source</span><span class="p">(</span><span class="s2">"g"</span><span class="p">,</span> <span class="n">entry</span><span class="p">)</span> <span class="ow">is</span> <span class="n">entry</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">check_delivery_source</span><span class="p">(</span><span class="s2">"g"</span><span class="p">,</span> <span class="p">{</span><span class="s2">"list_project"</span><span class="p">:</span> <span class="kc">None</span><span class="p">})</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">ValueError</span>: <span class="n">unknown delivery-source keys for genre 'g': ['list_project'] (known: ['resolve', 'list', 'list_projects', 'organise'])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">check_delivery_source</span><span class="p">(</span><span class="s2">"g"</span><span class="p">,</span> <span class="p">{})</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">ValueError</span>: <span class="n">delivery source for genre 'g' has no 'resolve' — a genre that cannot resolve a claim cannot be served</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.delivery.check_title">
+<span class="sig-prename descclassname"><span class="pre">nw.delivery.</span></span><span class="sig-name descname"><span class="pre">check_title</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/nw/delivery.html#check_title"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.delivery.check_title" title="Link to this definition"></a></dt>
+<dd><p>Validate and normalise a human-assigned title; <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> if refused.</p>
+<p>The shared half of the naming rule, so every genre refuses the same
+spellings rather than each inventing its own near-miss:</p>
+<ul class="simple">
+<li><p><strong>Never ref-shaped.</strong> A title the shared parser reads as an ordinal
+(<code class="docutils literal notranslate"><span class="pre">&quot;cut</span> <span class="pre">4&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;#7&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;12&quot;</span></code>) is refused everywhere — a resolver
+that tries <a class="reference internal" href="#nw.delivery.parse_ref" title="nw.delivery.parse_ref"><code class="xref py py-func docutils literal notranslate"><span class="pre">parse_ref()</span></code></a> first (muvid’s does today; any genre may
+tomorrow) would shadow it forever, so the user would have renamed their
+work into a name that resolves to a <em>different</em> artifact.</p></li>
+<li><p><strong>Never path-shaped.</strong> No separators, no <code class="docutils literal notranslate"><span class="pre">.</span></code>/<code class="docutils literal notranslate"><span class="pre">..</span></code>, no control
+characters — a title participates in resolution, so it inherits the
+same hostility to traversal as any other id.</p></li>
+</ul>
+<p>The OTHER half — “does this collide with an existing artifact_id, title
+or filename in the genre’s own namespace?” — is the genre’s, because only
+the genre knows its namespace. The contract there: a collision raises
+<code class="docutils literal notranslate"><span class="pre">ValueError</span></code> naming the current holder, never silently reassigns.</p>
+<p>This governs titles assigned through <a class="reference internal" href="#nw.delivery.Organiser" title="nw.delivery.Organiser"><code class="xref py py-class docutils literal notranslate"><span class="pre">Organiser</span></code></a>; genre CREATE
+paths keep their own (often looser) rules, so a render <em>created</em> as
+<code class="docutils literal notranslate"><span class="pre">&quot;12&quot;</span></code> may exist that <code class="docutils literal notranslate"><span class="pre">organise</span></code> would refuse to assign — asymmetric,
+and deliberate: organise is the door new names arrive through.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">check_title</span><span class="p">(</span><span class="s2">"  The Slow Open "</span><span class="p">)</span>
+<span class="go">'The Slow Open'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">check_title</span><span class="p">(</span><span class="s2">"cut 4"</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">ValueError</span>: <span class="n">'cut 4' reads as a reference; pick a name that is not 'cut &lt;n&gt;', '#&lt;n&gt;' or a bare number</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">check_title</span><span class="p">(</span><span class="s2">"a/b"</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="c">...</span>
+<span class="gr">ValueError</span>: <span class="n">a title cannot contain path separators or control characters</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -314,6 +551,25 @@ ordinary, expected answer, not an error.</p>
 accepting <code class="docutils literal notranslate"><span class="pre">cut</span> <span class="pre">0</span></code> would resolve to a neighbour under a naive index:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">parse_ref</span><span class="p">(</span><span class="s2">"cut 0"</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span>
 <span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.delivery.safe_message">
+<span class="sig-prename descclassname"><span class="pre">nw.delivery.</span></span><span class="sig-name descname"><span class="pre">safe_message</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">BaseException</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/nw/delivery.html#safe_message"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.delivery.safe_message" title="Link to this definition"></a></dt>
+<dd><p>An exception’s message, reduced to what is safe to show a caller.</p>
+<p>The seam’s exception vocabulary — <code class="docutils literal notranslate"><span class="pre">KeyError</span></code> / <code class="docutils literal notranslate"><span class="pre">PermissionError</span></code> /
+<code class="docutils literal notranslate"><span class="pre">ValueError</span></code> — passes through, because genre authors keep those
+messages path-free BY CONTRACT (never let a server path escape in the
+message; it is stated on <a class="reference internal" href="#nw.delivery.Resolver" title="nw.delivery.Resolver"><code class="xref py py-data docutils literal notranslate"><span class="pre">Resolver</span></code></a> and it binds every seam
+function). Anything else — an <code class="docutils literal notranslate"><span class="pre">OSError</span></code> proudly carrying a server path
+— is reduced to its type name: a per-genre problems entry renders in a
+tool response a non-developer reads.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">safe_message</span><span class="p">(</span><span class="ne">KeyError</span><span class="p">(</span><span class="s2">"no render named 'x'"</span><span class="p">))</span>
+<span class="go">'KeyError: "no render named \'x\'"'</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">safe_message</span><span class="p">(</span><span class="ne">OSError</span><span class="p">(</span><span class="s2">"[Errno 13] /somewhere/private/thing.mp3"</span><span class="p">))</span>
+<span class="go">'OSError'</span>
 </pre></div>
 </div>
 </dd></dl>

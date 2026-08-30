@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.delivery &mdash; nw 0.0.33 documentation</title>
+  <title>nw.delivery &mdash; nw 0.0.34 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=565bc8c8"></script>
+      <script src="../../_static/documentation_options.js?v=9dd25805"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -118,8 +118,12 @@
 <span class="sd">  file is it, and is it theirs? Only the genre knows its own workspace layout.</span>
 <span class="sd">- **The host owns transport.** Signing, expiry, streaming, the watch page. Only</span>
 <span class="sd">  the host knows its public URL, its secret, and its route.</span>
-<span class="sd">- **This module owns the noun they exchange** — :class:`Deliverable` — plus the</span>
-<span class="sd">  two Protocols that pin the seam: :data:`Resolver` and :data:`Lister`.</span>
+<span class="sd">- **This module owns the noun they exchange** — :class:`Deliverable` (and its</span>
+<span class="sd">  sibling :class:`ProjectSummary`) — plus the four functions that pin the seam:</span>
+<span class="sd">  :data:`Resolver`, :data:`Lister`, :data:`ProjectLister` and</span>
+<span class="sd">  :class:`Organiser`. A genre registers the ones it offers</span>
+<span class="sd">  (``resolve`` is mandatory; see :func:`check_delivery_source`), and absence</span>
+<span class="sd">  of the rest is a capability declaration, never an error.</span>
 
 <span class="sd">nw is where this belongs because it is the one package every genre already</span>
 <span class="sd">reaches and which reaches none of them: ``muvid``, ``braidio`` and ``reelee`` all</span>
@@ -196,9 +200,18 @@
     <span class="s2">"Deliverable"</span><span class="p">,</span>
     <span class="s2">"Resolver"</span><span class="p">,</span>
     <span class="s2">"Lister"</span><span class="p">,</span>
+    <span class="s2">"ProjectSummary"</span><span class="p">,</span>
+    <span class="s2">"ProjectLister"</span><span class="p">,</span>
+    <span class="s2">"Organiser"</span><span class="p">,</span>
     <span class="s2">"parse_ref"</span><span class="p">,</span>
     <span class="s2">"format_ref"</span><span class="p">,</span>
+    <span class="s2">"check_title"</span><span class="p">,</span>
+    <span class="s2">"caller_key"</span><span class="p">,</span>
+    <span class="s2">"safe_message"</span><span class="p">,</span>
+    <span class="s2">"check_delivery_source"</span><span class="p">,</span>
     <span class="s2">"REF_WORD"</span><span class="p">,</span>
+    <span class="s2">"MAX_TITLE_LEN"</span><span class="p">,</span>
+    <span class="s2">"DELIVERY_FUNCTIONS"</span><span class="p">,</span>
 <span class="p">]</span>
 
 <span class="c1">#: The noun a genre uses when it labels a deliverable for a human ("cut 4").</span>
@@ -347,6 +360,331 @@
 <span class="sd">    ('cut 1', 'cut 42')</span>
 <span class="sd">    """</span>
     <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">REF_WORD</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span></div>
+
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Projects and organising — the seam's third and fourth functions</span>
+<span class="c1"># (reelee#333; the asset-surfaces ADR §3.3 "naming belongs to the genre",</span>
+<span class="c1"># §3.4 "the read claim stays read-only", §4 "zero organise operations").</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="caller_key">
+<a class="viewcode-back" href="../../module_docs/nw/delivery.html#nw.caller_key">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">caller_key</span><span class="p">(</span><span class="n">email</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""The one normalisation of a caller identity, applied at the seam.</span>
+
+<span class="sd">    Bucket keys are lowercased OAuth emails, and workspaces are created</span>
+<span class="sd">    lazily — so a caller who arrives as ``Noel@Example.com`` after months as</span>
+<span class="sd">    ``noel@example.com`` would silently mint a second, empty bucket, and their</span>
+<span class="sd">    entire body of work would vanish from every listing with no error. Two</span>
+<span class="sd">    normalisations that almost agree are two buckets; this is the one.</span>
+
+<span class="sd">    Hosts SHOULD route every seam call through it. It is offered, not</span>
+<span class="sd">    retroactively demanded: existing callers normalise where they already do,</span>
+<span class="sd">    and converge here as they touch those sites.</span>
+
+<span class="sd">    &gt;&gt;&gt; caller_key("  Noel@Example.COM ")</span>
+<span class="sd">    'noel@example.com'</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">email</span> <span class="ow">or</span> <span class="s2">""</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="ProjectSummary">
+<a class="viewcode-back" href="../../module_docs/nw/delivery.html#nw.ProjectSummary">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ProjectSummary</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""A project a caller has — whether or not it has ever rendered.</span>
+
+<span class="sd">    :data:`Lister` enumerates finished work, which means a footage project</span>
+<span class="sd">    with a song and twelve clips and no cut yet is invisible to every surface</span>
+<span class="sd">    in the system (reelee#333). This is the row that makes it findable.</span>
+
+<span class="sd">    Every existing workspace lister computes an mtime to sort by and then</span>
+<span class="sd">    throws it away — forcing a host that merges several genres' listings to</span>
+<span class="sd">    re-guess an order it was already told. The richer half wins, so</span>
+<span class="sd">    ``modified_at`` stays, and ``created_at`` with it (every manifest already</span>
+<span class="sd">    records it; only the row dropped it).</span>
+
+<span class="sd">    ``deliverable_count`` is three-valued on purpose: ``None`` means "not</span>
+<span class="sd">    counted" (counting may cost a walk the genre chose not to pay), ``0``</span>
+<span class="sd">    means counted and genuinely renderless — the project a surface must show</span>
+<span class="sd">    as "no cut yet" rather than omit. ``meta`` is the same escape valve</span>
+<span class="sd">    :attr:`Deliverable.meta` is: the host renders what it recognises and</span>
+<span class="sd">    ignores the rest. A genre with internal drawers stamps a disambiguator</span>
+<span class="sd">    there (muvid: ``{"muvid_genre": "footage"}``), because one genre</span>
+<span class="sd">    registration may span several workspaces and a ``project_id`` may appear</span>
+<span class="sd">    in more than one — hosts must not key merged rows by</span>
+<span class="sd">    ``(genre, project_id)`` alone.</span>
+<span class="sd">    """</span>
+
+    <span class="n">project_id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
+    <span class="n">genre</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
+    <span class="n">created_at</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">modified_at</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">deliverable_count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">meta</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">label</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""The best short name for a human — the title if it has one, else the id.</span>
+
+<span class="sd">        &gt;&gt;&gt; ProjectSummary("we_ll_see", "We'll See").label</span>
+<span class="sd">        "We'll See"</span>
+<span class="sd">        &gt;&gt;&gt; ProjectSummary("we_ll_see").label</span>
+<span class="sd">        'we_ll_see'</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_id</span></div>
+
+
+
+<span class="c1">#: ``list_projects(email) -&gt; list[ProjectSummary]`` — every project of this</span>
+<span class="c1">#: caller's in the genre, newest-modified first, INCLUDING projects that have</span>
+<span class="c1">#: never rendered. The genre is implicit: registration is per-genre, and the</span>
+<span class="c1">#: host stamps the registry key onto any row whose ``genre`` arrives blank.</span>
+<span class="c1">#:</span>
+<span class="c1">#: The error contract, stated once so no genre re-invents it: an empty list is</span>
+<span class="c1">#: a POSITIVE CLAIM — "nothing exists under this exact :func:`caller_key`" —</span>
+<span class="c1">#: and an infrastructure failure must RAISE. The host surfaces a raise as a</span>
+<span class="c1">#: per-genre problems entry; it never folds one into an empty result, because</span>
+<span class="c1">#: a listing that silently omits a genre can honestly report "you have made</span>
+<span class="c1">#: nothing" to a caller with work on disk (the ``except: continue`` defect).</span>
+<span class="c1">#: A lister that degrades its own errors to ``[]`` rebuilds that defect one</span>
+<span class="c1">#: layer down, where the host can no longer see it.</span>
+<span class="c1">#:</span>
+<span class="c1">#: Two boundaries a lister must keep: it MUST NOT create a workspace directory</span>
+<span class="c1">#: just to list it — emptiness is the only signal there is, and minting the</span>
+<span class="c1">#: directory corrupts it (whether an empty answer means "no work" or "never</span>
+<span class="c1">#: seen this caller" is the HOST's copy to write, with the host's knowledge of</span>
+<span class="c1">#: the allowlist). And rows are the caller's OWN projects; a genre MAY include</span>
+<span class="c1">#: rows shared with the caller if it marks them (``meta["access"]="shared"``).</span>
+<span class="c1">#:</span>
+<span class="c1">#: The keyword ``after=`` is RESERVED for a future pagination cursor — a genre</span>
+<span class="c1">#: must not define it to mean anything else.</span>
+<span class="n">ProjectLister</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="s2">"list[ProjectSummary]"</span><span class="p">]</span>
+
+
+<span class="c1">#: The longest title :func:`check_title` accepts. Long enough for a real</span>
+<span class="c1">#: episode title, short enough to render in one listing row.</span>
+<span class="n">MAX_TITLE_LEN</span> <span class="o">=</span> <span class="mi">120</span>
+
+
+<div class="viewcode-block" id="check_title">
+<a class="viewcode-back" href="../../module_docs/nw/delivery.html#nw.check_title">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">check_title</span><span class="p">(</span><span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Validate and normalise a human-assigned title; ``ValueError`` if refused.</span>
+
+<span class="sd">    The shared half of the naming rule, so every genre refuses the same</span>
+<span class="sd">    spellings rather than each inventing its own near-miss:</span>
+
+<span class="sd">    - **Never ref-shaped.** A title the shared parser reads as an ordinal</span>
+<span class="sd">      (``"cut 4"``, ``"#7"``, ``"12"``) is refused everywhere — a resolver</span>
+<span class="sd">      that tries :func:`parse_ref` first (muvid's does today; any genre may</span>
+<span class="sd">      tomorrow) would shadow it forever, so the user would have renamed their</span>
+<span class="sd">      work into a name that resolves to a *different* artifact.</span>
+<span class="sd">    - **Never path-shaped.** No separators, no ``.``/``..``, no control</span>
+<span class="sd">      characters — a title participates in resolution, so it inherits the</span>
+<span class="sd">      same hostility to traversal as any other id.</span>
+
+<span class="sd">    The OTHER half — "does this collide with an existing artifact_id, title</span>
+<span class="sd">    or filename in the genre's own namespace?" — is the genre's, because only</span>
+<span class="sd">    the genre knows its namespace. The contract there: a collision raises</span>
+<span class="sd">    ``ValueError`` naming the current holder, never silently reassigns.</span>
+
+<span class="sd">    This governs titles assigned through :class:`Organiser`; genre CREATE</span>
+<span class="sd">    paths keep their own (often looser) rules, so a render *created* as</span>
+<span class="sd">    ``"12"`` may exist that ``organise`` would refuse to assign — asymmetric,</span>
+<span class="sd">    and deliberate: organise is the door new names arrive through.</span>
+
+<span class="sd">    &gt;&gt;&gt; check_title("  The Slow Open ")</span>
+<span class="sd">    'The Slow Open'</span>
+<span class="sd">    &gt;&gt;&gt; check_title("cut 4")</span>
+<span class="sd">    Traceback (most recent call last):</span>
+<span class="sd">    ...</span>
+<span class="sd">    ValueError: 'cut 4' reads as a reference; pick a name that is not 'cut &lt;n&gt;', '#&lt;n&gt;' or a bare number</span>
+<span class="sd">    &gt;&gt;&gt; check_title("a/b")</span>
+<span class="sd">    Traceback (most recent call last):</span>
+<span class="sd">    ...</span>
+<span class="sd">    ValueError: a title cannot contain path separators or control characters</span>
+<span class="sd">    """</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="p">(</span><span class="n">title</span> <span class="ow">or</span> <span class="s2">""</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">t</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"a title cannot be empty"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">parse_ref</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">t</span><span class="si">!r}</span><span class="s2"> reads as a reference; pick a name that is not "</span>
+            <span class="sa">f</span><span class="s2">"'</span><span class="si">{</span><span class="n">REF_WORD</span><span class="si">}</span><span class="s2"> &lt;n&gt;', '#&lt;n&gt;' or a bare number"</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">MAX_TITLE_LEN</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"a title is at most </span><span class="si">{</span><span class="n">MAX_TITLE_LEN</span><span class="si">}</span><span class="s2"> characters"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="nb">any</span><span class="p">(</span><span class="n">c</span> <span class="ow">in</span> <span class="n">t</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="s2">"/</span><span class="se">\\\0</span><span class="s2">"</span><span class="p">)</span>
+        <span class="ow">or</span> <span class="n">t</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"."</span><span class="p">,</span> <span class="s2">".."</span><span class="p">)</span>
+        <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span><span class="nb">ord</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">32</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">t</span><span class="p">)</span>
+    <span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">"a title cannot contain path separators or control characters"</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">t</span></div>
+
+
+
+<div class="viewcode-block" id="Organiser">
+<a class="viewcode-back" href="../../module_docs/nw/delivery.html#nw.Organiser">[docs]</a>
+<span class="nd">@runtime_checkable</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Organiser</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""``organise(email, project_id, artifact_id, *, title=…, tags=…, note=…) -&gt; Deliverable``</span>
+
+<span class="sd">    The seam's fourth function: rename, tag and annotate a DELIVERABLE, owned</span>
+<span class="sd">    by whoever assigns :attr:`Deliverable.ref` — never by the host. A</span>
+<span class="sd">    host-owned label store is refused on the record (the asset-surfaces ADR</span>
+<span class="sd">    §3.3): it mints a second naming vocabulary the resolvers cannot resolve,</span>
+<span class="sd">    so the very name a page taught the user would fail in the download tool.</span>
+<span class="sd">    Keeping naming genre-side is what makes names resolvable, because the same</span>
+<span class="sd">    code owns the write and the lookup.</span>
+
+<span class="sd">    This function arrives ONLY on the authenticated tool path. The signed</span>
+<span class="sd">    download token stays read-only (ADR §3.4) — it is a forwardable bearer</span>
+<span class="sd">    credential, safe precisely because it authorises reading one artifact and</span>
+<span class="sd">    nothing else. Which is why the Protocol takes ``email`` first and</span>
+<span class="sd">    authorizes exactly as :data:`Resolver` does, before anything is written.</span>
+
+<span class="sd">    The durability contract — each guarantee one a real genre can keep:</span>
+
+<span class="sd">    - **``artifact_id`` never changes, and files are never renamed or</span>
+<span class="sd">      moved.** The id is what a signed token is minted against, and some</span>
+<span class="sd">      locations are load-bearing (braidio's episode path is recorded in the</span>
+<span class="sd">      annotation graph). A flat-set genre whose id is the file stem persists</span>
+<span class="sd">      naming in a genre-owned sidecar, NOT by renaming the file — a rename is</span>
+<span class="sd">      also how naming becomes destruction (``os.rename`` silently replaces an</span>
+<span class="sd">      existing target).</span>
+<span class="sd">    - **An accepted title resolves.** After ``organise(..., title=T)``</span>
+<span class="sd">      succeeds, the genre's own ``resolve`` accepts ``T`` for this</span>
+<span class="sd">      deliverable. Titles pass :func:`check_title`, and a collision with an</span>
+<span class="sd">      existing name in the genre's namespace raises ``ValueError`` naming the</span>
+<span class="sd">      holder. A genre whose ``ref`` IS its title mirrors the accepted title</span>
+<span class="sd">      into ``ref`` — the label follows the rename; the id still does not.</span>
+<span class="sd">    - **Partial update, all-or-nothing.** ``None`` means "leave unchanged";</span>
+<span class="sd">      ``""`` clears the title or note, ``[]`` clears tags (replaced whole,</span>
+<span class="sd">      never merged — read-modify-write is the caller's). A field the genre</span>
+<span class="sd">      cannot persist raises ``ValueError`` naming it, and nothing is written.</span>
+<span class="sd">    - **The return is a receipt, not an echo**: the Deliverable AS RE-READ</span>
+<span class="sd">      from storage after the write, so the caller sees exactly what every</span>
+<span class="sd">      later listing will — a genre that cannot re-read its own write has a</span>
+<span class="sd">      durability bug this makes visible immediately.</span>
+<span class="sd">    - **``tags`` and ``note`` surface in the returned Deliverable's ``meta``</span>
+<span class="sd">      under the parameter's own names** (``meta["tags"]``, ``meta["note"]``).</span>
+<span class="sd">      The spelling is pinned HERE, in the seam, so the write side and every</span>
+<span class="sd">      listing renderer read one vocabulary.</span>
+
+<span class="sd">    Raises ``KeyError`` (host: 404) when nothing resolves, ``PermissionError``</span>
+<span class="sd">    (403) where "not yours" is safe to reveal, ``ValueError`` (400) when a</span>
+<span class="sd">    requested change is refused. Deliberately NO delete: retrievability, cost</span>
+<span class="sd">    and destruction are three separate predicates, and destruction does not</span>
+<span class="sd">    ride a naming function — it would be a separately gated fifth function.</span>
+<span class="sd">    """</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">email</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">project_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">artifact_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">title</span><span class="p">:</span> <span class="s2">"str | None"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">tags</span><span class="p">:</span> <span class="s2">"list[str] | None"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">note</span><span class="p">:</span> <span class="s2">"str | None"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Deliverable</span><span class="p">:</span> <span class="o">...</span></div>
+
+
+
+<div class="viewcode-block" id="safe_message">
+<a class="viewcode-back" href="../../module_docs/nw/delivery.html#nw.safe_message">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">safe_message</span><span class="p">(</span><span class="n">exc</span><span class="p">:</span> <span class="ne">BaseException</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""An exception's message, reduced to what is safe to show a caller.</span>
+
+<span class="sd">    The seam's exception vocabulary — ``KeyError`` / ``PermissionError`` /</span>
+<span class="sd">    ``ValueError`` — passes through, because genre authors keep those</span>
+<span class="sd">    messages path-free BY CONTRACT (never let a server path escape in the</span>
+<span class="sd">    message; it is stated on :data:`Resolver` and it binds every seam</span>
+<span class="sd">    function). Anything else — an ``OSError`` proudly carrying a server path</span>
+<span class="sd">    — is reduced to its type name: a per-genre problems entry renders in a</span>
+<span class="sd">    tool response a non-developer reads.</span>
+
+<span class="sd">    &gt;&gt;&gt; safe_message(KeyError("no render named 'x'"))</span>
+<span class="sd">    'KeyError: "no render named \\'x\\'"'</span>
+<span class="sd">    &gt;&gt;&gt; safe_message(OSError("[Errno 13] /somewhere/private/thing.mp3"))</span>
+<span class="sd">    'OSError'</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">exc</span><span class="p">,</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">PermissionError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">"</span>
+    <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span></div>
+
+
+
+<span class="c1">#: The four halves a genre may register, in the order a capability report</span>
+<span class="c1">#: prints. ``resolve`` is mandatory — a genre that cannot resolve a claim</span>
+<span class="c1">#: cannot be served at all. The rest are optional, and ABSENCE IS A CAPABILITY</span>
+<span class="c1">#: DECLARATION, not a hole: the host answers "this genre does not support</span>
+<span class="c1">#: that" (and may report it), never errors on it, and NEVER falls back to a</span>
+<span class="c1">#: store of its own.</span>
+<span class="n">DELIVERY_FUNCTIONS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">"resolve"</span><span class="p">,</span> <span class="s2">"list"</span><span class="p">,</span> <span class="s2">"list_projects"</span><span class="p">,</span> <span class="s2">"organise"</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="check_delivery_source">
+<a class="viewcode-back" href="../../module_docs/nw/delivery.html#nw.check_delivery_source">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">check_delivery_source</span><span class="p">(</span><span class="n">genre</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">entry</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Refuse a malformed registration at wiring time, not at first call.</span>
+
+<span class="sd">    The registration map — ``{genre: {"resolve": fn, "list": fn,</span>
+<span class="sd">    "list_projects": fn, "organise": fn}}`` — is assembled by hand in the</span>
+<span class="sd">    deployment repo, which makes it the luckiest point of the whole seam: a</span>
+<span class="sd">    key typo'd ``"list_project"`` does not fail, it silently disables the</span>
+<span class="sd">    capability for that genre, and an unreachable failure is an invisible one</span>
+<span class="sd">    (this module's founding story). Call this on each entry when building the</span>
+<span class="sd">    map; it returns the entry unchanged so it composes inline.</span>
+
+<span class="sd">    **This is a pure shape check and must stay one** — no I/O, no imports, no</span>
+<span class="sd">    runtime state — so a deployment repo's CI can run it over the assembled</span>
+<span class="sd">    map and catch the typo *before* the boot-time raise ever fires. The raise</span>
+<span class="sd">    is the backstop, not the detector; growing a check here that needs a live</span>
+<span class="sd">    store would put the whole-connector blast radius back.</span>
+
+<span class="sd">    Release-ordering corollary: a new key ships HERE before any genre</span>
+<span class="sd">    registers it, or an older nw on the box refuses a newer genre's honest</span>
+<span class="sd">    registration.</span>
+
+<span class="sd">    &gt;&gt;&gt; entry = {"resolve": lambda e, p, a: None}</span>
+<span class="sd">    &gt;&gt;&gt; check_delivery_source("g", entry) is entry</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; check_delivery_source("g", {"list_project": None})</span>
+<span class="sd">    Traceback (most recent call last):</span>
+<span class="sd">    ...</span>
+<span class="sd">    ValueError: unknown delivery-source keys for genre 'g': ['list_project'] (known: ['resolve', 'list', 'list_projects', 'organise'])</span>
+<span class="sd">    &gt;&gt;&gt; check_delivery_source("g", {})</span>
+<span class="sd">    Traceback (most recent call last):</span>
+<span class="sd">    ...</span>
+<span class="sd">    ValueError: delivery source for genre 'g' has no 'resolve' — a genre that cannot resolve a claim cannot be served</span>
+<span class="sd">    """</span>
+    <span class="n">unknown</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">entry</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">DELIVERY_FUNCTIONS</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">unknown</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"unknown delivery-source keys for genre </span><span class="si">{</span><span class="n">genre</span><span class="si">!r}</span><span class="s2">: "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">sorted</span><span class="p">(</span><span class="n">unknown</span><span class="p">)</span><span class="si">}</span><span class="s2"> (known: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">DELIVERY_FUNCTIONS</span><span class="p">)</span><span class="si">}</span><span class="s2">)"</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="s2">"resolve"</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">entry</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"delivery source for genre </span><span class="si">{</span><span class="n">genre</span><span class="si">!r}</span><span class="s2"> has no 'resolve' — "</span>
+            <span class="s2">"a genre that cannot resolve a claim cannot be served"</span>
+        <span class="p">)</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">fn</span> <span class="ow">in</span> <span class="n">entry</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"delivery-source entry </span><span class="si">{</span><span class="n">key</span><span class="si">!r}</span><span class="s2"> for genre </span><span class="si">{</span><span class="n">genre</span><span class="si">!r}</span><span class="s2"> is not callable"</span>
+            <span class="p">)</span>
+    <span class="k">return</span> <span class="n">entry</span></div>
 
 </pre></div>
 
