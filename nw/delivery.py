@@ -390,14 +390,8 @@ def check_title(title: str) -> str:
         )
     if len(t) > MAX_TITLE_LEN:
         raise ValueError(f"a title is at most {MAX_TITLE_LEN} characters")
-    if (
-        any(c in t for c in "/\\\0")
-        or t in (".", "..")
-        or any(ord(c) < 32 for c in t)
-    ):
-        raise ValueError(
-            "a title cannot contain path separators or control characters"
-        )
+    if any(c in t for c in "/\\\0") or t in (".", "..") or any(ord(c) < 32 for c in t):
+        raise ValueError("a title cannot contain path separators or control characters")
     return t
 
 
