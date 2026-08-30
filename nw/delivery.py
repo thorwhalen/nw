@@ -8,8 +8,12 @@ split along ownership lines, and this module owns the vocabulary in the middle:
   file is it, and is it theirs? Only the genre knows its own workspace layout.
 - **The host owns transport.** Signing, expiry, streaming, the watch page. Only
   the host knows its public URL, its secret, and its route.
-- **This module owns the noun they exchange** — :class:`Deliverable` — plus the
-  two Protocols that pin the seam: :data:`Resolver` and :data:`Lister`.
+- **This module owns the noun they exchange** — :class:`Deliverable` (and its
+  sibling :class:`ProjectSummary`) — plus the four functions that pin the seam:
+  :data:`Resolver`, :data:`Lister`, :data:`ProjectLister` and
+  :class:`Organiser`. A genre registers the ones it offers
+  (``resolve`` is mandatory; see :func:`check_delivery_source`), and absence
+  of the rest is a capability declaration, never an error.
 
 nw is where this belongs because it is the one package every genre already
 reaches and which reaches none of them: ``muvid``, ``braidio`` and ``reelee`` all
@@ -86,9 +90,18 @@ __all__ = [
     "Deliverable",
     "Resolver",
     "Lister",
+    "ProjectSummary",
+    "ProjectLister",
+    "Organiser",
     "parse_ref",
     "format_ref",
+    "check_title",
+    "caller_key",
+    "safe_message",
+    "check_delivery_source",
     "REF_WORD",
+    "MAX_TITLE_LEN",
+    "DELIVERY_FUNCTIONS",
 ]
 
 #: The noun a genre uses when it labels a deliverable for a human ("cut 4").
@@ -226,3 +239,310 @@ def format_ref(n: int) -> str:
     ('cut 1', 'cut 42')
     """
     return f"{REF_WORD} {int(n)}"
+
+
+# ---------------------------------------------------------------------------
+# Projects and organising — the seam's third and fourth functions
+# (reelee#333; the asset-surfaces ADR §3.3 "naming belongs to the genre",
+# §3.4 "the read claim stays read-only", §4 "zero organise operations").
+# ---------------------------------------------------------------------------
+
+
+def caller_key(email: str) -> str:
+    """The one normalisation of a caller identity, applied at the seam.
+
+    Bucket keys are lowercased OAuth emails, and workspaces are created
+    lazily — so a caller who arrives as ``Noel@Example.com`` after months as
+    ``noel@example.com`` would silently mint a second, empty bucket, and their
+    entire body of work would vanish from every listing with no error. Two
+    normalisations that almost agree are two buckets; this is the one.
+
+    Hosts SHOULD route every seam call through it. It is offered, not
+    retroactively demanded: existing callers normalise where they already do,
+    and converge here as they touch those sites.
+
+    >>> caller_key("  Noel@Example.COM ")
+    'noel@example.com'
+    """
+    return (email or "").strip().lower()
+
+
+@dataclass(frozen=True)
+class ProjectSummary:
+    """A project a caller has — whether or not it has ever rendered.
+
+    :data:`Lister` enumerates finished work, which means a footage project
+    with a song and twelve clips and no cut yet is invisible to every surface
+    in the system (reelee#333). This is the row that makes it findable.
+
+    Every existing workspace lister computes an mtime to sort by and then
+    throws it away — forcing a host that merges several genres' listings to
+    re-guess an order it was already told. The richer half wins, so
+    ``modified_at`` stays, and ``created_at`` with it (every manifest already
+    records it; only the row dropped it).
+
+    ``deliverable_count`` is three-valued on purpose: ``None`` means "not
+    counted" (counting may cost a walk the genre chose not to pay), ``0``
+    means counted and genuinely renderless — the project a surface must show
+    as "no cut yet" rather than omit. ``meta`` is the same escape valve
+    :attr:`Deliverable.meta` is: the host renders what it recognises and
+    ignores the rest. A genre with internal drawers stamps a disambiguator
+    there (muvid: ``{"muvid_genre": "footage"}``), because one genre
+    registration may span several workspaces and a ``project_id`` may appear
+    in more than one — hosts must not key merged rows by
+    ``(genre, project_id)`` alone.
+    """
+
+    project_id: str
+    title: str = ""
+    genre: str = ""
+    created_at: float | None = None
+    modified_at: float | None = None
+    deliverable_count: int | None = None
+    meta: dict = field(default_factory=dict)
+
+    @property
+    def label(self) -> str:
+        """The best short name for a human — the title if it has one, else the id.
+
+        >>> ProjectSummary("we_ll_see", "We'll See").label
+        "We'll See"
+        >>> ProjectSummary("we_ll_see").label
+        'we_ll_see'
+        """
+        return self.title or self.project_id
+
+
+#: ``list_projects(email) -> list[ProjectSummary]`` — every project of this
+#: caller's in the genre, newest-modified first, INCLUDING projects that have
+#: never rendered. The genre is implicit: registration is per-genre, and the
+#: host stamps the registry key onto any row whose ``genre`` arrives blank.
+#:
+#: The error contract, stated once so no genre re-invents it: an empty list is
+#: a POSITIVE CLAIM — "nothing exists under this exact :func:`caller_key`" —
+#: and an infrastructure failure must RAISE. The host surfaces a raise as a
+#: per-genre problems entry; it never folds one into an empty result, because
+#: a listing that silently omits a genre can honestly report "you have made
+#: nothing" to a caller with work on disk (the ``except: continue`` defect).
+#: A lister that degrades its own errors to ``[]`` rebuilds that defect one
+#: layer down, where the host can no longer see it.
+#:
+#: Two boundaries a lister must keep: it MUST NOT create a workspace directory
+#: just to list it — emptiness is the only signal there is, and minting the
+#: directory corrupts it (whether an empty answer means "no work" or "never
+#: seen this caller" is the HOST's copy to write, with the host's knowledge of
+#: the allowlist). And rows are the caller's OWN projects; a genre MAY include
+#: rows shared with the caller if it marks them (``meta["access"]="shared"``).
+#:
+#: The keyword ``after=`` is RESERVED for a future pagination cursor — a genre
+#: must not define it to mean anything else.
+ProjectLister = Callable[[str], "list[ProjectSummary]"]
+
+
+#: The longest title :func:`check_title` accepts. Long enough for a real
+#: episode title, short enough to render in one listing row.
+MAX_TITLE_LEN = 120
+
+
+def check_title(title: str) -> str:
+    """Validate and normalise a human-assigned title; ``ValueError`` if refused.
+
+    The shared half of the naming rule, so every genre refuses the same
+    spellings rather than each inventing its own near-miss:
+
+    - **Never ref-shaped.** A title the shared parser reads as an ordinal
+      (``"cut 4"``, ``"#7"``, ``"12"``) is refused everywhere — a resolver
+      that tries :func:`parse_ref` first (muvid's does today; any genre may
+      tomorrow) would shadow it forever, so the user would have renamed their
+      work into a name that resolves to a *different* artifact.
+    - **Never path-shaped.** No separators, no ``.``/``..``, no control
+      characters — a title participates in resolution, so it inherits the
+      same hostility to traversal as any other id.
+
+    The OTHER half — "does this collide with an existing artifact_id, title
+    or filename in the genre's own namespace?" — is the genre's, because only
+    the genre knows its namespace. The contract there: a collision raises
+    ``ValueError`` naming the current holder, never silently reassigns.
+
+    This governs titles assigned through :class:`Organiser`; genre CREATE
+    paths keep their own (often looser) rules, so a render *created* as
+    ``"12"`` may exist that ``organise`` would refuse to assign — asymmetric,
+    and deliberate: organise is the door new names arrive through.
+
+    >>> check_title("  The Slow Open ")
+    'The Slow Open'
+    >>> check_title("cut 4")
+    Traceback (most recent call last):
+    ...
+    ValueError: 'cut 4' reads as a reference; pick a name that is not 'cut <n>', '#<n>' or a bare number
+    >>> check_title("a/b")
+    Traceback (most recent call last):
+    ...
+    ValueError: a title cannot contain path separators or control characters
+    """
+    t = (title or "").strip()
+    if not t:
+        raise ValueError("a title cannot be empty")
+    if parse_ref(t) is not None:
+        raise ValueError(
+            f"{t!r} reads as a reference; pick a name that is not "
+            f"'{REF_WORD} <n>', '#<n>' or a bare number"
+        )
+    if len(t) > MAX_TITLE_LEN:
+        raise ValueError(f"a title is at most {MAX_TITLE_LEN} characters")
+    if (
+        any(c in t for c in "/\\\0")
+        or t in (".", "..")
+        or any(ord(c) < 32 for c in t)
+    ):
+        raise ValueError(
+            "a title cannot contain path separators or control characters"
+        )
+    return t
+
+
+@runtime_checkable
+class Organiser(Protocol):
+    """``organise(email, project_id, artifact_id, *, title=…, tags=…, note=…) -> Deliverable``
+
+    The seam's fourth function: rename, tag and annotate a DELIVERABLE, owned
+    by whoever assigns :attr:`Deliverable.ref` — never by the host. A
+    host-owned label store is refused on the record (the asset-surfaces ADR
+    §3.3): it mints a second naming vocabulary the resolvers cannot resolve,
+    so the very name a page taught the user would fail in the download tool.
+    Keeping naming genre-side is what makes names resolvable, because the same
+    code owns the write and the lookup.
+
+    This function arrives ONLY on the authenticated tool path. The signed
+    download token stays read-only (ADR §3.4) — it is a forwardable bearer
+    credential, safe precisely because it authorises reading one artifact and
+    nothing else. Which is why the Protocol takes ``email`` first and
+    authorizes exactly as :data:`Resolver` does, before anything is written.
+
+    The durability contract — each guarantee one a real genre can keep:
+
+    - **``artifact_id`` never changes, and files are never renamed or
+      moved.** The id is what a signed token is minted against, and some
+      locations are load-bearing (braidio's episode path is recorded in the
+      annotation graph). A flat-set genre whose id is the file stem persists
+      naming in a genre-owned sidecar, NOT by renaming the file — a rename is
+      also how naming becomes destruction (``os.rename`` silently replaces an
+      existing target).
+    - **An accepted title resolves.** After ``organise(..., title=T)``
+      succeeds, the genre's own ``resolve`` accepts ``T`` for this
+      deliverable. Titles pass :func:`check_title`, and a collision with an
+      existing name in the genre's namespace raises ``ValueError`` naming the
+      holder. A genre whose ``ref`` IS its title mirrors the accepted title
+      into ``ref`` — the label follows the rename; the id still does not.
+    - **Partial update, all-or-nothing.** ``None`` means "leave unchanged";
+      ``""`` clears the title or note, ``[]`` clears tags (replaced whole,
+      never merged — read-modify-write is the caller's). A field the genre
+      cannot persist raises ``ValueError`` naming it, and nothing is written.
+    - **The return is a receipt, not an echo**: the Deliverable AS RE-READ
+      from storage after the write, so the caller sees exactly what every
+      later listing will — a genre that cannot re-read its own write has a
+      durability bug this makes visible immediately.
+    - **``tags`` and ``note`` surface in the returned Deliverable's ``meta``
+      under the parameter's own names** (``meta["tags"]``, ``meta["note"]``).
+      The spelling is pinned HERE, in the seam, so the write side and every
+      listing renderer read one vocabulary.
+
+    Raises ``KeyError`` (host: 404) when nothing resolves, ``PermissionError``
+    (403) where "not yours" is safe to reveal, ``ValueError`` (400) when a
+    requested change is refused. Deliberately NO delete: retrievability, cost
+    and destruction are three separate predicates, and destruction does not
+    ride a naming function — it would be a separately gated fifth function.
+    """
+
+    def __call__(
+        self,
+        email: str,
+        project_id: str,
+        artifact_id: str,
+        *,
+        title: "str | None" = None,
+        tags: "list[str] | None" = None,
+        note: "str | None" = None,
+    ) -> Deliverable: ...
+
+
+def safe_message(exc: BaseException) -> str:
+    """An exception's message, reduced to what is safe to show a caller.
+
+    The seam's exception vocabulary — ``KeyError`` / ``PermissionError`` /
+    ``ValueError`` — passes through, because genre authors keep those
+    messages path-free BY CONTRACT (never let a server path escape in the
+    message; it is stated on :data:`Resolver` and it binds every seam
+    function). Anything else — an ``OSError`` proudly carrying a server path
+    — is reduced to its type name: a per-genre problems entry renders in a
+    tool response a non-developer reads.
+
+    >>> safe_message(KeyError("no render named 'x'"))
+    'KeyError: "no render named \\'x\\'"'
+    >>> safe_message(OSError("[Errno 13] /somewhere/private/thing.mp3"))
+    'OSError'
+    """
+    if isinstance(exc, (KeyError, PermissionError, ValueError)):
+        return f"{type(exc).__name__}: {exc}"
+    return type(exc).__name__
+
+
+#: The four halves a genre may register, in the order a capability report
+#: prints. ``resolve`` is mandatory — a genre that cannot resolve a claim
+#: cannot be served at all. The rest are optional, and ABSENCE IS A CAPABILITY
+#: DECLARATION, not a hole: the host answers "this genre does not support
+#: that" (and may report it), never errors on it, and NEVER falls back to a
+#: store of its own.
+DELIVERY_FUNCTIONS = ("resolve", "list", "list_projects", "organise")
+
+
+def check_delivery_source(genre: str, entry: dict) -> dict:
+    """Refuse a malformed registration at wiring time, not at first call.
+
+    The registration map — ``{genre: {"resolve": fn, "list": fn,
+    "list_projects": fn, "organise": fn}}`` — is assembled by hand in the
+    deployment repo, which makes it the luckiest point of the whole seam: a
+    key typo'd ``"list_project"`` does not fail, it silently disables the
+    capability for that genre, and an unreachable failure is an invisible one
+    (this module's founding story). Call this on each entry when building the
+    map; it returns the entry unchanged so it composes inline.
+
+    **This is a pure shape check and must stay one** — no I/O, no imports, no
+    runtime state — so a deployment repo's CI can run it over the assembled
+    map and catch the typo *before* the boot-time raise ever fires. The raise
+    is the backstop, not the detector; growing a check here that needs a live
+    store would put the whole-connector blast radius back.
+
+    Release-ordering corollary: a new key ships HERE before any genre
+    registers it, or an older nw on the box refuses a newer genre's honest
+    registration.
+
+    >>> entry = {"resolve": lambda e, p, a: None}
+    >>> check_delivery_source("g", entry) is entry
+    True
+    >>> check_delivery_source("g", {"list_project": None})
+    Traceback (most recent call last):
+    ...
+    ValueError: unknown delivery-source keys for genre 'g': ['list_project'] (known: ['resolve', 'list', 'list_projects', 'organise'])
+    >>> check_delivery_source("g", {})
+    Traceback (most recent call last):
+    ...
+    ValueError: delivery source for genre 'g' has no 'resolve' — a genre that cannot resolve a claim cannot be served
+    """
+    unknown = set(entry) - set(DELIVERY_FUNCTIONS)
+    if unknown:
+        raise ValueError(
+            f"unknown delivery-source keys for genre {genre!r}: "
+            f"{sorted(unknown)} (known: {list(DELIVERY_FUNCTIONS)})"
+        )
+    if "resolve" not in entry:
+        raise ValueError(
+            f"delivery source for genre {genre!r} has no 'resolve' — "
+            "a genre that cannot resolve a claim cannot be served"
+        )
+    for key, fn in entry.items():
+        if not callable(fn):
+            raise ValueError(
+                f"delivery-source entry {key!r} for genre {genre!r} is not callable"
+            )
+    return entry
