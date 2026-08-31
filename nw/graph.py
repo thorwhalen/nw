@@ -683,9 +683,221 @@ def collect_orphan_traces(project_root: str | Path) -> list[UUID]:
     return removed
 
 
+def backfill_traces(project_root: str | Path, *, execute: bool = False) -> dict:
+    """Bless a pre-trace project so the verifying-trace rule can read it (nw#58).
+
+    On a project whose annotations predate nw#24's trace-writing, the
+    verifying-trace rule is a behavior change, not a wrapper: every derived
+    annotation reads stale (``no-trace``), and nothing heals them — regen
+    skips non-Transform-produced annotations, and body updates write no
+    trace. This writes, for each derived annotation with no trace, a trace
+    against its parents' CURRENT content digests: blessing at-rest state as
+    fresh, which is exactly the old timestamp rule's verdict for at-rest
+    data — semantics-preserving at the moment of migration.
+
+    **Report-only by default.** The first thing run against a real user's
+    projects should be a read; pass ``execute=True`` to write. Idempotent
+    either way: an annotation that already has a usable trace is counted in
+    ``already_traced`` and never rewritten, so a partial run is simply
+    re-run rather than reasoned about. One caveat keeps "a read" honest at
+    the FILE level: stores are opened with ``migrate=True``, so a store
+    stamped at an older lacing schema is upgraded ON OPEN even under the
+    default — run this only where the build that serves these stores is
+    already the new one (the D-vg-mcp-10 deploy ordering; a pre-migrated
+    file makes an old serving build refuse it).
+
+    **Not blessed, by design — the old rule's own stale verdicts.** A parent
+    edited AFTER the annotation was derived is exactly the
+    pending-regeneration state the old timestamp rule reported stale;
+    blessing it would silently clear a real signal. Such annotations land in
+    ``skipped`` and stay no-trace-stale — same verdict, and a later regen
+    writes the true trace through the chokepoint. (Exact preservation in the
+    other direction is impossible — the trace rule recurses where the old
+    rule was one-hop — but that residual over-reports, the direction
+    :mod:`nw.freshness` documents as the safe one.)
+
+    What is deliberately NOT blessed, each with a ``skipped`` entry naming
+    the annotation and the reason:
+
+    - a parent that no longer exists — that annotation is genuinely
+      ``upstream-missing``, and a fabricated trace would hide a real hole;
+    - a parent list carrying artifact refs (64-hex asset ids) — the
+      annotation-tier trace cannot cover them (nw#55), and a trace over a
+      subset of the parents reads as stale anyway ("upstream set is not
+      exactly ``was_derived_from``"), so writing one would be decoration;
+    - a parent whose body cannot be digested — broken data at the producer,
+      same rule as :func:`build_verifying_trace`.
+
+    Parentless annotations are never stale by contract, so they are counted
+    (``parentless``) and need nothing.
+
+    Returns one project's report — callers migrating a tree of projects loop
+    and get per-project summaries for free:
+    ``{"project", "stores_found", "examined", "backfilled", "already_traced",
+    "traced_unusable", "parentless",
+    "skipped": [{"annotation_id", "reason"}, ...], "executed"}``.
+    ``backfilled`` is the count of traces written when ``execute=True``, and
+    of traces that WOULD be written otherwise; ``executed`` says which
+    reading applies. Read ``stores_found`` before trusting zeros: a typo'd
+    or empty root reports all-zero COUNTS, and ``stores_found == 0`` is what
+    distinguishes "nothing to migrate" from "not a project here".
+    ``traced_unusable`` counts annotations whose existing trace the
+    freshness rule cannot use (foreign digest scheme, mismatched upstream
+    set) — permanently stale, deliberately not overwritten here; expect it
+    to be zero on genuine pre-trace projects. A broken project (corrupt
+    store, unreadable ``project.json``) RAISES rather than reporting —
+    catch per root in a tree loop so one damaged project is recorded, not
+    silently averaged away.
+    """
+    from nw.freshness import _traces_by_target  # one owner of the trace-reading rule
+
+    graph = ProjectGraph(project_root)
+    annotations: list[Annotation] = []
+    stores_found = 0
+    with open_project_stores(graph.project_root) as stores:
+        for store in stores:
+            stores_found += 1
+            annotations.extend(store.all())
+    by_id = {a.id: a for a in annotations}
+    traced = _traces_by_target(annotations)
+
+    to_write: list[Annotation] = []
+    already_traced = 0
+    traced_unusable = 0
+    parentless = 0
+    skipped: list[dict] = []
+    examined = 0
+
+    for ann in annotations:
+        if ann.body_schema_uri == VERIFYING_TRACE_BODY_SCHEMA_URI:
+            continue  # traces describe; they are not described
+        examined += 1
+        parents = tuple(dict.fromkeys(ann.provenance.was_derived_from))
+        if not parents:
+            parentless += 1
+            continue
+        existing = traced.get(ann.id)
+        if existing is not None:
+            # "Has a trace" is not "has a trace the freshness rule can USE" —
+            # a foreign digest scheme or a mismatched upstream set reads
+            # stale forever, and counting it as already_traced would hand
+            # the operator an instrument that reads "healthy" over a row
+            # that is not. Never rewritten here (a second trace would win
+            # by recency, silently overriding what may be deliberate) —
+            # just counted where it can be seen.
+            if _trace_is_usable(existing, parents):
+                already_traced += 1
+            else:
+                traced_unusable += 1
+            continue
+        alien = [p for p in parents if not isinstance(p, UUID)]
+        if alien:
+            skipped.append(
+                {
+                    "annotation_id": str(ann.id),
+                    "reason": (
+                        "parents include artifact refs (asset ids); the "
+                        "annotation-tier trace cannot cover them (nw#55)"
+                    ),
+                }
+            )
+            continue
+        missing = [p for p in parents if p not in by_id]
+        if missing:
+            skipped.append(
+                {
+                    "annotation_id": str(ann.id),
+                    "reason": (
+                        f"parent(s) missing: {[str(m) for m in missing]} — "
+                        "genuinely upstream-missing; a fabricated trace "
+                        "would hide a real hole"
+                    ),
+                }
+            )
+            continue
+        own_t = ann.provenance.generated_at_time.to_seconds()
+        edited = [
+            p
+            for p in parents
+            if by_id[p].provenance.generated_at_time.to_seconds() > own_t
+        ]
+        if edited:
+            # The old timestamp rule read this STALE (a parent edited after
+            # the derive, regeneration pending) — blessing it would silently
+            # clear a real pending-regen signal. It stays no-trace-stale,
+            # which is the same verdict; a later regen writes the true trace
+            # through the chokepoint.
+            skipped.append(
+                {
+                    "annotation_id": str(ann.id),
+                    "reason": (
+                        f"parent(s) edited after this was derived "
+                        f"({[str(e) for e in edited]}) — stale under the old "
+                        "timestamp rule too; regenerate rather than bless"
+                    ),
+                }
+            )
+            continue
+        trace = build_verifying_trace(
+            for_annotation_id=ann.id,
+            parent_ids=parents,
+            upstream=[by_id[p] for p in parents],
+            asset_id=graph.asset_id,
+        )
+        if trace is None:
+            skipped.append(
+                {
+                    "annotation_id": str(ann.id),
+                    "reason": "a parent's body could not be digested",
+                }
+            )
+            continue
+        to_write.append(trace)
+
+    if execute and to_write:
+        from lacing import Tier, TierStereotype
+
+        with graph._open() as store:
+            store.add_tier(
+                Tier(name=VERIFYING_TRACE_TIER, stereotype=TierStereotype.NONE)
+            )
+            for trace in to_write:
+                store.add(trace)
+
+    return {
+        "project": str(graph.project_root),
+        "stores_found": stores_found,
+        "examined": examined,
+        "backfilled": len(to_write),
+        "already_traced": already_traced,
+        "traced_unusable": traced_unusable,
+        "parentless": parentless,
+        "skipped": skipped,
+        "executed": bool(execute),
+    }
+
+
 # ---------------------------------------------------------------------------
 # Internals
 # ---------------------------------------------------------------------------
+
+
+def _trace_is_usable(body, parents: tuple) -> bool:
+    """Whether an existing trace can actually VERIFY — the freshness rule's
+    own preconditions: the digest scheme matches, every recorded upstream id
+    parses, and the recorded upstream set is exactly the parents. A trace
+    failing any of these reads stale forever (digest-scheme-changed /
+    trace-upstream-mismatch), which is not "already traced" in any sense an
+    operator's instrument should report as healthy."""
+    from lacing.digest import VALUE_DIGEST_SCHEME
+
+    if body.digest_scheme != VALUE_DIGEST_SCHEME:
+        return False
+    try:
+        recorded = {UUID(u.annotation_id) for u in body.upstream}
+    except (ValueError, TypeError, AttributeError):
+        return False
+    return recorded == set(parents)
 
 
 def _trace_target(ann: Annotation) -> Optional[UUID]:
