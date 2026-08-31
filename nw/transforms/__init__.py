@@ -522,6 +522,86 @@ def stamp_transform_identity(plan: Plan, transform: Transform) -> Plan:
     )
 
 
+def cache_key(transform: Transform, *parts) -> str:
+    """A stable identity for a non-fal Transform's output (nw#54).
+
+    falaw's content-addressed cache covers fal calls; a Transform that spends
+    money or CPU WITHOUT going through fal (ElevenLabs TTS, an ffmpeg
+    extraction) has to carry its own compare-and-skip identity. Before this
+    existed, each such Transform hand-rolled one — braidio's two paid
+    Transforms imported the digest from a *private* module of another
+    package, where a reshaping would have silently changed cache keys on
+    paid calls.
+
+    The digest: SHA-256 over ``parts``, ``\\0``-delimited (``None`` → empty,
+    ``str`` → utf-8, ``bytes`` verbatim). Give ``parts`` a distinguishing
+    leading tag (``"narration"``, ``"segment"``) so two Transforms hashing
+    similar inputs cannot collide.
+
+    ``impl_version`` reaches the key with the SAME omit-if-default rule as
+    :func:`stamp_transform_identity`, and for the same two reasons. A key
+    that ignored ``impl_version`` would reintroduce the exact bug the field
+    exists to prevent — "same interface, changed behaviour" serving a stale
+    artifact forever (invariant 3). And at :data:`DFLT_IMPL_VERSION` nothing
+    extra is folded, so every key ever issued by the hand-rolled
+    predecessors stays byte-identical: adopting this helper re-bills
+    nothing, and the first real bump is the first salt (which folds
+    ``transform.name`` too, scoping the invalidation to the bumped
+    Transform).
+
+    >>> class _T:  # a stand-in transform
+    ...     name = "narration_render.tts"
+    ...     impl_version = "1"
+    >>> k1 = cache_key(_T(), "narration", "hello", None)
+    >>> k1 == cache_key(_T(), "narration", "hello", None)   # stable
+    True
+    >>> _T.impl_version = "2"
+    >>> cache_key(_T(), "narration", "hello", None) == k1   # the bump salts
+    False
+    """
+    import hashlib
+
+    h = hashlib.sha256()
+
+    def _feed(part) -> None:
+        if part is None:
+            part = b""
+        elif isinstance(part, str):
+            part = part.encode()
+        elif not isinstance(part, bytes):
+            part = str(part).encode()
+        h.update(part)
+        h.update(b"\0")
+
+    for part in parts:
+        _feed(part)
+    version = str(getattr(transform, "impl_version", DFLT_IMPL_VERSION))
+    if version != DFLT_IMPL_VERSION:
+        _feed(f"transform:{getattr(transform, 'name', '')}@{version}")
+    return h.hexdigest()
+
+
+def cached_output(project_root, tier: str, key: str):
+    """An existing completed ``tier`` annotation with this ``cache_key``, or None.
+
+    The lookup half of :func:`cache_key`: a Transform checks here before
+    doing billable/expensive work, and skips when a completed node (one with
+    a non-null ``artifact_id``) already carries the key in its body.
+
+    A linear scan of the tier — honest about scale: fine at project size
+    (tens to hundreds of nodes), and the day a project outgrows it the fix
+    is an index behind this same signature, not a second lookup convention
+    per genre.
+    """
+    from nw.graph import annotations_at_tier
+
+    for ann in annotations_at_tier(project_root, tier):
+        body = ann.body or {}
+        if body.get("cache_key") == key and body.get("artifact_id"):
+            return ann
+    return None
+
+
 def register_transform(
     name: str, impl: Optional[Transform] = None
 ) -> Transform | Callable[[type], type]:
@@ -645,4 +725,6 @@ __all__ = [
     "list_transforms",
     "transform_catalog",
     "stamp_transform_identity",
+    "cache_key",
+    "cached_output",
 ]
