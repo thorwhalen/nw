@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.transforms &mdash; nw 0.0.35 documentation</title>
+  <title>nw.transforms &mdash; nw 0.0.36 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=39aadc1c"></script>
+      <script src="../../_static/documentation_options.js?v=0e525676"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -656,6 +656,92 @@
 
 
 
+<div class="viewcode-block" id="cache_key">
+<a class="viewcode-back" href="../../module_docs/nw/transforms.html#nw.cache_key">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">cache_key</span><span class="p">(</span><span class="n">transform</span><span class="p">:</span> <span class="n">Transform</span><span class="p">,</span> <span class="o">*</span><span class="n">parts</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""A stable identity for a non-fal Transform's output (nw#54).</span>
+
+<span class="sd">    falaw's content-addressed cache covers fal calls; a Transform that spends</span>
+<span class="sd">    money or CPU WITHOUT going through fal (ElevenLabs TTS, an ffmpeg</span>
+<span class="sd">    extraction) has to carry its own compare-and-skip identity. Before this</span>
+<span class="sd">    existed, each such Transform hand-rolled one — braidio's two paid</span>
+<span class="sd">    Transforms imported the digest from a *private* module of another</span>
+<span class="sd">    package, where a reshaping would have silently changed cache keys on</span>
+<span class="sd">    paid calls.</span>
+
+<span class="sd">    The digest: SHA-256 over ``parts``, ``\\0``-delimited (``None`` → empty,</span>
+<span class="sd">    ``str`` → utf-8, ``bytes`` verbatim). Give ``parts`` a distinguishing</span>
+<span class="sd">    leading tag (``"narration"``, ``"segment"``) so two Transforms hashing</span>
+<span class="sd">    similar inputs cannot collide.</span>
+
+<span class="sd">    ``impl_version`` reaches the key with the SAME omit-if-default rule as</span>
+<span class="sd">    :func:`stamp_transform_identity`, and for the same two reasons. A key</span>
+<span class="sd">    that ignored ``impl_version`` would reintroduce the exact bug the field</span>
+<span class="sd">    exists to prevent — "same interface, changed behaviour" serving a stale</span>
+<span class="sd">    artifact forever (invariant 3). And at :data:`DFLT_IMPL_VERSION` nothing</span>
+<span class="sd">    extra is folded, so every key ever issued by the hand-rolled</span>
+<span class="sd">    predecessors stays byte-identical: adopting this helper re-bills</span>
+<span class="sd">    nothing, and the first real bump is the first salt (which folds</span>
+<span class="sd">    ``transform.name`` too, scoping the invalidation to the bumped</span>
+<span class="sd">    Transform).</span>
+
+<span class="sd">    &gt;&gt;&gt; class _T:  # a stand-in transform</span>
+<span class="sd">    ...     name = "narration_render.tts"</span>
+<span class="sd">    ...     impl_version = "1"</span>
+<span class="sd">    &gt;&gt;&gt; k1 = cache_key(_T(), "narration", "hello", None)</span>
+<span class="sd">    &gt;&gt;&gt; k1 == cache_key(_T(), "narration", "hello", None)   # stable</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; _T.impl_version = "2"</span>
+<span class="sd">    &gt;&gt;&gt; cache_key(_T(), "narration", "hello", None) == k1   # the bump salts</span>
+<span class="sd">    False</span>
+<span class="sd">    """</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">hashlib</span>
+
+    <span class="n">h</span> <span class="o">=</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_feed</span><span class="p">(</span><span class="n">part</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">part</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">part</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">""</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">part</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">part</span> <span class="o">=</span> <span class="n">part</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">part</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+            <span class="n">part</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">part</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span>
+        <span class="n">h</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">part</span><span class="p">)</span>
+        <span class="n">h</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="sa">b</span><span class="s2">"</span><span class="se">\0</span><span class="s2">"</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">part</span> <span class="ow">in</span> <span class="n">parts</span><span class="p">:</span>
+        <span class="n">_feed</span><span class="p">(</span><span class="n">part</span><span class="p">)</span>
+    <span class="n">version</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">transform</span><span class="p">,</span> <span class="s2">"impl_version"</span><span class="p">,</span> <span class="n">DFLT_IMPL_VERSION</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">version</span> <span class="o">!=</span> <span class="n">DFLT_IMPL_VERSION</span><span class="p">:</span>
+        <span class="n">_feed</span><span class="p">(</span><span class="sa">f</span><span class="s2">"transform:</span><span class="si">{</span><span class="nb">getattr</span><span class="p">(</span><span class="n">transform</span><span class="p">,</span><span class="w"> </span><span class="s1">'name'</span><span class="p">,</span><span class="w"> </span><span class="s1">''</span><span class="p">)</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">version</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">h</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="cached_output">
+<a class="viewcode-back" href="../../module_docs/nw/transforms.html#nw.cached_output">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">cached_output</span><span class="p">(</span><span class="n">project_root</span><span class="p">,</span> <span class="n">tier</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""An existing completed ``tier`` annotation with this ``cache_key``, or None.</span>
+
+<span class="sd">    The lookup half of :func:`cache_key`: a Transform checks here before</span>
+<span class="sd">    doing billable/expensive work, and skips when a completed node (one with</span>
+<span class="sd">    a non-null ``artifact_id``) already carries the key in its body.</span>
+
+<span class="sd">    A linear scan of the tier — honest about scale: fine at project size</span>
+<span class="sd">    (tens to hundreds of nodes), and the day a project outgrows it the fix</span>
+<span class="sd">    is an index behind this same signature, not a second lookup convention</span>
+<span class="sd">    per genre.</span>
+<span class="sd">    """</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">nw.graph</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations_at_tier</span>
+
+    <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">annotations_at_tier</span><span class="p">(</span><span class="n">project_root</span><span class="p">,</span> <span class="n">tier</span><span class="p">):</span>
+        <span class="n">body</span> <span class="o">=</span> <span class="n">ann</span><span class="o">.</span><span class="n">body</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">body</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"cache_key"</span><span class="p">)</span> <span class="o">==</span> <span class="n">key</span> <span class="ow">and</span> <span class="n">body</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"artifact_id"</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">ann</span>
+    <span class="k">return</span> <span class="kc">None</span></div>
+
+
+
 <div class="viewcode-block" id="register_transform">
 <a class="viewcode-back" href="../../module_docs/nw/transforms.html#nw.register_transform">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">register_transform</span><span class="p">(</span>
@@ -791,6 +877,8 @@
     <span class="s2">"list_transforms"</span><span class="p">,</span>
     <span class="s2">"transform_catalog"</span><span class="p">,</span>
     <span class="s2">"stamp_transform_identity"</span><span class="p">,</span>
+    <span class="s2">"cache_key"</span><span class="p">,</span>
+    <span class="s2">"cached_output"</span><span class="p">,</span>
 <span class="p">]</span>
 </pre></div>
 

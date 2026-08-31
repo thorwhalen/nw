@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.transforms &mdash; nw 0.0.35 documentation</title>
+  <title>nw.transforms &mdash; nw 0.0.36 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=39aadc1c"></script>
+      <script src="../../_static/documentation_options.js?v=0e525676"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -110,6 +110,8 @@
 <li class="toctree-l3"><a class="reference internal" href="#nw.transforms.TransformResult.is_complete"><code class="docutils literal notranslate"><span class="pre">TransformResult.is_complete</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.transforms.cache_key"><code class="docutils literal notranslate"><span class="pre">cache_key()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.transforms.cached_output"><code class="docutils literal notranslate"><span class="pre">cached_output()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.transforms.get_transform"><code class="docutils literal notranslate"><span class="pre">get_transform()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.transforms.list_transforms"><code class="docutils literal notranslate"><span class="pre">list_transforms()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.transforms.register_transform"><code class="docutils literal notranslate"><span class="pre">register_transform()</span></code></a></li>
@@ -420,6 +422,57 @@ gate in the federation is required to read.</p>
 <dd><p>Whether every planned output was produced.</p>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.transforms.cache_key">
+<span class="sig-prename descclassname"><span class="pre">nw.transforms.</span></span><span class="sig-name descname"><span class="pre">cache_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transform</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nw.transforms.Transform" title="nw.transforms.Transform"><span class="pre">Transform</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">parts</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/nw/transforms.html#cache_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.transforms.cache_key" title="Link to this definition"></a></dt>
+<dd><p>A stable identity for a non-fal Transform’s output (nw#54).</p>
+<p>falaw’s content-addressed cache covers fal calls; a Transform that spends
+money or CPU WITHOUT going through fal (ElevenLabs TTS, an ffmpeg
+extraction) has to carry its own compare-and-skip identity. Before this
+existed, each such Transform hand-rolled one — braidio’s two paid
+Transforms imported the digest from a <em>private</em> module of another
+package, where a reshaping would have silently changed cache keys on
+paid calls.</p>
+<p>The digest: SHA-256 over <code class="docutils literal notranslate"><span class="pre">parts</span></code>, <code class="docutils literal notranslate"><span class="pre">\0</span></code>-delimited (<code class="docutils literal notranslate"><span class="pre">None</span></code> → empty,
+<code class="docutils literal notranslate"><span class="pre">str</span></code> → utf-8, <code class="docutils literal notranslate"><span class="pre">bytes</span></code> verbatim). Give <code class="docutils literal notranslate"><span class="pre">parts</span></code> a distinguishing
+leading tag (<code class="docutils literal notranslate"><span class="pre">&quot;narration&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;segment&quot;</span></code>) so two Transforms hashing
+similar inputs cannot collide.</p>
+<p><code class="docutils literal notranslate"><span class="pre">impl_version</span></code> reaches the key with the SAME omit-if-default rule as
+<a class="reference internal" href="#nw.transforms.stamp_transform_identity" title="nw.transforms.stamp_transform_identity"><code class="xref py py-func docutils literal notranslate"><span class="pre">stamp_transform_identity()</span></code></a>, and for the same two reasons. A key
+that ignored <code class="docutils literal notranslate"><span class="pre">impl_version</span></code> would reintroduce the exact bug the field
+exists to prevent — “same interface, changed behaviour” serving a stale
+artifact forever (invariant 3). And at <a class="reference internal" href="#nw.transforms.DFLT_IMPL_VERSION" title="nw.transforms.DFLT_IMPL_VERSION"><code class="xref py py-data docutils literal notranslate"><span class="pre">DFLT_IMPL_VERSION</span></code></a> nothing
+extra is folded, so every key ever issued by the hand-rolled
+predecessors stays byte-identical: adopting this helper re-bills
+nothing, and the first real bump is the first salt (which folds
+<code class="docutils literal notranslate"><span class="pre">transform.name</span></code> too, scoping the invalidation to the bumped
+Transform).</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span><span class="w"> </span><span class="nc">_T</span><span class="p">:</span>  <span class="c1"># a stand-in transform</span>
+<span class="gp">... </span>    <span class="n">name</span> <span class="o">=</span> <span class="s2">"narration_render.tts"</span>
+<span class="gp">... </span>    <span class="n">impl_version</span> <span class="o">=</span> <span class="s2">"1"</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">k1</span> <span class="o">=</span> <span class="n">cache_key</span><span class="p">(</span><span class="n">_T</span><span class="p">(),</span> <span class="s2">"narration"</span><span class="p">,</span> <span class="s2">"hello"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">k1</span> <span class="o">==</span> <span class="n">cache_key</span><span class="p">(</span><span class="n">_T</span><span class="p">(),</span> <span class="s2">"narration"</span><span class="p">,</span> <span class="s2">"hello"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>   <span class="c1"># stable</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_T</span><span class="o">.</span><span class="n">impl_version</span> <span class="o">=</span> <span class="s2">"2"</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cache_key</span><span class="p">(</span><span class="n">_T</span><span class="p">(),</span> <span class="s2">"narration"</span><span class="p">,</span> <span class="s2">"hello"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span> <span class="o">==</span> <span class="n">k1</span>   <span class="c1"># the bump salts</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.transforms.cached_output">
+<span class="sig-prename descclassname"><span class="pre">nw.transforms.</span></span><span class="sig-name descname"><span class="pre">cached_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tier</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nw/transforms.html#cached_output"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.transforms.cached_output" title="Link to this definition"></a></dt>
+<dd><p>An existing completed <code class="docutils literal notranslate"><span class="pre">tier</span></code> annotation with this <code class="docutils literal notranslate"><span class="pre">cache_key</span></code>, or None.</p>
+<p>The lookup half of <a class="reference internal" href="#nw.transforms.cache_key" title="nw.transforms.cache_key"><code class="xref py py-func docutils literal notranslate"><span class="pre">cache_key()</span></code></a>: a Transform checks here before
+doing billable/expensive work, and skips when a completed node (one with
+a non-null <code class="docutils literal notranslate"><span class="pre">artifact_id</span></code>) already carries the key in its body.</p>
+<p>A linear scan of the tier — honest about scale: fine at project size
+(tens to hundreds of nodes), and the day a project outgrows it the fix
+is an index behind this same signature, not a second lookup convention
+per genre.</p>
 </dd></dl>
 
 <dl class="py function">
