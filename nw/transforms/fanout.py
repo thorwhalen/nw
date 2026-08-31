@@ -360,9 +360,7 @@ def fan_out_plan(
             # item it died on. add_note is 3.11+; on 3.10 the frame in the
             # traceback still points here.
             if hasattr(e, "add_note"):
-                e.add_note(
-                    f"fan_out_plan: while planning item {item.mapping_key!r}"
-                )
+                e.add_note(f"fan_out_plan: while planning item {item.mapping_key!r}")
             raise
         units.append(
             FanOutUnit(
