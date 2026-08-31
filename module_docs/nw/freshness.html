@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.freshness &mdash; nw 0.0.34 documentation</title>
+  <title>nw.freshness &mdash; nw 0.0.35 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=9dd25805"></script>
+      <script src="../../_static/documentation_options.js?v=39aadc1c"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -186,10 +186,19 @@ mean “fresh” is not “would regenerate identically”.</p></li>
 <li><p><strong>The plan → execute window.</strong> The trace is written when the output is
 <em>persisted</em>, so an upstream mutated between planning and writing is
 recorded at its newer value. That needs a concurrent edit during a render.</p></li>
-<li><p><strong>The artifact tier.</strong> Deliberately out of scope: <code class="docutils literal notranslate"><span class="pre">lacing.Provenance.was_derived_from</span></code>
-is <code class="docutils literal notranslate"><span class="pre">list[UUID]</span></code> and cannot hold a 64-hex <code class="docutils literal notranslate"><span class="pre">asset_id</span></code>, so artifact →
-artifact lineage is unrepresentable (thorwhalen/lacing#14). This module is
-the <strong>annotation</strong> tier only.</p></li>
+<li><p><strong>The artifact tier.</strong> Deliberately out of scope — but for a different
+reason than this line used to give. Artifact → artifact lineage has been
+<em>representable</em> since thorwhalen/lacing#14 landed (2026-08-16):
+<code class="docutils literal notranslate"><span class="pre">lacing.Provenance.was_derived_from</span></code> is <code class="docutils literal notranslate"><span class="pre">list[ProvenanceRef]</span></code> where
+<code class="docutils literal notranslate"><span class="pre">ProvenanceRef</span> <span class="pre">=</span> <span class="pre">UUID</span> <span class="pre">|</span> <span class="pre">AssetId</span></code>. What keeps it out of scope HERE is that
+nothing in nw <em>writes</em> artifact refs yet: the typed writers
+(<code class="docutils literal notranslate"><span class="pre">append_decision</span></code>, the <code class="docutils literal notranslate"><span class="pre">_put</span></code>/<code class="docutils literal notranslate"><span class="pre">_upsert</span></code> helpers) take
+<code class="docutils literal notranslate"><span class="pre">tuple[UUID,</span> <span class="pre">...]</span></code>, and an annotation arriving at
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">ProjectGraph.add_annotation()</span></code> with an asset-id parent is persisted
+but gets NO verifying trace — the parent never resolves as an annotation,
+so the trace is declined and the row reads no-trace-stale
+(thorwhalen/nw#55). This module is the <strong>annotation</strong> tier only until
+that changes.</p></li>
 </ul>
 </section>
 <dl class="py class">

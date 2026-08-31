@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.graph &mdash; nw 0.0.34 documentation</title>
+  <title>nw.graph &mdash; nw 0.0.35 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=9dd25805"></script>
+      <script src="../../_static/documentation_options.js?v=39aadc1c"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -862,9 +862,224 @@
 
 
 
+<div class="viewcode-block" id="backfill_traces">
+<a class="viewcode-back" href="../../module_docs/nw/graph.html#nw.backfill_traces">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">backfill_traces</span><span class="p">(</span><span class="n">project_root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">execute</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Bless a pre-trace project so the verifying-trace rule can read it (nw#58).</span>
+
+<span class="sd">    On a project whose annotations predate nw#24's trace-writing, the</span>
+<span class="sd">    verifying-trace rule is a behavior change, not a wrapper: every derived</span>
+<span class="sd">    annotation reads stale (``no-trace``), and nothing heals them — regen</span>
+<span class="sd">    skips non-Transform-produced annotations, and body updates write no</span>
+<span class="sd">    trace. This writes, for each derived annotation with no trace, a trace</span>
+<span class="sd">    against its parents' CURRENT content digests: blessing at-rest state as</span>
+<span class="sd">    fresh, which is exactly the old timestamp rule's verdict for at-rest</span>
+<span class="sd">    data — semantics-preserving at the moment of migration.</span>
+
+<span class="sd">    **Report-only by default.** The first thing run against a real user's</span>
+<span class="sd">    projects should be a read; pass ``execute=True`` to write. Idempotent</span>
+<span class="sd">    either way: an annotation that already has a usable trace is counted in</span>
+<span class="sd">    ``already_traced`` and never rewritten, so a partial run is simply</span>
+<span class="sd">    re-run rather than reasoned about. One caveat keeps "a read" honest at</span>
+<span class="sd">    the FILE level: stores are opened with ``migrate=True``, so a store</span>
+<span class="sd">    stamped at an older lacing schema is upgraded ON OPEN even under the</span>
+<span class="sd">    default — run this only where the build that serves these stores is</span>
+<span class="sd">    already the new one (the D-vg-mcp-10 deploy ordering; a pre-migrated</span>
+<span class="sd">    file makes an old serving build refuse it).</span>
+
+<span class="sd">    **Not blessed, by design — the old rule's own stale verdicts.** A parent</span>
+<span class="sd">    edited AFTER the annotation was derived is exactly the</span>
+<span class="sd">    pending-regeneration state the old timestamp rule reported stale;</span>
+<span class="sd">    blessing it would silently clear a real signal. Such annotations land in</span>
+<span class="sd">    ``skipped`` and stay no-trace-stale — same verdict, and a later regen</span>
+<span class="sd">    writes the true trace through the chokepoint. (Exact preservation in the</span>
+<span class="sd">    other direction is impossible — the trace rule recurses where the old</span>
+<span class="sd">    rule was one-hop — but that residual over-reports, the direction</span>
+<span class="sd">    :mod:`nw.freshness` documents as the safe one.)</span>
+
+<span class="sd">    What is deliberately NOT blessed, each with a ``skipped`` entry naming</span>
+<span class="sd">    the annotation and the reason:</span>
+
+<span class="sd">    - a parent that no longer exists — that annotation is genuinely</span>
+<span class="sd">      ``upstream-missing``, and a fabricated trace would hide a real hole;</span>
+<span class="sd">    - a parent list carrying artifact refs (64-hex asset ids) — the</span>
+<span class="sd">      annotation-tier trace cannot cover them (nw#55), and a trace over a</span>
+<span class="sd">      subset of the parents reads as stale anyway ("upstream set is not</span>
+<span class="sd">      exactly ``was_derived_from``"), so writing one would be decoration;</span>
+<span class="sd">    - a parent whose body cannot be digested — broken data at the producer,</span>
+<span class="sd">      same rule as :func:`build_verifying_trace`.</span>
+
+<span class="sd">    Parentless annotations are never stale by contract, so they are counted</span>
+<span class="sd">    (``parentless``) and need nothing.</span>
+
+<span class="sd">    Returns one project's report — callers migrating a tree of projects loop</span>
+<span class="sd">    and get per-project summaries for free:</span>
+<span class="sd">    ``{"project", "stores_found", "examined", "backfilled", "already_traced",</span>
+<span class="sd">    "traced_unusable", "parentless",</span>
+<span class="sd">    "skipped": [{"annotation_id", "reason"}, ...], "executed"}``.</span>
+<span class="sd">    ``backfilled`` is the count of traces written when ``execute=True``, and</span>
+<span class="sd">    of traces that WOULD be written otherwise; ``executed`` says which</span>
+<span class="sd">    reading applies. Read ``stores_found`` before trusting zeros: a typo'd</span>
+<span class="sd">    or empty root reports all-zero COUNTS, and ``stores_found == 0`` is what</span>
+<span class="sd">    distinguishes "nothing to migrate" from "not a project here".</span>
+<span class="sd">    ``traced_unusable`` counts annotations whose existing trace the</span>
+<span class="sd">    freshness rule cannot use (foreign digest scheme, mismatched upstream</span>
+<span class="sd">    set) — permanently stale, deliberately not overwritten here; expect it</span>
+<span class="sd">    to be zero on genuine pre-trace projects. A broken project (corrupt</span>
+<span class="sd">    store, unreadable ``project.json``) RAISES rather than reporting —</span>
+<span class="sd">    catch per root in a tree loop so one damaged project is recorded, not</span>
+<span class="sd">    silently averaged away.</span>
+<span class="sd">    """</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">nw.freshness</span><span class="w"> </span><span class="kn">import</span> <span class="n">_traces_by_target</span>  <span class="c1"># one owner of the trace-reading rule</span>
+
+    <span class="n">graph</span> <span class="o">=</span> <span class="n">ProjectGraph</span><span class="p">(</span><span class="n">project_root</span><span class="p">)</span>
+    <span class="n">annotations</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">stores_found</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">with</span> <span class="n">open_project_stores</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">project_root</span><span class="p">)</span> <span class="k">as</span> <span class="n">stores</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">store</span> <span class="ow">in</span> <span class="n">stores</span><span class="p">:</span>
+            <span class="n">stores_found</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">annotations</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">store</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
+    <span class="n">by_id</span> <span class="o">=</span> <span class="p">{</span><span class="n">a</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">a</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">annotations</span><span class="p">}</span>
+    <span class="n">traced</span> <span class="o">=</span> <span class="n">_traces_by_target</span><span class="p">(</span><span class="n">annotations</span><span class="p">)</span>
+
+    <span class="n">to_write</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">already_traced</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">traced_unusable</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">parentless</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">skipped</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">examined</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">annotations</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ann</span><span class="o">.</span><span class="n">body_schema_uri</span> <span class="o">==</span> <span class="n">VERIFYING_TRACE_BODY_SCHEMA_URI</span><span class="p">:</span>
+            <span class="k">continue</span>  <span class="c1"># traces describe; they are not described</span>
+        <span class="n">examined</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">parents</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">provenance</span><span class="o">.</span><span class="n">was_derived_from</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">parents</span><span class="p">:</span>
+            <span class="n">parentless</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">continue</span>
+        <span class="n">existing</span> <span class="o">=</span> <span class="n">traced</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">existing</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># "Has a trace" is not "has a trace the freshness rule can USE" —</span>
+            <span class="c1"># a foreign digest scheme or a mismatched upstream set reads</span>
+            <span class="c1"># stale forever, and counting it as already_traced would hand</span>
+            <span class="c1"># the operator an instrument that reads "healthy" over a row</span>
+            <span class="c1"># that is not. Never rewritten here (a second trace would win</span>
+            <span class="c1"># by recency, silently overriding what may be deliberate) —</span>
+            <span class="c1"># just counted where it can be seen.</span>
+            <span class="k">if</span> <span class="n">_trace_is_usable</span><span class="p">(</span><span class="n">existing</span><span class="p">,</span> <span class="n">parents</span><span class="p">):</span>
+                <span class="n">already_traced</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">traced_unusable</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">continue</span>
+        <span class="n">alien</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">parents</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">UUID</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="n">alien</span><span class="p">:</span>
+            <span class="n">skipped</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="s2">"annotation_id"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
+                    <span class="s2">"reason"</span><span class="p">:</span> <span class="p">(</span>
+                        <span class="s2">"parents include artifact refs (asset ids); the "</span>
+                        <span class="s2">"annotation-tier trace cannot cover them (nw#55)"</span>
+                    <span class="p">),</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
+            <span class="k">continue</span>
+        <span class="n">missing</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">parents</span> <span class="k">if</span> <span class="n">p</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">by_id</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">missing</span><span class="p">:</span>
+            <span class="n">skipped</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="s2">"annotation_id"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
+                    <span class="s2">"reason"</span><span class="p">:</span> <span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">"parent(s) missing: </span><span class="si">{</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">m</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">missing</span><span class="p">]</span><span class="si">}</span><span class="s2"> — "</span>
+                        <span class="s2">"genuinely upstream-missing; a fabricated trace "</span>
+                        <span class="s2">"would hide a real hole"</span>
+                    <span class="p">),</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
+            <span class="k">continue</span>
+        <span class="n">own_t</span> <span class="o">=</span> <span class="n">ann</span><span class="o">.</span><span class="n">provenance</span><span class="o">.</span><span class="n">generated_at_time</span><span class="o">.</span><span class="n">to_seconds</span><span class="p">()</span>
+        <span class="n">edited</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">p</span>
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">parents</span>
+            <span class="k">if</span> <span class="n">by_id</span><span class="p">[</span><span class="n">p</span><span class="p">]</span><span class="o">.</span><span class="n">provenance</span><span class="o">.</span><span class="n">generated_at_time</span><span class="o">.</span><span class="n">to_seconds</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">own_t</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="n">edited</span><span class="p">:</span>
+            <span class="c1"># The old timestamp rule read this STALE (a parent edited after</span>
+            <span class="c1"># the derive, regeneration pending) — blessing it would silently</span>
+            <span class="c1"># clear a real pending-regen signal. It stays no-trace-stale,</span>
+            <span class="c1"># which is the same verdict; a later regen writes the true trace</span>
+            <span class="c1"># through the chokepoint.</span>
+            <span class="n">skipped</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="s2">"annotation_id"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
+                    <span class="s2">"reason"</span><span class="p">:</span> <span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">"parent(s) edited after this was derived "</span>
+                        <span class="sa">f</span><span class="s2">"(</span><span class="si">{</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">e</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">edited</span><span class="p">]</span><span class="si">}</span><span class="s2">) — stale under the old "</span>
+                        <span class="s2">"timestamp rule too; regenerate rather than bless"</span>
+                    <span class="p">),</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
+            <span class="k">continue</span>
+        <span class="n">trace</span> <span class="o">=</span> <span class="n">build_verifying_trace</span><span class="p">(</span>
+            <span class="n">for_annotation_id</span><span class="o">=</span><span class="n">ann</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="n">parent_ids</span><span class="o">=</span><span class="n">parents</span><span class="p">,</span>
+            <span class="n">upstream</span><span class="o">=</span><span class="p">[</span><span class="n">by_id</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">parents</span><span class="p">],</span>
+            <span class="n">asset_id</span><span class="o">=</span><span class="n">graph</span><span class="o">.</span><span class="n">asset_id</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">trace</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">skipped</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="s2">"annotation_id"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
+                    <span class="s2">"reason"</span><span class="p">:</span> <span class="s2">"a parent's body could not be digested"</span><span class="p">,</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
+            <span class="k">continue</span>
+        <span class="n">to_write</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">trace</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">execute</span> <span class="ow">and</span> <span class="n">to_write</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">lacing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tier</span><span class="p">,</span> <span class="n">TierStereotype</span>
+
+        <span class="k">with</span> <span class="n">graph</span><span class="o">.</span><span class="n">_open</span><span class="p">()</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
+            <span class="n">store</span><span class="o">.</span><span class="n">add_tier</span><span class="p">(</span>
+                <span class="n">Tier</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">VERIFYING_TRACE_TIER</span><span class="p">,</span> <span class="n">stereotype</span><span class="o">=</span><span class="n">TierStereotype</span><span class="o">.</span><span class="n">NONE</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">trace</span> <span class="ow">in</span> <span class="n">to_write</span><span class="p">:</span>
+                <span class="n">store</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">trace</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s2">"project"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">project_root</span><span class="p">),</span>
+        <span class="s2">"stores_found"</span><span class="p">:</span> <span class="n">stores_found</span><span class="p">,</span>
+        <span class="s2">"examined"</span><span class="p">:</span> <span class="n">examined</span><span class="p">,</span>
+        <span class="s2">"backfilled"</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">to_write</span><span class="p">),</span>
+        <span class="s2">"already_traced"</span><span class="p">:</span> <span class="n">already_traced</span><span class="p">,</span>
+        <span class="s2">"traced_unusable"</span><span class="p">:</span> <span class="n">traced_unusable</span><span class="p">,</span>
+        <span class="s2">"parentless"</span><span class="p">:</span> <span class="n">parentless</span><span class="p">,</span>
+        <span class="s2">"skipped"</span><span class="p">:</span> <span class="n">skipped</span><span class="p">,</span>
+        <span class="s2">"executed"</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="n">execute</span><span class="p">),</span>
+    <span class="p">}</span></div>
+
+
+
 <span class="c1"># ---------------------------------------------------------------------------</span>
 <span class="c1"># Internals</span>
 <span class="c1"># ---------------------------------------------------------------------------</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_trace_is_usable</span><span class="p">(</span><span class="n">body</span><span class="p">,</span> <span class="n">parents</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Whether an existing trace can actually VERIFY — the freshness rule's</span>
+<span class="sd">    own preconditions: the digest scheme matches, every recorded upstream id</span>
+<span class="sd">    parses, and the recorded upstream set is exactly the parents. A trace</span>
+<span class="sd">    failing any of these reads stale forever (digest-scheme-changed /</span>
+<span class="sd">    trace-upstream-mismatch), which is not "already traced" in any sense an</span>
+<span class="sd">    operator's instrument should report as healthy."""</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">lacing.digest</span><span class="w"> </span><span class="kn">import</span> <span class="n">VALUE_DIGEST_SCHEME</span>
+
+    <span class="k">if</span> <span class="n">body</span><span class="o">.</span><span class="n">digest_scheme</span> <span class="o">!=</span> <span class="n">VALUE_DIGEST_SCHEME</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">recorded</span> <span class="o">=</span> <span class="p">{</span><span class="n">UUID</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">annotation_id</span><span class="p">)</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">body</span><span class="o">.</span><span class="n">upstream</span><span class="p">}</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="n">recorded</span> <span class="o">==</span> <span class="nb">set</span><span class="p">(</span><span class="n">parents</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_trace_target</span><span class="p">(</span><span class="n">ann</span><span class="p">:</span> <span class="n">Annotation</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UUID</span><span class="p">]:</span>

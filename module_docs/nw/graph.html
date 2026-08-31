@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.graph &mdash; nw 0.0.34 documentation</title>
+  <title>nw.graph &mdash; nw 0.0.35 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=9dd25805"></script>
+      <script src="../../_static/documentation_options.js?v=39aadc1c"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -83,6 +83,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#nw.graph.StoredShot"><code class="docutils literal notranslate"><span class="pre">StoredShot</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.graph.all_project_stores"><code class="docutils literal notranslate"><span class="pre">all_project_stores()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.graph.annotations_at_tier"><code class="docutils literal notranslate"><span class="pre">annotations_at_tier()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.graph.backfill_traces"><code class="docutils literal notranslate"><span class="pre">backfill_traces()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.graph.collect_orphan_traces"><code class="docutils literal notranslate"><span class="pre">collect_orphan_traces()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.graph.derived_from"><code class="docutils literal notranslate"><span class="pre">derived_from()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.graph.descendants_of"><code class="docutils literal notranslate"><span class="pre">descendants_of()</span></code></a></li>
@@ -307,6 +308,70 @@ keeps working when the backend is Postgres.</p>
 <code class="docutils literal notranslate"><span class="pre">annotations_at_tier(root,</span> <span class="pre">&quot;shot&quot;)</span></code> returns every shot annotation
 regardless of which store it lives in (project graph vs. storyboard
 vs. alignment).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.graph.backfill_traces">
+<span class="sig-prename descclassname"><span class="pre">nw.graph.</span></span><span class="sig-name descname"><span class="pre">backfill_traces</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">execute</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../../_modules/nw/graph.html#backfill_traces"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.graph.backfill_traces" title="Link to this definition"></a></dt>
+<dd><p>Bless a pre-trace project so the verifying-trace rule can read it (nw#58).</p>
+<p>On a project whose annotations predate nw#24’s trace-writing, the
+verifying-trace rule is a behavior change, not a wrapper: every derived
+annotation reads stale (<code class="docutils literal notranslate"><span class="pre">no-trace</span></code>), and nothing heals them — regen
+skips non-Transform-produced annotations, and body updates write no
+trace. This writes, for each derived annotation with no trace, a trace
+against its parents’ CURRENT content digests: blessing at-rest state as
+fresh, which is exactly the old timestamp rule’s verdict for at-rest
+data — semantics-preserving at the moment of migration.</p>
+<p><strong>Report-only by default.</strong> The first thing run against a real user’s
+projects should be a read; pass <code class="docutils literal notranslate"><span class="pre">execute=True</span></code> to write. Idempotent
+either way: an annotation that already has a usable trace is counted in
+<code class="docutils literal notranslate"><span class="pre">already_traced</span></code> and never rewritten, so a partial run is simply
+re-run rather than reasoned about. One caveat keeps “a read” honest at
+the FILE level: stores are opened with <code class="docutils literal notranslate"><span class="pre">migrate=True</span></code>, so a store
+stamped at an older lacing schema is upgraded ON OPEN even under the
+default — run this only where the build that serves these stores is
+already the new one (the D-vg-mcp-10 deploy ordering; a pre-migrated
+file makes an old serving build refuse it).</p>
+<p><strong>Not blessed, by design — the old rule’s own stale verdicts.</strong> A parent
+edited AFTER the annotation was derived is exactly the
+pending-regeneration state the old timestamp rule reported stale;
+blessing it would silently clear a real signal. Such annotations land in
+<code class="docutils literal notranslate"><span class="pre">skipped</span></code> and stay no-trace-stale — same verdict, and a later regen
+writes the true trace through the chokepoint. (Exact preservation in the
+other direction is impossible — the trace rule recurses where the old
+rule was one-hop — but that residual over-reports, the direction
+<a class="reference internal" href="freshness.html#module-nw.freshness" title="nw.freshness"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nw.freshness</span></code></a> documents as the safe one.)</p>
+<p>What is deliberately NOT blessed, each with a <code class="docutils literal notranslate"><span class="pre">skipped</span></code> entry naming
+the annotation and the reason:</p>
+<ul class="simple">
+<li><p>a parent that no longer exists — that annotation is genuinely
+<code class="docutils literal notranslate"><span class="pre">upstream-missing</span></code>, and a fabricated trace would hide a real hole;</p></li>
+<li><p>a parent list carrying artifact refs (64-hex asset ids) — the
+annotation-tier trace cannot cover them (nw#55), and a trace over a
+subset of the parents reads as stale anyway (“upstream set is not
+exactly <code class="docutils literal notranslate"><span class="pre">was_derived_from</span></code>”), so writing one would be decoration;</p></li>
+<li><p>a parent whose body cannot be digested — broken data at the producer,
+same rule as <code class="xref py py-func docutils literal notranslate"><span class="pre">build_verifying_trace()</span></code>.</p></li>
+</ul>
+<p>Parentless annotations are never stale by contract, so they are counted
+(<code class="docutils literal notranslate"><span class="pre">parentless</span></code>) and need nothing.</p>
+<p>Returns one project’s report — callers migrating a tree of projects loop
+and get per-project summaries for free:
+<code class="docutils literal notranslate"><span class="pre">{&quot;project&quot;,</span> <span class="pre">&quot;stores_found&quot;,</span> <span class="pre">&quot;examined&quot;,</span> <span class="pre">&quot;backfilled&quot;,</span> <span class="pre">&quot;already_traced&quot;,</span>
+<span class="pre">&quot;traced_unusable&quot;,</span> <span class="pre">&quot;parentless&quot;,</span>
+<span class="pre">&quot;skipped&quot;:</span> <span class="pre">[{&quot;annotation_id&quot;,</span> <span class="pre">&quot;reason&quot;},</span> <span class="pre">...],</span> <span class="pre">&quot;executed&quot;}</span></code>.
+<code class="docutils literal notranslate"><span class="pre">backfilled</span></code> is the count of traces written when <code class="docutils literal notranslate"><span class="pre">execute=True</span></code>, and
+of traces that WOULD be written otherwise; <code class="docutils literal notranslate"><span class="pre">executed</span></code> says which
+reading applies. Read <code class="docutils literal notranslate"><span class="pre">stores_found</span></code> before trusting zeros: a typo’d
+or empty root reports all-zero COUNTS, and <code class="docutils literal notranslate"><span class="pre">stores_found</span> <span class="pre">==</span> <span class="pre">0</span></code> is what
+distinguishes “nothing to migrate” from “not a project here”.
+<code class="docutils literal notranslate"><span class="pre">traced_unusable</span></code> counts annotations whose existing trace the
+freshness rule cannot use (foreign digest scheme, mismatched upstream
+set) — permanently stale, deliberately not overwritten here; expect it
+to be zero on genuine pre-trace projects. A broken project (corrupt
+store, unreadable <code class="docutils literal notranslate"><span class="pre">project.json</span></code>) RAISES rather than reporting —
+catch per root in a tree loop so one damaged project is recorded, not
+silently averaged away.</p>
 </dd></dl>
 
 <dl class="py function">

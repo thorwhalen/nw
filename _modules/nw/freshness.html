@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.freshness &mdash; nw 0.0.34 documentation</title>
+  <title>nw.freshness &mdash; nw 0.0.35 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=9dd25805"></script>
+      <script src="../../_static/documentation_options.js?v=39aadc1c"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -177,10 +177,19 @@
 <span class="sd">- **The plan → execute window.** The trace is written when the output is</span>
 <span class="sd">  *persisted*, so an upstream mutated between planning and writing is</span>
 <span class="sd">  recorded at its newer value. That needs a concurrent edit during a render.</span>
-<span class="sd">- **The artifact tier.** Deliberately out of scope: ``lacing.Provenance.was_derived_from``</span>
-<span class="sd">  is ``list[UUID]`` and cannot hold a 64-hex ``asset_id``, so artifact →</span>
-<span class="sd">  artifact lineage is unrepresentable (thorwhalen/lacing#14). This module is</span>
-<span class="sd">  the **annotation** tier only.</span>
+<span class="sd">- **The artifact tier.** Deliberately out of scope — but for a different</span>
+<span class="sd">  reason than this line used to give. Artifact → artifact lineage has been</span>
+<span class="sd">  *representable* since thorwhalen/lacing#14 landed (2026-08-16):</span>
+<span class="sd">  ``lacing.Provenance.was_derived_from`` is ``list[ProvenanceRef]`` where</span>
+<span class="sd">  ``ProvenanceRef = UUID | AssetId``. What keeps it out of scope HERE is that</span>
+<span class="sd">  nothing in nw *writes* artifact refs yet: the typed writers</span>
+<span class="sd">  (``append_decision``, the ``_put``/``_upsert`` helpers) take</span>
+<span class="sd">  ``tuple[UUID, ...]``, and an annotation arriving at</span>
+<span class="sd">  :meth:`ProjectGraph.add_annotation` with an asset-id parent is persisted</span>
+<span class="sd">  but gets NO verifying trace — the parent never resolves as an annotation,</span>
+<span class="sd">  so the trace is declined and the row reads no-trace-stale</span>
+<span class="sd">  (thorwhalen/nw#55). This module is the **annotation** tier only until</span>
+<span class="sd">  that changes.</span>
 <span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
