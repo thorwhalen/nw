@@ -48,6 +48,7 @@ from .project import CharacterImage, Project
 from .graph import (
     ProjectGraph,
     annotations_at_tier,
+    backfill_traces,
     collect_orphan_traces,
     derived_from,
     descendants_of,
@@ -200,6 +201,7 @@ __all__ = [
     "annotations_at_tier",
     "apply_to_projects",
     "clone_project",
+    "backfill_traces",
     "collect_orphan_traces",
     "compose_report",
     "derived_from",

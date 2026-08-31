@@ -67,10 +67,19 @@ Stated so nobody reads more into the number than is there:
 - **The plan → execute window.** The trace is written when the output is
   *persisted*, so an upstream mutated between planning and writing is
   recorded at its newer value. That needs a concurrent edit during a render.
-- **The artifact tier.** Deliberately out of scope: ``lacing.Provenance.was_derived_from``
-  is ``list[UUID]`` and cannot hold a 64-hex ``asset_id``, so artifact →
-  artifact lineage is unrepresentable (thorwhalen/lacing#14). This module is
-  the **annotation** tier only.
+- **The artifact tier.** Deliberately out of scope — but for a different
+  reason than this line used to give. Artifact → artifact lineage has been
+  *representable* since thorwhalen/lacing#14 landed (2026-08-16):
+  ``lacing.Provenance.was_derived_from`` is ``list[ProvenanceRef]`` where
+  ``ProvenanceRef = UUID | AssetId``. What keeps it out of scope HERE is that
+  nothing in nw *writes* artifact refs yet: the typed writers
+  (``append_decision``, the ``_put``/``_upsert`` helpers) take
+  ``tuple[UUID, ...]``, and an annotation arriving at
+  :meth:`ProjectGraph.add_annotation` with an asset-id parent is persisted
+  but gets NO verifying trace — the parent never resolves as an annotation,
+  so the trace is declined and the row reads no-trace-stale
+  (thorwhalen/nw#55). This module is the **annotation** tier only until
+  that changes.
 """
 
 from __future__ import annotations
