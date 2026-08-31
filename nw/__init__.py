@@ -98,6 +98,18 @@ from .transforms import (
     stamp_transform_identity,
     transform_catalog,
     transforms,
+    # fan-out (nw#26)
+    DFLT_GENERATE_WHEN,
+    FanOutItemResult,
+    FanOutPlan,
+    FanOutResult,
+    FanOutUnit,
+    GenerateWhen,
+    UnitStatus,
+    WorkItem,
+    fan_out_execute,
+    fan_out_plan,
+    work_item_instance_id,
 )
 from . import delivery  # noqa: F401  — `nw.delivery.Deliverable` (the genre->host seam)
 from .delivery import Deliverable, Lister, Resolver, format_ref, parse_ref
@@ -232,6 +244,18 @@ __all__ = [
     "transform_catalog",
     "stamp_transform_identity",
     "DFLT_IMPL_VERSION",
+    # fan-out (nw#26)
+    "GenerateWhen",
+    "DFLT_GENERATE_WHEN",
+    "WorkItem",
+    "work_item_instance_id",
+    "FanOutUnit",
+    "FanOutPlan",
+    "fan_out_plan",
+    "UnitStatus",
+    "FanOutItemResult",
+    "FanOutResult",
+    "fan_out_execute",
     "save_storyboard",
     "shot_report",
     "all_stale",

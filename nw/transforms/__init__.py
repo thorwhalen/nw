@@ -20,6 +20,13 @@ Two-phase, mirroring ``nw.workflow`` (prepare → plan → execute):
 Transforms are registered with an :class:`xdol.Registry` keyed by name, so
 apps (``reelee``, ``muvid``, …) add their own without modifying ``nw``.
 
+Applying one Transform across N units — a **fan-out** — goes through
+:mod:`nw.transforms.fanout` (nw#26): PDG-shaped :class:`WorkItem`\\ s with a
+mandatory semantic ``mapping_key``, instance ids as a pure function of
+``(transform_name, mapping_key)``, the ``generate_when`` static/dynamic
+declaration, and per-unit failure isolation. Its module docstring is the
+spec.
+
 Naming convention for ``Transform.name``::
 
     <from_kind>_to_<to_kind>[.<flavor>[.<variant>]]
@@ -44,6 +51,21 @@ from xdol import Registry
 
 from falaw import Plan, execute_plan_isolated
 from lacing import Annotation, Artifact
+
+from nw.transforms.fanout import (
+    DFLT_GENERATE_WHEN,
+    WORK_ITEM_NAMESPACE,
+    FanOutItemResult,
+    FanOutPlan,
+    FanOutResult,
+    FanOutUnit,
+    GenerateWhen,
+    UnitStatus,
+    WorkItem,
+    fan_out_execute,
+    fan_out_plan,
+    work_item_instance_id,
+)
 
 
 # ---------------------------------------------------------------------------
@@ -190,6 +212,15 @@ class Transform(Protocol):
     output_kind: str
     """The body-schema URI this Transform produces."""
 
+    generate_when: str
+    """When this Transform's fan-out cardinality is knowable (nw#26):
+    ``"static"`` (the work-item list is derivable before the run — a
+    pre-flight estimate is a real number) or ``"dynamic"`` (cardinality is
+    known only after an upstream call returns — the only honest pre-flight
+    estimate is *unknown*, which forces approval). Undeclared defaults to
+    ``"dynamic"``: fail expensive-looking. See
+    :data:`nw.transforms.fanout.GenerateWhen`."""
+
     is_batch: bool
     """How :meth:`plan` consumes ``inputs.primary``.
 
@@ -320,6 +351,13 @@ class BaseTransform:
     or a single primary annotation (one-to-one — the default). See the
     :class:`Transform` Protocol for the full contract. Batch Transforms
     (``extract_*``, ``clips_to_animatic``) set this to ``True``."""
+    generate_when: GenerateWhen = DFLT_GENERATE_WHEN
+    """When this Transform's fan-out cardinality is knowable — ``"static"``
+    or ``"dynamic"`` (nw#26). The default is ``"dynamic"``: fail
+    expensive-looking, so an undeclared shape can never let a cost gate
+    quote a number for a cardinality nobody knows yet. Declare ``"static"``
+    only when the work-item list is derivable from the graph before the
+    run ("one image per panel")."""
 
     def plan(
         self,
@@ -644,6 +682,15 @@ def register_transform(
                 "body-schema URI it produces — an undeclared output type is "
                 "a unit of work whose success is unverifiable."
             )
+        shape = getattr(instance, "generate_when", DFLT_GENERATE_WHEN)
+        if shape not in ("static", "dynamic"):
+            raise ValueError(
+                f"register_transform({name!r}): {type(instance).__name__}."
+                f"generate_when must be 'static' or 'dynamic', got {shape!r}. "
+                "The declaration is what lets a cost gate tell a real "
+                "pre-flight estimate from an honest unknown (nw#26) — an "
+                "unrecognised value would be read as neither."
+            )
         return instance
 
     if impl is None:
@@ -681,7 +728,8 @@ def transform_catalog() -> list[dict]:
     consumer needs no registry-internal knowledge to render or compose.
     Entry shape::
 
-        {name, input_kinds, output_kind, is_batch, impl_version, params_schema}
+        {name, input_kinds, output_kind, is_batch, generate_when,
+         impl_version, params_schema}
 
     ``name`` is the registry key (the addressable name). ``params_schema``
     is the params model's JSON Schema — ``{}`` for a Transform with no
@@ -698,6 +746,9 @@ def transform_catalog() -> list[dict]:
                 "input_kinds": list(transform.input_kinds),
                 "output_kind": transform.output_kind,
                 "is_batch": transform.is_batch,
+                "generate_when": getattr(
+                    transform, "generate_when", DFLT_GENERATE_WHEN
+                ),
                 "impl_version": getattr(transform, "impl_version", DFLT_IMPL_VERSION),
                 "params_schema": (
                     {}
@@ -727,4 +778,17 @@ __all__ = [
     "stamp_transform_identity",
     "cache_key",
     "cached_output",
+    # fan-out (nw#26)
+    "GenerateWhen",
+    "DFLT_GENERATE_WHEN",
+    "WORK_ITEM_NAMESPACE",
+    "WorkItem",
+    "work_item_instance_id",
+    "FanOutUnit",
+    "FanOutPlan",
+    "fan_out_plan",
+    "UnitStatus",
+    "FanOutItemResult",
+    "FanOutResult",
+    "fan_out_execute",
 ]

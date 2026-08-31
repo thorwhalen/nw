@@ -18,7 +18,15 @@ it. Layering: `lacing → nw → falaw.Plan → backends` — nothing above
   (`stamp_transform_identity`; omit-if-default, so keys only change on a
   real bump). A Transform overriding `execute` must stamp itself.
   `transform_catalog()` is the JSON-able capability surface for agent/MCP
-  builders.
+  builders. Fan-out (nw#26, `nw/transforms/fanout.py` — its docstring is the
+  spec): PDG-shaped `WorkItem`s whose `mapping_key` must be deterministic AND
+  semantic (bare integers and UUIDs are *refused at validation*), instance
+  ids a pure function of `(transform_name, mapping_key)` (UUIDv5 — async-safe,
+  stable under insertion), `generate_when: static|dynamic` on the declaration
+  (default `dynamic`: fail expensive-looking; it is what lets a cost gate tell
+  a real pre-quote from an honest unknown), per-unit isolation in
+  `fan_out_execute` on top of falaw's per-call isolation, and work items in
+  the **run record** (`FanOutResult.to_record()`), never the graph document.
 - **Freshness** (`nw/freshness.py`) — verifying-trace rebuild analysis with
   early cutoff (Salsa-style backdating). `stale_verdicts`/`stale_after`
   answer "what did *this* change invalidate"; `stale_verdicts_all`/`all_stale`
