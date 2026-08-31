@@ -58,6 +58,8 @@ from nw.transforms.fanout import _check_mapping_key
         "550e8400-e29b-41d4-a716-446655440000",
         "550e8400e29b41d4a716446655440000",  # bare-hex UUID spelling
         "urn:uuid:550e8400-e29b-41d4-a716-446655440000",
+        "URN:UUID:550e8400-e29b-41d4-a716-446655440000",  # stdlib's urn
+        # handling is case-sensitive; the classifier must not be
         "{550e8400-e29b-41d4-a716-446655440000}",  # braced spelling
         "a\x00b",
     ],
@@ -138,6 +140,13 @@ def test_instance_id_refuses_an_unnamed_transform():
 
 def test_check_mapping_key_returns_the_value():
     assert _check_mapping_key("scene_1") == "scene_1"
+
+
+def test_check_mapping_key_refuses_non_strings_with_a_typed_error():
+    with pytest.raises(ValueError, match="must be a str"):
+        _check_mapping_key(12)  # type: ignore[arg-type]
+    with pytest.raises(ValueError, match="must be a str"):
+        work_item_instance_id("t", 12)  # type: ignore[arg-type]
 
 
 # ---------------------------------------------------------------------------
@@ -319,6 +328,35 @@ def test_fan_out_plan_builds_one_unit_per_item_in_order():
         assert len(u.plan.calls) == 1 and len(u.skeleton) == 1
 
 
+def test_fan_out_plan_materialises_a_generator():
+    """Review finding: a one-shot iterable was consumed by the duplicate
+    scan, leaving a zero-unit fan-out that reported *complete having done
+    nothing* — the silent-vacuous-success shape this module refuses."""
+    t = _StubTransform()
+    gen = (WorkItem(mapping_key=f"g/{c}") for c in "abc")
+    fo = fan_out_plan(t, _Project(), gen, inputs_for=_inputs_for_factory())
+    assert len(fo.units) == 3
+    assert [u.item.mapping_key for u in fo.units] == ["g/a", "g/b", "g/c"]
+
+
+def test_fan_out_plan_names_the_item_a_plan_failure_died_on():
+    import sys
+
+    class Exploding(_StubTransform):
+        def plan(self, project, inputs, *, params=None):
+            if inputs.primary[0].body["key"] == "a/2":
+                raise RuntimeError("planner exploded")
+            return super().plan(project, inputs, params=params)
+
+    with pytest.raises(RuntimeError) as caught:
+        fan_out_plan(
+            Exploding(), _Project(), _items("a/1", "a/2"),
+            inputs_for=_inputs_for_factory(),
+        )
+    if sys.version_info >= (3, 11):
+        assert any("a/2" in note for note in getattr(caught.value, "__notes__", []))
+
+
 def test_fan_out_plan_refuses_duplicate_mapping_keys():
     with pytest.raises(ValueError, match="duplicate mapping_key"):
         fan_out_plan(
@@ -354,6 +392,28 @@ def test_fan_out_plan_stamps_impl_version_at_plan_time():
     fo = fan_out_plan(t, _Project(), _items("s1/p1"), inputs_for=_inputs_for_factory())
     call = fo.units[0].plan.calls[0]
     assert call.key_extra.get("transform_impl") == "2"
+
+
+def test_fan_out_plan_refuses_non_json_attributes_before_any_spend():
+    """Review finding: the attributes contract used to surface only at
+    to_record() — after the money was spent, stranding the record."""
+    t = _StubTransform()
+    items = (WorkItem(mapping_key="a/1", attributes={"bad": object()}),)
+    with pytest.raises(ValueError, match="non-JSON-serializable"):
+        fan_out_plan(t, _Project(), items, inputs_for=_inputs_for_factory())
+    assert t.executed == [], "refused before anything ran"
+
+
+def test_fan_out_plan_snapshots_attributes_against_post_plan_mutation():
+    """Review finding: `attributes` was shared by reference through the
+    frozen model, so mutating the caller's dict rewrote the run record."""
+    t = _StubTransform()
+    project = _Project()
+    caller_item = WorkItem(mapping_key="a/1", attributes={"seed": 1})
+    fo = fan_out_plan(t, project, (caller_item,), inputs_for=_inputs_for_factory())
+    caller_item.attributes["seed"] = 999  # the frozen model can't stop this
+    record = fan_out_execute(t, project, fo).to_record()
+    assert record["items"][0]["item"]["attributes"] == {"seed": 1}
 
 
 def test_fan_out_plan_makes_no_billable_calls():
@@ -435,6 +495,58 @@ def test_execute_passes_policy_and_cache_flags_through():
     assert t.execute_kwargs == [
         {"use_cache": False, "force": True, "on_failure": "isolate"}
     ]
+
+
+def test_execute_refuses_a_mismatched_transform():
+    """Review finding: executing A's plan with transform B silently
+    misattributed every instance id (and skipped B's impl_version stamp)."""
+    a = _StubTransform()
+    fo = fan_out_plan(a, _Project(), _items("a/1"), inputs_for=_inputs_for_factory())
+    b = _StubTransform()
+    b.name = "test.other"
+    with pytest.raises(ValueError, match="planned for"):
+        fan_out_execute(b, _Project(), fo)
+
+
+def test_execute_isolates_a_protocol_violating_none_result():
+    """Review finding: result interpretation outside the try let a
+    None-returning execute escape mid-loop, discarding the whole record."""
+
+    class Rogue(_StubTransform):
+        def execute(self, project, plan, skeleton, *, use_cache=True,
+                    force=False, on_failure="halt"):
+            key = plan.calls[0].arguments["key"]
+            if key == "a/1":
+                return None  # protocol violation
+            return super().execute(
+                project, plan, skeleton,
+                use_cache=use_cache, force=force, on_failure=on_failure,
+            )
+
+    t = Rogue()
+    project = _Project()
+    fo = fan_out_plan(t, project, _items("a/1", "a/2"), inputs_for=_inputs_for_factory())
+    result = fan_out_execute(t, project, fo)
+    assert [r.status for r in result.items] == ["failed", "succeeded"]
+    assert "AttributeError" in result.items[0].reason
+    assert len(result.items) == len(fo.units), "the record survives the rogue"
+
+
+def test_a_failed_unit_makes_the_run_cost_unknown():
+    """Review finding: a raising unit's spend vanished from the record —
+    `has_unknown_costs: False` beside `$0.00` after a billed failure is the
+    exact under-report the federation's unknown-cost rule forbids."""
+    t = _StubTransform(fail_keys={"a/1"})
+    project = _Project()
+    fo = fan_out_plan(t, project, _items("a/1", "a/2"), inputs_for=_inputs_for_factory())
+    result = fan_out_execute(t, project, fo)
+    assert result.has_unknown_costs is True
+    assert result.to_record()["has_unknown_costs"] is True
+    # ... and an all-green run stays fully known:
+    t2 = _StubTransform()
+    project2 = _Project()
+    fo2 = fan_out_plan(t2, project2, _items("a/1"), inputs_for=_inputs_for_factory())
+    assert fan_out_execute(t2, project2, fo2).has_unknown_costs is False
 
 
 def test_execute_refuses_an_unknown_policy():

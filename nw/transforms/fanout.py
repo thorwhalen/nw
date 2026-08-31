@@ -44,6 +44,12 @@ concurrency plus isolation, not a worklist — falaw bounds concurrency
 *within* a unit already; cross-unit scheduling is future work this API does
 not foreclose), and lazy inputs / ``required_inputs`` (separate issue when a
 Transform actually needs them).
+
+Import spelling: use the top-level ``nw`` exports or
+``from nw.transforms.fanout import ...``. The attribute chain
+``nw.transforms.fanout`` does NOT resolve — ``nw.transforms`` as an
+*attribute of the nw package* is the transform Registry (a deliberate,
+pre-existing shadowing), not this module's parent.
 """
 
 from __future__ import annotations
@@ -100,6 +106,10 @@ def _check_mapping_key(value: str, *, label: str = "mapping_key") -> str:
     meaningful in a log, and the basis of "regenerate shot 4 of scene 12,
     leave the rest alone".
     """
+    if not isinstance(value, str):
+        raise ValueError(
+            f"{label} must be a str, got {value!r} ({type(value).__name__})."
+        )
     v = value.strip()
     if not v or v != value:
         raise ValueError(
@@ -117,7 +127,10 @@ def _check_mapping_key(value: str, *, label: str = "mapping_key") -> str:
             "semantic key like 'scene_12/shot_04'."
         )
     try:
-        uuid.UUID(v)
+        # Lowercased first: stdlib uuid.UUID's `urn:` handling is
+        # case-sensitive, so "URN:UUID:..." would otherwise slip past a
+        # probe the lowercase spelling fails.
+        uuid.UUID(v.lower())
     except (ValueError, AttributeError, TypeError):
         return value
     raise ValueError(
@@ -297,6 +310,11 @@ def fan_out_plan(
     """
     from nw.transforms import stamp_transform_identity
 
+    # A one-shot iterable (a generator) would be consumed by the duplicate
+    # scan below, leaving the planning loop zero units — a 200-item fan-out
+    # reporting *complete having done nothing*. Refused-at-validation is
+    # this module's whole philosophy, and materialising is the validation.
+    items = tuple(items)
     name = getattr(transform, "name", "") or ""
     if not name:
         raise ValueError(
@@ -317,7 +335,35 @@ def fan_out_plan(
 
     units = []
     for item in items:
-        plan, skeleton = transform.plan(project, inputs_for(item), params=params)
+        # Enforce the attributes contract BEFORE anything can spend: a
+        # non-JSON value would otherwise surface only at to_record(),
+        # after a possibly-large run, stranding that run's record.
+        try:
+            item.model_dump(mode="json")
+        except Exception as e:
+            raise ValueError(
+                f"fan_out_plan: item {item.mapping_key!r} has "
+                "non-JSON-serializable `attributes` — the WorkItem contract "
+                "requires JSON-serializable attributes so the run record "
+                "can be persisted."
+            ) from e
+        # Snapshot the item: `attributes` is a dict reachable through the
+        # frozen model, so a caller mutating it post-plan would rewrite
+        # what to_record() reports about a run that already happened.
+        # (Deep copy cannot fail here: everything JSON-able is copyable.)
+        item = item.model_copy(deep=True)
+        try:
+            plan, skeleton = transform.plan(project, inputs_for(item), params=params)
+        except Exception as e:
+            # Atomicity-by-raise is right at plan time (plans are cheap and
+            # nothing partial escapes), but the traceback should name the
+            # item it died on. add_note is 3.11+; on 3.10 the frame in the
+            # traceback still points here.
+            if hasattr(e, "add_note"):
+                e.add_note(
+                    f"fan_out_plan: while planning item {item.mapping_key!r}"
+                )
+            raise
         units.append(
             FanOutUnit(
                 item=item,
@@ -391,52 +437,85 @@ class FanOutResult:
 
     @property
     def has_unknown_costs(self) -> bool:
+        """True when the run's true spend is not fully known.
+
+        Two sources, both counted: a surviving unit whose own report says
+        so, and any **failed** unit — a unit that raised mid-execute may
+        have been billed for calls its (discarded) report would have
+        carried, so its spend is unknown by construction. Without the
+        second clause, a failed run could read "all costs known, $0.00
+        spent" — the exact under-report the federation's unknown-cost rule
+        exists to prevent. ``blocked`` units never ran and are known-$0.
+        """
         return any(
-            r.result.has_unknown_costs for r in self.items if r.result is not None
+            (r.result.has_unknown_costs if r.result is not None else False)
+            or r.status == "failed"
+            for r in self.items
         )
 
     def to_record(self) -> dict:
         """The run record — where work items live (never the graph document).
 
         JSON-serializable as returned, provided every item's ``attributes``
-        is (their contract). Annotations and artifacts are referenced by id;
-        the annotations themselves were already written to the graph by each
-        unit's ordinary ``execute``, and duplicating their bodies here would
-        make the record a second, driftable copy.
+        is (their contract; a violation raises here, naming the item).
+        Annotations and artifacts are referenced by id; the annotations
+        themselves were already written to the graph by each unit's ordinary
+        ``execute``, and duplicating their bodies here would make the record
+        a second, driftable copy.
+
+        ``failed_count`` / ``blocked_count`` count outputs **within** a unit
+        (zero when the unit itself failed — its result is ``None``); the
+        unit-level outcome is ``status``. A consumer counting failed *units*
+        counts statuses, not these fields.
         """
+        rows = []
+        for r in self.items:
+            try:
+                rows.append(
+                    {
+                        "item": r.item.model_dump(mode="json"),
+                        "instance_id": str(r.instance_id),
+                        "status": r.status,
+                        "reason": r.reason,
+                        "annotation_ids": (
+                            [str(a.id) for a in r.result.annotations]
+                            if r.result is not None
+                            else []
+                        ),
+                        "artifact_ids": (
+                            [a.asset_id for a in r.result.artifacts]
+                            if r.result is not None
+                            else []
+                        ),
+                        "cost_usd_actual": (
+                            r.result.cost_usd_actual if r.result is not None else 0.0
+                        ),
+                        "failed_count": (
+                            len(r.result.failed) if r.result is not None else 0
+                        ),
+                        "blocked_count": (
+                            len(r.result.blocked) if r.result is not None else 0
+                        ),
+                    }
+                )
+            except Exception as e:
+                # Almost always a non-JSON-serializable `attributes` value.
+                # The error must name WHICH item broke the record — the run
+                # already spent its money, and an unattributable failure
+                # here strands the whole record.
+                if hasattr(e, "add_note"):
+                    e.add_note(
+                        f"to_record: while serializing item "
+                        f"{r.item.mapping_key!r} — its `attributes` must be "
+                        "JSON-serializable (the WorkItem contract)"
+                    )
+                raise
         return {
             "transform_name": self.transform_name,
             "complete": self.is_complete,
             "cost_usd_actual": self.cost_usd_actual,
             "has_unknown_costs": self.has_unknown_costs,
-            "items": [
-                {
-                    "item": r.item.model_dump(mode="json"),
-                    "instance_id": str(r.instance_id),
-                    "status": r.status,
-                    "reason": r.reason,
-                    "annotation_ids": (
-                        [str(a.id) for a in r.result.annotations]
-                        if r.result is not None
-                        else []
-                    ),
-                    "artifact_ids": (
-                        [a.asset_id for a in r.result.artifacts]
-                        if r.result is not None
-                        else []
-                    ),
-                    "cost_usd_actual": (
-                        r.result.cost_usd_actual if r.result is not None else 0.0
-                    ),
-                    "failed_count": (
-                        len(r.result.failed) if r.result is not None else 0
-                    ),
-                    "blocked_count": (
-                        len(r.result.blocked) if r.result is not None else 0
-                    ),
-                }
-                for r in self.items
-            ],
+            "items": rows,
         }
 
 
@@ -485,6 +564,16 @@ def fan_out_execute(
     its result is partial — the Transform already decided those failures
     were survivable; only a raising unit halts.
 
+    Two protocol-violation shapes degrade rather than crash, deliberately:
+    an ``execute`` that rejects ``use_cache``/``force`` (or returns a
+    non-``TransformResult``) shows up as per-unit ``failed`` rows carrying
+    the ``TypeError``/``AttributeError`` — N identical rows for one
+    programming error reads worse than one loud raise, but the alternative
+    discards the run record for units that already spent. And a ``**kwargs``
+    override that accepts-but-ignores ``on_failure`` runs its internal
+    default within the unit — undetectable by signature inspection in
+    principle; cross-unit policy is still honoured.
+
     Units run **sequentially**. Concurrency *within* a unit is falaw's
     (``execute_plan_isolated`` bounds it); concurrency *across* units is the
     deferred-scheduler work nw#26 explicitly scopes out, and nothing here
@@ -495,6 +584,15 @@ def fan_out_execute(
         raise ValueError(
             f"fan_out_execute: on_failure must be 'halt' or 'isolate', "
             f"got {on_failure!r}."
+        )
+    executing_name = getattr(transform, "name", "") or ""
+    if executing_name != fan_out.transform_name:
+        raise ValueError(
+            f"fan_out_execute: this FanOutPlan was planned for "
+            f"{fan_out.transform_name!r} but the transform passed is "
+            f"{executing_name!r}. Executing under the wrong identity would "
+            "misattribute every instance id in the run record (and skip the "
+            "executing transform's own impl_version stamp)."
         )
     pass_on_failure = _accepts_on_failure(transform.execute)
 
@@ -516,6 +614,21 @@ def fan_out_execute(
             kwargs["on_failure"] = on_failure
         try:
             result = transform.execute(project, unit.plan, unit.skeleton, **kwargs)
+            # Result interpretation stays INSIDE the try: an execute that
+            # returns None (or a result whose properties raise) is a
+            # protocol violation, but letting it escape mid-loop would
+            # discard the whole run record — cost attribution for money
+            # already spent — which is the loss isolate exists to prevent.
+            status: UnitStatus = "succeeded" if result.is_complete else "partial"
+            reason = (
+                ""
+                if result.is_complete
+                else (
+                    f"{len(result.failed)} failed, "
+                    f"{len(result.blocked)} blocked of "
+                    f"{len(result.failed) + len(result.blocked) + len(result.annotations)} outputs"
+                )
+            )
         except Exception as e:  # noqa: BLE001 — per-unit isolation is the feature
             results.append(
                 FanOutItemResult(
@@ -533,17 +646,9 @@ def fan_out_execute(
             FanOutItemResult(
                 item=unit.item,
                 instance_id=unit.instance_id,
-                status="succeeded" if result.is_complete else "partial",
+                status=status,
                 result=result,
-                reason=(
-                    ""
-                    if result.is_complete
-                    else (
-                        f"{len(result.failed)} failed, "
-                        f"{len(result.blocked)} blocked of "
-                        f"{len(result.failed) + len(result.blocked) + len(result.annotations)} outputs"
-                    )
-                ),
+                reason=reason,
             )
         )
     return FanOutResult(transform_name=fan_out.transform_name, items=tuple(results))
