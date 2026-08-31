@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>&lt;no title&gt; &mdash; nw 0.0.37 documentation</title>
+  <title>&lt;no title&gt; &mdash; nw 0.0.38 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=aa2ad26f"></script>
+      <script src="_static/documentation_options.js?v=423071ad"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -81,6 +81,7 @@
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/transforms/_adapters.html">nw.transforms._adapters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/transforms/_adapters/render_strategy.html">nw.transforms._adapters.render_strategy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/transforms/_provenance.html">nw.transforms._provenance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/transforms/fanout.html">nw.transforms.fanout</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/workflow.html">nw.workflow</a></li>
 </ul>
 
@@ -120,6 +121,10 @@
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.Deliverable"><code class="docutils literal notranslate"><span class="pre">Deliverable</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.EnvironmentRef"><code class="docutils literal notranslate"><span class="pre">EnvironmentRef</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.FailedOutput"><code class="docutils literal notranslate"><span class="pre">FailedOutput</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.FanOutItemResult"><code class="docutils literal notranslate"><span class="pre">FanOutItemResult</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.FanOutPlan"><code class="docutils literal notranslate"><span class="pre">FanOutPlan</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.FanOutResult"><code class="docutils literal notranslate"><span class="pre">FanOutResult</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.FanOutUnit"><code class="docutils literal notranslate"><span class="pre">FanOutUnit</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.FreshnessVerdict"><code class="docutils literal notranslate"><span class="pre">FreshnessVerdict</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.FrozenSegment"><code class="docutils literal notranslate"><span class="pre">FrozenSegment</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.Gap"><code class="docutils literal notranslate"><span class="pre">Gap</span></code></a></li>
@@ -140,6 +145,7 @@
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.Transform"><code class="docutils literal notranslate"><span class="pre">Transform</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.TransformInputs"><code class="docutils literal notranslate"><span class="pre">TransformInputs</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.TransformResult"><code class="docutils literal notranslate"><span class="pre">TransformResult</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.WorkItem"><code class="docutils literal notranslate"><span class="pre">WorkItem</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.all_stale"><code class="docutils literal notranslate"><span class="pre">all_stale()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.annotations_at_tier"><code class="docutils literal notranslate"><span class="pre">annotations_at_tier()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.apply_to_projects"><code class="docutils literal notranslate"><span class="pre">apply_to_projects()</span></code></a></li>
@@ -153,6 +159,8 @@
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.describe_genre"><code class="docutils literal notranslate"><span class="pre">describe_genre()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.execute_render"><code class="docutils literal notranslate"><span class="pre">execute_render()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.execute_render_panel_images"><code class="docutils literal notranslate"><span class="pre">execute_render_panel_images()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.fan_out_execute"><code class="docutils literal notranslate"><span class="pre">fan_out_execute()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.fan_out_plan"><code class="docutils literal notranslate"><span class="pre">fan_out_plan()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.format_ref"><code class="docutils literal notranslate"><span class="pre">format_ref()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.genre_catalog"><code class="docutils literal notranslate"><span class="pre">genre_catalog()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.get_genre"><code class="docutils literal notranslate"><span class="pre">get_genre()</span></code></a></li>
@@ -192,6 +200,7 @@
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.storyboard_from_shots"><code class="docutils literal notranslate"><span class="pre">storyboard_from_shots()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.summarize_all"><code class="docutils literal notranslate"><span class="pre">summarize_all()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.transform_catalog"><code class="docutils literal notranslate"><span class="pre">transform_catalog()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.work_item_instance_id"><code class="docutils literal notranslate"><span class="pre">work_item_instance_id()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies.html">nw.bodies</a><ul>
@@ -441,17 +450,25 @@
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/transforms.html">nw.transforms</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.BaseTransform"><code class="docutils literal notranslate"><span class="pre">BaseTransform</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.DFLT_IMPL_VERSION"><code class="docutils literal notranslate"><span class="pre">DFLT_IMPL_VERSION</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.FanOutItemResult"><code class="docutils literal notranslate"><span class="pre">FanOutItemResult</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.FanOutPlan"><code class="docutils literal notranslate"><span class="pre">FanOutPlan</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.FanOutResult"><code class="docutils literal notranslate"><span class="pre">FanOutResult</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.FanOutUnit"><code class="docutils literal notranslate"><span class="pre">FanOutUnit</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.Transform"><code class="docutils literal notranslate"><span class="pre">Transform</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.TransformInputs"><code class="docutils literal notranslate"><span class="pre">TransformInputs</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.TransformResult"><code class="docutils literal notranslate"><span class="pre">TransformResult</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.WorkItem"><code class="docutils literal notranslate"><span class="pre">WorkItem</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.cache_key"><code class="docutils literal notranslate"><span class="pre">cache_key()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.cached_output"><code class="docutils literal notranslate"><span class="pre">cached_output()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.fan_out_execute"><code class="docutils literal notranslate"><span class="pre">fan_out_execute()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.fan_out_plan"><code class="docutils literal notranslate"><span class="pre">fan_out_plan()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.get_transform"><code class="docutils literal notranslate"><span class="pre">get_transform()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.list_transforms"><code class="docutils literal notranslate"><span class="pre">list_transforms()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.register_transform"><code class="docutils literal notranslate"><span class="pre">register_transform()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.stamp_transform_identity"><code class="docutils literal notranslate"><span class="pre">stamp_transform_identity()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.transform_catalog"><code class="docutils literal notranslate"><span class="pre">transform_catalog()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.transforms"><code class="docutils literal notranslate"><span class="pre">transforms</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.work_item_instance_id"><code class="docutils literal notranslate"><span class="pre">work_item_instance_id()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/transforms/_adapters.html">nw.transforms._adapters</a></li>
@@ -462,6 +479,21 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/transforms/_provenance.html">nw.transforms._provenance</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms/_provenance.html#nw.transforms._provenance.derive_provenance"><code class="docutils literal notranslate"><span class="pre">derive_provenance()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/transforms/fanout.html">nw.transforms.fanout</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms/fanout.html#nw.transforms.fanout.DFLT_GENERATE_WHEN"><code class="docutils literal notranslate"><span class="pre">DFLT_GENERATE_WHEN</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms/fanout.html#nw.transforms.fanout.FanOutItemResult"><code class="docutils literal notranslate"><span class="pre">FanOutItemResult</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms/fanout.html#nw.transforms.fanout.FanOutPlan"><code class="docutils literal notranslate"><span class="pre">FanOutPlan</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms/fanout.html#nw.transforms.fanout.FanOutResult"><code class="docutils literal notranslate"><span class="pre">FanOutResult</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms/fanout.html#nw.transforms.fanout.FanOutUnit"><code class="docutils literal notranslate"><span class="pre">FanOutUnit</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms/fanout.html#nw.transforms.fanout.GenerateWhen"><code class="docutils literal notranslate"><span class="pre">GenerateWhen</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms/fanout.html#nw.transforms.fanout.UnitStatus"><code class="docutils literal notranslate"><span class="pre">UnitStatus</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms/fanout.html#nw.transforms.fanout.WORK_ITEM_NAMESPACE"><code class="docutils literal notranslate"><span class="pre">WORK_ITEM_NAMESPACE</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms/fanout.html#nw.transforms.fanout.WorkItem"><code class="docutils literal notranslate"><span class="pre">WorkItem</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms/fanout.html#nw.transforms.fanout.fan_out_execute"><code class="docutils literal notranslate"><span class="pre">fan_out_execute()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms/fanout.html#nw.transforms.fanout.fan_out_plan"><code class="docutils literal notranslate"><span class="pre">fan_out_plan()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms/fanout.html#nw.transforms.fanout.work_item_instance_id"><code class="docutils literal notranslate"><span class="pre">work_item_instance_id()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/workflow.html">nw.workflow</a><ul>

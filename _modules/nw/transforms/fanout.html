@@ -1,0 +1,839 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>nw.transforms.fanout &mdash; nw 0.0.38 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=423071ad"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../../_static/toggleprompt.js?v=d7ede5d2"></script>
+      <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            nw
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw.html">nw</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/bodies.html">nw.bodies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/bodies/character_ref.html">nw.bodies.character_ref</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/bodies/decision.html">nw.bodies.decision</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/bodies/environment_ref.html">nw.bodies.environment_ref</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/bodies/genre_envelope.html">nw.bodies.genre_envelope</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/bodies/render_result.html">nw.bodies.render_result</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/bodies/section.html">nw.bodies.section</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/bodies/shot.html">nw.bodies.shot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/bodies/verifying_trace.html">nw.bodies.verifying_trace</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/delivery.html">nw.delivery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/experiment.html">nw.experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/freshness.html">nw.freshness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/genres.html">nw.genres</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/graph.html">nw.graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/graph_backend.html">nw.graph_backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/inspect.html">nw.inspect</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/jobs.html">nw.jobs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/migrate.html">nw.migrate</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/project.html">nw.project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/renderers.html">nw.renderers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/renderers/_common.html">nw.renderers._common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/renderers/composite_lipsync.html">nw.renderers.composite_lipsync</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/renderers/image_to_video.html">nw.renderers.image_to_video</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/renderers/lipsync.html">nw.renderers.lipsync</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/renderers/still.html">nw.renderers.still</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/renderers/text_to_video.html">nw.renderers.text_to_video</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/schema.html">nw.schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/script_segmentation.html">nw.script_segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/storyboard.html">nw.storyboard</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/transforms.html">nw.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/transforms/_adapters.html">nw.transforms._adapters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/transforms/_adapters/render_strategy.html">nw.transforms._adapters.render_strategy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/transforms/_provenance.html">nw.transforms._provenance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/transforms/fanout.html">nw.transforms.fanout</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/workflow.html">nw.workflow</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">nw</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../transforms.html">nw.transforms</a></li>
+      <li class="breadcrumb-item active">nw.transforms.fanout</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for nw.transforms.fanout</h1><div class="highlight"><pre>
+<span></span><span class="sd">"""Fan-out — PDG-shaped work items with mandatory semantic identity (nw#26).</span>
+
+<span class="sd">nw's fan-out primitive: apply one Transform across N units of work, where each</span>
+<span class="sd">unit carries a **deterministic, semantic identity** and fails on its own.</span>
+<span class="sd">The design is Houdini PDG's work-item model with Dagster's mandatory mapping</span>
+<span class="sd">key; ComfyUI-style node expansion was surveyed and rejected (silent cache</span>
+<span class="sd">death on per-item data, no per-instance retry, no shape declaration — the</span>
+<span class="sd">issue records the evidence).</span>
+
+<span class="sd">The pieces, and the rule each one carries:</span>
+
+<span class="sd">- :class:`WorkItem` — the unit. Its ``mapping_key`` must be deterministic</span>
+<span class="sd">  AND semantic: a ``uuid4`` silently disables the cache, and an ordinal</span>
+<span class="sd">  shifts when the source material is edited (insert one scene early in a</span>
+<span class="sd">  200-shot fan-out and every later ordinal misses — up to 199 spurious</span>
+<span class="sd">  re-renders). Bare integers and UUIDs are therefore **refused at</span>
+<span class="sd">  validation**, not discouraged in prose.</span>
+<span class="sd">- :func:`work_item_instance_id` — instance identity is a **pure function**</span>
+<span class="sd">  of ``(transform_name, mapping_key)`` (UUIDv5), never allocated from</span>
+<span class="sd">  ambient state. Pure means async-safe by construction and stable under</span>
+<span class="sd">  insertion; ComfyUI's mutable class-level prefix state is the</span>
+<span class="sd">  counterexample (their own in-source TODO admits the coroutine race).</span>
+<span class="sd">- ``generate_when`` on the Transform declaration — Houdini PDG's</span>
+<span class="sd">  static/dynamic split, the one mechanism both research briefs nominated</span>
+<span class="sd">  independently. ``"static"``: the item list is derivable before the run,</span>
+<span class="sd">  so a fan-out pre-quote is a *real* number. ``"dynamic"``: cardinality is</span>
+<span class="sd">  known only after an upstream call returns (segment-this-screenplay), so</span>
+<span class="sd">  the only honest pre-quote is "unknown" — which the federation's cost</span>
+<span class="sd">  rule already forces into approval. Undeclared defaults to ``"dynamic"``:</span>
+<span class="sd">  fail expensive-looking.</span>
+<span class="sd">- :func:`fan_out_plan` / :func:`fan_out_execute` — plan each unit as an</span>
+<span class="sd">  **ordinary Transform invocation** (ordinary :class:`falaw.Plan`, ordinary</span>
+<span class="sd">  ``lacing.Annotation`` skeletons — never a special "expanded" record</span>
+<span class="sd">  type; the one thing ComfyUI gets right), then execute with per-unit</span>
+<span class="sd">  isolation on top of falaw#20's per-call isolation.</span>
+<span class="sd">- :class:`FanOutResult` — work items live in the **run record**</span>
+<span class="sd">  (:meth:`FanOutResult.to_record`), never in the graph document.</span>
+<span class="sd">  Materialising instances into the document would mutate it on execution</span>
+<span class="sd">  and break its digest.</span>
+
+<span class="sd">Deliberately NOT here (recorded in nw#26 so nobody re-litigates): a general</span>
+<span class="sd">re-entrant scheduler (a fan-out of independent plans needs bounded</span>
+<span class="sd">concurrency plus isolation, not a worklist — falaw bounds concurrency</span>
+<span class="sd">*within* a unit already; cross-unit scheduling is future work this API does</span>
+<span class="sd">not foreclose), and lazy inputs / ``required_inputs`` (separate issue when a</span>
+<span class="sd">Transform actually needs them).</span>
+
+<span class="sd">Import spelling: use the top-level ``nw`` exports or</span>
+<span class="sd">``from nw.transforms.fanout import ...``. The attribute chain</span>
+<span class="sd">``nw.transforms.fanout`` does NOT resolve — ``nw.transforms`` as an</span>
+<span class="sd">*attribute of the nw package* is the transform Registry (a deliberate,</span>
+<span class="sd">pre-existing shadowing), not this module's parent.</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">ConfigDict</span><span class="p">,</span> <span class="n">Field</span><span class="p">,</span> <span class="n">field_validator</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">falaw</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plan</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">lacing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotation</span><span class="p">,</span> <span class="n">TimeInterval</span>
+
+
+<span class="n">GenerateWhen</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"static"</span><span class="p">,</span> <span class="s2">"dynamic"</span><span class="p">]</span>
+<span class="sd">"""When a Transform's fan-out cardinality is knowable.</span>
+
+<span class="sd">``"static"`` — the work-item list is derivable from the graph before the run</span>
+<span class="sd">("one image per panel": count the panels). A pre-flight estimate over a</span>
+<span class="sd">static fan-out is a real number.</span>
+
+<span class="sd">``"dynamic"`` — cardinality is known only after an upstream call returns</span>
+<span class="sd">("segment this screenplay into beats"). The only honest pre-flight estimate</span>
+<span class="sd">is *unknown*, which forces approval rather than under-quoting.</span>
+<span class="sd">"""</span>
+
+<span class="n">DFLT_GENERATE_WHEN</span><span class="p">:</span> <span class="n">GenerateWhen</span> <span class="o">=</span> <span class="s2">"dynamic"</span>
+<span class="sd">"""The default when a Transform declares nothing: fail expensive-looking.</span>
+
+<span class="sd">An undeclared shape treated as static would let a cost gate quote a number</span>
+<span class="sd">for a cardinality nobody knows yet — the exact under-quote the</span>
+<span class="sd">``estimate() -&gt; None`` rule exists to prevent."""</span>
+
+<span class="n">WORK_ITEM_NAMESPACE</span> <span class="o">=</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">(</span><span class="s2">"0805b55c-002d-40c2-9ede-3dc06f4d636f"</span><span class="p">)</span>
+<span class="sd">"""UUIDv5 namespace for :func:`work_item_instance_id`. Frozen forever:</span>
+<span class="sd">changing it changes every instance id ever issued."""</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_check_mapping_key</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"mapping_key"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Refuse a key that is not deterministic-AND-semantic. Returns ``value``.</span>
+
+<span class="sd">    Both halves of the requirement have a concrete failure mode, so both are</span>
+<span class="sd">    validated rather than documented:</span>
+
+<span class="sd">    - a **UUID** (any spelling ``uuid.UUID`` accepts — dashed, bare hex,</span>
+<span class="sd">      braced, URN) is deterministic only if minted once and remembered,</span>
+<span class="sd">      which in practice means ``uuid4()`` per run: the cache never hits.</span>
+<span class="sd">    - a **bare integer** (``"12"``, ``"-3"``) is an ordinal: editing the</span>
+<span class="sd">      source material shifts every subsequent id, so downstream cache</span>
+<span class="sd">      entries miss from the insertion point on.</span>
+
+<span class="sd">    ``"scene_12/shot_04"`` is the shape to aim for: stable under insertion,</span>
+<span class="sd">    meaningful in a log, and the basis of "regenerate shot 4 of scene 12,</span>
+<span class="sd">    leave the rest alone".</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2"> must be a str, got </span><span class="si">{</span><span class="n">value</span><span class="si">!r}</span><span class="s2"> (</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">)."</span>
+        <span class="p">)</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">v</span> <span class="ow">or</span> <span class="n">v</span> <span class="o">!=</span> <span class="n">value</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2"> must be a non-empty string without leading/trailing "</span>
+            <span class="sa">f</span><span class="s2">"whitespace, got </span><span class="si">{</span><span class="n">value</span><span class="si">!r}</span><span class="s2">."</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="s2">"</span><span class="se">\x00</span><span class="s2">"</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2"> may not contain NUL, got </span><span class="si">{</span><span class="n">value</span><span class="si">!r}</span><span class="s2">."</span><span class="p">)</span>
+    <span class="n">stripped</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">if</span> <span class="n">v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="s2">"+-"</span> <span class="k">else</span> <span class="n">v</span>
+    <span class="k">if</span> <span class="n">stripped</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">value</span><span class="si">!r}</span><span class="s2"> is a bare integer — an ordinal. Ordinals "</span>
+            <span class="s2">"shift when the source material is edited, invalidating every "</span>
+            <span class="s2">"downstream cache entry after the insertion point. Use a "</span>
+            <span class="s2">"semantic key like 'scene_12/shot_04'."</span>
+        <span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Lowercased first: stdlib uuid.UUID's `urn:` handling is</span>
+        <span class="c1"># case-sensitive, so "URN:UUID:..." would otherwise slip past a</span>
+        <span class="c1"># probe the lowercase spelling fails.</span>
+        <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">value</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">value</span><span class="si">!r}</span><span class="s2"> is a UUID. A per-run UUID silently disables "</span>
+        <span class="s2">"the cache (a new key every run never hits), and a remembered one "</span>
+        <span class="s2">"identifies nothing a human can act on. Use a semantic key like "</span>
+        <span class="s2">"'scene_12/shot_04'."</span>
+    <span class="p">)</span>
+
+
+<div class="viewcode-block" id="WorkItem">
+<a class="viewcode-back" href="../../../module_docs/nw/transforms/fanout.html#nw.WorkItem">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">WorkItem</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""One unit of a fan-out — the PDG-shaped work item (nw#26).</span>
+
+<span class="sd">    ``scope_interval`` puts *time in the demand, not the graph* (Nuke's</span>
+<span class="sd">    model): a pipeline that stores frame ranges in nodes must edit the graph</span>
+<span class="sd">    to change a range; one that stores them in the request does not. It is</span>
+<span class="sd">    an interval rather than a point because lacing's ``TimeInterval`` admits</span>
+<span class="sd">    ``start == end`` as a valid point annotation — the point-demand case is</span>
+<span class="sd">    already representable, no second demand type needed.</span>
+<span class="sd">    """</span>
+
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">mapping_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="o">...</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">"Deterministic, semantic identity for this unit, e.g. "</span>
+            <span class="s2">"'scene_12/shot_04'. Bare integers and UUIDs are refused — "</span>
+            <span class="s2">"see the module docstring for why both halves are mandatory."</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">parent_key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">"The mapping_key of the item this one was expanded from, when a "</span>
+            <span class="s2">"fan-out is itself the product of a fan-out (screenplay → scenes "</span>
+            <span class="s2">"→ shots)."</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">attributes</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">"Per-item data handed to the unit (seed, prompt override, …). "</span>
+            <span class="s2">"Must be JSON-serializable if the run record is to be persisted."</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">scope_interval</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TimeInterval</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">"The stretch of the master timeline this unit is *for* — the "</span>
+            <span class="s2">"demand, riding on the request rather than stored in the graph."</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"mapping_key"</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_valid_mapping_key</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_check_mapping_key</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+
+    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"parent_key"</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_valid_parent_key</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">v</span>
+        <span class="k">return</span> <span class="n">_check_mapping_key</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"parent_key"</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">instance_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""This item's instance id is only defined *for a transform* — use</span>
+<span class="sd">        :func:`work_item_instance_id`. This property exists to raise a</span>
+<span class="sd">        helpful error instead of letting ``item.instance_id`` look like it</span>
+<span class="sd">        could mean something transform-free."""</span>
+        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span>
+            <span class="s2">"a WorkItem has no instance_id of its own — identity is "</span>
+            <span class="s2">"work_item_instance_id(transform_name, item.mapping_key), a pure "</span>
+            <span class="s2">"function of both."</span>
+        <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="work_item_instance_id">
+<a class="viewcode-back" href="../../../module_docs/nw/transforms/fanout.html#nw.work_item_instance_id">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">work_item_instance_id</span><span class="p">(</span><span class="n">transform_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mapping_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""The instance id of one fan-out unit: UUIDv5 of ``(transform_name, mapping_key)``.</span>
+
+<span class="sd">    A **pure function**, deliberately: pure is async-safe by construction</span>
+<span class="sd">    (no ambient counter for a suspended coroutine to corrupt — the ComfyUI</span>
+<span class="sd">    ``GraphBuilder`` race) and stable under insertion (adding an item never</span>
+<span class="sd">    changes any other item's id). The same (transform, key) pair yields the</span>
+<span class="sd">    same id on every machine, every run, forever — which is what makes</span>
+<span class="sd">    per-instance retry, cost attribution, and "regenerate just this one"</span>
+<span class="sd">    addressable across runs.</span>
+
+<span class="sd">    &gt;&gt;&gt; a = work_item_instance_id("panel_to_image.fal", "scene_1/panel_2")</span>
+<span class="sd">    &gt;&gt;&gt; a == work_item_instance_id("panel_to_image.fal", "scene_1/panel_2")</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; a != work_item_instance_id("panel_to_voiceover", "scene_1/panel_2")</span>
+<span class="sd">    True</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">transform_name</span> <span class="ow">or</span> <span class="s2">"</span><span class="se">\x00</span><span class="s2">"</span> <span class="ow">in</span> <span class="n">transform_name</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"transform_name must be a non-empty, NUL-free string, got "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">transform_name</span><span class="si">!r}</span><span class="s2"> — a fan-out over an unnamed Transform has "</span>
+            <span class="s2">"no identity to give its instances."</span>
+        <span class="p">)</span>
+    <span class="n">_check_mapping_key</span><span class="p">(</span><span class="n">mapping_key</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid5</span><span class="p">(</span><span class="n">WORK_ITEM_NAMESPACE</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">transform_name</span><span class="si">}</span><span class="se">\x00</span><span class="si">{</span><span class="n">mapping_key</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Plan side</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="FanOutUnit">
+<a class="viewcode-back" href="../../../module_docs/nw/transforms/fanout.html#nw.FanOutUnit">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FanOutUnit</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""One planned unit: a work item plus its ordinary Transform plan."""</span>
+
+    <span class="n">item</span><span class="p">:</span> <span class="n">WorkItem</span>
+    <span class="n">instance_id</span><span class="p">:</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span>
+    <span class="n">plan</span><span class="p">:</span> <span class="n">Plan</span>
+    <span class="n">skeleton</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Annotation</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="FanOutPlan">
+<a class="viewcode-back" href="../../../module_docs/nw/transforms/fanout.html#nw.FanOutPlan">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FanOutPlan</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""The planned fan-out — pure data, like every plan in this federation.</span>
+
+<span class="sd">    Cost arithmetic follows falaw#18's honest form exactly (same names, same</span>
+<span class="sd">    semantics): :attr:`known_cost_usd` is the priced part, and a correct</span>
+<span class="sd">    gate reads it **together with** :attr:`unknown_call_count` — the true</span>
+<span class="sd">    cost is the known sum *plus an unknown amount* over that many calls,</span>
+<span class="sd">    and the gate refuses when the count is nonzero rather than pretending</span>
+<span class="sd">    the unknown part is free.</span>
+<span class="sd">    """</span>
+
+    <span class="n">transform_name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">units</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">FanOutUnit</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">known_cost_usd</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Sum of every unit plan's priced, non-cache-hit calls."""</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">((</span><span class="n">u</span><span class="o">.</span><span class="n">plan</span><span class="o">.</span><span class="n">known_cost_usd</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="p">),</span> <span class="mf">0.0</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">has_unknown_costs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""True if any unit has a billable call with no price."""</span>
+        <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">plan</span><span class="o">.</span><span class="n">has_unknown_costs</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">unknown_call_count</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""How many billable calls across all units carry no price."""</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">u</span><span class="o">.</span><span class="n">plan</span><span class="o">.</span><span class="n">unknown_call_count</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="fan_out_plan">
+<a class="viewcode-back" href="../../../module_docs/nw/transforms/fanout.html#nw.fan_out_plan">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">fan_out_plan</span><span class="p">(</span>
+    <span class="n">transform</span><span class="p">,</span>
+    <span class="n">project</span><span class="p">,</span>
+    <span class="n">items</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">WorkItem</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">WorkItem</span><span class="p">],</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">inputs_for</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">WorkItem</span><span class="p">],</span> <span class="s2">"TransformInputs"</span><span class="p">],</span>  <span class="c1"># noqa: F821</span>
+    <span class="n">params</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BaseModel</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FanOutPlan</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Plan one Transform across ``items`` — each unit an ordinary ``plan()`` call.</span>
+
+<span class="sd">    ``inputs_for`` maps a work item to the :class:`~nw.transforms.TransformInputs`</span>
+<span class="sd">    its unit consumes; the item's ``attributes`` carry any per-unit data it</span>
+<span class="sd">    needs to build them. No billable calls; pure data out.</span>
+
+<span class="sd">    Duplicate ``mapping_key``\\ s are refused: two units sharing a key share</span>
+<span class="sd">    an instance id, which destroys exactly the per-instance identity the key</span>
+<span class="sd">    exists to provide (retry, cost attribution, regenerate-just-this-one all</span>
+<span class="sd">    become ambiguous).</span>
+
+<span class="sd">    ``stamp_transform_identity`` is applied to each unit plan **here, at plan</span>
+<span class="sd">    time** — its own docstring asks orchestrators that hash or persist plans</span>
+<span class="sd">    before execution to do so, and a fan-out's run record is such a</span>
+<span class="sd">    persistence. Idempotent, so :meth:`BaseTransform.execute` re-stamping at</span>
+<span class="sd">    execute time changes nothing.</span>
+<span class="sd">    """</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">nw.transforms</span><span class="w"> </span><span class="kn">import</span> <span class="n">stamp_transform_identity</span>
+
+    <span class="c1"># A one-shot iterable (a generator) would be consumed by the duplicate</span>
+    <span class="c1"># scan below, leaving the planning loop zero units — a 200-item fan-out</span>
+    <span class="c1"># reporting *complete having done nothing*. Refused-at-validation is</span>
+    <span class="c1"># this module's whole philosophy, and materialising is the validation.</span>
+    <span class="n">items</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">transform</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">""</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">"fan_out_plan: the transform declares no `name` — instance ids "</span>
+            <span class="s2">"are a pure function of (transform_name, mapping_key), so a "</span>
+            <span class="s2">"nameless Transform has no identity to give its units."</span>
+        <span class="p">)</span>
+    <span class="n">seen</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">items</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">mapping_key</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"fan_out_plan: duplicate mapping_key </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">mapping_key</span><span class="si">!r}</span><span class="s2"> "</span>
+                <span class="sa">f</span><span class="s2">"(items </span><span class="si">{</span><span class="n">seen</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">mapping_key</span><span class="p">]</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">). Two units sharing "</span>
+                <span class="s2">"a key share an instance id — per-instance retry, cost "</span>
+                <span class="s2">"attribution and regeneration all become ambiguous."</span>
+            <span class="p">)</span>
+        <span class="n">seen</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">mapping_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+
+    <span class="n">units</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+        <span class="c1"># Enforce the attributes contract BEFORE anything can spend: a</span>
+        <span class="c1"># non-JSON value would otherwise surface only at to_record(),</span>
+        <span class="c1"># after a possibly-large run, stranding that run's record.</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">item</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"json"</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"fan_out_plan: item </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">mapping_key</span><span class="si">!r}</span><span class="s2"> has "</span>
+                <span class="s2">"non-JSON-serializable `attributes` — the WorkItem contract "</span>
+                <span class="s2">"requires JSON-serializable attributes so the run record "</span>
+                <span class="s2">"can be persisted."</span>
+            <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+        <span class="c1"># Snapshot the item: `attributes` is a dict reachable through the</span>
+        <span class="c1"># frozen model, so a caller mutating it post-plan would rewrite</span>
+        <span class="c1"># what to_record() reports about a run that already happened.</span>
+        <span class="c1"># (Deep copy cannot fail here: everything JSON-able is copyable.)</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">model_copy</span><span class="p">(</span><span class="n">deep</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">plan</span><span class="p">,</span> <span class="n">skeleton</span> <span class="o">=</span> <span class="n">transform</span><span class="o">.</span><span class="n">plan</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">inputs_for</span><span class="p">(</span><span class="n">item</span><span class="p">),</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="c1"># Atomicity-by-raise is right at plan time (plans are cheap and</span>
+            <span class="c1"># nothing partial escapes), but the traceback should name the</span>
+            <span class="c1"># item it died on. add_note is 3.11+; on 3.10 the frame in the</span>
+            <span class="c1"># traceback still points here.</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="s2">"add_note"</span><span class="p">):</span>
+                <span class="n">e</span><span class="o">.</span><span class="n">add_note</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"fan_out_plan: while planning item </span><span class="si">{</span><span class="n">item</span><span class="o">.</span><span class="n">mapping_key</span><span class="si">!r}</span><span class="s2">"</span>
+                <span class="p">)</span>
+            <span class="k">raise</span>
+        <span class="n">units</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">FanOutUnit</span><span class="p">(</span>
+                <span class="n">item</span><span class="o">=</span><span class="n">item</span><span class="p">,</span>
+                <span class="n">instance_id</span><span class="o">=</span><span class="n">work_item_instance_id</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">mapping_key</span><span class="p">),</span>
+                <span class="n">plan</span><span class="o">=</span><span class="n">stamp_transform_identity</span><span class="p">(</span><span class="n">plan</span><span class="p">,</span> <span class="n">transform</span><span class="p">),</span>
+                <span class="n">skeleton</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">skeleton</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">FanOutPlan</span><span class="p">(</span><span class="n">transform_name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">units</span><span class="p">))</span></div>
+
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Execute side</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+<span class="n">UnitStatus</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"succeeded"</span><span class="p">,</span> <span class="s2">"partial"</span><span class="p">,</span> <span class="s2">"failed"</span><span class="p">,</span> <span class="s2">"blocked"</span><span class="p">]</span>
+<span class="sd">"""Per-unit outcome. ``partial``: the unit's execute returned, but with some</span>
+<span class="sd">of its own outputs failed/blocked (only reachable under ``"isolate"``).</span>
+<span class="sd">``blocked``: never attempted, because an earlier unit failed under</span>
+<span class="sd">``"halt"`` — falaw's three-states rationale one level up: a failed unit can</span>
+<span class="sd">be retried verbatim; a blocked one was simply never run."""</span>
+
+
+<div class="viewcode-block" id="FanOutItemResult">
+<a class="viewcode-back" href="../../../module_docs/nw/transforms/fanout.html#nw.FanOutItemResult">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FanOutItemResult</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""One unit's outcome, aligned 1:1 with the plan's units."""</span>
+
+    <span class="n">item</span><span class="p">:</span> <span class="n">WorkItem</span>
+    <span class="n">instance_id</span><span class="p">:</span> <span class="n">uuid</span><span class="o">.</span><span class="n">UUID</span>
+    <span class="n">status</span><span class="p">:</span> <span class="n">UnitStatus</span>
+    <span class="n">result</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">"TransformResult"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># noqa: F821</span>
+    <span class="n">error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="ne">BaseException</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">reason</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span></div>
+
+
+
+<div class="viewcode-block" id="FanOutResult">
+<a class="viewcode-back" href="../../../module_docs/nw/transforms/fanout.html#nw.FanOutResult">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FanOutResult</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""A fan-out run: one :class:`FanOutItemResult` per planned unit, in order.</span>
+
+<span class="sd">    ``len(result.items) == len(fan_out.units)`` always — the same alignment</span>
+<span class="sd">    guarantee falaw's ``ExecutionReport`` gives one level down.</span>
+<span class="sd">    """</span>
+
+    <span class="n">transform_name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">items</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">FanOutItemResult</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_complete</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="s2">"succeeded"</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cost_usd_actual</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Observed spend over the units that ran. A lower bound, like</span>
+<span class="sd">        :attr:`TransformResult.cost_usd_actual` (whose caveat about billed-</span>
+<span class="sd">        but-failed calls applies per unit)."""</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">cost_usd_actual</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span> <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="mf">0.0</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cache_hit_savings_usd</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="n">r</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">cache_hit_savings_usd</span>
+                <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span>
+                <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="p">),</span>
+            <span class="mf">0.0</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">has_unknown_costs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""True when the run's true spend is not fully known.</span>
+
+<span class="sd">        Two sources, both counted: a surviving unit whose own report says</span>
+<span class="sd">        so, and any **failed** unit — a unit that raised mid-execute may</span>
+<span class="sd">        have been billed for calls its (discarded) report would have</span>
+<span class="sd">        carried, so its spend is unknown by construction. Without the</span>
+<span class="sd">        second clause, a failed run could read "all costs known, $0.00</span>
+<span class="sd">        spent" — the exact under-report the federation's unknown-cost rule</span>
+<span class="sd">        exists to prevent. ``blocked`` units never ran and are known-$0.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="nb">any</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">has_unknown_costs</span> <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">False</span><span class="p">)</span>
+            <span class="ow">or</span> <span class="n">r</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="s2">"failed"</span>
+            <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="FanOutResult.to_record">
+<a class="viewcode-back" href="../../../module_docs/nw/transforms/fanout.html#nw.FanOutResult.to_record">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_record</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""The run record — where work items live (never the graph document).</span>
+
+<span class="sd">        JSON-serializable as returned, provided every item's ``attributes``</span>
+<span class="sd">        is (their contract; a violation raises here, naming the item).</span>
+<span class="sd">        Annotations and artifacts are referenced by id; the annotations</span>
+<span class="sd">        themselves were already written to the graph by each unit's ordinary</span>
+<span class="sd">        ``execute``, and duplicating their bodies here would make the record</span>
+<span class="sd">        a second, driftable copy.</span>
+
+<span class="sd">        ``failed_count`` / ``blocked_count`` count outputs **within** a unit</span>
+<span class="sd">        (zero when the unit itself failed — its result is ``None``); the</span>
+<span class="sd">        unit-level outcome is ``status``. A consumer counting failed *units*</span>
+<span class="sd">        counts statuses, not these fields.</span>
+<span class="sd">        """</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="p">{</span>
+                        <span class="s2">"item"</span><span class="p">:</span> <span class="n">r</span><span class="o">.</span><span class="n">item</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"json"</span><span class="p">),</span>
+                        <span class="s2">"instance_id"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">instance_id</span><span class="p">),</span>
+                        <span class="s2">"status"</span><span class="p">:</span> <span class="n">r</span><span class="o">.</span><span class="n">status</span><span class="p">,</span>
+                        <span class="s2">"reason"</span><span class="p">:</span> <span class="n">r</span><span class="o">.</span><span class="n">reason</span><span class="p">,</span>
+                        <span class="s2">"annotation_ids"</span><span class="p">:</span> <span class="p">(</span>
+                            <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">r</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">annotations</span><span class="p">]</span>
+                            <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                            <span class="k">else</span> <span class="p">[]</span>
+                        <span class="p">),</span>
+                        <span class="s2">"artifact_ids"</span><span class="p">:</span> <span class="p">(</span>
+                            <span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">asset_id</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">r</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">artifacts</span><span class="p">]</span>
+                            <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                            <span class="k">else</span> <span class="p">[]</span>
+                        <span class="p">),</span>
+                        <span class="s2">"cost_usd_actual"</span><span class="p">:</span> <span class="p">(</span>
+                            <span class="n">r</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">cost_usd_actual</span> <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mf">0.0</span>
+                        <span class="p">),</span>
+                        <span class="s2">"failed_count"</span><span class="p">:</span> <span class="p">(</span>
+                            <span class="nb">len</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">failed</span><span class="p">)</span> <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span>
+                        <span class="p">),</span>
+                        <span class="s2">"blocked_count"</span><span class="p">:</span> <span class="p">(</span>
+                            <span class="nb">len</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">blocked</span><span class="p">)</span> <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="mi">0</span>
+                        <span class="p">),</span>
+                    <span class="p">}</span>
+                <span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="c1"># Almost always a non-JSON-serializable `attributes` value.</span>
+                <span class="c1"># The error must name WHICH item broke the record — the run</span>
+                <span class="c1"># already spent its money, and an unattributable failure</span>
+                <span class="c1"># here strands the whole record.</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="s2">"add_note"</span><span class="p">):</span>
+                    <span class="n">e</span><span class="o">.</span><span class="n">add_note</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">"to_record: while serializing item "</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">r</span><span class="o">.</span><span class="n">item</span><span class="o">.</span><span class="n">mapping_key</span><span class="si">!r}</span><span class="s2"> — its `attributes` must be "</span>
+                        <span class="s2">"JSON-serializable (the WorkItem contract)"</span>
+                    <span class="p">)</span>
+                <span class="k">raise</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">"transform_name"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform_name</span><span class="p">,</span>
+            <span class="s2">"complete"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_complete</span><span class="p">,</span>
+            <span class="s2">"cost_usd_actual"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">cost_usd_actual</span><span class="p">,</span>
+            <span class="s2">"has_unknown_costs"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_unknown_costs</span><span class="p">,</span>
+            <span class="s2">"items"</span><span class="p">:</span> <span class="n">rows</span><span class="p">,</span>
+        <span class="p">}</span></div>
+</div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_accepts_on_failure</span><span class="p">(</span><span class="n">execute</span><span class="p">:</span> <span class="n">Callable</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Whether ``execute`` accepts the ``on_failure`` keyword.</span>
+
+<span class="sd">    The Protocol's own warning: ``runtime_checkable`` compares method names,</span>
+<span class="sd">    not signatures, and ~18 pre-nw#25 overrides in the federation take no</span>
+<span class="sd">    ``on_failure`` — passing it would raise ``TypeError`` at call time. The</span>
+<span class="sd">    documented guidance for "a caller iterating over arbitrary registered</span>
+<span class="sd">    Transforms" is to pass it only where accepted; this is that check.</span>
+<span class="sd">    """</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">sig</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="n">execute</span><span class="p">)</span>
+    <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="n">sig</span><span class="o">.</span><span class="n">parameters</span>
+    <span class="k">return</span> <span class="s2">"on_failure"</span> <span class="ow">in</span> <span class="n">params</span> <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">kind</span> <span class="ow">is</span> <span class="n">inspect</span><span class="o">.</span><span class="n">Parameter</span><span class="o">.</span><span class="n">VAR_KEYWORD</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+    <span class="p">)</span>
+
+
+<div class="viewcode-block" id="fan_out_execute">
+<a class="viewcode-back" href="../../../module_docs/nw/transforms/fanout.html#nw.fan_out_execute">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">fan_out_execute</span><span class="p">(</span>
+    <span class="n">transform</span><span class="p">,</span>
+    <span class="n">project</span><span class="p">,</span>
+    <span class="n">fan_out</span><span class="p">:</span> <span class="n">FanOutPlan</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">use_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">on_failure</span><span class="p">:</span> <span class="s2">"OnFailure"</span> <span class="o">=</span> <span class="s2">"isolate"</span><span class="p">,</span>  <span class="c1"># noqa: F821</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FanOutResult</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Execute a planned fan-out, one ordinary ``transform.execute`` per unit.</span>
+
+<span class="sd">    ``on_failure`` governs **both levels symmetrically**:</span>
+
+<span class="sd">    - within a unit, it is passed to the Transform's ``execute`` (when the</span>
+<span class="sd">      implementation accepts it — a pre-nw#25 override runs with its own</span>
+<span class="sd">      halt-like behaviour inside the unit; cross-unit isolation still</span>
+<span class="sd">      applies);</span>
+<span class="sd">    - across units, ``"isolate"`` (the default — it is the point of a</span>
+<span class="sd">      fan-out) runs every unit and reports per-unit outcomes, while</span>
+<span class="sd">      ``"halt"`` stops *submitting* units after the first raising unit and</span>
+<span class="sd">      marks the rest ``blocked``.</span>
+
+<span class="sd">    A unit whose ``execute`` **returns** is never a halt trigger, even when</span>
+<span class="sd">    its result is partial — the Transform already decided those failures</span>
+<span class="sd">    were survivable; only a raising unit halts.</span>
+
+<span class="sd">    Two protocol-violation shapes degrade rather than crash, deliberately:</span>
+<span class="sd">    an ``execute`` that rejects ``use_cache``/``force`` (or returns a</span>
+<span class="sd">    non-``TransformResult``) shows up as per-unit ``failed`` rows carrying</span>
+<span class="sd">    the ``TypeError``/``AttributeError`` — N identical rows for one</span>
+<span class="sd">    programming error reads worse than one loud raise, but the alternative</span>
+<span class="sd">    discards the run record for units that already spent. And a ``**kwargs``</span>
+<span class="sd">    override that accepts-but-ignores ``on_failure`` runs its internal</span>
+<span class="sd">    default within the unit — undetectable by signature inspection in</span>
+<span class="sd">    principle; cross-unit policy is still honoured.</span>
+
+<span class="sd">    Units run **sequentially**. Concurrency *within* a unit is falaw's</span>
+<span class="sd">    (``execute_plan_isolated`` bounds it); concurrency *across* units is the</span>
+<span class="sd">    deferred-scheduler work nw#26 explicitly scopes out, and nothing here</span>
+<span class="sd">    forecloses it — units are planned independently and the result is</span>
+<span class="sd">    order-aligned, not order-dependent.</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">on_failure</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"halt"</span><span class="p">,</span> <span class="s2">"isolate"</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"fan_out_execute: on_failure must be 'halt' or 'isolate', "</span>
+            <span class="sa">f</span><span class="s2">"got </span><span class="si">{</span><span class="n">on_failure</span><span class="si">!r}</span><span class="s2">."</span>
+        <span class="p">)</span>
+    <span class="n">executing_name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">transform</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">""</span>
+    <span class="k">if</span> <span class="n">executing_name</span> <span class="o">!=</span> <span class="n">fan_out</span><span class="o">.</span><span class="n">transform_name</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"fan_out_execute: this FanOutPlan was planned for "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">fan_out</span><span class="o">.</span><span class="n">transform_name</span><span class="si">!r}</span><span class="s2"> but the transform passed is "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">executing_name</span><span class="si">!r}</span><span class="s2">. Executing under the wrong identity would "</span>
+            <span class="s2">"misattribute every instance id in the run record (and skip the "</span>
+            <span class="s2">"executing transform's own impl_version stamp)."</span>
+        <span class="p">)</span>
+    <span class="n">pass_on_failure</span> <span class="o">=</span> <span class="n">_accepts_on_failure</span><span class="p">(</span><span class="n">transform</span><span class="o">.</span><span class="n">execute</span><span class="p">)</span>
+
+    <span class="n">results</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">FanOutItemResult</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">halted_by</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">for</span> <span class="n">unit</span> <span class="ow">in</span> <span class="n">fan_out</span><span class="o">.</span><span class="n">units</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">halted_by</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">FanOutItemResult</span><span class="p">(</span>
+                    <span class="n">item</span><span class="o">=</span><span class="n">unit</span><span class="o">.</span><span class="n">item</span><span class="p">,</span>
+                    <span class="n">instance_id</span><span class="o">=</span><span class="n">unit</span><span class="o">.</span><span class="n">instance_id</span><span class="p">,</span>
+                    <span class="n">status</span><span class="o">=</span><span class="s2">"blocked"</span><span class="p">,</span>
+                    <span class="n">reason</span><span class="o">=</span><span class="sa">f</span><span class="s2">"not attempted: unit </span><span class="si">{</span><span class="n">halted_by</span><span class="si">!r}</span><span class="s2"> failed under 'halt'"</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">continue</span>
+        <span class="n">kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"use_cache"</span><span class="p">:</span> <span class="n">use_cache</span><span class="p">,</span> <span class="s2">"force"</span><span class="p">:</span> <span class="n">force</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">pass_on_failure</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">"on_failure"</span><span class="p">]</span> <span class="o">=</span> <span class="n">on_failure</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">transform</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">unit</span><span class="o">.</span><span class="n">plan</span><span class="p">,</span> <span class="n">unit</span><span class="o">.</span><span class="n">skeleton</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="c1"># Result interpretation stays INSIDE the try: an execute that</span>
+            <span class="c1"># returns None (or a result whose properties raise) is a</span>
+            <span class="c1"># protocol violation, but letting it escape mid-loop would</span>
+            <span class="c1"># discard the whole run record — cost attribution for money</span>
+            <span class="c1"># already spent — which is the loss isolate exists to prevent.</span>
+            <span class="n">status</span><span class="p">:</span> <span class="n">UnitStatus</span> <span class="o">=</span> <span class="s2">"succeeded"</span> <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">is_complete</span> <span class="k">else</span> <span class="s2">"partial"</span>
+            <span class="n">reason</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">""</span>
+                <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">is_complete</span>
+                <span class="k">else</span> <span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">failed</span><span class="p">)</span><span class="si">}</span><span class="s2"> failed, "</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">blocked</span><span class="p">)</span><span class="si">}</span><span class="s2"> blocked of "</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">failed</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">blocked</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">annotations</span><span class="p">)</span><span class="si">}</span><span class="s2"> outputs"</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># noqa: BLE001 — per-unit isolation is the feature</span>
+            <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">FanOutItemResult</span><span class="p">(</span>
+                    <span class="n">item</span><span class="o">=</span><span class="n">unit</span><span class="o">.</span><span class="n">item</span><span class="p">,</span>
+                    <span class="n">instance_id</span><span class="o">=</span><span class="n">unit</span><span class="o">.</span><span class="n">instance_id</span><span class="p">,</span>
+                    <span class="n">status</span><span class="o">=</span><span class="s2">"failed"</span><span class="p">,</span>
+                    <span class="n">error</span><span class="o">=</span><span class="n">e</span><span class="p">,</span>
+                    <span class="n">reason</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">on_failure</span> <span class="o">==</span> <span class="s2">"halt"</span><span class="p">:</span>
+                <span class="n">halted_by</span> <span class="o">=</span> <span class="n">unit</span><span class="o">.</span><span class="n">item</span><span class="o">.</span><span class="n">mapping_key</span>
+            <span class="k">continue</span>
+        <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">FanOutItemResult</span><span class="p">(</span>
+                <span class="n">item</span><span class="o">=</span><span class="n">unit</span><span class="o">.</span><span class="n">item</span><span class="p">,</span>
+                <span class="n">instance_id</span><span class="o">=</span><span class="n">unit</span><span class="o">.</span><span class="n">instance_id</span><span class="p">,</span>
+                <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">,</span>
+                <span class="n">result</span><span class="o">=</span><span class="n">result</span><span class="p">,</span>
+                <span class="n">reason</span><span class="o">=</span><span class="n">reason</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">FanOutResult</span><span class="p">(</span><span class="n">transform_name</span><span class="o">=</span><span class="n">fan_out</span><span class="o">.</span><span class="n">transform_name</span><span class="p">,</span> <span class="n">items</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">results</span><span class="p">))</span></div>
+
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">"GenerateWhen"</span><span class="p">,</span>
+    <span class="s2">"DFLT_GENERATE_WHEN"</span><span class="p">,</span>
+    <span class="s2">"WORK_ITEM_NAMESPACE"</span><span class="p">,</span>
+    <span class="s2">"WorkItem"</span><span class="p">,</span>
+    <span class="s2">"work_item_instance_id"</span><span class="p">,</span>
+    <span class="s2">"FanOutUnit"</span><span class="p">,</span>
+    <span class="s2">"FanOutPlan"</span><span class="p">,</span>
+    <span class="s2">"fan_out_plan"</span><span class="p">,</span>
+    <span class="s2">"UnitStatus"</span><span class="p">,</span>
+    <span class="s2">"FanOutItemResult"</span><span class="p">,</span>
+    <span class="s2">"FanOutResult"</span><span class="p">,</span>
+    <span class="s2">"fan_out_execute"</span><span class="p">,</span>
+<span class="p">]</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

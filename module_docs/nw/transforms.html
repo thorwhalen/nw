@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.transforms &mdash; nw 0.0.37 documentation</title>
+  <title>nw.transforms &mdash; nw 0.0.38 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=aa2ad26f"></script>
+      <script src="../../_static/documentation_options.js?v=423071ad"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -81,14 +81,30 @@
 <li class="toctree-l1"><a class="reference internal" href="storyboard.html">nw.storyboard</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">nw.transforms</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#nw.transforms.BaseTransform"><code class="docutils literal notranslate"><span class="pre">BaseTransform</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#nw.transforms.BaseTransform.generate_when"><code class="docutils literal notranslate"><span class="pre">BaseTransform.generate_when</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.transforms.BaseTransform.impl_version"><code class="docutils literal notranslate"><span class="pre">BaseTransform.impl_version</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.transforms.BaseTransform.is_batch"><code class="docutils literal notranslate"><span class="pre">BaseTransform.is_batch</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.transforms.BaseTransform.params_model"><code class="docutils literal notranslate"><span class="pre">BaseTransform.params_model</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.transforms.DFLT_IMPL_VERSION"><code class="docutils literal notranslate"><span class="pre">DFLT_IMPL_VERSION</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.transforms.FanOutItemResult"><code class="docutils literal notranslate"><span class="pre">FanOutItemResult</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.transforms.FanOutPlan"><code class="docutils literal notranslate"><span class="pre">FanOutPlan</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#nw.transforms.FanOutPlan.has_unknown_costs"><code class="docutils literal notranslate"><span class="pre">FanOutPlan.has_unknown_costs</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.transforms.FanOutPlan.known_cost_usd"><code class="docutils literal notranslate"><span class="pre">FanOutPlan.known_cost_usd</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.transforms.FanOutPlan.unknown_call_count"><code class="docutils literal notranslate"><span class="pre">FanOutPlan.unknown_call_count</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.transforms.FanOutResult"><code class="docutils literal notranslate"><span class="pre">FanOutResult</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#nw.transforms.FanOutResult.cost_usd_actual"><code class="docutils literal notranslate"><span class="pre">FanOutResult.cost_usd_actual</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.transforms.FanOutResult.has_unknown_costs"><code class="docutils literal notranslate"><span class="pre">FanOutResult.has_unknown_costs</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.transforms.FanOutResult.to_record"><code class="docutils literal notranslate"><span class="pre">FanOutResult.to_record()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.transforms.FanOutUnit"><code class="docutils literal notranslate"><span class="pre">FanOutUnit</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.transforms.Transform"><code class="docutils literal notranslate"><span class="pre">Transform</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#nw.transforms.Transform.execute"><code class="docutils literal notranslate"><span class="pre">Transform.execute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.transforms.Transform.generate_when"><code class="docutils literal notranslate"><span class="pre">Transform.generate_when</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.transforms.Transform.impl_version"><code class="docutils literal notranslate"><span class="pre">Transform.impl_version</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.transforms.Transform.input_kinds"><code class="docutils literal notranslate"><span class="pre">Transform.input_kinds</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.transforms.Transform.is_batch"><code class="docutils literal notranslate"><span class="pre">Transform.is_batch</span></code></a></li>
@@ -110,19 +126,28 @@
 <li class="toctree-l3"><a class="reference internal" href="#nw.transforms.TransformResult.is_complete"><code class="docutils literal notranslate"><span class="pre">TransformResult.is_complete</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.transforms.WorkItem"><code class="docutils literal notranslate"><span class="pre">WorkItem</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#nw.transforms.WorkItem.instance_id"><code class="docutils literal notranslate"><span class="pre">WorkItem.instance_id</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.transforms.WorkItem.model_config"><code class="docutils literal notranslate"><span class="pre">WorkItem.model_config</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.transforms.cache_key"><code class="docutils literal notranslate"><span class="pre">cache_key()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.transforms.cached_output"><code class="docutils literal notranslate"><span class="pre">cached_output()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.transforms.fan_out_execute"><code class="docutils literal notranslate"><span class="pre">fan_out_execute()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.transforms.fan_out_plan"><code class="docutils literal notranslate"><span class="pre">fan_out_plan()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.transforms.get_transform"><code class="docutils literal notranslate"><span class="pre">get_transform()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.transforms.list_transforms"><code class="docutils literal notranslate"><span class="pre">list_transforms()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.transforms.register_transform"><code class="docutils literal notranslate"><span class="pre">register_transform()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.transforms.stamp_transform_identity"><code class="docutils literal notranslate"><span class="pre">stamp_transform_identity()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.transforms.transform_catalog"><code class="docutils literal notranslate"><span class="pre">transform_catalog()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.transforms.transforms"><code class="docutils literal notranslate"><span class="pre">transforms</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.transforms.work_item_instance_id"><code class="docutils literal notranslate"><span class="pre">work_item_instance_id()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="transforms/_adapters.html">nw.transforms._adapters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="transforms/_adapters/render_strategy.html">nw.transforms._adapters.render_strategy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="transforms/_provenance.html">nw.transforms._provenance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms/fanout.html">nw.transforms.fanout</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow.html">nw.workflow</a></li>
 </ul>
 
@@ -171,6 +196,12 @@ them to the project graph, and returns a <a class="reference internal" href="#nw
 </ol>
 <p>Transforms are registered with an <code class="xref py py-class docutils literal notranslate"><span class="pre">xdol.Registry</span></code> keyed by name, so
 apps (<code class="docutils literal notranslate"><span class="pre">reelee</span></code>, <code class="docutils literal notranslate"><span class="pre">muvid</span></code>, …) add their own without modifying <code class="docutils literal notranslate"><span class="pre">nw</span></code>.</p>
+<p>Applying one Transform across N units — a <strong>fan-out</strong> — goes through
+<a class="reference internal" href="transforms/fanout.html#module-nw.transforms.fanout" title="nw.transforms.fanout"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nw.transforms.fanout</span></code></a> (nw#26): PDG-shaped <a class="reference internal" href="#nw.transforms.WorkItem" title="nw.transforms.WorkItem"><code class="xref py py-class docutils literal notranslate"><span class="pre">WorkItem</span></code></a>s with a
+mandatory semantic <code class="docutils literal notranslate"><span class="pre">mapping_key</span></code>, instance ids as a pure function of
+<code class="docutils literal notranslate"><span class="pre">(transform_name,</span> <span class="pre">mapping_key)</span></code>, the <code class="docutils literal notranslate"><span class="pre">generate_when</span></code> static/dynamic
+declaration, and per-unit failure isolation. Its module docstring is the
+spec.</p>
 <p>Naming convention for <code class="docutils literal notranslate"><span class="pre">Transform.name</span></code>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">from_kind</span><span class="o">&gt;</span><span class="n">_to_</span><span class="o">&lt;</span><span class="n">to_kind</span><span class="o">&gt;</span><span class="p">[</span><span class="o">.&lt;</span><span class="n">flavor</span><span class="o">&gt;</span><span class="p">[</span><span class="o">.&lt;</span><span class="n">variant</span><span class="o">&gt;</span><span class="p">]]</span>
 <span class="n">e</span><span class="o">.</span><span class="n">g</span><span class="o">.</span> <span class="s2">"beat_to_panel.llm.default"</span><span class="p">,</span> <span class="s2">"panel_to_image.fal.flux_kontext"</span><span class="p">,</span>
@@ -198,6 +229,17 @@ to its own plan/id pairing. The zip below would otherwise stop at the
 shorter sequence and drop the surplus with no error and no record —
 harmless only for as long as the executor returns exactly one artifact
 per call, which is precisely what per-call failure isolation changes.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.transforms.BaseTransform.generate_when">
+<span class="sig-name descname"><span class="pre">generate_when</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'static'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'dynamic'</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'dynamic'</span></span><a class="headerlink" href="#nw.transforms.BaseTransform.generate_when" title="Link to this definition"></a></dt>
+<dd><p>When this Transform’s fan-out cardinality is knowable — <code class="docutils literal notranslate"><span class="pre">&quot;static&quot;</span></code>
+or <code class="docutils literal notranslate"><span class="pre">&quot;dynamic&quot;</span></code> (nw#26). The default is <code class="docutils literal notranslate"><span class="pre">&quot;dynamic&quot;</span></code>: fail
+expensive-looking, so an undeclared shape can never let a cost gate
+quote a number for a cardinality nobody knows yet. Declare <code class="docutils literal notranslate"><span class="pre">&quot;static&quot;</span></code>
+only when the work-item list is derivable from the graph before the
+run (“one image per panel”).</p>
+</dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nw.transforms.BaseTransform.impl_version">
 <span class="sig-name descname"><span class="pre">impl_version</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'1'</span></span><a class="headerlink" href="#nw.transforms.BaseTransform.impl_version" title="Link to this definition"></a></dt>
@@ -238,6 +280,93 @@ first salt (nw#27).</p>
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="nw.transforms.FanOutItemResult">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.transforms.</span></span><span class="sig-name descname"><span class="pre">FanOutItemResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nw.transforms.WorkItem" title="nw.transforms.WorkItem"><span class="pre">WorkItem</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">uuid.UUID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="transforms/fanout.html#nw.transforms.fanout.UnitStatus" title="nw.transforms.fanout.UnitStatus"><span class="pre">UnitStatus</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">result</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'TransformResult'</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">BaseException</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reason</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nw/transforms/fanout.html#FanOutItemResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.transforms.FanOutItemResult" title="Link to this definition"></a></dt>
+<dd><p>One unit’s outcome, aligned 1:1 with the plan’s units.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.transforms.FanOutPlan">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.transforms.</span></span><span class="sig-name descname"><span class="pre">FanOutPlan</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transform_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">units</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="transforms/fanout.html#nw.transforms.fanout.FanOutUnit" title="nw.transforms.fanout.FanOutUnit"><span class="pre">FanOutUnit</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nw/transforms/fanout.html#FanOutPlan"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.transforms.FanOutPlan" title="Link to this definition"></a></dt>
+<dd><p>The planned fan-out — pure data, like every plan in this federation.</p>
+<p>Cost arithmetic follows falaw#18’s honest form exactly (same names, same
+semantics): <a class="reference internal" href="#nw.transforms.FanOutPlan.known_cost_usd" title="nw.transforms.FanOutPlan.known_cost_usd"><code class="xref py py-attr docutils literal notranslate"><span class="pre">known_cost_usd</span></code></a> is the priced part, and a correct
+gate reads it <strong>together with</strong> <a class="reference internal" href="#nw.transforms.FanOutPlan.unknown_call_count" title="nw.transforms.FanOutPlan.unknown_call_count"><code class="xref py py-attr docutils literal notranslate"><span class="pre">unknown_call_count</span></code></a> — the true
+cost is the known sum <em>plus an unknown amount</em> over that many calls,
+and the gate refuses when the count is nonzero rather than pretending
+the unknown part is free.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="nw.transforms.FanOutPlan.has_unknown_costs">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">has_unknown_costs</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></span><a class="headerlink" href="#nw.transforms.FanOutPlan.has_unknown_costs" title="Link to this definition"></a></dt>
+<dd><p>True if any unit has a billable call with no price.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nw.transforms.FanOutPlan.known_cost_usd">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">known_cost_usd</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></span><a class="headerlink" href="#nw.transforms.FanOutPlan.known_cost_usd" title="Link to this definition"></a></dt>
+<dd><p>Sum of every unit plan’s priced, non-cache-hit calls.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nw.transforms.FanOutPlan.unknown_call_count">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">unknown_call_count</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></span><a class="headerlink" href="#nw.transforms.FanOutPlan.unknown_call_count" title="Link to this definition"></a></dt>
+<dd><p>How many billable calls across all units carry no price.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.transforms.FanOutResult">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.transforms.</span></span><span class="sig-name descname"><span class="pre">FanOutResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transform_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">items</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="transforms/fanout.html#nw.transforms.fanout.FanOutItemResult" title="nw.transforms.fanout.FanOutItemResult"><span class="pre">FanOutItemResult</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nw/transforms/fanout.html#FanOutResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.transforms.FanOutResult" title="Link to this definition"></a></dt>
+<dd><p>A fan-out run: one <a class="reference internal" href="#nw.transforms.FanOutItemResult" title="nw.transforms.FanOutItemResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">FanOutItemResult</span></code></a> per planned unit, in order.</p>
+<p><code class="docutils literal notranslate"><span class="pre">len(result.items)</span> <span class="pre">==</span> <span class="pre">len(fan_out.units)</span></code> always — the same alignment
+guarantee falaw’s <code class="docutils literal notranslate"><span class="pre">ExecutionReport</span></code> gives one level down.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="nw.transforms.FanOutResult.cost_usd_actual">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">cost_usd_actual</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></span><a class="headerlink" href="#nw.transforms.FanOutResult.cost_usd_actual" title="Link to this definition"></a></dt>
+<dd><p>Observed spend over the units that ran. A lower bound, like
+<a class="reference internal" href="#nw.transforms.TransformResult.cost_usd_actual" title="nw.transforms.TransformResult.cost_usd_actual"><code class="xref py py-attr docutils literal notranslate"><span class="pre">TransformResult.cost_usd_actual</span></code></a> (whose caveat about billed-
+but-failed calls applies per unit).</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nw.transforms.FanOutResult.has_unknown_costs">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">has_unknown_costs</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></span><a class="headerlink" href="#nw.transforms.FanOutResult.has_unknown_costs" title="Link to this definition"></a></dt>
+<dd><p>True when the run’s true spend is not fully known.</p>
+<p>Two sources, both counted: a surviving unit whose own report says
+so, and any <strong>failed</strong> unit — a unit that raised mid-execute may
+have been billed for calls its (discarded) report would have
+carried, so its spend is unknown by construction. Without the
+second clause, a failed run could read “all costs known, $0.00
+spent” — the exact under-report the federation’s unknown-cost rule
+exists to prevent. <code class="docutils literal notranslate"><span class="pre">blocked</span></code> units never ran and are known-$0.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.transforms.FanOutResult.to_record">
+<span class="sig-name descname"><span class="pre">to_record</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../../_modules/nw/transforms/fanout.html#FanOutResult.to_record"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.transforms.FanOutResult.to_record" title="Link to this definition"></a></dt>
+<dd><p>The run record — where work items live (never the graph document).</p>
+<p>JSON-serializable as returned, provided every item’s <code class="docutils literal notranslate"><span class="pre">attributes</span></code>
+is (their contract; a violation raises here, naming the item).
+Annotations and artifacts are referenced by id; the annotations
+themselves were already written to the graph by each unit’s ordinary
+<code class="docutils literal notranslate"><span class="pre">execute</span></code>, and duplicating their bodies here would make the record
+a second, driftable copy.</p>
+<p><code class="docutils literal notranslate"><span class="pre">failed_count</span></code> / <code class="docutils literal notranslate"><span class="pre">blocked_count</span></code> count outputs <strong>within</strong> a unit
+(zero when the unit itself failed — its result is <code class="docutils literal notranslate"><span class="pre">None</span></code>); the
+unit-level outcome is <code class="docutils literal notranslate"><span class="pre">status</span></code>. A consumer counting failed <em>units</em>
+counts statuses, not these fields.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.transforms.FanOutUnit">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.transforms.</span></span><span class="sig-name descname"><span class="pre">FanOutUnit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="transforms/fanout.html#nw.transforms.fanout.WorkItem" title="nw.transforms.fanout.WorkItem"><span class="pre">WorkItem</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">UUID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plan</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Plan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skeleton</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Annotation</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nw/transforms/fanout.html#FanOutUnit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.transforms.FanOutUnit" title="Link to this definition"></a></dt>
+<dd><p>One planned unit: a work item plus its ordinary Transform plan.</p>
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="nw.transforms.Transform">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.transforms.</span></span><span class="sig-name descname"><span class="pre">Transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nw/transforms.html#Transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.transforms.Transform" title="Link to this definition"></a></dt>
 <dd><p>A swappable, costed function from A-annotations to B-annotations.</p>
@@ -265,6 +394,18 @@ it, or catch <code class="docutils literal notranslate"><span class="pre">TypeEr
 <a class="reference internal" href="#nw.transforms.BaseTransform" title="nw.transforms.BaseTransform"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseTransform</span></code></a>’s <code class="docutils literal notranslate"><span class="pre">execute</span></code> — the common case — already
 does.</p>
 </div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.transforms.Transform.generate_when">
+<span class="sig-name descname"><span class="pre">generate_when</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#nw.transforms.Transform.generate_when" title="Link to this definition"></a></dt>
+<dd><p>When this Transform’s fan-out cardinality is knowable (nw#26):
+<code class="docutils literal notranslate"><span class="pre">&quot;static&quot;</span></code> (the work-item list is derivable before the run — a
+pre-flight estimate is a real number) or <code class="docutils literal notranslate"><span class="pre">&quot;dynamic&quot;</span></code> (cardinality is
+known only after an upstream call returns — the only honest pre-flight
+estimate is <em>unknown</em>, which forces approval). Undeclared defaults to
+<code class="docutils literal notranslate"><span class="pre">&quot;dynamic&quot;</span></code>: fail expensive-looking. See
+<a class="reference internal" href="transforms/fanout.html#nw.transforms.fanout.GenerateWhen" title="nw.transforms.fanout.GenerateWhen"><code class="xref py py-data docutils literal notranslate"><span class="pre">nw.transforms.fanout.GenerateWhen</span></code></a>.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -424,6 +565,33 @@ gate in the federation is required to read.</p>
 
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.transforms.WorkItem">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.transforms.</span></span><span class="sig-name descname"><span class="pre">WorkItem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mapping_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attributes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">~typing.Any]</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope_interval</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TimeInterval</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nw/transforms/fanout.html#WorkItem"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.transforms.WorkItem" title="Link to this definition"></a></dt>
+<dd><p>One unit of a fan-out — the PDG-shaped work item (nw#26).</p>
+<p><code class="docutils literal notranslate"><span class="pre">scope_interval</span></code> puts <em>time in the demand, not the graph</em> (Nuke’s
+model): a pipeline that stores frame ranges in nodes must edit the graph
+to change a range; one that stores them in the request does not. It is
+an interval rather than a point because lacing’s <code class="docutils literal notranslate"><span class="pre">TimeInterval</span></code> admits
+<code class="docutils literal notranslate"><span class="pre">start</span> <span class="pre">==</span> <span class="pre">end</span></code> as a valid point annotation — the point-demand case is
+already representable, no second demand type needed.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="nw.transforms.WorkItem.instance_id">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">instance_id</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">UUID</span></span><a class="headerlink" href="#nw.transforms.WorkItem.instance_id" title="Link to this definition"></a></dt>
+<dd><p>This item’s instance id is only defined <em>for a transform</em> — use
+<a class="reference internal" href="#nw.transforms.work_item_instance_id" title="nw.transforms.work_item_instance_id"><code class="xref py py-func docutils literal notranslate"><span class="pre">work_item_instance_id()</span></code></a>. This property exists to raise a
+helpful error instead of letting <code class="docutils literal notranslate"><span class="pre">item.instance_id</span></code> look like it
+could mean something transform-free.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.transforms.WorkItem.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'frozen':</span> <span class="pre">True}</span></span><a class="headerlink" href="#nw.transforms.WorkItem.model_config" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="nw.transforms.cache_key">
 <span class="sig-prename descclassname"><span class="pre">nw.transforms.</span></span><span class="sig-name descname"><span class="pre">cache_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transform</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nw.transforms.Transform" title="nw.transforms.Transform"><span class="pre">Transform</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">parts</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../../_modules/nw/transforms.html#cache_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.transforms.cache_key" title="Link to this definition"></a></dt>
@@ -473,6 +641,58 @@ a non-null <code class="docutils literal notranslate"><span class="pre">artifact
 (tens to hundreds of nodes), and the day a project outgrows it the fix
 is an index behind this same signature, not a second lookup convention
 per genre.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.transforms.fan_out_execute">
+<span class="sig-prename descclassname"><span class="pre">nw.transforms.</span></span><span class="sig-name descname"><span class="pre">fan_out_execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transform</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fan_out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nw.transforms.FanOutPlan" title="nw.transforms.FanOutPlan"><span class="pre">FanOutPlan</span></a></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_failure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">OnFailure</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'isolate'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nw.transforms.FanOutResult" title="nw.transforms.FanOutResult"><span class="pre">FanOutResult</span></a></span></span><a class="reference internal" href="../../_modules/nw/transforms/fanout.html#fan_out_execute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.transforms.fan_out_execute" title="Link to this definition"></a></dt>
+<dd><p>Execute a planned fan-out, one ordinary <code class="docutils literal notranslate"><span class="pre">transform.execute</span></code> per unit.</p>
+<p><code class="docutils literal notranslate"><span class="pre">on_failure</span></code> governs <strong>both levels symmetrically</strong>:</p>
+<ul class="simple">
+<li><p>within a unit, it is passed to the Transform’s <code class="docutils literal notranslate"><span class="pre">execute</span></code> (when the
+implementation accepts it — a pre-nw#25 override runs with its own
+halt-like behaviour inside the unit; cross-unit isolation still
+applies);</p></li>
+<li><p>across units, <code class="docutils literal notranslate"><span class="pre">&quot;isolate&quot;</span></code> (the default — it is the point of a
+fan-out) runs every unit and reports per-unit outcomes, while
+<code class="docutils literal notranslate"><span class="pre">&quot;halt&quot;</span></code> stops <em>submitting</em> units after the first raising unit and
+marks the rest <code class="docutils literal notranslate"><span class="pre">blocked</span></code>.</p></li>
+</ul>
+<p>A unit whose <code class="docutils literal notranslate"><span class="pre">execute</span></code> <strong>returns</strong> is never a halt trigger, even when
+its result is partial — the Transform already decided those failures
+were survivable; only a raising unit halts.</p>
+<p>Two protocol-violation shapes degrade rather than crash, deliberately:
+an <code class="docutils literal notranslate"><span class="pre">execute</span></code> that rejects <code class="docutils literal notranslate"><span class="pre">use_cache</span></code>/<code class="docutils literal notranslate"><span class="pre">force</span></code> (or returns a
+non-<code class="docutils literal notranslate"><span class="pre">TransformResult</span></code>) shows up as per-unit <code class="docutils literal notranslate"><span class="pre">failed</span></code> rows carrying
+the <code class="docutils literal notranslate"><span class="pre">TypeError</span></code>/<code class="docutils literal notranslate"><span class="pre">AttributeError</span></code> — N identical rows for one
+programming error reads worse than one loud raise, but the alternative
+discards the run record for units that already spent. And a <code class="docutils literal notranslate"><span class="pre">**kwargs</span></code>
+override that accepts-but-ignores <code class="docutils literal notranslate"><span class="pre">on_failure</span></code> runs its internal
+default within the unit — undetectable by signature inspection in
+principle; cross-unit policy is still honoured.</p>
+<p>Units run <strong>sequentially</strong>. Concurrency <em>within</em> a unit is falaw’s
+(<code class="docutils literal notranslate"><span class="pre">execute_plan_isolated</span></code> bounds it); concurrency <em>across</em> units is the
+deferred-scheduler work nw#26 explicitly scopes out, and nothing here
+forecloses it — units are planned independently and the result is
+order-aligned, not order-dependent.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.transforms.fan_out_plan">
+<span class="sig-prename descclassname"><span class="pre">nw.transforms.</span></span><span class="sig-name descname"><span class="pre">fan_out_plan</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transform</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">items</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#nw.transforms.WorkItem" title="nw.transforms.WorkItem"><span class="pre">WorkItem</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#nw.transforms.WorkItem" title="nw.transforms.WorkItem"><span class="pre">WorkItem</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs_for</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#nw.transforms.WorkItem" title="nw.transforms.WorkItem"><span class="pre">WorkItem</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'TransformInputs'</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">BaseModel</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nw.transforms.FanOutPlan" title="nw.transforms.FanOutPlan"><span class="pre">FanOutPlan</span></a></span></span><a class="reference internal" href="../../_modules/nw/transforms/fanout.html#fan_out_plan"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.transforms.fan_out_plan" title="Link to this definition"></a></dt>
+<dd><p>Plan one Transform across <code class="docutils literal notranslate"><span class="pre">items</span></code> — each unit an ordinary <code class="docutils literal notranslate"><span class="pre">plan()</span></code> call.</p>
+<p><code class="docutils literal notranslate"><span class="pre">inputs_for</span></code> maps a work item to the <a class="reference internal" href="#nw.transforms.TransformInputs" title="nw.transforms.TransformInputs"><code class="xref py py-class docutils literal notranslate"><span class="pre">TransformInputs</span></code></a>
+its unit consumes; the item’s <code class="docutils literal notranslate"><span class="pre">attributes</span></code> carry any per-unit data it
+needs to build them. No billable calls; pure data out.</p>
+<p>Duplicate <code class="docutils literal notranslate"><span class="pre">mapping_key</span></code>s are refused: two units sharing a key share
+an instance id, which destroys exactly the per-instance identity the key
+exists to provide (retry, cost attribution, regenerate-just-this-one all
+become ambiguous).</p>
+<p><code class="docutils literal notranslate"><span class="pre">stamp_transform_identity</span></code> is applied to each unit plan <strong>here, at plan
+time</strong> — its own docstring asks orchestrators that hash or persist plans
+before execution to do so, and a fan-out’s run record is such a
+persistence. Idempotent, so <code class="xref py py-meth docutils literal notranslate"><span class="pre">BaseTransform.execute()</span></code> re-stamping at
+execute time changes nothing.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -542,7 +762,8 @@ value.</p>
 serves or selects from, mirroring <a class="reference internal" href="../nw.html#nw.genre_catalog" title="nw.genre_catalog"><code class="xref py py-func docutils literal notranslate"><span class="pre">nw.genre_catalog()</span></code></a> (nw#28): a
 consumer needs no registry-internal knowledge to render or compose.
 Entry shape:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="n">name</span><span class="p">,</span> <span class="n">input_kinds</span><span class="p">,</span> <span class="n">output_kind</span><span class="p">,</span> <span class="n">is_batch</span><span class="p">,</span> <span class="n">impl_version</span><span class="p">,</span> <span class="n">params_schema</span><span class="p">}</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="n">name</span><span class="p">,</span> <span class="n">input_kinds</span><span class="p">,</span> <span class="n">output_kind</span><span class="p">,</span> <span class="n">is_batch</span><span class="p">,</span> <span class="n">generate_when</span><span class="p">,</span>
+ <span class="n">impl_version</span><span class="p">,</span> <span class="n">params_schema</span><span class="p">}</span>
 </pre></div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">name</span></code> is the registry key (the addressable name). <code class="docutils literal notranslate"><span class="pre">params_schema</span></code>
@@ -556,6 +777,26 @@ list is JSON-serializable as returned.</p>
 <span class="sig-prename descclassname"><span class="pre">nw.transforms.</span></span><span class="sig-name descname"><span class="pre">transforms</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Registry</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Registry</span> <span class="pre">nw.transforms&gt;</span></span><a class="headerlink" href="#nw.transforms.transforms" title="Link to this definition"></a></dt>
 <dd><p>Public registry of Transform instances. <code class="docutils literal notranslate"><span class="pre">on_conflict=&quot;error&quot;</span></code> so a
 misconfigured plugin fails loudly instead of silently shadowing a built-in.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.transforms.work_item_instance_id">
+<span class="sig-prename descclassname"><span class="pre">nw.transforms.</span></span><span class="sig-name descname"><span class="pre">work_item_instance_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transform_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mapping_key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">UUID</span></span></span><a class="reference internal" href="../../_modules/nw/transforms/fanout.html#work_item_instance_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.transforms.work_item_instance_id" title="Link to this definition"></a></dt>
+<dd><p>The instance id of one fan-out unit: UUIDv5 of <code class="docutils literal notranslate"><span class="pre">(transform_name,</span> <span class="pre">mapping_key)</span></code>.</p>
+<p>A <strong>pure function</strong>, deliberately: pure is async-safe by construction
+(no ambient counter for a suspended coroutine to corrupt — the ComfyUI
+<code class="docutils literal notranslate"><span class="pre">GraphBuilder</span></code> race) and stable under insertion (adding an item never
+changes any other item’s id). The same (transform, key) pair yields the
+same id on every machine, every run, forever — which is what makes
+per-instance retry, cost attribution, and “regenerate just this one”
+addressable across runs.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">work_item_instance_id</span><span class="p">(</span><span class="s2">"panel_to_image.fal"</span><span class="p">,</span> <span class="s2">"scene_1/panel_2"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">==</span> <span class="n">work_item_instance_id</span><span class="p">(</span><span class="s2">"panel_to_image.fal"</span><span class="p">,</span> <span class="s2">"scene_1/panel_2"</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">!=</span> <span class="n">work_item_instance_id</span><span class="p">(</span><span class="s2">"panel_to_voiceover"</span><span class="p">,</span> <span class="s2">"scene_1/panel_2"</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </section>

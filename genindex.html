@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; nw 0.0.37 documentation</title>
+  <title>Index &mdash; nw 0.0.38 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=aa2ad26f"></script>
+      <script src="_static/documentation_options.js?v=423071ad"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -80,6 +80,7 @@
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/transforms/_adapters.html">nw.transforms._adapters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/transforms/_adapters/render_strategy.html">nw.transforms._adapters.render_strategy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/transforms/_provenance.html">nw.transforms._provenance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/transforms/fanout.html">nw.transforms.fanout</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/workflow.html">nw.workflow</a></li>
 </ul>
 
@@ -295,10 +296,10 @@
         <li><a href="module_docs/nw/bodies/character_ref.html#nw.bodies.character_ref.CharacterRefBodyV1">(class in nw.bodies.character_ref)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module_docs/nw/delivery.html#nw.delivery.check_delivery_source">check_delivery_source() (in module nw.delivery)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module_docs/nw/delivery.html#nw.delivery.check_title">check_title() (in module nw.delivery)</a>
 </li>
       <li><a href="module_docs/nw.html#nw.clone_project">clone_project() (in module nw)</a>
@@ -333,9 +334,15 @@
         <li><a href="module_docs/nw/genres.html#nw.genres.Genre.cost_profile">(nw.genres.Genre attribute)</a>
 </li>
       </ul></li>
-      <li><a href="module_docs/nw.html#nw.TransformResult.cost_usd_actual">cost_usd_actual (nw.TransformResult attribute)</a>
+      <li><a href="module_docs/nw.html#nw.FanOutResult.cost_usd_actual">cost_usd_actual (nw.FanOutResult property)</a>
 
       <ul>
+        <li><a href="module_docs/nw.html#nw.TransformResult.cost_usd_actual">(nw.TransformResult attribute)</a>
+</li>
+        <li><a href="module_docs/nw/transforms/fanout.html#nw.transforms.fanout.FanOutResult.cost_usd_actual">(nw.transforms.fanout.FanOutResult property)</a>
+</li>
+        <li><a href="module_docs/nw/transforms.html#nw.transforms.FanOutResult.cost_usd_actual">(nw.transforms.FanOutResult property)</a>
+</li>
         <li><a href="module_docs/nw/transforms.html#nw.transforms.TransformResult.cost_usd_actual">(nw.transforms.TransformResult attribute)</a>
 </li>
       </ul></li>
@@ -379,10 +386,10 @@
       </ul></li>
       <li><a href="module_docs/nw/delivery.html#nw.delivery.DELIVERY_FUNCTIONS">DELIVERY_FUNCTIONS (in module nw.delivery)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module_docs/nw/transforms/_provenance.html#nw.transforms._provenance.derive_provenance">derive_provenance() (in module nw.transforms._provenance)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module_docs/nw.html#nw.derived_from">derived_from() (in module nw)</a>
 
       <ul>
@@ -401,6 +408,8 @@
         <li><a href="module_docs/nw/genres.html#nw.genres.describe_genre">(in module nw.genres)</a>
 </li>
       </ul></li>
+      <li><a href="module_docs/nw/transforms/fanout.html#nw.transforms.fanout.DFLT_GENERATE_WHEN">DFLT_GENERATE_WHEN (in module nw.transforms.fanout)</a>
+</li>
       <li><a href="module_docs/nw/transforms.html#nw.transforms.DFLT_IMPL_VERSION">DFLT_IMPL_VERSION (in module nw.transforms)</a>
 </li>
       <li><a href="module_docs/nw/renderers/_common.html#nw.renderers._common.download_to">download_to() (in module nw.renderers._common)</a>
@@ -481,14 +490,62 @@
       </ul></li>
       <li><a href="module_docs/nw.html#nw.FailedOutput">FailedOutput (class in nw)</a>
 </li>
+      <li><a href="module_docs/nw.html#nw.fan_out_execute">fan_out_execute() (in module nw)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/transforms.html#nw.transforms.fan_out_execute">(in module nw.transforms)</a>
+</li>
+        <li><a href="module_docs/nw/transforms/fanout.html#nw.transforms.fanout.fan_out_execute">(in module nw.transforms.fanout)</a>
+</li>
+      </ul></li>
+      <li><a href="module_docs/nw.html#nw.fan_out_plan">fan_out_plan() (in module nw)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/transforms.html#nw.transforms.fan_out_plan">(in module nw.transforms)</a>
+</li>
+        <li><a href="module_docs/nw/transforms/fanout.html#nw.transforms.fanout.fan_out_plan">(in module nw.transforms.fanout)</a>
+</li>
+      </ul></li>
+      <li><a href="module_docs/nw.html#nw.FanOutItemResult">FanOutItemResult (class in nw)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/transforms.html#nw.transforms.FanOutItemResult">(class in nw.transforms)</a>
+</li>
+        <li><a href="module_docs/nw/transforms/fanout.html#nw.transforms.fanout.FanOutItemResult">(class in nw.transforms.fanout)</a>
+</li>
+      </ul></li>
+      <li><a href="module_docs/nw.html#nw.FanOutPlan">FanOutPlan (class in nw)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/transforms.html#nw.transforms.FanOutPlan">(class in nw.transforms)</a>
+</li>
+        <li><a href="module_docs/nw/transforms/fanout.html#nw.transforms.fanout.FanOutPlan">(class in nw.transforms.fanout)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="module_docs/nw.html#nw.FanOutResult">FanOutResult (class in nw)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/transforms.html#nw.transforms.FanOutResult">(class in nw.transforms)</a>
+</li>
+        <li><a href="module_docs/nw/transforms/fanout.html#nw.transforms.fanout.FanOutResult">(class in nw.transforms.fanout)</a>
+</li>
+      </ul></li>
+      <li><a href="module_docs/nw.html#nw.FanOutUnit">FanOutUnit (class in nw)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/transforms.html#nw.transforms.FanOutUnit">(class in nw.transforms)</a>
+</li>
+        <li><a href="module_docs/nw/transforms/fanout.html#nw.transforms.fanout.FanOutUnit">(class in nw.transforms.fanout)</a>
+</li>
+      </ul></li>
       <li><a href="module_docs/nw.html#nw.format_ref">format_ref() (in module nw)</a>
 
       <ul>
         <li><a href="module_docs/nw/delivery.html#nw.delivery.format_ref">(in module nw.delivery)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module_docs/nw.html#nw.FreshnessVerdict">FreshnessVerdict (class in nw)</a>
 
       <ul>
@@ -513,6 +570,18 @@
         <li><a href="module_docs/nw/inspect.html#nw.inspect.Gap">(class in nw.inspect)</a>
 </li>
       </ul></li>
+      <li><a href="module_docs/nw.html#nw.BaseTransform.generate_when">generate_when (nw.BaseTransform attribute)</a>
+
+      <ul>
+        <li><a href="module_docs/nw.html#nw.Transform.generate_when">(nw.Transform attribute)</a>
+</li>
+        <li><a href="module_docs/nw/transforms.html#nw.transforms.BaseTransform.generate_when">(nw.transforms.BaseTransform attribute)</a>
+</li>
+        <li><a href="module_docs/nw/transforms.html#nw.transforms.Transform.generate_when">(nw.transforms.Transform attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="module_docs/nw/transforms/fanout.html#nw.transforms.fanout.GenerateWhen">GenerateWhen (in module nw.transforms.fanout)</a>
+</li>
       <li><a href="module_docs/nw.html#nw.Genre">Genre (class in nw)</a>
 
       <ul>
@@ -535,6 +604,8 @@
 </li>
       <li><a href="module_docs/nw/genres.html#nw.genres.genre_project_factories">genre_project_factories (in module nw.genres)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module_docs/nw/genres.html#nw.genres.genre_resolvers">genre_resolvers (in module nw.genres)</a>
 </li>
       <li><a href="module_docs/nw/genres.html#nw.genres.GENRE_STATUSES">GENRE_STATUSES (in module nw.genres)</a>
@@ -545,8 +616,6 @@
         <li><a href="module_docs/nw/bodies/genre_envelope.html#nw.bodies.genre_envelope.GenreEnvelopeBodyV1">(class in nw.bodies.genre_envelope)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module_docs/nw/genres.html#nw.genres.GenreInitializer">GenreInitializer (in module nw.genres)</a>
 </li>
       <li><a href="module_docs/nw/genres.html#nw.genres.GenreProjectFactory">GenreProjectFactory (in module nw.genres)</a>
@@ -595,11 +664,21 @@
         <li><a href="module_docs/nw.html#nw.ShotReport.has_long_freeze">(nw.ShotReport property)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="module_docs/nw.html#nw.TransformResult.has_unknown_costs">has_unknown_costs (nw.TransformResult attribute)</a>
+      <li><a href="module_docs/nw.html#nw.FanOutPlan.has_unknown_costs">has_unknown_costs (nw.FanOutPlan property)</a>
 
       <ul>
+        <li><a href="module_docs/nw.html#nw.FanOutResult.has_unknown_costs">(nw.FanOutResult property)</a>
+</li>
+        <li><a href="module_docs/nw.html#nw.TransformResult.has_unknown_costs">(nw.TransformResult attribute)</a>
+</li>
+        <li><a href="module_docs/nw/transforms/fanout.html#nw.transforms.fanout.FanOutPlan.has_unknown_costs">(nw.transforms.fanout.FanOutPlan property)</a>
+</li>
+        <li><a href="module_docs/nw/transforms/fanout.html#nw.transforms.fanout.FanOutResult.has_unknown_costs">(nw.transforms.fanout.FanOutResult property)</a>
+</li>
+        <li><a href="module_docs/nw/transforms.html#nw.transforms.FanOutPlan.has_unknown_costs">(nw.transforms.FanOutPlan property)</a>
+</li>
+        <li><a href="module_docs/nw/transforms.html#nw.transforms.FanOutResult.has_unknown_costs">(nw.transforms.FanOutResult property)</a>
+</li>
         <li><a href="module_docs/nw/transforms.html#nw.transforms.TransformResult.has_unknown_costs">(nw.transforms.TransformResult attribute)</a>
 </li>
       </ul></li>
@@ -639,14 +718,22 @@
         <li><a href="module_docs/nw/transforms.html#nw.transforms.Transform.input_kinds">(nw.transforms.Transform attribute)</a>
 </li>
       </ul></li>
+      <li><a href="module_docs/nw/transforms/fanout.html#nw.transforms.fanout.WorkItem.instance_id">instance_id (nw.transforms.fanout.WorkItem property)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/transforms.html#nw.transforms.WorkItem.instance_id">(nw.transforms.WorkItem property)</a>
+</li>
+        <li><a href="module_docs/nw.html#nw.WorkItem.instance_id">(nw.WorkItem property)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module_docs/nw.html#nw.Genre.intake_kinds">intake_kinds (nw.Genre attribute)</a>
 
       <ul>
         <li><a href="module_docs/nw/genres.html#nw.genres.Genre.intake_kinds">(nw.genres.Genre attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module_docs/nw.html#nw.BaseTransform.is_batch">is_batch (nw.BaseTransform attribute)</a>
 
       <ul>
@@ -711,6 +798,16 @@
 
       <ul>
         <li><a href="module_docs/nw/delivery.html#nw.delivery.Deliverable.kind">(nw.delivery.Deliverable property)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="module_docs/nw.html#nw.FanOutPlan.known_cost_usd">known_cost_usd (nw.FanOutPlan property)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/transforms/fanout.html#nw.transforms.fanout.FanOutPlan.known_cost_usd">(nw.transforms.fanout.FanOutPlan property)</a>
+</li>
+        <li><a href="module_docs/nw/transforms.html#nw.transforms.FanOutPlan.known_cost_usd">(nw.transforms.FanOutPlan property)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -912,6 +1009,12 @@
 </li>
         <li><a href="module_docs/nw/transforms/_adapters/render_strategy.html#nw.transforms._adapters.render_strategy.RenderStrategyParams.model_config">(nw.transforms._adapters.render_strategy.RenderStrategyParams attribute)</a>
 </li>
+        <li><a href="module_docs/nw/transforms/fanout.html#nw.transforms.fanout.WorkItem.model_config">(nw.transforms.fanout.WorkItem attribute)</a>
+</li>
+        <li><a href="module_docs/nw/transforms.html#nw.transforms.WorkItem.model_config">(nw.transforms.WorkItem attribute)</a>
+</li>
+        <li><a href="module_docs/nw.html#nw.WorkItem.model_config">(nw.WorkItem attribute)</a>
+</li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -986,6 +1089,8 @@
         <li><a href="module_docs/nw/transforms/_adapters/render_strategy.html#module-nw.transforms._adapters.render_strategy">nw.transforms._adapters.render_strategy</a>
 </li>
         <li><a href="module_docs/nw/transforms/_provenance.html#module-nw.transforms._provenance">nw.transforms._provenance</a>
+</li>
+        <li><a href="module_docs/nw/transforms/fanout.html#module-nw.transforms.fanout">nw.transforms.fanout</a>
 </li>
         <li><a href="module_docs/nw/workflow.html#module-nw.workflow">nw.workflow</a>
 </li>
@@ -1242,6 +1347,13 @@
 
       <ul>
         <li><a href="module_docs/nw/transforms/_provenance.html#module-nw.transforms._provenance">module</a>
+</li>
+      </ul></li>
+      <li>
+    nw.transforms.fanout
+
+      <ul>
+        <li><a href="module_docs/nw/transforms/fanout.html#module-nw.transforms.fanout">module</a>
 </li>
       </ul></li>
       <li>
@@ -1727,6 +1839,14 @@
         <li><a href="module_docs/nw.html#nw.Template.to_dict">(nw.Template method)</a>
 </li>
       </ul></li>
+      <li><a href="module_docs/nw.html#nw.FanOutResult.to_record">to_record() (nw.FanOutResult method)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/transforms/fanout.html#nw.transforms.fanout.FanOutResult.to_record">(nw.transforms.fanout.FanOutResult method)</a>
+</li>
+        <li><a href="module_docs/nw/transforms.html#nw.transforms.FanOutResult.to_record">(nw.transforms.FanOutResult method)</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module_docs/nw.html#nw.Project.total_spend_usd">total_spend_usd() (nw.Project method)</a>
@@ -1769,6 +1889,16 @@
 <h2 id="U">U</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="module_docs/nw/transforms/fanout.html#nw.transforms.fanout.UnitStatus">UnitStatus (in module nw.transforms.fanout)</a>
+</li>
+      <li><a href="module_docs/nw.html#nw.FanOutPlan.unknown_call_count">unknown_call_count (nw.FanOutPlan property)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/transforms/fanout.html#nw.transforms.fanout.FanOutPlan.unknown_call_count">(nw.transforms.fanout.FanOutPlan property)</a>
+</li>
+        <li><a href="module_docs/nw/transforms.html#nw.transforms.FanOutPlan.unknown_call_count">(nw.transforms.FanOutPlan property)</a>
+</li>
+      </ul></li>
       <li><a href="module_docs/nw.html#nw.Project.update_spec">update_spec() (nw.Project method)</a>
 
       <ul>
@@ -1783,14 +1913,14 @@
         <li><a href="module_docs/nw.html#nw.ProjectGraph.upsert_character_ref">(nw.ProjectGraph method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module_docs/nw/graph.html#nw.graph.ProjectGraph.upsert_environment_ref">upsert_environment_ref() (nw.graph.ProjectGraph method)</a>
 
       <ul>
         <li><a href="module_docs/nw.html#nw.ProjectGraph.upsert_environment_ref">(nw.ProjectGraph method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module_docs/nw/graph.html#nw.graph.ProjectGraph.upsert_section">upsert_section() (nw.graph.ProjectGraph method)</a>
 
       <ul>
@@ -1827,6 +1957,26 @@
 <h2 id="W">W</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="module_docs/nw.html#nw.work_item_instance_id">work_item_instance_id() (in module nw)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/transforms.html#nw.transforms.work_item_instance_id">(in module nw.transforms)</a>
+</li>
+        <li><a href="module_docs/nw/transforms/fanout.html#nw.transforms.fanout.work_item_instance_id">(in module nw.transforms.fanout)</a>
+</li>
+      </ul></li>
+      <li><a href="module_docs/nw/transforms/fanout.html#nw.transforms.fanout.WORK_ITEM_NAMESPACE">WORK_ITEM_NAMESPACE (in module nw.transforms.fanout)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="module_docs/nw.html#nw.WorkItem">WorkItem (class in nw)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/transforms.html#nw.transforms.WorkItem">(class in nw.transforms)</a>
+</li>
+        <li><a href="module_docs/nw/transforms/fanout.html#nw.transforms.fanout.WorkItem">(class in nw.transforms.fanout)</a>
+</li>
+      </ul></li>
       <li><a href="module_docs/nw.html#nw.Project.write_spec">write_spec() (nw.Project method)</a>
 
       <ul>

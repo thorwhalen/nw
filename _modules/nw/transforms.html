@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.transforms &mdash; nw 0.0.37 documentation</title>
+  <title>nw.transforms &mdash; nw 0.0.38 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=aa2ad26f"></script>
+      <script src="../../_static/documentation_options.js?v=423071ad"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -80,6 +80,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/transforms/_adapters.html">nw.transforms._adapters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/transforms/_adapters/render_strategy.html">nw.transforms._adapters.render_strategy</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/transforms/_provenance.html">nw.transforms._provenance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/transforms/fanout.html">nw.transforms.fanout</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/workflow.html">nw.workflow</a></li>
 </ul>
 
@@ -130,6 +131,13 @@
 <span class="sd">Transforms are registered with an :class:`xdol.Registry` keyed by name, so</span>
 <span class="sd">apps (``reelee``, ``muvid``, …) add their own without modifying ``nw``.</span>
 
+<span class="sd">Applying one Transform across N units — a **fan-out** — goes through</span>
+<span class="sd">:mod:`nw.transforms.fanout` (nw#26): PDG-shaped :class:`WorkItem`\\ s with a</span>
+<span class="sd">mandatory semantic ``mapping_key``, instance ids as a pure function of</span>
+<span class="sd">``(transform_name, mapping_key)``, the ``generate_when`` static/dynamic</span>
+<span class="sd">declaration, and per-unit failure isolation. Its module docstring is the</span>
+<span class="sd">spec.</span>
+
 <span class="sd">Naming convention for ``Transform.name``::</span>
 
 <span class="sd">    &lt;from_kind&gt;_to_&lt;to_kind&gt;[.&lt;flavor&gt;[.&lt;variant&gt;]]</span>
@@ -154,6 +162,21 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">falaw</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plan</span><span class="p">,</span> <span class="n">execute_plan_isolated</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">lacing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotation</span><span class="p">,</span> <span class="n">Artifact</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">nw.transforms.fanout</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">DFLT_GENERATE_WHEN</span><span class="p">,</span>
+    <span class="n">WORK_ITEM_NAMESPACE</span><span class="p">,</span>
+    <span class="n">FanOutItemResult</span><span class="p">,</span>
+    <span class="n">FanOutPlan</span><span class="p">,</span>
+    <span class="n">FanOutResult</span><span class="p">,</span>
+    <span class="n">FanOutUnit</span><span class="p">,</span>
+    <span class="n">GenerateWhen</span><span class="p">,</span>
+    <span class="n">UnitStatus</span><span class="p">,</span>
+    <span class="n">WorkItem</span><span class="p">,</span>
+    <span class="n">fan_out_execute</span><span class="p">,</span>
+    <span class="n">fan_out_plan</span><span class="p">,</span>
+    <span class="n">work_item_instance_id</span><span class="p">,</span>
+<span class="p">)</span>
 
 
 <span class="c1"># ---------------------------------------------------------------------------</span>
@@ -311,6 +334,15 @@
     <span class="n">output_kind</span><span class="p">:</span> <span class="nb">str</span>
 <span class="w">    </span><span class="sd">"""The body-schema URI this Transform produces."""</span>
 
+    <span class="n">generate_when</span><span class="p">:</span> <span class="nb">str</span>
+<span class="w">    </span><span class="sd">"""When this Transform's fan-out cardinality is knowable (nw#26):</span>
+<span class="sd">    ``"static"`` (the work-item list is derivable before the run — a</span>
+<span class="sd">    pre-flight estimate is a real number) or ``"dynamic"`` (cardinality is</span>
+<span class="sd">    known only after an upstream call returns — the only honest pre-flight</span>
+<span class="sd">    estimate is *unknown*, which forces approval). Undeclared defaults to</span>
+<span class="sd">    ``"dynamic"``: fail expensive-looking. See</span>
+<span class="sd">    :data:`nw.transforms.fanout.GenerateWhen`."""</span>
+
     <span class="n">is_batch</span><span class="p">:</span> <span class="nb">bool</span>
 <span class="w">    </span><span class="sd">"""How :meth:`plan` consumes ``inputs.primary``.</span>
 
@@ -450,6 +482,13 @@
 <span class="sd">    or a single primary annotation (one-to-one — the default). See the</span>
 <span class="sd">    :class:`Transform` Protocol for the full contract. Batch Transforms</span>
 <span class="sd">    (``extract_*``, ``clips_to_animatic``) set this to ``True``."""</span>
+    <span class="n">generate_when</span><span class="p">:</span> <span class="n">GenerateWhen</span> <span class="o">=</span> <span class="n">DFLT_GENERATE_WHEN</span>
+<span class="w">    </span><span class="sd">"""When this Transform's fan-out cardinality is knowable — ``"static"``</span>
+<span class="sd">    or ``"dynamic"`` (nw#26). The default is ``"dynamic"``: fail</span>
+<span class="sd">    expensive-looking, so an undeclared shape can never let a cost gate</span>
+<span class="sd">    quote a number for a cardinality nobody knows yet. Declare ``"static"``</span>
+<span class="sd">    only when the work-item list is derivable from the graph before the</span>
+<span class="sd">    run ("one image per panel")."""</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">plan</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -786,6 +825,15 @@
                 <span class="s2">"body-schema URI it produces — an undeclared output type is "</span>
                 <span class="s2">"a unit of work whose success is unverifiable."</span>
             <span class="p">)</span>
+        <span class="n">shape</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="s2">"generate_when"</span><span class="p">,</span> <span class="n">DFLT_GENERATE_WHEN</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">shape</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"static"</span><span class="p">,</span> <span class="s2">"dynamic"</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"register_transform(</span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2">): </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">."</span>
+                <span class="sa">f</span><span class="s2">"generate_when must be 'static' or 'dynamic', got </span><span class="si">{</span><span class="n">shape</span><span class="si">!r}</span><span class="s2">. "</span>
+                <span class="s2">"The declaration is what lets a cost gate tell a real "</span>
+                <span class="s2">"pre-flight estimate from an honest unknown (nw#26) — an "</span>
+                <span class="s2">"unrecognised value would be read as neither."</span>
+            <span class="p">)</span>
         <span class="k">return</span> <span class="n">instance</span>
 
     <span class="k">if</span> <span class="n">impl</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -832,7 +880,8 @@
 <span class="sd">    consumer needs no registry-internal knowledge to render or compose.</span>
 <span class="sd">    Entry shape::</span>
 
-<span class="sd">        {name, input_kinds, output_kind, is_batch, impl_version, params_schema}</span>
+<span class="sd">        {name, input_kinds, output_kind, is_batch, generate_when,</span>
+<span class="sd">         impl_version, params_schema}</span>
 
 <span class="sd">    ``name`` is the registry key (the addressable name). ``params_schema``</span>
 <span class="sd">    is the params model's JSON Schema — ``{}`` for a Transform with no</span>
@@ -849,6 +898,9 @@
                 <span class="s2">"input_kinds"</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">transform</span><span class="o">.</span><span class="n">input_kinds</span><span class="p">),</span>
                 <span class="s2">"output_kind"</span><span class="p">:</span> <span class="n">transform</span><span class="o">.</span><span class="n">output_kind</span><span class="p">,</span>
                 <span class="s2">"is_batch"</span><span class="p">:</span> <span class="n">transform</span><span class="o">.</span><span class="n">is_batch</span><span class="p">,</span>
+                <span class="s2">"generate_when"</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span>
+                    <span class="n">transform</span><span class="p">,</span> <span class="s2">"generate_when"</span><span class="p">,</span> <span class="n">DFLT_GENERATE_WHEN</span>
+                <span class="p">),</span>
                 <span class="s2">"impl_version"</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">transform</span><span class="p">,</span> <span class="s2">"impl_version"</span><span class="p">,</span> <span class="n">DFLT_IMPL_VERSION</span><span class="p">),</span>
                 <span class="s2">"params_schema"</span><span class="p">:</span> <span class="p">(</span>
                     <span class="p">{}</span>
@@ -879,6 +931,19 @@
     <span class="s2">"stamp_transform_identity"</span><span class="p">,</span>
     <span class="s2">"cache_key"</span><span class="p">,</span>
     <span class="s2">"cached_output"</span><span class="p">,</span>
+    <span class="c1"># fan-out (nw#26)</span>
+    <span class="s2">"GenerateWhen"</span><span class="p">,</span>
+    <span class="s2">"DFLT_GENERATE_WHEN"</span><span class="p">,</span>
+    <span class="s2">"WORK_ITEM_NAMESPACE"</span><span class="p">,</span>
+    <span class="s2">"WorkItem"</span><span class="p">,</span>
+    <span class="s2">"work_item_instance_id"</span><span class="p">,</span>
+    <span class="s2">"FanOutUnit"</span><span class="p">,</span>
+    <span class="s2">"FanOutPlan"</span><span class="p">,</span>
+    <span class="s2">"fan_out_plan"</span><span class="p">,</span>
+    <span class="s2">"UnitStatus"</span><span class="p">,</span>
+    <span class="s2">"FanOutItemResult"</span><span class="p">,</span>
+    <span class="s2">"FanOutResult"</span><span class="p">,</span>
+    <span class="s2">"fan_out_execute"</span><span class="p">,</span>
 <span class="p">]</span>
 </pre></div>
 
