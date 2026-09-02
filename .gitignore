@@ -115,3 +115,8 @@ venv.bak/
 
 # PyCharm
 .idea
+
+# Session handoff material — per the global convention, handoffs stay local and
+# uncommitted. `.claude/skills/` and other shipped agent config remain tracked.
+.claude/handoffs/
+.claude/RESUME.md
