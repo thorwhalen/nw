@@ -12,6 +12,7 @@ import time
 
 import pytest
 
+from au import ComputationResult, ComputationStatus
 from nw import Project
 import nw.jobs as jobs
 from nw.jobs import JobsConfig
@@ -935,3 +936,132 @@ def test_the_canonical_field_wins_over_its_alias(project):
     done = _poll_until(project, job.job_id, lambda j: j.status == jobs.SUCCEEDED)
     assert done.progress.stage_index == 7
     assert done.progress.current_transform == "canonical"
+
+
+# ---------------------------------------------------------------------------
+# liveness must be a fact in the shared store, not in one process's memory
+# ---------------------------------------------------------------------------
+
+
+def _running_record(project, job_id):
+    rt = jobs._runtime(project)
+    with rt.lock:
+        return jobs._index_get_locked(rt, job_id)
+
+
+def test_a_running_worker_stamps_a_heartbeat(project):
+    """The beat has to actually reach the durable record, not just exist.
+
+    It is what a *different process* reads to tell a live job from a dead one,
+    so a heartbeat that never lands is the same as no heartbeat at all.
+    """
+    release = threading.Event()
+    job = jobs.enqueue(
+        project,
+        "journey.full_auto",
+        VIDEO_PARAMS,
+        dispatch={"journey.full_auto": _blocking_stub(release)},
+        config=JobsConfig(heartbeat_interval_s=0.01),
+    )
+    _poll_until(project, job.job_id, lambda j: j.status == jobs.RUNNING)
+    beat = _poll_until(
+        project,
+        job.job_id,
+        lambda j: (_running_record(project, j.job_id) or {}).get("heartbeat_at"),
+    )
+    assert (_running_record(project, beat.job_id) or {}).get("heartbeat_at")
+    release.set()
+    _poll_until(project, job.job_id, lambda j: j.status in jobs.TERMINAL_STATUSES)
+
+
+def test_a_fresh_heartbeat_saves_a_job_this_process_cannot_see(project):
+    """The multi-process case, simulated by clearing the process-local map.
+
+    ``is_running`` answers "is a worker on this in MY process". A second API
+    replica gets ``False`` for a perfectly healthy job and, past
+    ``stale_running_s``, rewrites it to FAILED in the store they share. Here
+    the record is old enough to reap and the heartbeat is fresh: the shared
+    fact must win over the local absence.
+    """
+    rt = jobs._runtime(project)
+    config = JobsConfig(stale_running_s=0.0, heartbeat_stale_s=600.0)
+    record = {
+        "job_id": "j1",
+        "kind": "panel.animate",
+        "started_at": jobs._iso(jobs._utcnow_plus(-3600)),
+        "heartbeat_at": jobs._now_iso(),
+    }
+    running = ComputationResult(None, ComputationStatus.RUNNING)
+
+    out = jobs._maybe_reap(rt, record, running, config)
+
+    assert out.status is ComputationStatus.RUNNING, (
+        "a live job in another process was reaped as dead"
+    )
+
+
+def test_a_stale_heartbeat_still_reaps(project):
+    """The negative control: the reaper must still do its job.
+
+    Without this, a predicate that always returned True would pass the test
+    above and silently retire the stuck-toast fix the reaper exists to be.
+    """
+    rt = jobs._runtime(project)
+    config = JobsConfig(stale_running_s=0.0, heartbeat_stale_s=1.0)
+    record = {
+        "job_id": "j2",
+        "kind": "panel.animate",
+        "started_at": jobs._iso(jobs._utcnow_plus(-3600)),
+        "heartbeat_at": jobs._iso(jobs._utcnow_plus(-3600)),
+    }
+
+    out = jobs._maybe_reap(rt, record, ComputationResult(None, ComputationStatus.RUNNING), config)
+
+    assert out.status is ComputationStatus.FAILED
+    assert jobs.REAPED_REASON in str(out.error)
+
+
+def test_a_record_with_no_heartbeat_keeps_the_old_behaviour(project):
+    """Absence is not liveness.
+
+    Records written before heartbeats existed, and workers that died before
+    their first beat, must both stay reapable — otherwise this change turns a
+    stuck job into a permanently stuck one.
+    """
+    rt = jobs._runtime(project)
+    config = JobsConfig(stale_running_s=0.0)
+    record = {
+        "job_id": "j3",
+        "kind": "panel.animate",
+        "started_at": jobs._iso(jobs._utcnow_plus(-3600)),
+    }
+
+    out = jobs._maybe_reap(rt, record, ComputationResult(None, ComputationStatus.RUNNING), config)
+
+    assert out.status is ComputationStatus.FAILED
+
+
+def test_the_beat_stops_when_the_render_raises(project):
+    """A dead job must stop claiming to be alive.
+
+    If the beat outlived a raising render, the heartbeat would veto the reap
+    forever and the job would hang RUNNING — this change would have replaced
+    one stuck-job bug with a worse one.
+    """
+    def boom(project, params, *, job_id, on_event, should_cancel):
+        raise RuntimeError("render exploded")
+
+    job = jobs.enqueue(
+        project,
+        "journey.full_auto",
+        VIDEO_PARAMS,
+        dispatch={"journey.full_auto": boom},
+        config=JobsConfig(heartbeat_interval_s=0.01),
+    )
+    _poll_until(project, job.job_id, lambda j: j.status in jobs.TERMINAL_STATUSES)
+
+    first = (_running_record(project, job.job_id) or {}).get("heartbeat_at")
+    time.sleep(0.1)  # several beat intervals
+    assert (_running_record(project, job.job_id) or {}).get("heartbeat_at") == first, (
+        "the heartbeat thread outlived the render that raised"
+    )
