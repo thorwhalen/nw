@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.jobs &mdash; nw 0.0.40 documentation</title>
+  <title>nw.jobs &mdash; nw 0.0.41 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=84bd753f"></script>
+      <script src="../../_static/documentation_options.js?v=20c5f126"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -550,14 +550,44 @@
 <span class="sd">    The ``cancel_requested`` flag is authoritative, so the job reads</span>
 <span class="sd">    ``cancelling`` → ``cancelled`` even if the still-running thread later</span>
 <span class="sd">    overwrites the store with COMPLETED.</span>
+
+<span class="sd">    **A job that has already finished is not cancelled — the call is a no-op**</span>
+<span class="sd">    and returns the job unchanged. Because the flag is authoritative for</span>
+<span class="sd">    status, setting it on a terminal record rewrote a SUCCEEDED job to</span>
+<span class="sd">    ``cancelled`` and dropped its ``result`` and ``pct`` (and a FAILED job's</span>
+<span class="sd">    ``error``): work that ran, finished and *billed*, reported as though it had</span>
+<span class="sd">    not. Cancelling is a request about the future, and there is no future left</span>
+<span class="sd">    to change.</span>
 <span class="sd">    """</span>
     <span class="n">rt</span> <span class="o">=</span> <span class="n">_runtime</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
     <span class="k">with</span> <span class="n">rt</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
         <span class="n">record</span> <span class="o">=</span> <span class="n">_index_get_locked</span><span class="p">(</span><span class="n">rt</span><span class="p">,</span> <span class="n">job_id</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">record</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
-        <span class="n">record</span><span class="p">[</span><span class="s2">"cancel_requested"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="n">_index_set_locked</span><span class="p">(</span><span class="n">rt</span><span class="p">,</span> <span class="n">job_id</span><span class="p">,</span> <span class="n">record</span><span class="p">)</span>
+        <span class="c1"># A cancel that arrives after the work finished is a NO-OP, not a</span>
+        <span class="c1"># rewrite. ``cancel_requested`` is authoritative for status, so setting</span>
+        <span class="c1"># it unconditionally turned an already-SUCCEEDED job into ``cancelled``</span>
+        <span class="c1"># with ``result`` and ``pct`` dropped — a finished, already-BILLED unit</span>
+        <span class="c1"># of work reported as if it had never happened. The window is the poll</span>
+        <span class="c1"># gap, and a long render behind a prominent "stop" button is exactly the</span>
+        <span class="c1"># shape that produces a late click.</span>
+        <span class="c1">#</span>
+        <span class="c1"># Read the au record, not the index: the index carries intent, the au</span>
+        <span class="c1"># store carries outcome. A cross-process race can still slip between</span>
+        <span class="c1"># this read and the write below; that shrinks the window from "the whole</span>
+        <span class="c1"># poll gap" to "two statements", and closing it fully needs the</span>
+        <span class="c1"># optimistic-concurrency work the module owes anyway.</span>
+        <span class="n">already_finished</span> <span class="o">=</span> <span class="n">_normalize_status</span><span class="p">(</span>
+            <span class="n">rt</span><span class="o">.</span><span class="n">au_store</span><span class="p">[</span><span class="n">job_id</span><span class="p">]</span><span class="o">.</span><span class="n">status</span><span class="p">,</span>
+            <span class="n">cancel_requested</span><span class="o">=</span><span class="nb">bool</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"cancel_requested"</span><span class="p">)),</span>
+        <span class="p">)</span> <span class="ow">in</span> <span class="n">TERMINAL_STATUSES</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">already_finished</span><span class="p">:</span>
+            <span class="n">record</span><span class="p">[</span><span class="s2">"cancel_requested"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">_index_set_locked</span><span class="p">(</span><span class="n">rt</span><span class="p">,</span> <span class="n">job_id</span><span class="p">,</span> <span class="n">record</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">already_finished</span><span class="p">:</span>
+        <span class="c1"># Outside the lock: ``get_job`` -&gt; ``_maybe_reap`` takes it, and</span>
+        <span class="c1"># ``threading.Lock`` is not reentrant.</span>
+        <span class="k">return</span> <span class="n">get_job</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">job_id</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
     <span class="c1"># Flip the durable record terminal immediately (idempotent: no-op if already</span>
     <span class="c1"># terminal). Passing the backend lets cancel() reach terminate() (§3.1).</span>
     <span class="n">au</span><span class="o">.</span><span class="n">cancel_task</span><span class="p">(</span><span class="n">job_id</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="n">rt</span><span class="o">.</span><span class="n">backend</span><span class="p">,</span> <span class="n">store</span><span class="o">=</span><span class="n">rt</span><span class="o">.</span><span class="n">au_store</span><span class="p">)</span>
@@ -1000,21 +1030,42 @@
         <span class="n">cost</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"cost"</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{})</span>
         <span class="n">updates</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
 
-        <span class="k">for</span> <span class="n">src</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"stage_index"</span><span class="p">,</span> <span class="s2">"stage_count"</span><span class="p">,</span> <span class="s2">"current_transform"</span><span class="p">,</span> <span class="s2">"fraction"</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">src</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">:</span>
-                <span class="n">progress</span><span class="p">[</span><span class="n">src</span><span class="p">]</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="n">src</span><span class="p">]</span>
-        <span class="n">cost_map</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">"estimated_usd"</span><span class="p">:</span> <span class="s2">"estimated_usd"</span><span class="p">,</span>
-            <span class="s2">"actual_usd"</span><span class="p">:</span> <span class="s2">"actual_usd"</span><span class="p">,</span>
-            <span class="s2">"cost_usd"</span><span class="p">:</span> <span class="s2">"actual_usd"</span><span class="p">,</span>
-            <span class="s2">"cache_hit_savings_usd"</span><span class="p">:</span> <span class="s2">"cache_hit_savings_usd"</span><span class="p">,</span>
+        <span class="c1"># Aliases, exactly as ``cost_map`` below does for ``cost_usd``: the</span>
+        <span class="c1"># emitter owns its domain vocabulary, and the translation belongs at</span>
+        <span class="c1"># this boundary rather than forcing every producer to spell the</span>
+        <span class="c1"># store's field names. reelee's journey emits ``index`` /</span>
+        <span class="c1"># ``transform``; without these two rows its whole stage breakdown</span>
+        <span class="c1"># mirrored as nulls while every event was being delivered correctly —</span>
+        <span class="c1"># a live defect that looked like "no events" from the outside.</span>
+        <span class="c1"># Keyed by DESTINATION, with sources in precedence order — the</span>
+        <span class="c1"># canonical name always beats its alias. A ``{source: dest}`` map reads</span>
+        <span class="c1"># more naturally and is wrong: dict order decides, so an event carrying</span>
+        <span class="c1"># both names would be resolved by whichever row happened to be written</span>
+        <span class="c1"># last.</span>
+        <span class="n">progress_sources</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">"stage_index"</span><span class="p">:</span> <span class="p">(</span><span class="s2">"stage_index"</span><span class="p">,</span> <span class="s2">"index"</span><span class="p">),</span>
+            <span class="s2">"stage_count"</span><span class="p">:</span> <span class="p">(</span><span class="s2">"stage_count"</span><span class="p">,),</span>
+            <span class="s2">"current_transform"</span><span class="p">:</span> <span class="p">(</span><span class="s2">"current_transform"</span><span class="p">,</span> <span class="s2">"transform"</span><span class="p">),</span>
+            <span class="s2">"fraction"</span><span class="p">:</span> <span class="p">(</span><span class="s2">"fraction"</span><span class="p">,),</span>
+        <span class="p">}</span>
+        <span class="k">for</span> <span class="n">dst</span><span class="p">,</span> <span class="n">sources</span> <span class="ow">in</span> <span class="n">progress_sources</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">src</span> <span class="ow">in</span> <span class="n">sources</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">src</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">:</span>
+                    <span class="n">progress</span><span class="p">[</span><span class="n">dst</span><span class="p">]</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="n">src</span><span class="p">]</span>
+                    <span class="k">break</span>
+        <span class="n">cost_sources</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">"estimated_usd"</span><span class="p">:</span> <span class="p">(</span><span class="s2">"estimated_usd"</span><span class="p">,),</span>
+            <span class="s2">"actual_usd"</span><span class="p">:</span> <span class="p">(</span><span class="s2">"actual_usd"</span><span class="p">,</span> <span class="s2">"cost_usd"</span><span class="p">),</span>
+            <span class="s2">"cache_hit_savings_usd"</span><span class="p">:</span> <span class="p">(</span><span class="s2">"cache_hit_savings_usd"</span><span class="p">,),</span>
             <span class="c1"># The unknown-cost flag travels with the figure it qualifies, or</span>
             <span class="c1"># the figure arrives alone and reads as exact.</span>
-            <span class="s2">"has_unknown_costs"</span><span class="p">:</span> <span class="s2">"actual_is_lower_bound"</span><span class="p">,</span>
+            <span class="s2">"actual_is_lower_bound"</span><span class="p">:</span> <span class="p">(</span><span class="s2">"has_unknown_costs"</span><span class="p">,),</span>
         <span class="p">}</span>
-        <span class="k">for</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span> <span class="ow">in</span> <span class="n">cost_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">src</span> <span class="ow">in</span> <span class="n">fields</span> <span class="ow">and</span> <span class="n">fields</span><span class="p">[</span><span class="n">src</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">cost</span><span class="p">[</span><span class="n">dst</span><span class="p">]</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="n">src</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">dst</span><span class="p">,</span> <span class="n">sources</span> <span class="ow">in</span> <span class="n">cost_sources</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">src</span> <span class="ow">in</span> <span class="n">sources</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">src</span> <span class="ow">in</span> <span class="n">fields</span> <span class="ow">and</span> <span class="n">fields</span><span class="p">[</span><span class="n">src</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">cost</span><span class="p">[</span><span class="n">dst</span><span class="p">]</span> <span class="o">=</span> <span class="n">fields</span><span class="p">[</span><span class="n">src</span><span class="p">]</span>
+                    <span class="k">break</span>
 
         <span class="n">updates</span><span class="p">[</span><span class="s2">"progress"</span><span class="p">]</span> <span class="o">=</span> <span class="n">progress</span>
         <span class="n">updates</span><span class="p">[</span><span class="s2">"cost"</span><span class="p">]</span> <span class="o">=</span> <span class="n">cost</span>

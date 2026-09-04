@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.jobs &mdash; nw 0.0.40 documentation</title>
+  <title>nw.jobs &mdash; nw 0.0.41 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=84bd753f"></script>
+      <script src="../../_static/documentation_options.js?v=20c5f126"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -355,6 +355,13 @@ boundary) <em>and</em> flips the au record terminal at once via <code class="doc
 The <code class="docutils literal notranslate"><span class="pre">cancel_requested</span></code> flag is authoritative, so the job reads
 <code class="docutils literal notranslate"><span class="pre">cancelling</span></code> → <code class="docutils literal notranslate"><span class="pre">cancelled</span></code> even if the still-running thread later
 overwrites the store with COMPLETED.</p>
+<p><strong>A job that has already finished is not cancelled — the call is a no-op</strong>
+and returns the job unchanged. Because the flag is authoritative for
+status, setting it on a terminal record rewrote a SUCCEEDED job to
+<code class="docutils literal notranslate"><span class="pre">cancelled</span></code> and dropped its <code class="docutils literal notranslate"><span class="pre">result</span></code> and <code class="docutils literal notranslate"><span class="pre">pct</span></code> (and a FAILED job’s
+<code class="docutils literal notranslate"><span class="pre">error</span></code>): work that ran, finished and <em>billed</em>, reported as though it had
+not. Cancelling is a request about the future, and there is no future left
+to change.</p>
 </dd></dl>
 
 <dl class="py function">
