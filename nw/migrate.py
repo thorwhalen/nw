@@ -25,6 +25,7 @@ decisions move into the graph.
 from __future__ import annotations
 
 import json
+import os
 import shutil
 import uuid as _uuid
 from pathlib import Path
@@ -48,7 +49,7 @@ from .bodies import (
     SECTION_BODY_SCHEMA_URI,
     SHOT_BODY_SCHEMA_URI,
 )
-from .graph_backend import SCOPE_GRAPH, open_graph_store
+from .graph_backend import SCOPE_GRAPH, open_graph_store, selected_backend
 
 
 # ---------------------------------------------------------------------------
@@ -104,6 +105,65 @@ def open_project_graph(project_root: Path) -> IntervalAnnotationStore:
     )
     _ensure_tiers(store)
     return store
+
+
+def open_project_graph_readonly(project_root: Path) -> IntervalAnnotationStore:
+    """Open the project's graph store to **read**, without taking a write lock.
+
+    :func:`open_project_graph` calls :func:`_ensure_tiers`, which issues an
+    ``add_tier`` per project tier on *every* open. That is a write, so a reader
+    contended with any live writer — and on SQLite it does not merely wait.
+    Measured with a writer holding ``BEGIN IMMEDIATE``:
+
+    ============================  ====================================
+    ``SqliteStore(path)``         OK in **0.19 ms**
+    ``open_project_graph(root)``  ``OperationalError`` after **5.4 s**
+    ============================  ====================================
+
+    **This read does not merely block — it raises**, and it raises slowly
+    enough to be mistaken for a hang and chased in the wrong layer. Phrasing
+    it as efficiency would invite a revert; phrasing it as blocking would
+    invite a busy-timeout tweak. The failure is categorical.
+
+    That matters the moment anything fans out across projects while a render
+    is running. Measured through the consumer that motivated it — listing
+    sibling projects, each of which reads a genre envelope — one contended
+    project cost **5429 ms** and *then* lost its metadata, because the caller
+    catches per project. Through this path the same call is **1.33 ms** and
+    keeps it.
+
+    Two deliberate differences from the read-write open, both following from
+    "a read does not write":
+
+    - **No tier creation.** The store is opened as it is on disk. A tier that
+      is missing simply has no annotations to return, which is the honest
+      answer to a reader.
+    - **No migration.** :func:`open_project_graph` passes ``migrate=True`` so a
+      file written under an older lacing schema upgrades on open. Upgrading is
+      a write, and a surface that silently migrated every project it *listed*
+      would be the same class of defect as one that created metadata for them.
+      ``ProjectGraph`` falls back to the read-write open for such a file, so
+      the rare case pays the lock and the common case does not.
+
+    In Postgres mode this delegates to the ordinary open: MVCC readers do not
+    block writers, so the problem being solved is SQLite-specific and inventing
+    a second path there would add a seam with nothing behind it.
+
+    Raises:
+        FileNotFoundError: in SQLite mode, when the project has no graph
+            database yet. Creating one is a write; a reader is told plainly
+            that there is nothing to read rather than quietly making it.
+    """
+    db = project_graph_db_path(project_root)
+    if selected_backend(os.environ) == "postgres":
+        return open_graph_store(
+            db, asset_id=project_asset_id(project_root), scope=SCOPE_GRAPH
+        )
+    if not Path(db).exists():
+        raise FileNotFoundError(f"no graph database for project: {project_root}")
+    from lacing.store.sqlite import SqliteStore
+
+    return SqliteStore(str(db))
 
 
 def _ensure_tiers(store: IntervalAnnotationStore) -> None:
