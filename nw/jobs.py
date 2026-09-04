@@ -115,6 +115,21 @@ class JobsConfig:
     stale_running_s: float = 900.0
     """A RUNNING record older than this with no live worker is reaped as
     ``FAILED("worker died — resumable")`` (kills the stuck-toast bug)."""
+
+    heartbeat_interval_s: float = 20.0
+    """How often a running worker stamps ``heartbeat_at`` on its index record.
+
+    Liveness has to be a fact in the **shared store**, not in one process's
+    memory, or a second API replica cannot tell a live job from a dead one.
+    Cheap: one small atomic file write per job per interval."""
+
+    heartbeat_stale_s: float = 120.0
+    """A heartbeat younger than this proves the worker is alive **anywhere**.
+
+    Generously larger than ``heartbeat_interval_s``: the beat is a Python
+    thread, and a render holding the GIL in a C extension can delay it well
+    past one interval. The asymmetry is deliberate — a late beat costs a
+    slower reap, while an eager one destroys a live job's record."""
     approval_threshold_usd: float = 1.0
     """Estimated cost at/above which a render requires explicit approval."""
     jobs_dirname: str = ".nw/jobs"
@@ -828,8 +843,22 @@ def _bind_worker(
             )
         else:
             fal_ctx = nullcontext()
-        with fal_ctx, extra_ctx if extra_ctx is not None else nullcontext():
-            result = call()
+        stop_beat = threading.Event()
+        beat = threading.Thread(
+            target=_beat_while_running,
+            args=(rt, job_id, config, stop_beat),
+            name=f"nw-jobs-heartbeat-{job_id[:8]}",
+            daemon=True,
+        )
+        beat.start()
+        try:
+            with fal_ctx, extra_ctx if extra_ctx is not None else nullcontext():
+                result = call()
+        finally:
+            # ``finally``, not a trailing statement: a render that raises must
+            # still stop beating, or a dead job keeps claiming to be alive and
+            # the reaper it exists to inform never fires.
+            stop_beat.set()
         _reconcile_terminal(rt, job_id, result)
         return result
 
@@ -991,6 +1020,8 @@ def _maybe_reap(rt, record, au_result, config) -> ComputationResult:
     job_id = record["job_id"]
     if rt.middleware.is_running(job_id):
         return au_result  # a live worker in this process is on it
+    if _heartbeat_is_fresh(record, config):
+        return au_result  # a live worker in SOME process is on it
     started = _parse_iso(record.get("started_at") or record.get("created_at"))
     if (
         started is not None
@@ -1007,6 +1038,49 @@ def _maybe_reap(rt, record, au_result, config) -> ComputationResult:
     with rt.lock:
         _index_update_locked(rt, job_id, finished_at=_now_iso(), error=REAPED_REASON)
     return rt.au_store[job_id]
+
+
+def _heartbeat_is_fresh(record, config) -> bool:
+    """Whether ``record``'s worker has beaten recently enough to be alive.
+
+    ``is_running`` — the check beside this one — reads a **process-local**
+    dict, so it answers "is a worker on this in MY process". A second API
+    replica reading a job whose worker lives in the first replica gets
+    ``False``, and once the record is older than ``stale_running_s`` it
+    rewrites a healthy running job to ``FAILED("worker died")`` in the store
+    they share. Silently, and to the record the live replica is also reading.
+
+    That is invisible in a single process, which is why it would ship: at a
+    few minutes per render the record never reaches the threshold, and only a
+    long job crosses it.
+
+    A missing ``heartbeat_at`` returns ``False`` — records written before
+    heartbeats existed, and jobs whose worker died before its first beat,
+    both keep exactly the old behaviour. This predicate can only **prevent** a
+    reap, never cause one, so it cannot introduce a false positive of its own.
+    """
+    beat = _parse_iso(record.get("heartbeat_at"))
+    if beat is None:
+        return False
+    return (_utcnow() - beat).total_seconds() < config.heartbeat_stale_s
+
+
+def _beat_while_running(rt, job_id, config, stop: threading.Event) -> None:
+    """Stamp ``heartbeat_at`` on the index record until ``stop`` is set.
+
+    Runs on a daemon thread beside the render. Best-effort throughout: a
+    failed beat must never take down the render it is only reporting on, and
+    a missed beat degrades to the pre-heartbeat behaviour rather than to a
+    wrong answer.
+    """
+    while not stop.is_set():
+        try:
+            with rt.lock:
+                if _index_get_locked(rt, job_id) is not None:
+                    _index_update_locked(rt, job_id, heartbeat_at=_now_iso())
+        except Exception:  # noqa: BLE001 — reporting must not break the render
+            pass
+        stop.wait(config.heartbeat_interval_s)
 
 
 def _project_job(rt, record, au_result, config) -> Job:
