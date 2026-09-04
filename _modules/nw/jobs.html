@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.jobs &mdash; nw 0.0.42 documentation</title>
+  <title>nw.jobs &mdash; nw 0.0.43 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=173d7b4c"></script>
+      <script src="../../_static/documentation_options.js?v=b345ff55"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -338,6 +338,27 @@
     <span class="n">cost</span><span class="p">:</span> <span class="n">JobCost</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">JobCost</span><span class="p">)</span>
     <span class="n">cached</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 
+    <span class="n">worker_silent_s</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">"""Seconds since this job's worker last stamped a heartbeat.</span>
+
+<span class="sd">    ``None`` when it has never beaten — a record written before heartbeats</span>
+<span class="sd">    existed, or a worker that died before its first beat. Absence is not a</span>
+<span class="sd">    duration, and rendering ``None`` as ``0`` would report the silent case as</span>
+<span class="sd">    the healthiest one.</span>
+<span class="sd">    """</span>
+
+    <span class="n">worker_responsive</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">"""Whether the worker is provably still alive, **by the reaper's own rule**.</span>
+
+<span class="sd">    Derived from the same ``_heartbeat_is_fresh`` predicate ``_maybe_reap``</span>
+<span class="sd">    consults, so a UI and the reaper can never disagree about what "alive"</span>
+<span class="sd">    means — a second definition living in a client is how a screen ends up</span>
+<span class="sd">    insisting a job is fine while the server is failing it.</span>
+
+<span class="sd">    ``None`` means *unknowable*, not *dead*: a job that is not running, or one</span>
+<span class="sd">    that never beat. ``False`` is a positive claim that contact has been lost.</span>
+<span class="sd">    """</span>
+
     <span class="n">artifact_ref</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">result</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">error</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
@@ -641,6 +662,8 @@
         <span class="s2">"label_hint"</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">label_hint</span><span class="p">,</span>
         <span class="s2">"key"</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">eta_key</span><span class="p">,</span>
         <span class="s2">"cost"</span><span class="p">:</span> <span class="n">asdict</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">cost</span><span class="p">),</span>
+        <span class="s2">"worker_silent_s"</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">worker_silent_s</span><span class="p">,</span>
+        <span class="s2">"worker_responsive"</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">worker_responsive</span><span class="p">,</span>
         <span class="s2">"artifact_ref"</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">artifact_ref</span><span class="p">,</span>
         <span class="s2">"result"</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">result</span><span class="p">,</span>
         <span class="s2">"error"</span><span class="p">:</span> <span class="n">job</span><span class="o">.</span><span class="n">error</span><span class="p">,</span>
@@ -1265,6 +1288,17 @@
     <span class="n">progress</span> <span class="o">=</span> <span class="n">_progress_from</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
     <span class="n">cost</span> <span class="o">=</span> <span class="n">_cost_from</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
 
+    <span class="c1"># Liveness, but only where the question means anything: a terminal job's</span>
+    <span class="c1"># worker is *supposed* to be silent, and reporting that as lost contact</span>
+    <span class="c1"># would make every finished job look broken.</span>
+    <span class="n">worker_silent_s</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">worker_responsive</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">last_beat</span> <span class="o">=</span> <span class="n">_parse_iso</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"heartbeat_at"</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">last_beat</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">worker_silent_s</span> <span class="o">=</span> <span class="nb">round</span><span class="p">((</span><span class="n">_utcnow</span><span class="p">()</span> <span class="o">-</span> <span class="n">last_beat</span><span class="p">)</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">(),</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">status</span> <span class="ow">in</span> <span class="p">(</span><span class="n">RUNNING</span><span class="p">,</span> <span class="n">CANCELLING</span><span class="p">):</span>
+            <span class="n">worker_responsive</span> <span class="o">=</span> <span class="n">_heartbeat_is_fresh</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span>
+
     <span class="n">predicted_total_s</span> <span class="o">=</span> <span class="n">remaining_s</span> <span class="o">=</span> <span class="n">eta_s</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">eta_ts</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">pct</span> <span class="o">=</span> <span class="kc">None</span>
@@ -1329,6 +1363,8 @@
         <span class="n">eta_key</span><span class="o">=</span><span class="n">eta_key</span><span class="p">,</span>
         <span class="n">cost</span><span class="o">=</span><span class="n">cost</span><span class="p">,</span>
         <span class="n">cached</span><span class="o">=</span><span class="nb">bool</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"cached"</span><span class="p">)),</span>
+        <span class="n">worker_silent_s</span><span class="o">=</span><span class="n">worker_silent_s</span><span class="p">,</span>
+        <span class="n">worker_responsive</span><span class="o">=</span><span class="n">worker_responsive</span><span class="p">,</span>
         <span class="n">artifact_ref</span><span class="o">=</span><span class="n">artifact_ref</span><span class="p">,</span>
         <span class="n">result</span><span class="o">=</span><span class="n">result_payload</span><span class="p">,</span>
         <span class="n">error</span><span class="o">=</span><span class="n">error</span><span class="p">,</span>
