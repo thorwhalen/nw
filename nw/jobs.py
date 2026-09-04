@@ -440,10 +440,13 @@ def cancel_job(
         # this read and the write below; that shrinks the window from "the whole
         # poll gap" to "two statements", and closing it fully needs the
         # optimistic-concurrency work the module owes anyway.
-        already_finished = _normalize_status(
-            rt.au_store[job_id].status,
-            cancel_requested=bool(record.get("cancel_requested")),
-        ) in TERMINAL_STATUSES
+        already_finished = (
+            _normalize_status(
+                rt.au_store[job_id].status,
+                cancel_requested=bool(record.get("cancel_requested")),
+            )
+            in TERMINAL_STATUSES
+        )
         if not already_finished:
             record["cancel_requested"] = True
             _index_set_locked(rt, job_id, record)
