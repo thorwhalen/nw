@@ -634,7 +634,12 @@ def test_to_dict_matches_json_contract(project):
     assert set(d["progress"].keys()) == {
         "stage_index", "stage_count", "current_transform", "fraction"
     }
-    assert set(d["cost"].keys()) == {"estimated_usd", "actual_usd", "cache_hit_savings_usd"}
+    assert set(d["cost"].keys()) == {
+        "estimated_usd",
+        "actual_usd",
+        "cache_hit_savings_usd",
+        "actual_is_lower_bound",
+    }
     import json
 
     json.dumps(d)  # must be JSON-serializable
@@ -710,3 +715,99 @@ def test_capture_context_rebinds_caller_state_in_the_worker(project):
     )
     assert jobs_done.status == jobs.SUCCEEDED
     assert seen["value"] == "byo-from-request"  # the hook re-bound it in the worker
+
+
+# ---------------------------------------------------------------------------
+# unknown cost — a $0 must stay readable (reelee-studio survey, working rule 7)
+# ---------------------------------------------------------------------------
+
+
+def _unpriceable_stub(*, via_event: bool):
+    """A stub whose run billed something nobody could price.
+
+    ``via_event`` picks which of the two paths into the index carries the
+    flag: the live event mirror, or the terminal reconcile. Both exist, and a
+    fix to only one of them leaves the other reporting an exact ``$0``.
+    """
+
+    def stub(project, params, *, job_id, on_event, should_cancel):
+        if via_event:
+            on_event(
+                {
+                    "kind": "journey.stage_completed",
+                    "actual_usd": 0.0,
+                    "has_unknown_costs": True,
+                }
+            )
+            return {"journey_status": "completed"}
+        return {
+            "journey_status": "completed",
+            "cost_usd_actual": 0.0,
+            "has_unknown_costs": True,
+        }
+
+    return stub
+
+
+@pytest.mark.parametrize("via_event", [True, False], ids=["event", "terminal"])
+def test_a_zero_that_means_unknown_is_flagged_as_a_lower_bound(project, via_event):
+    """``actual_usd == 0.0`` with an unpriced billed call reads as a LOWER BOUND.
+
+    This is the distinction a spend surface cannot be allowed to lose: a run
+    that cost nothing and a run whose cost we do not know both arrive as
+    ``0.0``. Without the flag the second renders as *free*.
+    """
+    job = jobs.enqueue(
+        project,
+        "journey.full_auto",
+        VIDEO_PARAMS,
+        dispatch={"journey.full_auto": _unpriceable_stub(via_event=via_event)},
+    )
+    done = _poll_until(project, job.job_id, lambda j: j.status == jobs.SUCCEEDED)
+
+    assert done.status == jobs.SUCCEEDED
+    assert done.cost.actual_usd == 0.0
+    assert done.cost.actual_is_lower_bound is True
+    assert jobs.to_dict(done)["cost"]["actual_is_lower_bound"] is True
+
+
+def test_a_run_that_reports_no_unknown_cost_is_not_flagged(project):
+    """The flag is a claim, not a default: a fully-priced run stays unflagged.
+
+    Pins the other direction, so a mutation that hardcodes ``True`` — which
+    would make every figure unusable rather than merely one — fails too.
+    """
+    release = threading.Event()
+    release.set()
+    job = jobs.enqueue(
+        project,
+        "journey.full_auto",
+        VIDEO_PARAMS,
+        dispatch={"journey.full_auto": _blocking_stub(release)},
+    )
+    done = _poll_until(project, job.job_id, lambda j: j.status == jobs.SUCCEEDED)
+
+    assert done.cost.actual_usd == 0.42
+    assert not done.cost.actual_is_lower_bound
+
+
+def test_an_unreported_flag_is_none_not_false(project):
+    """Absence is not a claim of exactness.
+
+    A render that never says either way — an older caller, or one that died
+    before finishing — leaves ``None``. Reading that as ``False`` would assert
+    a precision nobody offered.
+    """
+
+    def silent(project, params, *, job_id, on_event, should_cancel):
+        return {"journey_status": "completed"}
+
+    job = jobs.enqueue(
+        project,
+        "journey.full_auto",
+        VIDEO_PARAMS,
+        dispatch={"journey.full_auto": silent},
+    )
+    done = _poll_until(project, job.job_id, lambda j: j.status == jobs.SUCCEEDED)
+
+    assert done.cost.actual_is_lower_bound is None

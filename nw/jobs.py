@@ -44,6 +44,11 @@ Design decisions (from the ``nw.jobs``-on-``au`` design report,
 - **ETA is learned from observed wall-time**, per ``(model, operation, dur_bucket)``
   with back-off, median (not mean), honest "estimating…" before enough
   history, and **cache-hits excluded from learning**.
+- **A cost never travels without its honesty flag.** ``JobCost.actual_usd`` is
+  paired with ``actual_is_lower_bound``, because an unpriceable call that
+  actually billed contributes ``0.0`` to the sum — so a bare ``$0`` means
+  *either* "nothing was spent" *or* "we do not know what was spent", and a
+  spend surface that cannot tell them apart shows the second as free.
 
 All tunables are keyword-configurable via :class:`JobsConfig`; defaults live at
 the top of this module — no magic numbers below.
@@ -148,6 +153,21 @@ class JobCost:
     estimated_usd: float | None = None
     actual_usd: float | None = None
     cache_hit_savings_usd: float | None = None
+    actual_is_lower_bound: bool | None = None
+    """True when the run reported ``has_unknown_costs`` — some call that
+    actually billed had no price, so :attr:`actual_usd` UNDER-states the spend.
+
+    Its whole job is to keep a ``$0`` readable. Without it, ``actual_usd``
+    conflates two answers a spend surface must never merge: "this run cost
+    nothing" (a cache hit — a known zero) and "we do not know what this run
+    cost" (an unpriceable call ran). A UI that renders the second as *free*,
+    or a bound that reads it as *under budget*, is the failure this field
+    exists to make impossible.
+
+    ``None`` means the render never reported either way — an older caller, or
+    a job that died before finishing. ``None`` is not ``False``: absence of the
+    flag is not a claim that the total is exact.
+    """
 
 
 @dataclass
@@ -832,6 +852,9 @@ def _mirror_event_into_index(rt, job_id, ev) -> None:
             "actual_usd": "actual_usd",
             "cost_usd": "actual_usd",
             "cache_hit_savings_usd": "cache_hit_savings_usd",
+            # The unknown-cost flag travels with the figure it qualifies, or
+            # the figure arrives alone and reads as exact.
+            "has_unknown_costs": "actual_is_lower_bound",
         }
         for src, dst in cost_map.items():
             if src in fields and fields[src] is not None:
@@ -866,6 +889,8 @@ def _reconcile_terminal(rt, job_id, result) -> None:
                 cost["actual_usd"] = result["cost_usd_actual"]
             if result.get("cache_hit_savings_usd") is not None:
                 cost["cache_hit_savings_usd"] = result["cache_hit_savings_usd"]
+            if result.get("has_unknown_costs") is not None:
+                cost["actual_is_lower_bound"] = bool(result["has_unknown_costs"])
             updates["cost"] = cost
             for src in ("animatic_artifact_id", "artifact_id", "artifact_ref"):
                 if result.get(src) is not None:
@@ -1247,6 +1272,7 @@ def _cost_from(record) -> JobCost:
         estimated_usd=c.get("estimated_usd"),
         actual_usd=c.get("actual_usd"),
         cache_hit_savings_usd=c.get("cache_hit_savings_usd"),
+        actual_is_lower_bound=c.get("actual_is_lower_bound"),
     )
 
 
