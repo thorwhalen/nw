@@ -628,7 +628,7 @@ def test_to_dict_matches_json_contract(project):
         "params", "created_at", "started_at", "finished_at", "queue_wait_s",
         "elapsed_s", "progress", "predicted_total_s", "remaining_s", "eta_ts",
         "eta_s", "pct", "confidence", "label_hint", "key", "cost", "artifact_ref",
-        "result", "error", "last_event_id",
+        "result", "error", "last_event_id", "worker_silent_s", "worker_responsive",
     }
     assert expected_keys.issubset(d.keys())
     # nested records serialize to plain dicts (JSON-safe)
@@ -1065,3 +1065,78 @@ def test_the_beat_stops_when_the_render_raises(project):
     assert (_running_record(project, job.job_id) or {}).get("heartbeat_at") == first, (
         "the heartbeat thread outlived the render that raised"
     )
+
+
+def test_liveness_is_surfaced_with_the_reapers_own_definition(project):
+    """A UI and the reaper must never disagree about what "alive" means.
+
+    ``worker_responsive`` is derived from the same ``_heartbeat_is_fresh``
+    predicate ``_maybe_reap`` consults. A second definition living in a client
+    is how a screen ends up insisting a job is fine while the server is
+    failing it — and the client's copy is the one the user believes.
+    """
+    config = JobsConfig(heartbeat_stale_s=120.0)
+    rt = jobs._runtime(project, config)
+    fresh = {
+        "job_id": "live",
+        "kind": "panel.animate",
+        "started_at": jobs._iso(jobs._utcnow_plus(-300)),
+        "heartbeat_at": jobs._iso(jobs._utcnow_plus(-5)),
+    }
+    silent = {**fresh, "job_id": "lost",
+              "heartbeat_at": jobs._iso(jobs._utcnow_plus(-600))}
+    running = ComputationResult(None, ComputationStatus.RUNNING)
+
+    alive = jobs._project_job(rt, fresh, running, config)
+    lost = jobs._project_job(rt, silent, running, config)
+
+    assert alive.worker_responsive is True
+    assert alive.worker_silent_s < 30
+    assert lost.worker_responsive is False, "contact was lost and nothing said so"
+    assert lost.worker_silent_s > 500
+    # The UI's verdict and the reaper's verdict come from one predicate.
+    assert lost.worker_responsive is jobs._heartbeat_is_fresh(silent, config)
+
+
+def test_a_job_that_never_beat_reports_unknowable_not_dead(project):
+    """``None`` is not ``False``.
+
+    A record written before heartbeats existed has no liveness evidence either
+    way. Reporting that as "contact lost" would mark every pre-existing job
+    broken; reporting it as ``0`` seconds silent would mark it healthiest.
+    """
+    rt = jobs._runtime(project)
+    record = {
+        "job_id": "old",
+        "kind": "panel.animate",
+        "started_at": jobs._iso(jobs._utcnow_plus(-60)),
+    }
+
+    job = jobs._project_job(
+        rt, record, ComputationResult(None, ComputationStatus.RUNNING), jobs.DEFAULT_CONFIG
+    )
+
+    assert job.worker_silent_s is None
+    assert job.worker_responsive is None
+
+
+def test_a_finished_job_is_not_reported_as_having_lost_contact(project):
+    """A terminal worker is *supposed* to be silent.
+
+    Without this guard every completed job would eventually read
+    ``worker_responsive: false`` as its last heartbeat aged, and a finished
+    shot would render as a broken one.
+    """
+    release = threading.Event()
+    release.set()
+    job = jobs.enqueue(
+        project,
+        "journey.full_auto",
+        VIDEO_PARAMS,
+        dispatch={"journey.full_auto": _blocking_stub(release)},
+        config=JobsConfig(heartbeat_interval_s=0.01),
+    )
+    done = _poll_until(project, job.job_id, lambda j: j.status == jobs.SUCCEEDED)
+
+    assert done.status == jobs.SUCCEEDED
+    assert done.worker_responsive is None, "a finished job read as unresponsive"

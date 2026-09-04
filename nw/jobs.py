@@ -216,6 +216,27 @@ class Job:
     cost: JobCost = field(default_factory=JobCost)
     cached: bool = False
 
+    worker_silent_s: float | None = None
+    """Seconds since this job's worker last stamped a heartbeat.
+
+    ``None`` when it has never beaten — a record written before heartbeats
+    existed, or a worker that died before its first beat. Absence is not a
+    duration, and rendering ``None`` as ``0`` would report the silent case as
+    the healthiest one.
+    """
+
+    worker_responsive: bool | None = None
+    """Whether the worker is provably still alive, **by the reaper's own rule**.
+
+    Derived from the same ``_heartbeat_is_fresh`` predicate ``_maybe_reap``
+    consults, so a UI and the reaper can never disagree about what "alive"
+    means — a second definition living in a client is how a screen ends up
+    insisting a job is fine while the server is failing it.
+
+    ``None`` means *unknowable*, not *dead*: a job that is not running, or one
+    that never beat. ``False`` is a positive claim that contact has been lost.
+    """
+
     artifact_ref: str | None = None
     result: dict | None = None
     error: str | None = None
@@ -501,6 +522,8 @@ def to_dict(job: Job) -> dict:
         "label_hint": job.label_hint,
         "key": job.eta_key,
         "cost": asdict(job.cost),
+        "worker_silent_s": job.worker_silent_s,
+        "worker_responsive": job.worker_responsive,
         "artifact_ref": job.artifact_ref,
         "result": job.result,
         "error": job.error,
@@ -1109,6 +1132,17 @@ def _project_job(rt, record, au_result, config) -> Job:
     progress = _progress_from(record)
     cost = _cost_from(record)
 
+    # Liveness, but only where the question means anything: a terminal job's
+    # worker is *supposed* to be silent, and reporting that as lost contact
+    # would make every finished job look broken.
+    worker_silent_s = None
+    worker_responsive = None
+    last_beat = _parse_iso(record.get("heartbeat_at"))
+    if last_beat is not None:
+        worker_silent_s = round((_utcnow() - last_beat).total_seconds(), 1)
+        if status in (RUNNING, CANCELLING):
+            worker_responsive = _heartbeat_is_fresh(record, config)
+
     predicted_total_s = remaining_s = eta_s = None
     eta_ts = None
     pct = None
@@ -1173,6 +1207,8 @@ def _project_job(rt, record, au_result, config) -> Job:
         eta_key=eta_key,
         cost=cost,
         cached=bool(record.get("cached")),
+        worker_silent_s=worker_silent_s,
+        worker_responsive=worker_responsive,
         artifact_ref=artifact_ref,
         result=result_payload,
         error=error,
