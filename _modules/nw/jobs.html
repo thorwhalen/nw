@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.jobs &mdash; nw 0.0.41 documentation</title>
+  <title>nw.jobs &mdash; nw 0.0.42 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=20c5f126"></script>
+      <script src="../../_static/documentation_options.js?v=173d7b4c"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -228,6 +228,21 @@
     <span class="n">stale_running_s</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">900.0</span>
 <span class="w">    </span><span class="sd">"""A RUNNING record older than this with no live worker is reaped as</span>
 <span class="sd">    ``FAILED("worker died — resumable")`` (kills the stuck-toast bug)."""</span>
+
+    <span class="n">heartbeat_interval_s</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">20.0</span>
+<span class="w">    </span><span class="sd">"""How often a running worker stamps ``heartbeat_at`` on its index record.</span>
+
+<span class="sd">    Liveness has to be a fact in the **shared store**, not in one process's</span>
+<span class="sd">    memory, or a second API replica cannot tell a live job from a dead one.</span>
+<span class="sd">    Cheap: one small atomic file write per job per interval."""</span>
+
+    <span class="n">heartbeat_stale_s</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">120.0</span>
+<span class="w">    </span><span class="sd">"""A heartbeat younger than this proves the worker is alive **anywhere**.</span>
+
+<span class="sd">    Generously larger than ``heartbeat_interval_s``: the beat is a Python</span>
+<span class="sd">    thread, and a render holding the GIL in a C extension can delay it well</span>
+<span class="sd">    past one interval. The asymmetry is deliberate — a late beat costs a</span>
+<span class="sd">    slower reap, while an eager one destroys a live job's record."""</span>
     <span class="n">approval_threshold_usd</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span>
 <span class="w">    </span><span class="sd">"""Estimated cost at/above which a render requires explicit approval."""</span>
     <span class="n">jobs_dirname</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">".nw/jobs"</span>
@@ -577,10 +592,13 @@
         <span class="c1"># this read and the write below; that shrinks the window from "the whole</span>
         <span class="c1"># poll gap" to "two statements", and closing it fully needs the</span>
         <span class="c1"># optimistic-concurrency work the module owes anyway.</span>
-        <span class="n">already_finished</span> <span class="o">=</span> <span class="n">_normalize_status</span><span class="p">(</span>
-            <span class="n">rt</span><span class="o">.</span><span class="n">au_store</span><span class="p">[</span><span class="n">job_id</span><span class="p">]</span><span class="o">.</span><span class="n">status</span><span class="p">,</span>
-            <span class="n">cancel_requested</span><span class="o">=</span><span class="nb">bool</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"cancel_requested"</span><span class="p">)),</span>
-        <span class="p">)</span> <span class="ow">in</span> <span class="n">TERMINAL_STATUSES</span>
+        <span class="n">already_finished</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">_normalize_status</span><span class="p">(</span>
+                <span class="n">rt</span><span class="o">.</span><span class="n">au_store</span><span class="p">[</span><span class="n">job_id</span><span class="p">]</span><span class="o">.</span><span class="n">status</span><span class="p">,</span>
+                <span class="n">cancel_requested</span><span class="o">=</span><span class="nb">bool</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"cancel_requested"</span><span class="p">)),</span>
+            <span class="p">)</span>
+            <span class="ow">in</span> <span class="n">TERMINAL_STATUSES</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">already_finished</span><span class="p">:</span>
             <span class="n">record</span><span class="p">[</span><span class="s2">"cancel_requested"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="n">_index_set_locked</span><span class="p">(</span><span class="n">rt</span><span class="p">,</span> <span class="n">job_id</span><span class="p">,</span> <span class="n">record</span><span class="p">)</span>
@@ -984,8 +1002,22 @@
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">fal_ctx</span> <span class="o">=</span> <span class="n">nullcontext</span><span class="p">()</span>
-        <span class="k">with</span> <span class="n">fal_ctx</span><span class="p">,</span> <span class="n">extra_ctx</span> <span class="k">if</span> <span class="n">extra_ctx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">nullcontext</span><span class="p">():</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="n">call</span><span class="p">()</span>
+        <span class="n">stop_beat</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+        <span class="n">beat</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span>
+            <span class="n">target</span><span class="o">=</span><span class="n">_beat_while_running</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">rt</span><span class="p">,</span> <span class="n">job_id</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">stop_beat</span><span class="p">),</span>
+            <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">"nw-jobs-heartbeat-</span><span class="si">{</span><span class="n">job_id</span><span class="p">[:</span><span class="mi">8</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+            <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">beat</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">fal_ctx</span><span class="p">,</span> <span class="n">extra_ctx</span> <span class="k">if</span> <span class="n">extra_ctx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">nullcontext</span><span class="p">():</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">call</span><span class="p">()</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="c1"># ``finally``, not a trailing statement: a render that raises must</span>
+            <span class="c1"># still stop beating, or a dead job keeps claiming to be alive and</span>
+            <span class="c1"># the reaper it exists to inform never fires.</span>
+            <span class="n">stop_beat</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
         <span class="n">_reconcile_terminal</span><span class="p">(</span><span class="n">rt</span><span class="p">,</span> <span class="n">job_id</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">result</span>
 
@@ -1147,6 +1179,8 @@
     <span class="n">job_id</span> <span class="o">=</span> <span class="n">record</span><span class="p">[</span><span class="s2">"job_id"</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">rt</span><span class="o">.</span><span class="n">middleware</span><span class="o">.</span><span class="n">is_running</span><span class="p">(</span><span class="n">job_id</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">au_result</span>  <span class="c1"># a live worker in this process is on it</span>
+    <span class="k">if</span> <span class="n">_heartbeat_is_fresh</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">au_result</span>  <span class="c1"># a live worker in SOME process is on it</span>
     <span class="n">started</span> <span class="o">=</span> <span class="n">_parse_iso</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"started_at"</span><span class="p">)</span> <span class="ow">or</span> <span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"created_at"</span><span class="p">))</span>
     <span class="k">if</span> <span class="p">(</span>
         <span class="n">started</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
@@ -1163,6 +1197,49 @@
     <span class="k">with</span> <span class="n">rt</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
         <span class="n">_index_update_locked</span><span class="p">(</span><span class="n">rt</span><span class="p">,</span> <span class="n">job_id</span><span class="p">,</span> <span class="n">finished_at</span><span class="o">=</span><span class="n">_now_iso</span><span class="p">(),</span> <span class="n">error</span><span class="o">=</span><span class="n">REAPED_REASON</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">rt</span><span class="o">.</span><span class="n">au_store</span><span class="p">[</span><span class="n">job_id</span><span class="p">]</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_heartbeat_is_fresh</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Whether ``record``'s worker has beaten recently enough to be alive.</span>
+
+<span class="sd">    ``is_running`` — the check beside this one — reads a **process-local**</span>
+<span class="sd">    dict, so it answers "is a worker on this in MY process". A second API</span>
+<span class="sd">    replica reading a job whose worker lives in the first replica gets</span>
+<span class="sd">    ``False``, and once the record is older than ``stale_running_s`` it</span>
+<span class="sd">    rewrites a healthy running job to ``FAILED("worker died")`` in the store</span>
+<span class="sd">    they share. Silently, and to the record the live replica is also reading.</span>
+
+<span class="sd">    That is invisible in a single process, which is why it would ship: at a</span>
+<span class="sd">    few minutes per render the record never reaches the threshold, and only a</span>
+<span class="sd">    long job crosses it.</span>
+
+<span class="sd">    A missing ``heartbeat_at`` returns ``False`` — records written before</span>
+<span class="sd">    heartbeats existed, and jobs whose worker died before its first beat,</span>
+<span class="sd">    both keep exactly the old behaviour. This predicate can only **prevent** a</span>
+<span class="sd">    reap, never cause one, so it cannot introduce a false positive of its own.</span>
+<span class="sd">    """</span>
+    <span class="n">beat</span> <span class="o">=</span> <span class="n">_parse_iso</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"heartbeat_at"</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">beat</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">_utcnow</span><span class="p">()</span> <span class="o">-</span> <span class="n">beat</span><span class="p">)</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">config</span><span class="o">.</span><span class="n">heartbeat_stale_s</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_beat_while_running</span><span class="p">(</span><span class="n">rt</span><span class="p">,</span> <span class="n">job_id</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">stop</span><span class="p">:</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Stamp ``heartbeat_at`` on the index record until ``stop`` is set.</span>
+
+<span class="sd">    Runs on a daemon thread beside the render. Best-effort throughout: a</span>
+<span class="sd">    failed beat must never take down the render it is only reporting on, and</span>
+<span class="sd">    a missed beat degrades to the pre-heartbeat behaviour rather than to a</span>
+<span class="sd">    wrong answer.</span>
+<span class="sd">    """</span>
+    <span class="k">while</span> <span class="ow">not</span> <span class="n">stop</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">rt</span><span class="o">.</span><span class="n">lock</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">_index_get_locked</span><span class="p">(</span><span class="n">rt</span><span class="p">,</span> <span class="n">job_id</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">_index_update_locked</span><span class="p">(</span><span class="n">rt</span><span class="p">,</span> <span class="n">job_id</span><span class="p">,</span> <span class="n">heartbeat_at</span><span class="o">=</span><span class="n">_now_iso</span><span class="p">())</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># noqa: BLE001 — reporting must not break the render</span>
+            <span class="k">pass</span>
+        <span class="n">stop</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">heartbeat_interval_s</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_project_job</span><span class="p">(</span><span class="n">rt</span><span class="p">,</span> <span class="n">record</span><span class="p">,</span> <span class="n">au_result</span><span class="p">,</span> <span class="n">config</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Job</span><span class="p">:</span>
