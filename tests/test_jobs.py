@@ -811,3 +811,127 @@ def test_an_unreported_flag_is_none_not_false(project):
     done = _poll_until(project, job.job_id, lambda j: j.status == jobs.SUCCEEDED)
 
     assert done.cost.actual_is_lower_bound is None
+
+
+# ---------------------------------------------------------------------------
+# the job record must not lie about what happened
+# ---------------------------------------------------------------------------
+
+
+def test_a_late_cancel_does_not_rewrite_a_finished_job(project):
+    """A cancel that arrives after the work finished is a no-op.
+
+    ``cancel_requested`` is authoritative for status, so setting it on a
+    terminal record turned a SUCCEEDED job into ``cancelled`` and dropped its
+    ``result`` and ``pct``. The work had run, finished, and — for a paid render
+    — billed. The window is the client's poll gap, and a multi-minute job
+    behind a prominent "stop" button is the shape that produces the late click.
+    """
+    release = threading.Event()
+    release.set()
+    job = jobs.enqueue(
+        project,
+        "journey.full_auto",
+        VIDEO_PARAMS,
+        dispatch={"journey.full_auto": _blocking_stub(release)},
+    )
+    done = _poll_until(project, job.job_id, lambda j: j.status == jobs.SUCCEEDED)
+    assert done.status == jobs.SUCCEEDED and done.result is not None
+
+    after = jobs.cancel_job(project, job.job_id)
+
+    assert after.status == jobs.SUCCEEDED, "a finished job was rewritten to cancelled"
+    assert after.result == done.result, "the finished job's result was dropped"
+    assert after.pct == 100
+    assert after.artifact_ref == done.artifact_ref
+    # …and it stays that way on the next read, i.e. nothing was persisted.
+    assert jobs.get_job(project, job.job_id).status == jobs.SUCCEEDED
+
+
+def test_cancelling_a_job_that_is_still_running_still_works(project):
+    """The guard must not disarm cancel — the negative control.
+
+    A guard that refused every cancel would pass the test above and silently
+    remove the feature, so this pins the direction that still has a future to
+    change.
+    """
+    release = threading.Event()
+    job = jobs.enqueue(
+        project,
+        "journey.full_auto",
+        VIDEO_PARAMS,
+        dispatch={"journey.full_auto": _blocking_stub(release)},
+    )
+    _poll_until(project, job.job_id, lambda j: j.status == jobs.RUNNING)
+
+    after = jobs.cancel_job(project, job.job_id)
+    assert after.status in (jobs.CANCELLING, jobs.CANCELLED)
+    release.set()
+    assert _poll_until(
+        project, job.job_id, lambda j: j.status in jobs.TERMINAL_STATUSES
+    ).status == jobs.CANCELLED
+
+
+@pytest.mark.parametrize(
+    "fields, expect_index, expect_transform",
+    [
+        ({"stage_index": 2, "current_transform": "panel_to_clip"}, 2, "panel_to_clip"),
+        ({"index": 2, "transform": "panel_to_clip"}, 2, "panel_to_clip"),
+    ],
+    ids=["canonical", "alias"],
+)
+def test_stage_progress_mirrors_under_either_field_name(
+    project, fields, expect_index, expect_transform
+):
+    """The emitter owns its vocabulary; the translation belongs at this boundary.
+
+    reelee's journey emits ``index`` / ``transform``. Without the aliases its
+    entire stage breakdown mirrored as nulls while every event was being
+    delivered correctly — which reads from outside as "no events are emitted"
+    and sends the reader looking in the wrong place.
+    """
+
+    def stub(project, params, *, job_id, on_event, should_cancel):
+        on_event({"kind": "journey.stage_started", **fields})
+        return {"journey_status": "completed"}
+
+    job = jobs.enqueue(
+        project,
+        "journey.full_auto",
+        VIDEO_PARAMS,
+        dispatch={"journey.full_auto": stub},
+    )
+    done = _poll_until(project, job.job_id, lambda j: j.status == jobs.SUCCEEDED)
+    assert done.progress.stage_index == expect_index
+    assert done.progress.current_transform == expect_transform
+
+
+def test_the_canonical_field_wins_over_its_alias(project):
+    """Precedence is explicit, not an accident of dict-literal order.
+
+    A ``{source: dest}`` map reads better and resolves this case by whichever
+    row was written last. Both names in one event is unlikely — and that is
+    exactly why nobody would notice it resolving the wrong way.
+    """
+
+    def stub(project, params, *, job_id, on_event, should_cancel):
+        on_event(
+            {
+                "kind": "journey.stage_started",
+                "stage_index": 7,
+                "index": 1,
+                "current_transform": "canonical",
+                "transform": "alias",
+            }
+        )
+        return {"journey_status": "completed"}
+
+    job = jobs.enqueue(
+        project,
+        "journey.full_auto",
+        VIDEO_PARAMS,
+        dispatch={"journey.full_auto": stub},
+    )
+    done = _poll_until(project, job.job_id, lambda j: j.status == jobs.SUCCEEDED)
+    assert done.progress.stage_index == 7
+    assert done.progress.current_transform == "canonical"

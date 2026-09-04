@@ -413,14 +413,44 @@ def cancel_job(
     The ``cancel_requested`` flag is authoritative, so the job reads
     ``cancelling`` → ``cancelled`` even if the still-running thread later
     overwrites the store with COMPLETED.
+
+    **A job that has already finished is not cancelled — the call is a no-op**
+    and returns the job unchanged. Because the flag is authoritative for
+    status, setting it on a terminal record rewrote a SUCCEEDED job to
+    ``cancelled`` and dropped its ``result`` and ``pct`` (and a FAILED job's
+    ``error``): work that ran, finished and *billed*, reported as though it had
+    not. Cancelling is a request about the future, and there is no future left
+    to change.
     """
     rt = _runtime(project, config)
     with rt.lock:
         record = _index_get_locked(rt, job_id)
         if record is None:
             return None
-        record["cancel_requested"] = True
-        _index_set_locked(rt, job_id, record)
+        # A cancel that arrives after the work finished is a NO-OP, not a
+        # rewrite. ``cancel_requested`` is authoritative for status, so setting
+        # it unconditionally turned an already-SUCCEEDED job into ``cancelled``
+        # with ``result`` and ``pct`` dropped — a finished, already-BILLED unit
+        # of work reported as if it had never happened. The window is the poll
+        # gap, and a long render behind a prominent "stop" button is exactly the
+        # shape that produces a late click.
+        #
+        # Read the au record, not the index: the index carries intent, the au
+        # store carries outcome. A cross-process race can still slip between
+        # this read and the write below; that shrinks the window from "the whole
+        # poll gap" to "two statements", and closing it fully needs the
+        # optimistic-concurrency work the module owes anyway.
+        already_finished = _normalize_status(
+            rt.au_store[job_id].status,
+            cancel_requested=bool(record.get("cancel_requested")),
+        ) in TERMINAL_STATUSES
+        if not already_finished:
+            record["cancel_requested"] = True
+            _index_set_locked(rt, job_id, record)
+    if already_finished:
+        # Outside the lock: ``get_job`` -> ``_maybe_reap`` takes it, and
+        # ``threading.Lock`` is not reentrant.
+        return get_job(project, job_id, config=config)
     # Flip the durable record terminal immediately (idempotent: no-op if already
     # terminal). Passing the backend lets cancel() reach terminate() (§3.1).
     au.cancel_task(job_id, backend=rt.backend, store=rt.au_store)
@@ -844,21 +874,42 @@ def _mirror_event_into_index(rt, job_id, ev) -> None:
         cost = dict(record.get("cost") or {})
         updates: dict[str, Any] = {}
 
-        for src in ("stage_index", "stage_count", "current_transform", "fraction"):
-            if src in fields:
-                progress[src] = fields[src]
-        cost_map = {
-            "estimated_usd": "estimated_usd",
-            "actual_usd": "actual_usd",
-            "cost_usd": "actual_usd",
-            "cache_hit_savings_usd": "cache_hit_savings_usd",
+        # Aliases, exactly as ``cost_map`` below does for ``cost_usd``: the
+        # emitter owns its domain vocabulary, and the translation belongs at
+        # this boundary rather than forcing every producer to spell the
+        # store's field names. reelee's journey emits ``index`` /
+        # ``transform``; without these two rows its whole stage breakdown
+        # mirrored as nulls while every event was being delivered correctly —
+        # a live defect that looked like "no events" from the outside.
+        # Keyed by DESTINATION, with sources in precedence order — the
+        # canonical name always beats its alias. A ``{source: dest}`` map reads
+        # more naturally and is wrong: dict order decides, so an event carrying
+        # both names would be resolved by whichever row happened to be written
+        # last.
+        progress_sources = {
+            "stage_index": ("stage_index", "index"),
+            "stage_count": ("stage_count",),
+            "current_transform": ("current_transform", "transform"),
+            "fraction": ("fraction",),
+        }
+        for dst, sources in progress_sources.items():
+            for src in sources:
+                if src in fields:
+                    progress[dst] = fields[src]
+                    break
+        cost_sources = {
+            "estimated_usd": ("estimated_usd",),
+            "actual_usd": ("actual_usd", "cost_usd"),
+            "cache_hit_savings_usd": ("cache_hit_savings_usd",),
             # The unknown-cost flag travels with the figure it qualifies, or
             # the figure arrives alone and reads as exact.
-            "has_unknown_costs": "actual_is_lower_bound",
+            "actual_is_lower_bound": ("has_unknown_costs",),
         }
-        for src, dst in cost_map.items():
-            if src in fields and fields[src] is not None:
-                cost[dst] = fields[src]
+        for dst, sources in cost_sources.items():
+            for src in sources:
+                if src in fields and fields[src] is not None:
+                    cost[dst] = fields[src]
+                    break
 
         updates["progress"] = progress
         updates["cost"] = cost
