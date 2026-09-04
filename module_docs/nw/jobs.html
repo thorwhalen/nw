@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.jobs &mdash; nw 0.0.39 documentation</title>
+  <title>nw.jobs &mdash; nw 0.0.40 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=e648f5b4"></script>
+      <script src="../../_static/documentation_options.js?v=84bd753f"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -74,7 +74,10 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.jobs.Job"><code class="docutils literal notranslate"><span class="pre">Job</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#nw.jobs.JobCost"><code class="docutils literal notranslate"><span class="pre">JobCost</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.jobs.JobCost"><code class="docutils literal notranslate"><span class="pre">JobCost</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#nw.jobs.JobCost.actual_is_lower_bound"><code class="docutils literal notranslate"><span class="pre">JobCost.actual_is_lower_bound</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.jobs.JobProgress"><code class="docutils literal notranslate"><span class="pre">JobProgress</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.jobs.JobsConfig"><code class="docutils literal notranslate"><span class="pre">JobsConfig</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#nw.jobs.JobsConfig.approval_threshold_usd"><code class="docutils literal notranslate"><span class="pre">JobsConfig.approval_threshold_usd</span></code></a></li>
@@ -188,6 +191,11 @@ flag is the authority for cancellation intent, so a job reads
 <li><p><strong>ETA is learned from observed wall-time</strong>, per <code class="docutils literal notranslate"><span class="pre">(model,</span> <span class="pre">operation,</span> <span class="pre">dur_bucket)</span></code>
 with back-off, median (not mean), honest “estimating…” before enough
 history, and <strong>cache-hits excluded from learning</strong>.</p></li>
+<li><p><strong>A cost never travels without its honesty flag.</strong> <code class="docutils literal notranslate"><span class="pre">JobCost.actual_usd</span></code> is
+paired with <code class="docutils literal notranslate"><span class="pre">actual_is_lower_bound</span></code>, because an unpriceable call that
+actually billed contributes <code class="docutils literal notranslate"><span class="pre">0.0</span></code> to the sum — so a bare <code class="docutils literal notranslate"><span class="pre">$0</span></code> means
+<em>either</em> “nothing was spent” <em>or</em> “we do not know what was spent”, and a
+spend surface that cannot tell them apart shows the second as free.</p></li>
 </ul>
 <p>All tunables are keyword-configurable via <a class="reference internal" href="#nw.jobs.JobsConfig" title="nw.jobs.JobsConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobsConfig</span></code></a>; defaults live at
 the top of this module — no magic numbers below.</p>
@@ -239,8 +247,24 @@ reaper uses (a RUNNING au record whose key is not in <code class="docutils liter
 
 <dl class="py class">
 <dt class="sig sig-object py" id="nw.jobs.JobCost">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.jobs.</span></span><span class="sig-name descname"><span class="pre">JobCost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">estimated_usd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'float</span> <span class="pre">|</span> <span class="pre">None'</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actual_usd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'float</span> <span class="pre">|</span> <span class="pre">None'</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_hit_savings_usd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'float</span> <span class="pre">|</span> <span class="pre">None'</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nw/jobs.html#JobCost"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.jobs.JobCost" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.jobs.</span></span><span class="sig-name descname"><span class="pre">JobCost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">estimated_usd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'float</span> <span class="pre">|</span> <span class="pre">None'</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actual_usd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'float</span> <span class="pre">|</span> <span class="pre">None'</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_hit_savings_usd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'float</span> <span class="pre">|</span> <span class="pre">None'</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actual_is_lower_bound</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'bool</span> <span class="pre">|</span> <span class="pre">None'</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nw/jobs.html#JobCost"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.jobs.JobCost" title="Link to this definition"></a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="nw.jobs.JobCost.actual_is_lower_bound">
+<span class="sig-name descname"><span class="pre">actual_is_lower_bound</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#nw.jobs.JobCost.actual_is_lower_bound" title="Link to this definition"></a></dt>
+<dd><p>True when the run reported <code class="docutils literal notranslate"><span class="pre">has_unknown_costs</span></code> — some call that
+actually billed had no price, so <code class="xref py py-attr docutils literal notranslate"><span class="pre">actual_usd</span></code> UNDER-states the spend.</p>
+<p>Its whole job is to keep a <code class="docutils literal notranslate"><span class="pre">$0</span></code> readable. Without it, <code class="docutils literal notranslate"><span class="pre">actual_usd</span></code>
+conflates two answers a spend surface must never merge: “this run cost
+nothing” (a cache hit — a known zero) and “we do not know what this run
+cost” (an unpriceable call ran). A UI that renders the second as <em>free</em>,
+or a bound that reads it as <em>under budget</em>, is the failure this field
+exists to make impossible.</p>
+<p><code class="docutils literal notranslate"><span class="pre">None</span></code> means the render never reported either way — an older caller, or
+a job that died before finishing. <code class="docutils literal notranslate"><span class="pre">None</span></code> is not <code class="docutils literal notranslate"><span class="pre">False</span></code>: absence of the
+flag is not a claim that the total is exact.</p>
+</dd></dl>
+
+</dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="nw.jobs.JobProgress">

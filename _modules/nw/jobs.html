@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.jobs &mdash; nw 0.0.39 documentation</title>
+  <title>nw.jobs &mdash; nw 0.0.40 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=e648f5b4"></script>
+      <script src="../../_static/documentation_options.js?v=84bd753f"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -155,6 +155,11 @@
 <span class="sd">- **ETA is learned from observed wall-time**, per ``(model, operation, dur_bucket)``</span>
 <span class="sd">  with back-off, median (not mean), honest "estimating…" before enough</span>
 <span class="sd">  history, and **cache-hits excluded from learning**.</span>
+<span class="sd">- **A cost never travels without its honesty flag.** ``JobCost.actual_usd`` is</span>
+<span class="sd">  paired with ``actual_is_lower_bound``, because an unpriceable call that</span>
+<span class="sd">  actually billed contributes ``0.0`` to the sum — so a bare ``$0`` means</span>
+<span class="sd">  *either* "nothing was spent" *or* "we do not know what was spent", and a</span>
+<span class="sd">  spend surface that cannot tell them apart shows the second as free.</span>
 
 <span class="sd">All tunables are keyword-configurable via :class:`JobsConfig`; defaults live at</span>
 <span class="sd">the top of this module — no magic numbers below.</span>
@@ -266,7 +271,22 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">JobCost</span><span class="p">:</span>
     <span class="n">estimated_usd</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">actual_usd</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">cache_hit_savings_usd</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span></div>
+    <span class="n">cache_hit_savings_usd</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">actual_is_lower_bound</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">"""True when the run reported ``has_unknown_costs`` — some call that</span>
+<span class="sd">    actually billed had no price, so :attr:`actual_usd` UNDER-states the spend.</span>
+
+<span class="sd">    Its whole job is to keep a ``$0`` readable. Without it, ``actual_usd``</span>
+<span class="sd">    conflates two answers a spend surface must never merge: "this run cost</span>
+<span class="sd">    nothing" (a cache hit — a known zero) and "we do not know what this run</span>
+<span class="sd">    cost" (an unpriceable call ran). A UI that renders the second as *free*,</span>
+<span class="sd">    or a bound that reads it as *under budget*, is the failure this field</span>
+<span class="sd">    exists to make impossible.</span>
+
+<span class="sd">    ``None`` means the render never reported either way — an older caller, or</span>
+<span class="sd">    a job that died before finishing. ``None`` is not ``False``: absence of the</span>
+<span class="sd">    flag is not a claim that the total is exact.</span>
+<span class="sd">    """</span></div>
 
 
 
@@ -988,6 +1008,9 @@
             <span class="s2">"actual_usd"</span><span class="p">:</span> <span class="s2">"actual_usd"</span><span class="p">,</span>
             <span class="s2">"cost_usd"</span><span class="p">:</span> <span class="s2">"actual_usd"</span><span class="p">,</span>
             <span class="s2">"cache_hit_savings_usd"</span><span class="p">:</span> <span class="s2">"cache_hit_savings_usd"</span><span class="p">,</span>
+            <span class="c1"># The unknown-cost flag travels with the figure it qualifies, or</span>
+            <span class="c1"># the figure arrives alone and reads as exact.</span>
+            <span class="s2">"has_unknown_costs"</span><span class="p">:</span> <span class="s2">"actual_is_lower_bound"</span><span class="p">,</span>
         <span class="p">}</span>
         <span class="k">for</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span> <span class="ow">in</span> <span class="n">cost_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">src</span> <span class="ow">in</span> <span class="n">fields</span> <span class="ow">and</span> <span class="n">fields</span><span class="p">[</span><span class="n">src</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1022,6 +1045,8 @@
                 <span class="n">cost</span><span class="p">[</span><span class="s2">"actual_usd"</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">"cost_usd_actual"</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"cache_hit_savings_usd"</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">cost</span><span class="p">[</span><span class="s2">"cache_hit_savings_usd"</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="s2">"cache_hit_savings_usd"</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"has_unknown_costs"</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">cost</span><span class="p">[</span><span class="s2">"actual_is_lower_bound"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">"has_unknown_costs"</span><span class="p">])</span>
             <span class="n">updates</span><span class="p">[</span><span class="s2">"cost"</span><span class="p">]</span> <span class="o">=</span> <span class="n">cost</span>
             <span class="k">for</span> <span class="n">src</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"animatic_artifact_id"</span><span class="p">,</span> <span class="s2">"artifact_id"</span><span class="p">,</span> <span class="s2">"artifact_ref"</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">src</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1403,6 +1428,7 @@
         <span class="n">estimated_usd</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"estimated_usd"</span><span class="p">),</span>
         <span class="n">actual_usd</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"actual_usd"</span><span class="p">),</span>
         <span class="n">cache_hit_savings_usd</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"cache_hit_savings_usd"</span><span class="p">),</span>
+        <span class="n">actual_is_lower_bound</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"actual_is_lower_bound"</span><span class="p">),</span>
     <span class="p">)</span>
 
 
