@@ -6,6 +6,7 @@ progress/cost/eta/cancel machinery is exercised without spending money.
 """
 
 import contextlib
+from pathlib import Path
 import contextvars
 import threading
 import time
@@ -1140,3 +1141,96 @@ def test_a_finished_job_is_not_reported_as_having_lost_contact(project):
 
     assert done.status == jobs.SUCCEEDED
     assert done.worker_responsive is None, "a finished job read as unresponsive"
+
+
+# ---------------------------------------------------------------------------
+# summarize — a read that reads, and does nothing else
+# ---------------------------------------------------------------------------
+
+
+def test_summarize_provisions_nothing(project):
+    """``list_jobs`` looks like a read and is not.
+
+    It calls ``_runtime``, which creates ``.nw/jobs/{au,index,durations}`` and
+    memoizes a ``_JobsRuntime`` — owning a render ``ThreadBackend`` — into the
+    unbounded module-global ``_RUNTIMES``. A cross-project dashboard polling N
+    projects is exactly the caller that turns that into render machinery for
+    every project a user has ever glanced at, held for the life of the process.
+    """
+    jobs_dir = Path(project.root) / jobs.DEFAULT_CONFIG.jobs_dirname
+    jobs._reset_runtimes()
+
+    assert jobs.summarize(project.root) == []
+
+    assert not jobs_dir.exists(), "a read created the job directories"
+    assert not jobs._RUNTIMES, "a read built a runtime (and a ThreadBackend)"
+
+
+def test_list_jobs_still_provisions_and_that_is_the_contrast(project):
+    """Negative control, and the measurement that motivated ``summarize``.
+
+    Pinning the old behaviour keeps the two functions honestly different: if
+    ``list_jobs`` ever stops provisioning, ``summarize`` has no reason to exist
+    and this test says so by failing.
+    """
+    jobs_dir = Path(project.root) / jobs.DEFAULT_CONFIG.jobs_dirname
+    jobs._reset_runtimes()
+
+    jobs.list_jobs(project)
+
+    assert jobs_dir.exists()
+    assert len(jobs._RUNTIMES) == 1
+
+
+def test_summarize_reads_real_jobs_without_a_runtime(project):
+    """It has to actually answer, not just decline to write."""
+    release = threading.Event()
+    release.set()
+    job = jobs.enqueue(
+        project,
+        "journey.full_auto",
+        VIDEO_PARAMS,
+        dispatch={"journey.full_auto": _blocking_stub(release)},
+    )
+    _poll_until(project, job.job_id, lambda j: j.status == jobs.SUCCEEDED)
+    jobs._reset_runtimes()
+
+    rows = jobs.summarize(project.root)
+
+    assert [r.job_id for r in rows] == [job.job_id]
+    assert rows[0].status == jobs.SUCCEEDED, (
+        "status must come from the au store — the index's own status field is "
+        "not authoritative and reports finished jobs as queued"
+    )
+    assert rows[0].cost.actual_usd == 0.42
+    assert not jobs._RUNTIMES
+
+
+def test_summarize_does_not_reap_someone_elses_job(project):
+    """Reaping is a write, and a read-only fan-out must not fail a job.
+
+    A stale RUNNING record read through ``get_job`` is reaped to FAILED — the
+    right call for a caller looking at that job, and the wrong one for a
+    dashboard glancing across every project.
+    """
+    release = threading.Event()
+    job = jobs.enqueue(
+        project,
+        "journey.full_auto",
+        VIDEO_PARAMS,
+        dispatch={"journey.full_auto": _blocking_stub(release)},
+    )
+    _poll_until(project, job.job_id, lambda j: j.status == jobs.RUNNING)
+    # Backdate it past the reaper's threshold.
+    rt = jobs._runtime(project)
+    with rt.lock:
+        record = jobs._index_get_locked(rt, job.job_id)
+        record["started_at"] = jobs._iso(jobs._utcnow_plus(-99999))
+        record.pop("heartbeat_at", None)
+        jobs._index_set_locked(rt, job.job_id, record)
+    jobs._reset_runtimes()
+
+    rows = jobs.summarize(project.root, config=JobsConfig(stale_running_s=0.0))
+
+    assert rows[0].status == jobs.RUNNING, "a read-only summary reaped a job"
+    release.set()
