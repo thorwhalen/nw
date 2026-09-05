@@ -427,6 +427,87 @@ def list_jobs(
     return jobs
 
 
+def summarize(
+    project_root, *, limit: int = 50, config: JobsConfig = DEFAULT_CONFIG
+) -> list[Job]:
+    """This project's jobs **without provisioning it**. Newest first.
+
+    :func:`list_jobs` looks like a read and is not. It calls :func:`_runtime`,
+    which creates ``.nw/jobs/{au,index,durations}`` and memoizes a
+    :class:`_JobsRuntime` — *which owns a render ``ThreadBackend``* — into the
+    unbounded module-global ``_RUNTIMES``. Measured on a never-rendered
+    project::
+
+        before: .nw/jobs exists? False   _RUNTIMES size: 0
+        list_jobs(project)  ->  0 rows
+        after : .nw/jobs exists? True ['au', 'durations', 'index']
+                _RUNTIMES size: 1, runtime owns a ThreadBackend
+
+    A cross-project dashboard polling N projects is exactly the caller that
+    turns that into render machinery for every project a user has ever glanced
+    at, held for the life of the process. So this reads what is there and
+    creates nothing: **no directory, no backend, no ``_RUNTIMES`` entry**, and
+    ``[]`` for a project that has never run a job.
+
+    It also performs neither write :func:`_read_job` does:
+
+    - **No reaping.** Marking someone else's job failed is a write, and a
+      read-only fan-out across projects has no business doing it. A job that
+      needs reaping will be reaped by a caller that is actually looking at it.
+    - **No ``pct_floor`` persistence.** The monotonic floor is a write too.
+      Progress may therefore appear to tick backwards *within this view* if a
+      prediction lengthens; that is the honest cost of not writing, and the
+      per-project view still holds the floor.
+
+    Status still comes from the au store, never from the index record's own
+    ``status`` field: ``FileSystemStore`` synthesizes ``PENDING`` for a missing
+    key, so membership lives in the index while *outcome* lives in the store,
+    and trusting the index's copy reports finished jobs as queued.
+    """
+    base = Path(project_root) / config.jobs_dirname
+    index_dir, au_dir = base / "index", base / "au"
+    if not index_dir.is_dir() or not au_dir.is_dir():
+        return []
+
+    index = _AtomicJsonFiles(index_dir)
+    au_store = FileSystemStore(str(au_dir), ttl_seconds=None)
+    records = [r for r in (index.get(k) for k in list(index)) if r]
+    records.sort(key=lambda r: r.get("created_at") or "", reverse=True)
+
+    # A stand-in for the runtime, carrying only what the pure projection
+    # touches. Deliberately not a real ``_JobsRuntime``: building one is the
+    # provisioning this function exists to avoid.
+    rt = _ReadOnlyRuntime(index=index, au_store=au_store, durations=_EMPTY_DURATIONS)
+
+    jobs: list[Job] = []
+    for record in records[:limit]:
+        try:
+            au_result = au_store[record["job_id"]]
+        except Exception:  # noqa: BLE001 — one unreadable job must not hide the rest
+            continue
+        jobs.append(_project_job(rt, record, au_result, config))
+    return jobs
+
+
+@dataclass
+class _ReadOnlyRuntime:
+    """What :func:`_project_job` needs, minus everything that writes.
+
+    ``_project_job`` reads ``rt.durations`` (for the ETA prediction) and
+    nothing else off the runtime, so a summary can be built without the lock,
+    the backend or the middleware. ``durations`` is empty rather than the real
+    learner: reading it would be harmless, but opening it creates the directory
+    this function promises not to create.
+    """
+
+    index: MutableMapping
+    au_store: FileSystemStore
+    durations: Mapping
+
+
+_EMPTY_DURATIONS: Mapping = {}
+
+
 def get_job(project, job_id: str, *, config: JobsConfig = DEFAULT_CONFIG) -> Job | None:
     """One job (projecting the au status + mirrored index metadata). ``None`` if
     unknown. Reaps a stale-RUNNING record on read."""
