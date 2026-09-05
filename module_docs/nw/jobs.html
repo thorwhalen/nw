@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.jobs &mdash; nw 0.0.44 documentation</title>
+  <title>nw.jobs &mdash; nw 0.0.45 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=78cc6f98"></script>
+      <script src="../../_static/documentation_options.js?v=dcb4eb81"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -105,6 +105,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#nw.jobs.get_job"><code class="docutils literal notranslate"><span class="pre">get_job()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.jobs.list_jobs"><code class="docutils literal notranslate"><span class="pre">list_jobs()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.jobs.predict_total_s"><code class="docutils literal notranslate"><span class="pre">predict_total_s()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.jobs.summarize"><code class="docutils literal notranslate"><span class="pre">summarize()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.jobs.to_dict"><code class="docutils literal notranslate"><span class="pre">to_dict()</span></code></a></li>
 </ul>
 </li>
@@ -492,6 +493,42 @@ whose missing-key-returns-PENDING gotcha makes membership meaningless).</p>
 <code class="docutils literal notranslate"><span class="pre">&gt;=</span> <span class="pre">n_min</span></code> samples wins (median, with a real or synthesized p90). Falls
 back through the coarse key, the output-kind key, then the cold prior. An
 all-cache-hit plan short-circuits to <code class="docutils literal notranslate"><span class="pre">cache_hit_floor_s</span></code> (<code class="docutils literal notranslate"><span class="pre">&quot;exact&quot;</span></code>).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.jobs.summarize">
+<span class="sig-prename descclassname"><span class="pre">nw.jobs.</span></span><span class="sig-name descname"><span class="pre">summarize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_root</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nw.jobs.JobsConfig" title="nw.jobs.JobsConfig"><span class="pre">JobsConfig</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">JobsConfig(n_min=3,</span> <span class="pre">sample_window_k=20,</span> <span class="pre">pct_ceil=99,</span> <span class="pre">overrun_factor=1.5,</span> <span class="pre">cache_hit_floor_s=0.5,</span> <span class="pre">dur_buckets_s=(4.0,</span> <span class="pre">8.0,</span> <span class="pre">12.0),</span> <span class="pre">prior_total_s={'image':</span> <span class="pre">12.0,</span> <span class="pre">'video':</span> <span class="pre">90.0,</span> <span class="pre">'audio':</span> <span class="pre">15.0},</span> <span class="pre">default_prior_total_s=30.0,</span> <span class="pre">stale_running_s=900.0,</span> <span class="pre">heartbeat_interval_s=20.0,</span> <span class="pre">heartbeat_stale_s=120.0,</span> <span class="pre">approval_threshold_usd=1.0,</span> <span class="pre">jobs_dirname='.nw/jobs')</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#nw.jobs.Job" title="nw.jobs.Job"><span class="pre">Job</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nw/jobs.html#summarize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.jobs.summarize" title="Link to this definition"></a></dt>
+<dd><p>This project’s jobs <strong>without provisioning it</strong>. Newest first.</p>
+<p><a class="reference internal" href="#nw.jobs.list_jobs" title="nw.jobs.list_jobs"><code class="xref py py-func docutils literal notranslate"><span class="pre">list_jobs()</span></code></a> looks like a read and is not. It calls <code class="xref py py-func docutils literal notranslate"><span class="pre">_runtime()</span></code>,
+which creates <code class="docutils literal notranslate"><span class="pre">.nw/jobs/{au,index,durations}</span></code> and memoizes a
+<code class="xref py py-class docutils literal notranslate"><span class="pre">_JobsRuntime</span></code> — <em>which owns a render ``ThreadBackend``</em> — into the
+unbounded module-global <code class="docutils literal notranslate"><span class="pre">_RUNTIMES</span></code>. Measured on a never-rendered
+project:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>before: .nw/jobs exists? False   _RUNTIMES size: 0
+list_jobs(project)  -&gt;  0 rows
+after : .nw/jobs exists? True ['au', 'durations', 'index']
+        _RUNTIMES size: 1, runtime owns a ThreadBackend
+</pre></div>
+</div>
+<p>A cross-project dashboard polling N projects is exactly the caller that
+turns that into render machinery for every project a user has ever glanced
+at, held for the life of the process. So this reads what is there and
+creates nothing: <strong>no directory, no backend, no ``_RUNTIMES`` entry</strong>, and
+<code class="docutils literal notranslate"><span class="pre">[]</span></code> for a project that has never run a job.</p>
+<p>It also performs neither write <code class="xref py py-func docutils literal notranslate"><span class="pre">_read_job()</span></code> does:</p>
+<ul class="simple">
+<li><p><strong>No reaping.</strong> Marking someone else’s job failed is a write, and a
+read-only fan-out across projects has no business doing it. A job that
+needs reaping will be reaped by a caller that is actually looking at it.</p></li>
+<li><p><strong>No ``pct_floor`` persistence.</strong> The monotonic floor is a write too.
+Progress may therefore appear to tick backwards <em>within this view</em> if a
+prediction lengthens; that is the honest cost of not writing, and the
+per-project view still holds the floor.</p></li>
+</ul>
+<p>Status still comes from the au store, never from the index record’s own
+<code class="docutils literal notranslate"><span class="pre">status</span></code> field: <code class="docutils literal notranslate"><span class="pre">FileSystemStore</span></code> synthesizes <code class="docutils literal notranslate"><span class="pre">PENDING</span></code> for a missing
+key, so membership lives in the index while <em>outcome</em> lives in the store,
+and trusting the index’s copy reports finished jobs as queued.</p>
 </dd></dl>
 
 <dl class="py function">

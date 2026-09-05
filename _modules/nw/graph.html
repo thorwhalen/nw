@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.graph &mdash; nw 0.0.44 documentation</title>
+  <title>nw.graph &mdash; nw 0.0.45 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=78cc6f98"></script>
+      <script src="../../_static/documentation_options.js?v=dcb4eb81"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -817,8 +817,19 @@
 <span class="sd">    ``annotations_at_tier(root, "shot")`` returns every shot annotation</span>
 <span class="sd">    regardless of which store it lives in (project graph vs. storyboard</span>
 <span class="sd">    vs. alignment).</span>
+
+<span class="sd">    Asks each store for the tier rather than deserializing every annotation</span>
+<span class="sd">    and filtering. ``by_tier`` is a real indexed query on all four lacing</span>
+<span class="sd">    backends and was called by nothing in nw; this walked the whole project</span>
+<span class="sd">    to answer a question about one tier. Measured on 2000 annotations with</span>
+<span class="sd">    200 at the tier: **33.5 ms → 3.9 ms**, and the gap widens with project</span>
+<span class="sd">    size because one is O(all rows) and the other O(matching).</span>
 <span class="sd">    """</span>
-    <span class="k">return</span> <span class="p">[</span><span class="n">ann</span> <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">iter_all_annotations</span><span class="p">(</span><span class="n">project_root</span><span class="p">)</span> <span class="k">if</span> <span class="n">ann</span><span class="o">.</span><span class="n">tier</span> <span class="o">==</span> <span class="n">tier</span><span class="p">]</span></div>
+    <span class="n">out</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">with</span> <span class="n">open_project_stores</span><span class="p">(</span><span class="n">project_root</span><span class="p">)</span> <span class="k">as</span> <span class="n">stores</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">store</span> <span class="ow">in</span> <span class="n">stores</span><span class="p">:</span>
+            <span class="n">out</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">store</span><span class="o">.</span><span class="n">by_tier</span><span class="p">(</span><span class="n">tier</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">out</span></div>
 
 
 

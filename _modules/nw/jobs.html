@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.jobs &mdash; nw 0.0.44 documentation</title>
+  <title>nw.jobs &mdash; nw 0.0.45 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=78cc6f98"></script>
+      <script src="../../_static/documentation_options.js?v=dcb4eb81"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -557,6 +557,90 @@
             <span class="k">break</span>
     <span class="k">return</span> <span class="n">jobs</span></div>
 
+
+
+<div class="viewcode-block" id="summarize">
+<a class="viewcode-back" href="../../module_docs/nw/jobs.html#nw.jobs.summarize">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">summarize</span><span class="p">(</span>
+    <span class="n">project_root</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n">JobsConfig</span> <span class="o">=</span> <span class="n">DEFAULT_CONFIG</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Job</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""This project's jobs **without provisioning it**. Newest first.</span>
+
+<span class="sd">    :func:`list_jobs` looks like a read and is not. It calls :func:`_runtime`,</span>
+<span class="sd">    which creates ``.nw/jobs/{au,index,durations}`` and memoizes a</span>
+<span class="sd">    :class:`_JobsRuntime` — *which owns a render ``ThreadBackend``* — into the</span>
+<span class="sd">    unbounded module-global ``_RUNTIMES``. Measured on a never-rendered</span>
+<span class="sd">    project::</span>
+
+<span class="sd">        before: .nw/jobs exists? False   _RUNTIMES size: 0</span>
+<span class="sd">        list_jobs(project)  -&gt;  0 rows</span>
+<span class="sd">        after : .nw/jobs exists? True ['au', 'durations', 'index']</span>
+<span class="sd">                _RUNTIMES size: 1, runtime owns a ThreadBackend</span>
+
+<span class="sd">    A cross-project dashboard polling N projects is exactly the caller that</span>
+<span class="sd">    turns that into render machinery for every project a user has ever glanced</span>
+<span class="sd">    at, held for the life of the process. So this reads what is there and</span>
+<span class="sd">    creates nothing: **no directory, no backend, no ``_RUNTIMES`` entry**, and</span>
+<span class="sd">    ``[]`` for a project that has never run a job.</span>
+
+<span class="sd">    It also performs neither write :func:`_read_job` does:</span>
+
+<span class="sd">    - **No reaping.** Marking someone else's job failed is a write, and a</span>
+<span class="sd">      read-only fan-out across projects has no business doing it. A job that</span>
+<span class="sd">      needs reaping will be reaped by a caller that is actually looking at it.</span>
+<span class="sd">    - **No ``pct_floor`` persistence.** The monotonic floor is a write too.</span>
+<span class="sd">      Progress may therefore appear to tick backwards *within this view* if a</span>
+<span class="sd">      prediction lengthens; that is the honest cost of not writing, and the</span>
+<span class="sd">      per-project view still holds the floor.</span>
+
+<span class="sd">    Status still comes from the au store, never from the index record's own</span>
+<span class="sd">    ``status`` field: ``FileSystemStore`` synthesizes ``PENDING`` for a missing</span>
+<span class="sd">    key, so membership lives in the index while *outcome* lives in the store,</span>
+<span class="sd">    and trusting the index's copy reports finished jobs as queued.</span>
+<span class="sd">    """</span>
+    <span class="n">base</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">project_root</span><span class="p">)</span> <span class="o">/</span> <span class="n">config</span><span class="o">.</span><span class="n">jobs_dirname</span>
+    <span class="n">index_dir</span><span class="p">,</span> <span class="n">au_dir</span> <span class="o">=</span> <span class="n">base</span> <span class="o">/</span> <span class="s2">"index"</span><span class="p">,</span> <span class="n">base</span> <span class="o">/</span> <span class="s2">"au"</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">index_dir</span><span class="o">.</span><span class="n">is_dir</span><span class="p">()</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">au_dir</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+        <span class="k">return</span> <span class="p">[]</span>
+
+    <span class="n">index</span> <span class="o">=</span> <span class="n">_AtomicJsonFiles</span><span class="p">(</span><span class="n">index_dir</span><span class="p">)</span>
+    <span class="n">au_store</span> <span class="o">=</span> <span class="n">FileSystemStore</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">au_dir</span><span class="p">),</span> <span class="n">ttl_seconds</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">records</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="p">(</span><span class="n">index</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">index</span><span class="p">))</span> <span class="k">if</span> <span class="n">r</span><span class="p">]</span>
+    <span class="n">records</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="n">r</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"created_at"</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">""</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># A stand-in for the runtime, carrying only what the pure projection</span>
+    <span class="c1"># touches. Deliberately not a real ``_JobsRuntime``: building one is the</span>
+    <span class="c1"># provisioning this function exists to avoid.</span>
+    <span class="n">rt</span> <span class="o">=</span> <span class="n">_ReadOnlyRuntime</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">,</span> <span class="n">au_store</span><span class="o">=</span><span class="n">au_store</span><span class="p">,</span> <span class="n">durations</span><span class="o">=</span><span class="n">_EMPTY_DURATIONS</span><span class="p">)</span>
+
+    <span class="n">jobs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Job</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">records</span><span class="p">[:</span><span class="n">limit</span><span class="p">]:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">au_result</span> <span class="o">=</span> <span class="n">au_store</span><span class="p">[</span><span class="n">record</span><span class="p">[</span><span class="s2">"job_id"</span><span class="p">]]</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># noqa: BLE001 — one unreadable job must not hide the rest</span>
+            <span class="k">continue</span>
+        <span class="n">jobs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_project_job</span><span class="p">(</span><span class="n">rt</span><span class="p">,</span> <span class="n">record</span><span class="p">,</span> <span class="n">au_result</span><span class="p">,</span> <span class="n">config</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">jobs</span></div>
+
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">_ReadOnlyRuntime</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""What :func:`_project_job` needs, minus everything that writes.</span>
+
+<span class="sd">    ``_project_job`` reads ``rt.durations`` (for the ETA prediction) and</span>
+<span class="sd">    nothing else off the runtime, so a summary can be built without the lock,</span>
+<span class="sd">    the backend or the middleware. ``durations`` is empty rather than the real</span>
+<span class="sd">    learner: reading it would be harmless, but opening it creates the directory</span>
+<span class="sd">    this function promises not to create.</span>
+<span class="sd">    """</span>
+
+    <span class="n">index</span><span class="p">:</span> <span class="n">MutableMapping</span>
+    <span class="n">au_store</span><span class="p">:</span> <span class="n">FileSystemStore</span>
+    <span class="n">durations</span><span class="p">:</span> <span class="n">Mapping</span>
+
+
+<span class="n">_EMPTY_DURATIONS</span><span class="p">:</span> <span class="n">Mapping</span> <span class="o">=</span> <span class="p">{}</span>
 
 
 <div class="viewcode-block" id="get_job">
