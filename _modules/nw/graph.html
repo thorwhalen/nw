@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.graph &mdash; nw 0.0.43 documentation</title>
+  <title>nw.graph &mdash; nw 0.0.44 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=b345ff55"></script>
+      <script src="../../_static/documentation_options.js?v=78cc6f98"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -183,6 +183,7 @@
     <span class="n">_TIER_SECTION</span><span class="p">,</span>
     <span class="n">_TIER_SHOT</span><span class="p">,</span>
     <span class="n">open_project_graph</span><span class="p">,</span>
+    <span class="n">open_project_graph_readonly</span><span class="p">,</span>
     <span class="n">project_asset_id</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -274,10 +275,56 @@
                 <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
                     <span class="k">pass</span>
 
+    <span class="nd">@contextmanager</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_open_read</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">IntervalAnnotationStore</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">"""Open for a READ, without taking a write lock. May yield ``None``.</span>
+
+<span class="sd">        This class's docstring already promises that "concurrent reads/writes</span>
+<span class="sd">        from different processes are safe (SqliteStore is file-locked)".</span>
+<span class="sd">        :func:`open_project_graph` broke that promise for readers: it calls</span>
+<span class="sd">        ``_ensure_tiers``, which writes on every open, so a read contended with</span>
+<span class="sd">        any live writer. Measured with a writer holding ``BEGIN IMMEDIATE``, a</span>
+<span class="sd">        read of one project's genre envelope took **5.4 s** and then raised —</span>
+<span class="sd">        and because callers of ``resolved_genre`` catch per project, what a</span>
+<span class="sd">        user saw was a listing that stalled for five seconds per contended</span>
+<span class="sd">        project and then quietly lost that project's metadata.</span>
+
+<span class="sd">        Two fallbacks, each preserving a guarantee the read-write open makes:</span>
+
+<span class="sd">        - **No graph on disk yields ``None``**, and the caller returns its</span>
+<span class="sd">          empty answer. A project with no store has no sections; creating one</span>
+<span class="sd">          to discover that is the write this exists to avoid.</span>
+<span class="sd">        - **A file needing migration falls back to the read-write open.**</span>
+<span class="sd">          ``open_project_graph`` passes ``migrate=True`` deliberately —</span>
+<span class="sd">          without it every pre-D5 project refuses to open — and dropping that</span>
+<span class="sd">          for reads would strand those projects until something wrote to them.</span>
+<span class="sd">          So the rare case pays the lock and the common case does not.</span>
+<span class="sd">        """</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">lacing.store.sqlite</span><span class="w"> </span><span class="kn">import</span> <span class="n">SchemaMismatchError</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">store</span> <span class="o">=</span> <span class="n">open_project_graph_readonly</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_root</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="kc">None</span>
+            <span class="k">return</span>
+        <span class="k">except</span> <span class="n">SchemaMismatchError</span><span class="p">:</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open</span><span class="p">()</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="n">store</span>
+            <span class="k">return</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">store</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">close</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">store</span><span class="p">,</span> <span class="s2">"close"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">close</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">close</span><span class="p">()</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                    <span class="k">pass</span>
+
     <span class="c1"># -- sections ------------------------------------------------------------</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">sections</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">StoredSection</span><span class="p">]:</span>
-        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open</span><span class="p">()</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open_read</span><span class="p">()</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">_collect_typed</span><span class="p">(</span>
                 <span class="n">store</span><span class="p">,</span>
                 <span class="n">tier</span><span class="o">=</span><span class="n">_TIER_SECTION</span><span class="p">,</span>
@@ -319,7 +366,7 @@
     <span class="c1"># -- shots ---------------------------------------------------------------</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">shots</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">StoredShot</span><span class="p">]:</span>
-        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open</span><span class="p">()</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open_read</span><span class="p">()</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">_collect_typed</span><span class="p">(</span>
                 <span class="n">store</span><span class="p">,</span>
                 <span class="n">tier</span><span class="o">=</span><span class="n">_TIER_SHOT</span><span class="p">,</span>
@@ -361,7 +408,7 @@
     <span class="c1"># -- character / environment refs ---------------------------------------</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">character_refs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">StoredCharacterRef</span><span class="p">]:</span>
-        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open</span><span class="p">()</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open_read</span><span class="p">()</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">_collect_typed</span><span class="p">(</span>
                 <span class="n">store</span><span class="p">,</span>
                 <span class="n">tier</span><span class="o">=</span><span class="n">_TIER_CHARACTER_REF</span><span class="p">,</span>
@@ -400,7 +447,7 @@
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">environment_refs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">StoredEnvironmentRef</span><span class="p">]:</span>
-        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open</span><span class="p">()</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open_read</span><span class="p">()</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">_collect_typed</span><span class="p">(</span>
                 <span class="n">store</span><span class="p">,</span>
                 <span class="n">tier</span><span class="o">=</span><span class="n">_TIER_ENVIRONMENT_REF</span><span class="p">,</span>
@@ -441,7 +488,7 @@
     <span class="c1"># -- decisions -----------------------------------------------------------</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">decisions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">StoredDecision</span><span class="p">]:</span>
-        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open</span><span class="p">()</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open_read</span><span class="p">()</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">_collect_typed</span><span class="p">(</span>
                 <span class="n">store</span><span class="p">,</span>
                 <span class="n">tier</span><span class="o">=</span><span class="n">_TIER_DECISION</span><span class="p">,</span>
@@ -524,12 +571,11 @@
 <span class="sd">        it through :meth:`nw.Project.resolved_genre`, which returns the</span>
 <span class="sd">        plain-dict envelope shape :func:`nw.genres.resolve_genre` produces.</span>
 <span class="sd">        """</span>
-        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open</span><span class="p">()</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">store</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
-                <span class="k">if</span> <span class="p">(</span>
-                    <span class="n">ann</span><span class="o">.</span><span class="n">tier</span> <span class="o">==</span> <span class="n">GENRE_ENVELOPE_TIER</span>
-                    <span class="ow">and</span> <span class="n">ann</span><span class="o">.</span><span class="n">body_schema_uri</span> <span class="o">==</span> <span class="n">GENRE_ENVELOPE_BODY_SCHEMA_URI</span>
-                <span class="p">):</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open_read</span><span class="p">()</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">store</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">store</span><span class="o">.</span><span class="n">by_tier</span><span class="p">(</span><span class="n">GENRE_ENVELOPE_TIER</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">ann</span><span class="o">.</span><span class="n">body_schema_uri</span> <span class="o">==</span> <span class="n">GENRE_ENVELOPE_BODY_SCHEMA_URI</span><span class="p">:</span>
                     <span class="k">try</span><span class="p">:</span>
                         <span class="k">return</span> <span class="n">GenreEnvelopeBodyV1</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
                     <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
@@ -1216,7 +1262,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_collect_typed</span><span class="p">(</span>
-    <span class="n">store</span><span class="p">:</span> <span class="n">IntervalAnnotationStore</span><span class="p">,</span>
+    <span class="n">store</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">IntervalAnnotationStore</span><span class="p">],</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">tier</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">schema_uri</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -1224,10 +1270,19 @@
     <span class="n">wrap</span><span class="p">,</span>
     <span class="n">sort_key</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Typed rows at one tier. ``None`` store — no graph on disk — yields ``[]``.</span>
+
+<span class="sd">    Reads through ``by_tier``, the indexed query every lacing backend</span>
+<span class="sd">    implements, rather than filtering ``all()`` in Python. Measured on a</span>
+<span class="sd">    2000-annotation project with 200 rows at the tier: **33.5 ms → 3.9 ms**,</span>
+<span class="sd">    and the gap widens with project size because one is O(all rows) and the</span>
+<span class="sd">    other O(matching). ``by_tier`` was implemented on all four backends and</span>
+<span class="sd">    called by nothing in nw.</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">store</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
     <span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">store</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
-        <span class="k">if</span> <span class="n">ann</span><span class="o">.</span><span class="n">tier</span> <span class="o">!=</span> <span class="n">tier</span><span class="p">:</span>
-            <span class="k">continue</span>
+    <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">store</span><span class="o">.</span><span class="n">by_tier</span><span class="p">(</span><span class="n">tier</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">ann</span><span class="o">.</span><span class="n">body_schema_uri</span> <span class="o">!=</span> <span class="n">schema_uri</span><span class="p">:</span>
             <span class="k">continue</span>
         <span class="k">try</span><span class="p">:</span>

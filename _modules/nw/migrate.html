@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.migrate &mdash; nw 0.0.43 documentation</title>
+  <title>nw.migrate &mdash; nw 0.0.44 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=b345ff55"></script>
+      <script src="../../_static/documentation_options.js?v=78cc6f98"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -136,6 +136,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">_uuid</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
@@ -159,7 +160,7 @@
     <span class="n">SECTION_BODY_SCHEMA_URI</span><span class="p">,</span>
     <span class="n">SHOT_BODY_SCHEMA_URI</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.graph_backend</span><span class="w"> </span><span class="kn">import</span> <span class="n">SCOPE_GRAPH</span><span class="p">,</span> <span class="n">open_graph_store</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.graph_backend</span><span class="w"> </span><span class="kn">import</span> <span class="n">SCOPE_GRAPH</span><span class="p">,</span> <span class="n">open_graph_store</span><span class="p">,</span> <span class="n">selected_backend</span>
 
 
 <span class="c1"># ---------------------------------------------------------------------------</span>
@@ -220,6 +221,68 @@
     <span class="p">)</span>
     <span class="n">_ensure_tiers</span><span class="p">(</span><span class="n">store</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">store</span></div>
+
+
+
+<div class="viewcode-block" id="open_project_graph_readonly">
+<a class="viewcode-back" href="../../module_docs/nw/migrate.html#nw.open_project_graph_readonly">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">open_project_graph_readonly</span><span class="p">(</span><span class="n">project_root</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IntervalAnnotationStore</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Open the project's graph store to **read**, without taking a write lock.</span>
+
+<span class="sd">    :func:`open_project_graph` calls :func:`_ensure_tiers`, which issues an</span>
+<span class="sd">    ``add_tier`` per project tier on *every* open. That is a write, so a reader</span>
+<span class="sd">    contended with any live writer — and on SQLite it does not merely wait.</span>
+<span class="sd">    Measured with a writer holding ``BEGIN IMMEDIATE``:</span>
+
+<span class="sd">    ============================  ====================================</span>
+<span class="sd">    ``SqliteStore(path)``         OK in **0.19 ms**</span>
+<span class="sd">    ``open_project_graph(root)``  ``OperationalError`` after **5.4 s**</span>
+<span class="sd">    ============================  ====================================</span>
+
+<span class="sd">    **This read does not merely block — it raises**, and it raises slowly</span>
+<span class="sd">    enough to be mistaken for a hang and chased in the wrong layer. Phrasing</span>
+<span class="sd">    it as efficiency would invite a revert; phrasing it as blocking would</span>
+<span class="sd">    invite a busy-timeout tweak. The failure is categorical.</span>
+
+<span class="sd">    That matters the moment anything fans out across projects while a render</span>
+<span class="sd">    is running. Measured through the consumer that motivated it — listing</span>
+<span class="sd">    sibling projects, each of which reads a genre envelope — one contended</span>
+<span class="sd">    project cost **5429 ms** and *then* lost its metadata, because the caller</span>
+<span class="sd">    catches per project. Through this path the same call is **1.33 ms** and</span>
+<span class="sd">    keeps it.</span>
+
+<span class="sd">    Two deliberate differences from the read-write open, both following from</span>
+<span class="sd">    "a read does not write":</span>
+
+<span class="sd">    - **No tier creation.** The store is opened as it is on disk. A tier that</span>
+<span class="sd">      is missing simply has no annotations to return, which is the honest</span>
+<span class="sd">      answer to a reader.</span>
+<span class="sd">    - **No migration.** :func:`open_project_graph` passes ``migrate=True`` so a</span>
+<span class="sd">      file written under an older lacing schema upgrades on open. Upgrading is</span>
+<span class="sd">      a write, and a surface that silently migrated every project it *listed*</span>
+<span class="sd">      would be the same class of defect as one that created metadata for them.</span>
+<span class="sd">      ``ProjectGraph`` falls back to the read-write open for such a file, so</span>
+<span class="sd">      the rare case pays the lock and the common case does not.</span>
+
+<span class="sd">    In Postgres mode this delegates to the ordinary open: MVCC readers do not</span>
+<span class="sd">    block writers, so the problem being solved is SQLite-specific and inventing</span>
+<span class="sd">    a second path there would add a seam with nothing behind it.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        FileNotFoundError: in SQLite mode, when the project has no graph</span>
+<span class="sd">            database yet. Creating one is a write; a reader is told plainly</span>
+<span class="sd">            that there is nothing to read rather than quietly making it.</span>
+<span class="sd">    """</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">project_graph_db_path</span><span class="p">(</span><span class="n">project_root</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">selected_backend</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">)</span> <span class="o">==</span> <span class="s2">"postgres"</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">open_graph_store</span><span class="p">(</span>
+            <span class="n">db</span><span class="p">,</span> <span class="n">asset_id</span><span class="o">=</span><span class="n">project_asset_id</span><span class="p">(</span><span class="n">project_root</span><span class="p">),</span> <span class="n">scope</span><span class="o">=</span><span class="n">SCOPE_GRAPH</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">Path</span><span class="p">(</span><span class="n">db</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"no graph database for project: </span><span class="si">{</span><span class="n">project_root</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">lacing.store.sqlite</span><span class="w"> </span><span class="kn">import</span> <span class="n">SqliteStore</span>
+
+    <span class="k">return</span> <span class="n">SqliteStore</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">db</span><span class="p">))</span></div>
 
 
 
