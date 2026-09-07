@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.bodies.genre_envelope &mdash; nw 0.0.46 documentation</title>
+  <title>nw.transforms._cache_mode &mdash; nw 0.0.46 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -100,7 +100,8 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
-      <li class="breadcrumb-item active">nw.bodies.genre_envelope</li>
+          <li class="breadcrumb-item"><a href="../transforms.html">nw.transforms</a></li>
+      <li class="breadcrumb-item active">nw.transforms._cache_mode</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -109,76 +110,80 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <h1>Source code for nw.bodies.genre_envelope</h1><div class="highlight"><pre>
-<span></span><span class="sd">"""Body schema for the project's resolved genre envelope.</span>
+  <h1>Source code for nw.transforms._cache_mode</h1><div class="highlight"><pre>
+<span></span><span class="sd">"""One place that maps nw's ``(use_cache, force)`` onto falaw's ``(use_cache, refresh)``.</span>
 
-<span class="sd">URI: ``annot://schema/genre-envelope/v1``</span>
+<span class="sd">nw exposes two cache knobs on ``Transform.execute``: ``use_cache`` ("may this</span>
+<span class="sd">run touch the cache at all?") and ``force`` (the "regenerate this" affordance).</span>
+<span class="sd">falaw's executor exposes the same policy as a *read* half and a *write* half</span>
+<span class="sd">(falaw#49): ``use_cache`` gates both, ``refresh`` suppresses only the read.</span>
 
-<span class="sd">The persisted form of the creation envelope :func:`nw.genres.resolve_genre`</span>
-<span class="sd">returns — ``{genre, template, params}`` — so "what genre/template/params</span>
-<span class="sd">created this project?" stays answerable after the create call returns</span>
-<span class="sd">(nw#32). Before this schema existed the envelope went to the *caller* and</span>
-<span class="sd">nowhere else: reopen the project tomorrow and nothing in it said what genre</span>
-<span class="sd">it was, so nothing downstream (planner scoping, genre presets on a later</span>
-<span class="sd">run, a host aggregating another app's genre) could be genre-conditioned.</span>
+<span class="sd">The historical translation was ``use_cache=use_cache and not force``, which is</span>
+<span class="sd">the double-spend nw#72 names: it turned "ignore the cached answer" into "and</span>
+<span class="sd">throw away the fresh one", so a forced run paid for a result it discarded and</span>
+<span class="sd">the next consumer re-billed it. ``force`` is a *read* instruction, so it maps</span>
+<span class="sd">to ``refresh`` and nothing else:</span>
 
-<span class="sd">Why an annotation rather than a ``ProjectSpec`` field</span>
-<span class="sd">-----------------------------------------------------</span>
-<span class="sd">``project.json`` is deliberately round-trip-compatible with muvid's</span>
-<span class="sd">``ProjectSpec`` for ``schema_version=1`` (nw#30), and its</span>
-<span class="sd">``extra="ignore"`` means a foreign reader's load/save cycle would silently</span>
-<span class="sd">*drop* an unmodelled genre key — failing quietly, the worst failure shape.</span>
-<span class="sd">The graph is nw's SSOT direction, carries provenance for free, and the</span>
-<span class="sd">precedent (:mod:`nw.bodies.decision` — a timeless, project-local, typed</span>
-<span class="sd">record under a sentinel zero-duration reference) already exists. Same</span>
-<span class="sd">shape here, singleton per project: stored under the ``genre-envelope``</span>
-<span class="sd">tier, replaced in place on re-initialization.</span>
+<span class="sd">============================  ==========  ===========</span>
+<span class="sd">nw ``(use_cache, force)``     cache read  cache write</span>
+<span class="sd">============================  ==========  ===========</span>
+<span class="sd">``(True, False)`` — default   yes         yes</span>
+<span class="sd">``(True, True)``              no          yes</span>
+<span class="sd">``(False, False)``            no          no</span>
+<span class="sd">============================  ==========  ===========</span>
 
-<span class="sd">``params`` is the *resolved* payload — the effective values after template</span>
-<span class="sd">and defaults merged — and stays opaque to the substrate, exactly as in</span>
-<span class="sd">:class:`nw.genres.Template`: the app that owns the genre gives it meaning.</span>
+<span class="sd">``(False, True)`` is the fourth corner and has no meaning — there is no key to</span>
+<span class="sd">write under when the cache is off, which is why falaw raises on it. Before</span>
+<span class="sd">nw#72 it silently collapsed to "no cache at all"; forwarding it unexamined</span>
+<span class="sd">would now surface falaw's ``ValueError`` from two frames down, naming keywords</span>
+<span class="sd">(``refresh``) the nw caller never passed. :func:`resolve_cache_mode` refuses it</span>
+<span class="sd">here instead, in nw's own vocabulary.</span>
 <span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">Field</span>
+<div class="viewcode-block" id="CacheModeConflict">
+<a class="viewcode-back" href="../../../module_docs/nw/transforms/_cache_mode.html#nw.CacheModeConflict">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CacheModeConflict</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""``use_cache=False`` and ``force=True`` were passed together.</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">lacing.schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_body_schema</span>
+<span class="sd">    A ``ValueError`` subclass so callers that already catch ``ValueError``</span>
+<span class="sd">    (and falaw's own refusal of the same corner) keep working, while a caller</span>
+<span class="sd">    that wants to distinguish this one specific contradiction can.</span>
+<span class="sd">    """</span></div>
 
 
-<span class="n">GENRE_ENVELOPE_BODY_SCHEMA_URI</span> <span class="o">=</span> <span class="s2">"annot://schema/genre-envelope/v1"</span>
-<span class="n">GENRE_ENVELOPE_TIER</span> <span class="o">=</span> <span class="s2">"genre-envelope"</span>
 
+<div class="viewcode-block" id="resolve_cache_mode">
+<a class="viewcode-back" href="../../../module_docs/nw/transforms/_cache_mode.html#nw.resolve_cache_mode">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">resolve_cache_mode</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">use_cache</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""Return the ``(use_cache, refresh)`` pair falaw's executor should get.</span>
 
-<div class="viewcode-block" id="GenreEnvelopeBodyV1">
-<a class="viewcode-back" href="../../../module_docs/nw/bodies/genre_envelope.html#nw.bodies.GenreEnvelopeBodyV1">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">GenreEnvelopeBodyV1</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Body of the (singleton) genre-envelope annotation.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        use_cache: May this run touch the cache at all?</span>
+<span class="sd">        force: Ignore any cached answer and re-run — while **keeping** what</span>
+<span class="sd">            the re-run pays for.</span>
 
-<span class="sd">    Field-for-field the :func:`nw.genres.resolve_genre` envelope, so the</span>
-<span class="sd">    persisted record and the creation-time contract can never drift apart.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        The ``(use_cache, refresh)`` pair to forward to ``execute_plan`` /</span>
+<span class="sd">        ``execute_plan_isolated``.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        CacheModeConflict: if ``force=True`` is paired with ``use_cache=False``.</span>
 <span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">force</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">use_cache</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">CacheModeConflict</span><span class="p">(</span>
+            <span class="s2">"use_cache=False and force=True are contradictory. force means "</span>
+            <span class="s2">"'skip the cache read but keep the cache write', so it needs the "</span>
+            <span class="s2">"cache on; use_cache=False means 'do not touch the cache at all', "</span>
+            <span class="s2">"so there is no key to write the forced result under. Pass "</span>
+            <span class="s2">"use_cache=True, force=True to re-run and keep what the re-run "</span>
+            <span class="s2">"pays for, or use_cache=False, force=False to bypass the cache "</span>
+            <span class="s2">"entirely (and pay again on the next run)."</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">use_cache</span><span class="p">,</span> <span class="n">force</span></div>
 
-    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"frozen"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">"extra"</span><span class="p">:</span> <span class="s2">"forbid"</span><span class="p">}</span>
-
-    <span class="n">genre</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"The genre slug the project was created as."</span><span class="p">)</span>
-    <span class="n">template</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">"The chosen template slug, or None for 'start from scratch'."</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
-            <span class="s2">"The *resolved* creation params — template + defaults merged. "</span>
-            <span class="s2">"Opaque to nw; the genre's owning app interprets them."</span>
-        <span class="p">),</span>
-    <span class="p">)</span></div>
-
-
-
-<span class="n">register_body_schema</span><span class="p">(</span><span class="n">GENRE_ENVELOPE_BODY_SCHEMA_URI</span><span class="p">,</span> <span class="n">GenreEnvelopeBodyV1</span><span class="p">)</span>
 </pre></div>
 
            </div>

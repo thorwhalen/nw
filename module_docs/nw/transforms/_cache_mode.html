@@ -1,0 +1,223 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>nw.transforms._cache_mode &mdash; nw 0.0.46 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=eb4c61eb"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../../_static/toggleprompt.js?v=d7ede5d2"></script>
+      <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="nw.transforms._provenance" href="_provenance.html" />
+    <link rel="prev" title="nw.transforms._adapters.render_strategy" href="_adapters/render_strategy.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            nw
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../nw.html">nw</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bodies.html">nw.bodies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bodies/character_ref.html">nw.bodies.character_ref</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bodies/decision.html">nw.bodies.decision</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bodies/environment_ref.html">nw.bodies.environment_ref</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bodies/genre_envelope.html">nw.bodies.genre_envelope</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bodies/render_result.html">nw.bodies.render_result</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bodies/section.html">nw.bodies.section</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bodies/shot.html">nw.bodies.shot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bodies/verifying_trace.html">nw.bodies.verifying_trace</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../delivery.html">nw.delivery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../experiment.html">nw.experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../freshness.html">nw.freshness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../genres.html">nw.genres</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../graph.html">nw.graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../graph_backend.html">nw.graph_backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../inspect.html">nw.inspect</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../jobs.html">nw.jobs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrate.html">nw.migrate</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../project.html">nw.project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../renderers.html">nw.renderers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../renderers/_common.html">nw.renderers._common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../renderers/composite_lipsync.html">nw.renderers.composite_lipsync</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../renderers/image_to_video.html">nw.renderers.image_to_video</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../renderers/lipsync.html">nw.renderers.lipsync</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../renderers/still.html">nw.renderers.still</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../renderers/text_to_video.html">nw.renderers.text_to_video</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../schema.html">nw.schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../script_segmentation.html">nw.script_segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../storyboard.html">nw.storyboard</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../transforms.html">nw.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_adapters.html">nw.transforms._adapters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_adapters/render_strategy.html">nw.transforms._adapters.render_strategy</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">nw.transforms._cache_mode</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#nw.transforms._cache_mode.CacheModeConflict"><code class="docutils literal notranslate"><span class="pre">CacheModeConflict</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.transforms._cache_mode.resolve_cache_mode"><code class="docutils literal notranslate"><span class="pre">resolve_cache_mode()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="_provenance.html">nw.transforms._provenance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fanout.html">nw.transforms.fanout</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../workflow.html">nw.workflow</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">nw</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">nw.transforms._cache_mode</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../../_sources/module_docs/nw/transforms/_cache_mode.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-nw.transforms._cache_mode">
+<span id="nw-transforms-cache-mode"></span><h1>nw.transforms._cache_mode<a class="headerlink" href="#module-nw.transforms._cache_mode" title="Link to this heading"></a></h1>
+<p>One place that maps nw’s <code class="docutils literal notranslate"><span class="pre">(use_cache,</span> <span class="pre">force)</span></code> onto falaw’s <code class="docutils literal notranslate"><span class="pre">(use_cache,</span> <span class="pre">refresh)</span></code>.</p>
+<p>nw exposes two cache knobs on <code class="docutils literal notranslate"><span class="pre">Transform.execute</span></code>: <code class="docutils literal notranslate"><span class="pre">use_cache</span></code> (“may this
+run touch the cache at all?”) and <code class="docutils literal notranslate"><span class="pre">force</span></code> (the “regenerate this” affordance).
+falaw’s executor exposes the same policy as a <em>read</em> half and a <em>write</em> half
+(falaw#49): <code class="docutils literal notranslate"><span class="pre">use_cache</span></code> gates both, <code class="docutils literal notranslate"><span class="pre">refresh</span></code> suppresses only the read.</p>
+<p>The historical translation was <code class="docutils literal notranslate"><span class="pre">use_cache=use_cache</span> <span class="pre">and</span> <span class="pre">not</span> <span class="pre">force</span></code>, which is
+the double-spend nw#72 names: it turned “ignore the cached answer” into “and
+throw away the fresh one”, so a forced run paid for a result it discarded and
+the next consumer re-billed it. <code class="docutils literal notranslate"><span class="pre">force</span></code> is a <em>read</em> instruction, so it maps
+to <code class="docutils literal notranslate"><span class="pre">refresh</span></code> and nothing else:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>nw <code class="docutils literal notranslate"><span class="pre">(use_cache,</span> <span class="pre">force)</span></code></p></th>
+<th class="head"><p>cache read</p></th>
+<th class="head"><p>cache write</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">(True,</span> <span class="pre">False)</span></code> — default</p></td>
+<td><p>yes</p></td>
+<td><p>yes</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">(True,</span> <span class="pre">True)</span></code></p></td>
+<td><p>no</p></td>
+<td><p>yes</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">(False,</span> <span class="pre">False)</span></code></p></td>
+<td><p>no</p></td>
+<td><p>no</p></td>
+</tr>
+</tbody>
+</table>
+<p><code class="docutils literal notranslate"><span class="pre">(False,</span> <span class="pre">True)</span></code> is the fourth corner and has no meaning — there is no key to
+write under when the cache is off, which is why falaw raises on it. Before
+nw#72 it silently collapsed to “no cache at all”; forwarding it unexamined
+would now surface falaw’s <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> from two frames down, naming keywords
+(<code class="docutils literal notranslate"><span class="pre">refresh</span></code>) the nw caller never passed. <a class="reference internal" href="#nw.transforms._cache_mode.resolve_cache_mode" title="nw.transforms._cache_mode.resolve_cache_mode"><code class="xref py py-func docutils literal notranslate"><span class="pre">resolve_cache_mode()</span></code></a> refuses it
+here instead, in nw’s own vocabulary.</p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="nw.transforms._cache_mode.CacheModeConflict">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.transforms._cache_mode.</span></span><span class="sig-name descname"><span class="pre">CacheModeConflict</span></span><a class="reference internal" href="../../../_modules/nw/transforms/_cache_mode.html#CacheModeConflict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.transforms._cache_mode.CacheModeConflict" title="Link to this definition"></a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">use_cache=False</span></code> and <code class="docutils literal notranslate"><span class="pre">force=True</span></code> were passed together.</p>
+<p>A <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> subclass so callers that already catch <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>
+(and falaw’s own refusal of the same corner) keep working, while a caller
+that wants to distinguish this one specific contradiction can.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.transforms._cache_mode.resolve_cache_mode">
+<span class="sig-prename descclassname"><span class="pre">nw.transforms._cache_mode.</span></span><span class="sig-name descname"><span class="pre">resolve_cache_mode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../../_modules/nw/transforms/_cache_mode.html#resolve_cache_mode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.transforms._cache_mode.resolve_cache_mode" title="Link to this definition"></a></dt>
+<dd><p>Return the <code class="docutils literal notranslate"><span class="pre">(use_cache,</span> <span class="pre">refresh)</span></code> pair falaw’s executor should get.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>use_cache</strong> – May this run touch the cache at all?</p></li>
+<li><p><strong>force</strong> – Ignore any cached answer and re-run — while <strong>keeping</strong> what
+the re-run pays for.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The <code class="docutils literal notranslate"><span class="pre">(use_cache,</span> <span class="pre">refresh)</span></code> pair to forward to <code class="docutils literal notranslate"><span class="pre">execute_plan</span></code> /
+<code class="docutils literal notranslate"><span class="pre">execute_plan_isolated</span></code>.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#nw.transforms._cache_mode.CacheModeConflict" title="nw.transforms._cache_mode.CacheModeConflict"><strong>CacheModeConflict</strong></a> – if <code class="docutils literal notranslate"><span class="pre">force=True</span></code> is paired with <code class="docutils literal notranslate"><span class="pre">use_cache=False</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="_adapters/render_strategy.html" class="btn btn-neutral float-left" title="nw.transforms._adapters.render_strategy" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="_provenance.html" class="btn btn-neutral float-right" title="nw.transforms._provenance" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

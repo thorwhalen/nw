@@ -35,6 +35,7 @@
    module_docs/nw/transforms
    module_docs/nw/transforms/_adapters
    module_docs/nw/transforms/_adapters/render_strategy
+   module_docs/nw/transforms/_cache_mode
    module_docs/nw/transforms/_provenance
    module_docs/nw/transforms/fanout
    module_docs/nw/workflow

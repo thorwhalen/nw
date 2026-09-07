@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>&lt;no title&gt; &mdash; nw 0.0.45 documentation</title>
+  <title>&lt;no title&gt; &mdash; nw 0.0.46 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=dcb4eb81"></script>
+      <script src="_static/documentation_options.js?v=eb4c61eb"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -80,6 +80,7 @@
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/transforms.html">nw.transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/transforms/_adapters.html">nw.transforms._adapters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/transforms/_adapters/render_strategy.html">nw.transforms._adapters.render_strategy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/transforms/_cache_mode.html">nw.transforms._cache_mode</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/transforms/_provenance.html">nw.transforms._provenance</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/transforms/fanout.html">nw.transforms.fanout</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/workflow.html">nw.workflow</a></li>
@@ -114,6 +115,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw.html">nw</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.BaseTransform"><code class="docutils literal notranslate"><span class="pre">BaseTransform</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.CacheModeConflict"><code class="docutils literal notranslate"><span class="pre">CacheModeConflict</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.CharacterImage"><code class="docutils literal notranslate"><span class="pre">CharacterImage</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.CharacterRef"><code class="docutils literal notranslate"><span class="pre">CharacterRef</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.ComposeReport"><code class="docutils literal notranslate"><span class="pre">ComposeReport</span></code></a></li>
@@ -451,6 +453,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/transforms.html">nw.transforms</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.BaseTransform"><code class="docutils literal notranslate"><span class="pre">BaseTransform</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.CacheModeConflict"><code class="docutils literal notranslate"><span class="pre">CacheModeConflict</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.DFLT_IMPL_VERSION"><code class="docutils literal notranslate"><span class="pre">DFLT_IMPL_VERSION</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.FanOutItemResult"><code class="docutils literal notranslate"><span class="pre">FanOutItemResult</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.FanOutPlan"><code class="docutils literal notranslate"><span class="pre">FanOutPlan</span></code></a></li>
@@ -467,6 +470,7 @@
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.get_transform"><code class="docutils literal notranslate"><span class="pre">get_transform()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.list_transforms"><code class="docutils literal notranslate"><span class="pre">list_transforms()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.register_transform"><code class="docutils literal notranslate"><span class="pre">register_transform()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.resolve_cache_mode"><code class="docutils literal notranslate"><span class="pre">resolve_cache_mode()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.stamp_transform_identity"><code class="docutils literal notranslate"><span class="pre">stamp_transform_identity()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.transform_catalog"><code class="docutils literal notranslate"><span class="pre">transform_catalog()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.transforms"><code class="docutils literal notranslate"><span class="pre">transforms</span></code></a></li>
@@ -477,6 +481,11 @@
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/transforms/_adapters/render_strategy.html">nw.transforms._adapters.render_strategy</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms/_adapters/render_strategy.html#nw.transforms._adapters.render_strategy.RenderStrategyParams"><code class="docutils literal notranslate"><span class="pre">RenderStrategyParams</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms/_adapters/render_strategy.html#nw.transforms._adapters.render_strategy.RenderStrategyTransform"><code class="docutils literal notranslate"><span class="pre">RenderStrategyTransform</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/transforms/_cache_mode.html">nw.transforms._cache_mode</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms/_cache_mode.html#nw.transforms._cache_mode.CacheModeConflict"><code class="docutils literal notranslate"><span class="pre">CacheModeConflict</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms/_cache_mode.html#nw.transforms._cache_mode.resolve_cache_mode"><code class="docutils literal notranslate"><span class="pre">resolve_cache_mode()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/transforms/_provenance.html">nw.transforms._provenance</a><ul>

@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; nw 0.0.45 documentation</title>
+  <title>Index &mdash; nw 0.0.46 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=dcb4eb81"></script>
+      <script src="_static/documentation_options.js?v=eb4c61eb"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -79,6 +79,7 @@
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/transforms.html">nw.transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/transforms/_adapters.html">nw.transforms._adapters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/transforms/_adapters/render_strategy.html">nw.transforms._adapters.render_strategy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/transforms/_cache_mode.html">nw.transforms._cache_mode</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/transforms/_provenance.html">nw.transforms._provenance</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/transforms/fanout.html">nw.transforms.fanout</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/workflow.html">nw.workflow</a></li>
@@ -263,6 +264,8 @@
       <li><a href="module_docs/nw/transforms.html#nw.transforms.cache_key">cache_key() (in module nw.transforms)</a>
 </li>
       <li><a href="module_docs/nw/transforms.html#nw.transforms.cached_output">cached_output() (in module nw.transforms)</a>
+</li>
+      <li><a href="module_docs/nw.html#nw.CacheModeConflict">CacheModeConflict</a>, <a href="module_docs/nw/transforms.html#nw.transforms.CacheModeConflict">[1]</a>, <a href="module_docs/nw/transforms/_cache_mode.html#nw.transforms._cache_mode.CacheModeConflict">[2]</a>
 </li>
       <li><a href="module_docs/nw/delivery.html#nw.delivery.caller_key">caller_key() (in module nw.delivery)</a>
 </li>
@@ -1096,6 +1099,8 @@
 </li>
         <li><a href="module_docs/nw/transforms/_adapters/render_strategy.html#module-nw.transforms._adapters.render_strategy">nw.transforms._adapters.render_strategy</a>
 </li>
+        <li><a href="module_docs/nw/transforms/_cache_mode.html#module-nw.transforms._cache_mode">nw.transforms._cache_mode</a>
+</li>
         <li><a href="module_docs/nw/transforms/_provenance.html#module-nw.transforms._provenance">nw.transforms._provenance</a>
 </li>
         <li><a href="module_docs/nw/transforms/fanout.html#module-nw.transforms.fanout">nw.transforms.fanout</a>
@@ -1236,8 +1241,6 @@
         <li><a href="module_docs/nw/inspect.html#module-nw.inspect">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     nw.jobs
 
@@ -1245,6 +1248,8 @@
         <li><a href="module_docs/nw/jobs.html#module-nw.jobs">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     nw.migrate
 
@@ -1348,6 +1353,13 @@
 
       <ul>
         <li><a href="module_docs/nw/transforms/_adapters/render_strategy.html#module-nw.transforms._adapters.render_strategy">module</a>
+</li>
+      </ul></li>
+      <li>
+    nw.transforms._cache_mode
+
+      <ul>
+        <li><a href="module_docs/nw/transforms/_cache_mode.html#module-nw.transforms._cache_mode">module</a>
 </li>
       </ul></li>
       <li>
@@ -1591,6 +1603,12 @@
 </li>
       <li><a href="module_docs/nw/transforms/_adapters/render_strategy.html#nw.transforms._adapters.render_strategy.RenderStrategyTransform">RenderStrategyTransform (class in nw.transforms._adapters.render_strategy)</a>
 </li>
+      <li><a href="module_docs/nw/transforms.html#nw.transforms.resolve_cache_mode">resolve_cache_mode() (in module nw.transforms)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/transforms/_cache_mode.html#nw.transforms._cache_mode.resolve_cache_mode">(in module nw.transforms._cache_mode)</a>
+</li>
+      </ul></li>
       <li><a href="module_docs/nw.html#nw.resolve_defaults">resolve_defaults() (in module nw)</a>
 
       <ul>

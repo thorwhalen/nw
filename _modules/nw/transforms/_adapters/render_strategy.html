@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.transforms._adapters.render_strategy &mdash; nw 0.0.45 documentation</title>
+  <title>nw.transforms._adapters.render_strategy &mdash; nw 0.0.46 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=dcb4eb81"></script>
+      <script src="../../../../_static/documentation_options.js?v=eb4c61eb"></script>
       <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -79,6 +79,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../module_docs/nw/transforms.html">nw.transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../module_docs/nw/transforms/_adapters.html">nw.transforms._adapters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../module_docs/nw/transforms/_adapters/render_strategy.html">nw.transforms._adapters.render_strategy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../module_docs/nw/transforms/_cache_mode.html">nw.transforms._cache_mode</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../module_docs/nw/transforms/_provenance.html">nw.transforms._provenance</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../module_docs/nw/transforms/fanout.html">nw.transforms.fanout</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../module_docs/nw/workflow.html">nw.workflow</a></li>
@@ -155,6 +156,7 @@
     <span class="n">TransformResult</span><span class="p">,</span>
     <span class="n">register_transform</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.._cache_mode</span><span class="w"> </span><span class="kn">import</span> <span class="n">resolve_cache_mode</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.._provenance</span><span class="w"> </span><span class="kn">import</span> <span class="n">derive_provenance</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">...bodies</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">RENDER_RESULT_BODY_SCHEMA_URI</span><span class="p">,</span>
@@ -281,11 +283,16 @@
                 <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.execute: on_failure must be 'halt' or "</span>
                 <span class="sa">f</span><span class="s2">"'isolate', got </span><span class="si">{</span><span class="n">on_failure</span><span class="si">!r}</span><span class="s2">."</span>
             <span class="p">)</span>
+        <span class="c1"># `force` skips the cache READ and keeps the WRITE — see</span>
+        <span class="c1"># `nw.transforms._cache_mode`. The old `use_cache and not force`</span>
+        <span class="c1"># disabled both, so re-rendering a shot threw away the clip it had</span>
+        <span class="c1"># just paid for (nw#72).</span>
+        <span class="n">cache_on</span><span class="p">,</span> <span class="n">refresh</span> <span class="o">=</span> <span class="n">resolve_cache_mode</span><span class="p">(</span><span class="n">use_cache</span><span class="o">=</span><span class="n">use_cache</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="n">force</span><span class="p">)</span>
         <span class="n">shot_id</span> <span class="o">=</span> <span class="n">skeleton</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">body</span><span class="p">[</span><span class="s2">"shot_id"</span><span class="p">]</span>
         <span class="c1"># materialize() needs only local paths — no upload required.</span>
         <span class="n">prep</span> <span class="o">=</span> <span class="n">prepare_shot</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">shot_id</span><span class="p">,</span> <span class="n">upload</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">report</span> <span class="o">=</span> <span class="n">execute_plan_isolated</span><span class="p">(</span>
-            <span class="n">plan</span><span class="p">,</span> <span class="n">use_cache</span><span class="o">=</span><span class="n">use_cache</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">force</span><span class="p">,</span> <span class="n">halt_on_failure</span><span class="o">=</span><span class="kc">True</span>
+            <span class="n">plan</span><span class="p">,</span> <span class="n">use_cache</span><span class="o">=</span><span class="n">cache_on</span><span class="p">,</span> <span class="n">refresh</span><span class="o">=</span><span class="n">refresh</span><span class="p">,</span> <span class="n">halt_on_failure</span><span class="o">=</span><span class="kc">True</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">report</span><span class="o">.</span><span class="n">is_complete</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">on_failure</span> <span class="o">==</span> <span class="s2">"halt"</span><span class="p">:</span>

@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.transforms.fanout &mdash; nw 0.0.45 documentation</title>
+  <title>nw.transforms.fanout &mdash; nw 0.0.46 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=dcb4eb81"></script>
+      <script src="../../../_static/documentation_options.js?v=eb4c61eb"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -79,6 +79,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/transforms.html">nw.transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/transforms/_adapters.html">nw.transforms._adapters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/transforms/_adapters/render_strategy.html">nw.transforms._adapters.render_strategy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/transforms/_cache_mode.html">nw.transforms._cache_mode</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/transforms/_provenance.html">nw.transforms._provenance</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/transforms/fanout.html">nw.transforms.fanout</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/workflow.html">nw.workflow</a></li>
@@ -175,6 +176,8 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">falaw</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plan</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">lacing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotation</span><span class="p">,</span> <span class="n">TimeInterval</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">nw.transforms._cache_mode</span><span class="w"> </span><span class="kn">import</span> <span class="n">resolve_cache_mode</span>
 
 
 <span class="n">GenerateWhen</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"static"</span><span class="p">,</span> <span class="s2">"dynamic"</span><span class="p">]</span>
@@ -710,6 +713,16 @@
 <span class="sd">    default within the unit — undetectable by signature inspection in</span>
 <span class="sd">    principle; cross-unit policy is still honoured.</span>
 
+<span class="sd">    ``use_cache`` / ``force`` are forwarded per unit and mean what they mean</span>
+<span class="sd">    on :meth:`Transform.execute`: ``force`` skips the cache **read** and keeps</span>
+<span class="sd">    the **write**, so re-forcing a 200-unit fan-out does not orphan 200 paid</span>
+<span class="sd">    results (nw#72). ``use_cache=False, force=True`` raises</span>
+<span class="sd">    :class:`~nw.transforms.CacheModeConflict` **before the first unit runs**:</span>
+<span class="sd">    it is a contradiction decidable from the arguments alone, so it does not</span>
+<span class="sd">    get the degradation above — filing one programming error as N identical</span>
+<span class="sd">    failed rows is only the lesser evil for the shapes that cannot be checked</span>
+<span class="sd">    up front.</span>
+
 <span class="sd">    Units run **sequentially**. Concurrency *within* a unit is falaw's</span>
 <span class="sd">    (``execute_plan_isolated`` bounds it); concurrency *across* units is the</span>
 <span class="sd">    deferred-scheduler work nw#26 explicitly scopes out, and nothing here</span>
@@ -721,6 +734,7 @@
             <span class="sa">f</span><span class="s2">"fan_out_execute: on_failure must be 'halt' or 'isolate', "</span>
             <span class="sa">f</span><span class="s2">"got </span><span class="si">{</span><span class="n">on_failure</span><span class="si">!r}</span><span class="s2">."</span>
         <span class="p">)</span>
+    <span class="n">resolve_cache_mode</span><span class="p">(</span><span class="n">use_cache</span><span class="o">=</span><span class="n">use_cache</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="n">force</span><span class="p">)</span>
     <span class="n">executing_name</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">transform</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">""</span>
     <span class="k">if</span> <span class="n">executing_name</span> <span class="o">!=</span> <span class="n">fan_out</span><span class="o">.</span><span class="n">transform_name</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>

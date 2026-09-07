@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.transforms &mdash; nw 0.0.45 documentation</title>
+  <title>nw.transforms &mdash; nw 0.0.46 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=dcb4eb81"></script>
+      <script src="../../_static/documentation_options.js?v=eb4c61eb"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -79,6 +79,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/transforms.html">nw.transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/transforms/_adapters.html">nw.transforms._adapters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/transforms/_adapters/render_strategy.html">nw.transforms._adapters.render_strategy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/transforms/_cache_mode.html">nw.transforms._cache_mode</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/transforms/_provenance.html">nw.transforms._provenance</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/transforms/fanout.html">nw.transforms.fanout</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/workflow.html">nw.workflow</a></li>
@@ -128,6 +129,13 @@
 <span class="sd">   them to the project graph, and returns a :class:`TransformResult` with</span>
 <span class="sd">   *actual* cost and cache savings.</span>
 
+<span class="sd">``execute``'s two cache knobs are a read half and a write half, not one</span>
+<span class="sd">switch: ``force=True`` skips the cache **read** and keeps the **write** (so a</span>
+<span class="sd">"regenerate this" run stays reusable instead of billing the next consumer</span>
+<span class="sd">again), while ``use_cache=False`` means "do not touch the cache at all".</span>
+<span class="sd">:mod:`nw.transforms._cache_mode` owns the mapping onto falaw's</span>
+<span class="sd">``(use_cache, refresh)`` and refuses the one pair that has no meaning (nw#72).</span>
+
 <span class="sd">Transforms are registered with an :class:`xdol.Registry` keyed by name, so</span>
 <span class="sd">apps (``reelee``, ``muvid``, …) add their own without modifying ``nw``.</span>
 
@@ -163,6 +171,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">falaw</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plan</span><span class="p">,</span> <span class="n">execute_plan_isolated</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">lacing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotation</span><span class="p">,</span> <span class="n">Artifact</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">nw.transforms._cache_mode</span><span class="w"> </span><span class="kn">import</span> <span class="n">CacheModeConflict</span><span class="p">,</span> <span class="n">resolve_cache_mode</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">nw.transforms.fanout</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">DFLT_GENERATE_WHEN</span><span class="p">,</span>
     <span class="n">WORK_ITEM_NAMESPACE</span><span class="p">,</span>
@@ -414,7 +423,11 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TransformResult</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Run ``plan``, complete ``skeleton``, write to the graph, return result.</span>
 
-<span class="sd">        ``force=True`` bypasses the cache (the "regenerate this" affordance).</span>
+<span class="sd">        ``force=True`` bypasses the cache **read** (the "regenerate this"</span>
+<span class="sd">        affordance) and keeps the cache **write**, so a forced re-run stays</span>
+<span class="sd">        reusable instead of billing the next consumer again (nw#72).</span>
+<span class="sd">        ``use_cache=False`` means "do not touch the cache at all"; pairing it</span>
+<span class="sd">        with ``force=True`` raises :class:`CacheModeConflict`.</span>
 
 <span class="sd">        ``on_failure`` selects the failure policy — see :data:`OnFailure`.</span>
 <span class="sd">        ``"halt"`` is the default so no existing caller changes behaviour.</span>
@@ -523,6 +536,11 @@
                 <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.execute: on_failure must be 'halt' or "</span>
                 <span class="sa">f</span><span class="s2">"'isolate', got </span><span class="si">{</span><span class="n">on_failure</span><span class="si">!r}</span><span class="s2">."</span>
             <span class="p">)</span>
+        <span class="c1"># `force` is a READ instruction, so it maps to falaw's `refresh` and</span>
+        <span class="c1"># nothing else. The old `use_cache and not force` also disabled the</span>
+        <span class="c1"># cache WRITE, so a forced run discarded the result it had just paid</span>
+        <span class="c1"># for and the next consumer re-billed it (nw#72, falaw#49).</span>
+        <span class="n">cache_on</span><span class="p">,</span> <span class="n">refresh</span> <span class="o">=</span> <span class="n">resolve_cache_mode</span><span class="p">(</span><span class="n">use_cache</span><span class="o">=</span><span class="n">use_cache</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="n">force</span><span class="p">)</span>
         <span class="n">plan</span> <span class="o">=</span> <span class="n">stamp_transform_identity</span><span class="p">(</span><span class="n">plan</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
         <span class="c1"># One engine, two policies. `halt` is `execute_plan` — falaw defines the</span>
         <span class="c1"># latter as exactly this call plus `artifacts_or_raise()` — so it keeps</span>
@@ -530,7 +548,8 @@
         <span class="c1"># every existing caller classifies on.</span>
         <span class="n">report</span> <span class="o">=</span> <span class="n">execute_plan_isolated</span><span class="p">(</span>
             <span class="n">plan</span><span class="p">,</span>
-            <span class="n">use_cache</span><span class="o">=</span><span class="n">use_cache</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">force</span><span class="p">,</span>
+            <span class="n">use_cache</span><span class="o">=</span><span class="n">cache_on</span><span class="p">,</span>
+            <span class="n">refresh</span><span class="o">=</span><span class="n">refresh</span><span class="p">,</span>
             <span class="n">halt_on_failure</span><span class="o">=</span><span class="n">on_failure</span> <span class="o">==</span> <span class="s2">"halt"</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">on_failure</span> <span class="o">==</span> <span class="s2">"halt"</span><span class="p">:</span>
@@ -929,6 +948,8 @@
     <span class="s2">"list_transforms"</span><span class="p">,</span>
     <span class="s2">"transform_catalog"</span><span class="p">,</span>
     <span class="s2">"stamp_transform_identity"</span><span class="p">,</span>
+    <span class="s2">"CacheModeConflict"</span><span class="p">,</span>
+    <span class="s2">"resolve_cache_mode"</span><span class="p">,</span>
     <span class="s2">"cache_key"</span><span class="p">,</span>
     <span class="s2">"cached_output"</span><span class="p">,</span>
     <span class="c1"># fan-out (nw#26)</span>

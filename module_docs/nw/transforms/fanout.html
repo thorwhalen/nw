@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.transforms.fanout &mdash; nw 0.0.45 documentation</title>
+  <title>nw.transforms.fanout &mdash; nw 0.0.46 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=dcb4eb81"></script>
+      <script src="../../../_static/documentation_options.js?v=eb4c61eb"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -82,6 +82,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../transforms.html">nw.transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_adapters.html">nw.transforms._adapters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_adapters/render_strategy.html">nw.transforms._adapters.render_strategy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_cache_mode.html">nw.transforms._cache_mode</a></li>
 <li class="toctree-l1"><a class="reference internal" href="_provenance.html">nw.transforms._provenance</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">nw.transforms.fanout</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#nw.transforms.fanout.DFLT_GENERATE_WHEN"><code class="docutils literal notranslate"><span class="pre">DFLT_GENERATE_WHEN</span></code></a></li>
@@ -381,6 +382,15 @@ discards the run record for units that already spent. And a <code class="docutil
 override that accepts-but-ignores <code class="docutils literal notranslate"><span class="pre">on_failure</span></code> runs its internal
 default within the unit — undetectable by signature inspection in
 principle; cross-unit policy is still honoured.</p>
+<p><code class="docutils literal notranslate"><span class="pre">use_cache</span></code> / <code class="docutils literal notranslate"><span class="pre">force</span></code> are forwarded per unit and mean what they mean
+on <code class="xref py py-meth docutils literal notranslate"><span class="pre">Transform.execute()</span></code>: <code class="docutils literal notranslate"><span class="pre">force</span></code> skips the cache <strong>read</strong> and keeps
+the <strong>write</strong>, so re-forcing a 200-unit fan-out does not orphan 200 paid
+results (nw#72). <code class="docutils literal notranslate"><span class="pre">use_cache=False,</span> <span class="pre">force=True</span></code> raises
+<a class="reference internal" href="../transforms.html#nw.transforms.CacheModeConflict" title="nw.transforms.CacheModeConflict"><code class="xref py py-class docutils literal notranslate"><span class="pre">CacheModeConflict</span></code></a> <strong>before the first unit runs</strong>:
+it is a contradiction decidable from the arguments alone, so it does not
+get the degradation above — filing one programming error as N identical
+failed rows is only the lesser evil for the shapes that cannot be checked
+up front.</p>
 <p>Units run <strong>sequentially</strong>. Concurrency <em>within</em> a unit is falaw’s
 (<code class="docutils literal notranslate"><span class="pre">execute_plan_isolated</span></code> bounds it); concurrency <em>across</em> units is the
 deferred-scheduler work nw#26 explicitly scopes out, and nothing here

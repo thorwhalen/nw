@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.transforms &mdash; nw 0.0.45 documentation</title>
+  <title>nw.transforms &mdash; nw 0.0.46 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=dcb4eb81"></script>
+      <script src="../../_static/documentation_options.js?v=eb4c61eb"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -87,6 +87,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#nw.transforms.BaseTransform.params_model"><code class="docutils literal notranslate"><span class="pre">BaseTransform.params_model</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.transforms.CacheModeConflict"><code class="docutils literal notranslate"><span class="pre">CacheModeConflict</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.transforms.DFLT_IMPL_VERSION"><code class="docutils literal notranslate"><span class="pre">DFLT_IMPL_VERSION</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.transforms.FanOutItemResult"><code class="docutils literal notranslate"><span class="pre">FanOutItemResult</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.transforms.FanOutPlan"><code class="docutils literal notranslate"><span class="pre">FanOutPlan</span></code></a><ul>
@@ -138,6 +139,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#nw.transforms.get_transform"><code class="docutils literal notranslate"><span class="pre">get_transform()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.transforms.list_transforms"><code class="docutils literal notranslate"><span class="pre">list_transforms()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.transforms.register_transform"><code class="docutils literal notranslate"><span class="pre">register_transform()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.transforms.resolve_cache_mode"><code class="docutils literal notranslate"><span class="pre">resolve_cache_mode()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.transforms.stamp_transform_identity"><code class="docutils literal notranslate"><span class="pre">stamp_transform_identity()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.transforms.transform_catalog"><code class="docutils literal notranslate"><span class="pre">transform_catalog()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.transforms.transforms"><code class="docutils literal notranslate"><span class="pre">transforms</span></code></a></li>
@@ -146,6 +148,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="transforms/_adapters.html">nw.transforms._adapters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="transforms/_adapters/render_strategy.html">nw.transforms._adapters.render_strategy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transforms/_cache_mode.html">nw.transforms._cache_mode</a></li>
 <li class="toctree-l1"><a class="reference internal" href="transforms/_provenance.html">nw.transforms._provenance</a></li>
 <li class="toctree-l1"><a class="reference internal" href="transforms/fanout.html">nw.transforms.fanout</a></li>
 <li class="toctree-l1"><a class="reference internal" href="workflow.html">nw.workflow</a></li>
@@ -194,6 +197,12 @@ completes the skeleton annotations with real artifact references, writes
 them to the project graph, and returns a <a class="reference internal" href="#nw.transforms.TransformResult" title="nw.transforms.TransformResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">TransformResult</span></code></a> with
 <em>actual</em> cost and cache savings.</p></li>
 </ol>
+<p><code class="docutils literal notranslate"><span class="pre">execute</span></code>’s two cache knobs are a read half and a write half, not one
+switch: <code class="docutils literal notranslate"><span class="pre">force=True</span></code> skips the cache <strong>read</strong> and keeps the <strong>write</strong> (so a
+“regenerate this” run stays reusable instead of billing the next consumer
+again), while <code class="docutils literal notranslate"><span class="pre">use_cache=False</span></code> means “do not touch the cache at all”.
+<a class="reference internal" href="transforms/_cache_mode.html#module-nw.transforms._cache_mode" title="nw.transforms._cache_mode"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nw.transforms._cache_mode</span></code></a> owns the mapping onto falaw’s
+<code class="docutils literal notranslate"><span class="pre">(use_cache,</span> <span class="pre">refresh)</span></code> and refuses the one pair that has no meaning (nw#72).</p>
 <p>Transforms are registered with an <code class="xref py py-class docutils literal notranslate"><span class="pre">xdol.Registry</span></code> keyed by name, so
 apps (<code class="docutils literal notranslate"><span class="pre">reelee</span></code>, <code class="docutils literal notranslate"><span class="pre">muvid</span></code>, …) add their own without modifying <code class="docutils literal notranslate"><span class="pre">nw</span></code>.</p>
 <p>Applying one Transform across N units — a <strong>fan-out</strong> — goes through
@@ -267,6 +276,15 @@ JSON Schema to the MCP server and the CLI. <code class="docutils literal notrans
 <p>alias of <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="nw.transforms.CacheModeConflict">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.transforms.</span></span><span class="sig-name descname"><span class="pre">CacheModeConflict</span></span><a class="reference internal" href="../../_modules/nw/transforms/_cache_mode.html#CacheModeConflict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.transforms.CacheModeConflict" title="Link to this definition"></a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">use_cache=False</span></code> and <code class="docutils literal notranslate"><span class="pre">force=True</span></code> were passed together.</p>
+<p>A <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> subclass so callers that already catch <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>
+(and falaw’s own refusal of the same corner) keep working, while a caller
+that wants to distinguish this one specific contradiction can.</p>
 </dd></dl>
 
 <dl class="py data">
@@ -377,7 +395,11 @@ registry and orchestrator depend on.</p>
 <dt class="sig sig-object py" id="nw.transforms.Transform.execute">
 <span class="sig-name descname"><span class="pre">execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plan</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Plan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skeleton</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Annotation</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_failure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'halt'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'isolate'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'halt'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nw.transforms.TransformResult" title="nw.transforms.TransformResult"><span class="pre">TransformResult</span></a></span></span><a class="reference internal" href="../../_modules/nw/transforms.html#Transform.execute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.transforms.Transform.execute" title="Link to this definition"></a></dt>
 <dd><p>Run <code class="docutils literal notranslate"><span class="pre">plan</span></code>, complete <code class="docutils literal notranslate"><span class="pre">skeleton</span></code>, write to the graph, return result.</p>
-<p><code class="docutils literal notranslate"><span class="pre">force=True</span></code> bypasses the cache (the “regenerate this” affordance).</p>
+<p><code class="docutils literal notranslate"><span class="pre">force=True</span></code> bypasses the cache <strong>read</strong> (the “regenerate this”
+affordance) and keeps the cache <strong>write</strong>, so a forced re-run stays
+reusable instead of billing the next consumer again (nw#72).
+<code class="docutils literal notranslate"><span class="pre">use_cache=False</span></code> means “do not touch the cache at all”; pairing it
+with <code class="docutils literal notranslate"><span class="pre">force=True</span></code> raises <a class="reference internal" href="#nw.transforms.CacheModeConflict" title="nw.transforms.CacheModeConflict"><code class="xref py py-class docutils literal notranslate"><span class="pre">CacheModeConflict</span></code></a>.</p>
 <p><code class="docutils literal notranslate"><span class="pre">on_failure</span></code> selects the failure policy — see <code class="xref py py-data docutils literal notranslate"><span class="pre">OnFailure</span></code>.
 <code class="docutils literal notranslate"><span class="pre">&quot;halt&quot;</span></code> is the default so no existing caller changes behaviour.</p>
 <div class="admonition warning">
@@ -670,6 +692,15 @@ discards the run record for units that already spent. And a <code class="docutil
 override that accepts-but-ignores <code class="docutils literal notranslate"><span class="pre">on_failure</span></code> runs its internal
 default within the unit — undetectable by signature inspection in
 principle; cross-unit policy is still honoured.</p>
+<p><code class="docutils literal notranslate"><span class="pre">use_cache</span></code> / <code class="docutils literal notranslate"><span class="pre">force</span></code> are forwarded per unit and mean what they mean
+on <a class="reference internal" href="#nw.transforms.Transform.execute" title="nw.transforms.Transform.execute"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Transform.execute()</span></code></a>: <code class="docutils literal notranslate"><span class="pre">force</span></code> skips the cache <strong>read</strong> and keeps
+the <strong>write</strong>, so re-forcing a 200-unit fan-out does not orphan 200 paid
+results (nw#72). <code class="docutils literal notranslate"><span class="pre">use_cache=False,</span> <span class="pre">force=True</span></code> raises
+<a class="reference internal" href="#nw.transforms.CacheModeConflict" title="nw.transforms.CacheModeConflict"><code class="xref py py-class docutils literal notranslate"><span class="pre">CacheModeConflict</span></code></a> <strong>before the first unit runs</strong>:
+it is a contradiction decidable from the arguments alone, so it does not
+get the degradation above — filing one programming error as N identical
+failed rows is only the lesser evil for the shapes that cannot be checked
+up front.</p>
 <p>Units run <strong>sequentially</strong>. Concurrency <em>within</em> a unit is falaw’s
 (<code class="docutils literal notranslate"><span class="pre">execute_plan_isolated</span></code> bounds it); concurrency <em>across</em> units is the
 deferred-scheduler work nw#26 explicitly scopes out, and nothing here
@@ -729,6 +760,28 @@ registry’s <code class="docutils literal notranslate"><span class="pre">on_con
 declared output type, or “the job runs successfully but produces
 nothing retrievable” becomes invisible to every layer that reports
 success (nw#27).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.transforms.resolve_cache_mode">
+<span class="sig-prename descclassname"><span class="pre">nw.transforms.</span></span><span class="sig-name descname"><span class="pre">resolve_cache_mode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nw/transforms/_cache_mode.html#resolve_cache_mode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.transforms.resolve_cache_mode" title="Link to this definition"></a></dt>
+<dd><p>Return the <code class="docutils literal notranslate"><span class="pre">(use_cache,</span> <span class="pre">refresh)</span></code> pair falaw’s executor should get.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>use_cache</strong> – May this run touch the cache at all?</p></li>
+<li><p><strong>force</strong> – Ignore any cached answer and re-run — while <strong>keeping</strong> what
+the re-run pays for.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The <code class="docutils literal notranslate"><span class="pre">(use_cache,</span> <span class="pre">refresh)</span></code> pair to forward to <code class="docutils literal notranslate"><span class="pre">execute_plan</span></code> /
+<code class="docutils literal notranslate"><span class="pre">execute_plan_isolated</span></code>.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#nw.transforms.CacheModeConflict" title="nw.transforms.CacheModeConflict"><strong>CacheModeConflict</strong></a> – if <code class="docutils literal notranslate"><span class="pre">force=True</span></code> is paired with <code class="docutils literal notranslate"><span class="pre">use_cache=False</span></code>.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
