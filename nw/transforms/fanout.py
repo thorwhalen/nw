@@ -578,8 +578,11 @@ def fan_out_execute(
     on :meth:`Transform.execute`: ``force`` skips the cache **read** and keeps
     the **write**, so re-forcing a 200-unit fan-out does not orphan 200 paid
     results (nw#72). ``use_cache=False, force=True`` raises
-    :class:`~nw.transforms.CacheModeConflict` — from the unit that first
-    executes, since that is where ``execute`` validates it.
+    :class:`~nw.transforms.CacheModeConflict` **before the first unit runs**:
+    it is a contradiction decidable from the arguments alone, so it does not
+    get the degradation above — filing one programming error as N identical
+    failed rows is only the lesser evil for the shapes that cannot be checked
+    up front.
 
     Units run **sequentially**. Concurrency *within* a unit is falaw's
     (``execute_plan_isolated`` bounds it); concurrency *across* units is the
