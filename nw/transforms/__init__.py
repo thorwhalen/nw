@@ -17,6 +17,13 @@ Two-phase, mirroring ``nw.workflow`` (prepare → plan → execute):
    them to the project graph, and returns a :class:`TransformResult` with
    *actual* cost and cache savings.
 
+``execute``'s two cache knobs are a read half and a write half, not one
+switch: ``force=True`` skips the cache **read** and keeps the **write** (so a
+"regenerate this" run stays reusable instead of billing the next consumer
+again), while ``use_cache=False`` means "do not touch the cache at all".
+:mod:`nw.transforms._cache_mode` owns the mapping onto falaw's
+``(use_cache, refresh)`` and refuses the one pair that has no meaning (nw#72).
+
 Transforms are registered with an :class:`xdol.Registry` keyed by name, so
 apps (``reelee``, ``muvid``, …) add their own without modifying ``nw``.
 
@@ -52,6 +59,7 @@ from xdol import Registry
 from falaw import Plan, execute_plan_isolated
 from lacing import Annotation, Artifact
 
+from nw.transforms._cache_mode import CacheModeConflict, resolve_cache_mode
 from nw.transforms.fanout import (
     DFLT_GENERATE_WHEN,
     WORK_ITEM_NAMESPACE,
@@ -287,7 +295,11 @@ class Transform(Protocol):
     ) -> TransformResult:
         """Run ``plan``, complete ``skeleton``, write to the graph, return result.
 
-        ``force=True`` bypasses the cache (the "regenerate this" affordance).
+        ``force=True`` bypasses the cache **read** (the "regenerate this"
+        affordance) and keeps the cache **write**, so a forced re-run stays
+        reusable instead of billing the next consumer again (nw#72).
+        ``use_cache=False`` means "do not touch the cache at all"; pairing it
+        with ``force=True`` raises :class:`CacheModeConflict`.
 
         ``on_failure`` selects the failure policy — see :data:`OnFailure`.
         ``"halt"`` is the default so no existing caller changes behaviour.
@@ -392,6 +404,11 @@ class BaseTransform:
                 f"{type(self).__name__}.execute: on_failure must be 'halt' or "
                 f"'isolate', got {on_failure!r}."
             )
+        # `force` is a READ instruction, so it maps to falaw's `refresh` and
+        # nothing else. The old `use_cache and not force` also disabled the
+        # cache WRITE, so a forced run discarded the result it had just paid
+        # for and the next consumer re-billed it (nw#72, falaw#49).
+        cache_on, refresh = resolve_cache_mode(use_cache=use_cache, force=force)
         plan = stamp_transform_identity(plan, self)
         # One engine, two policies. `halt` is `execute_plan` — falaw defines the
         # latter as exactly this call plus `artifacts_or_raise()` — so it keeps
@@ -399,7 +416,8 @@ class BaseTransform:
         # every existing caller classifies on.
         report = execute_plan_isolated(
             plan,
-            use_cache=use_cache and not force,
+            use_cache=cache_on,
+            refresh=refresh,
             halt_on_failure=on_failure == "halt",
         )
         if on_failure == "halt":
@@ -776,6 +794,8 @@ __all__ = [
     "list_transforms",
     "transform_catalog",
     "stamp_transform_identity",
+    "CacheModeConflict",
+    "resolve_cache_mode",
     "cache_key",
     "cached_output",
     # fan-out (nw#26)

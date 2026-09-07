@@ -64,6 +64,8 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 from falaw import Plan
 from lacing import Annotation, TimeInterval
 
+from nw.transforms._cache_mode import resolve_cache_mode
+
 
 GenerateWhen = Literal["static", "dynamic"]
 """When a Transform's fan-out cardinality is knowable.
@@ -572,6 +574,13 @@ def fan_out_execute(
     default within the unit — undetectable by signature inspection in
     principle; cross-unit policy is still honoured.
 
+    ``use_cache`` / ``force`` are forwarded per unit and mean what they mean
+    on :meth:`Transform.execute`: ``force`` skips the cache **read** and keeps
+    the **write**, so re-forcing a 200-unit fan-out does not orphan 200 paid
+    results (nw#72). ``use_cache=False, force=True`` raises
+    :class:`~nw.transforms.CacheModeConflict` — from the unit that first
+    executes, since that is where ``execute`` validates it.
+
     Units run **sequentially**. Concurrency *within* a unit is falaw's
     (``execute_plan_isolated`` bounds it); concurrency *across* units is the
     deferred-scheduler work nw#26 explicitly scopes out, and nothing here
@@ -583,6 +592,7 @@ def fan_out_execute(
             f"fan_out_execute: on_failure must be 'halt' or 'isolate', "
             f"got {on_failure!r}."
         )
+    resolve_cache_mode(use_cache=use_cache, force=force)
     executing_name = getattr(transform, "name", "") or ""
     if executing_name != fan_out.transform_name:
         raise ValueError(

@@ -622,7 +622,14 @@ def test_render_strategy_flags_an_unknown_cost(patch_render_execute):
     assert result.has_unknown_costs is True
 
 
-def test_render_strategy_bypasses_the_cache_on_force(patch_render_execute):
+def test_render_strategy_bypasses_the_cache_read_on_force(patch_render_execute):
+    """`force` skips the cache READ and keeps the WRITE (nw#72).
+
+    This used to assert ``use_cache is False``, which is the double-spend
+    itself: it disabled the write too, so a re-render discarded the clip it
+    had just paid for. tests/test_transform_force_refresh.py measures that in
+    vendor calls.
+    """
     plan, skeleton = _plan(1), _render_skeleton()
     kwargs = {}
     patch_render_execute(
@@ -632,4 +639,5 @@ def test_render_strategy_bypasses_the_cache_on_force(patch_render_execute):
 
     _render_transform().execute(_RenderProject(), plan, skeleton, force=True)
 
-    assert kwargs["use_cache"] is False
+    assert kwargs["use_cache"] is True, "the cache WRITE stays on"
+    assert kwargs["refresh"] is True, "the cache READ is skipped"
