@@ -87,6 +87,7 @@ from .renderers import (
 from .transforms import (
     DFLT_IMPL_VERSION,
     BaseTransform,
+    CacheModeConflict,
     FailedOutput,
     OnFailure,
     Transform,
@@ -166,6 +167,7 @@ __all__ = [
     "format_ref",
     "SCHEMA_VERSION",
     "BaseTransform",
+    "CacheModeConflict",
     "CharacterImage",
     "CharacterRef",
     "ComposeReport",

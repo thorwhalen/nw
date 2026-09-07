@@ -35,7 +35,11 @@ dependencies = [
     # release shipping `falaw/testing.py`, with everything nw imports
     # (`make_fake_assets_fixture`, the two other fixtures,
     # `OutboundNetworkAttempt`) present from the start.
-    "falaw>=0.0.36",
+    # Raised to >=0.0.45 for `execute_plan(refresh=)` — the cache read/write
+    # split (falaw#49) that `Transform.execute(force=True)` now routes through
+    # so a forced re-run keeps what it paid for (nw#72). `refresh=` is a
+    # TypeError on anything older, so this is a hard floor, not a preference.
+    "falaw>=0.0.45",
     # >=0.0.25 for `lacing.digest.annotation_value_digest` — the content digest
     # `nw.freshness` compares to cut off early. 0.0.24 does NOT have it, so a
     # lower floor resolves to a lacing without the symbol and fails at import

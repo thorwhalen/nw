@@ -43,6 +43,7 @@ from .. import (
     TransformResult,
     register_transform,
 )
+from .._cache_mode import resolve_cache_mode
 from .._provenance import derive_provenance
 from ...bodies import (
     RENDER_RESULT_BODY_SCHEMA_URI,
@@ -162,11 +163,16 @@ class RenderStrategyTransform(BaseTransform):
                 f"{type(self).__name__}.execute: on_failure must be 'halt' or "
                 f"'isolate', got {on_failure!r}."
             )
+        # `force` skips the cache READ and keeps the WRITE — see
+        # `nw.transforms._cache_mode`. The old `use_cache and not force`
+        # disabled both, so re-rendering a shot threw away the clip it had
+        # just paid for (nw#72).
+        cache_on, refresh = resolve_cache_mode(use_cache=use_cache, force=force)
         shot_id = skeleton[0].body["shot_id"]
         # materialize() needs only local paths — no upload required.
         prep = prepare_shot(project, shot_id, upload=False)
         report = execute_plan_isolated(
-            plan, use_cache=use_cache and not force, halt_on_failure=True
+            plan, use_cache=cache_on, refresh=refresh, halt_on_failure=True
         )
         if not report.is_complete:
             if on_failure == "halt":

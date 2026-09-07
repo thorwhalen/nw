@@ -27,6 +27,7 @@ import pytest
 
 from nw.transforms import (
     BaseTransform,
+    CacheModeConflict,
     DFLT_GENERATE_WHEN,
     FanOutPlan,
     TransformInputs,
@@ -491,10 +492,24 @@ def test_execute_passes_policy_and_cache_flags_through():
     t = _StubTransform()
     project = _Project()
     fo = fan_out_plan(t, project, _items("a/1"), inputs_for=_inputs_for_factory())
-    fan_out_execute(t, project, fo, use_cache=False, force=True, on_failure="isolate")
+    fan_out_execute(t, project, fo, use_cache=True, force=True, on_failure="isolate")
     assert t.execute_kwargs == [
-        {"use_cache": False, "force": True, "on_failure": "isolate"}
+        {"use_cache": True, "force": True, "on_failure": "isolate"}
     ]
+
+
+def test_execute_refuses_the_contradictory_cache_pair_before_any_unit_runs():
+    """`use_cache=False, force=True` has no meaning (nw#72) — and it is
+    checkable from the arguments, so it must not become N identical failed
+    rows, one per unit that already spent."""
+    t = _StubTransform()
+    project = _Project()
+    fo = fan_out_plan(t, project, _items("a/1", "a/2"), inputs_for=_inputs_for_factory())
+
+    with pytest.raises(CacheModeConflict):
+        fan_out_execute(t, project, fo, use_cache=False, force=True)
+
+    assert t.execute_kwargs == [], "no unit was executed"
 
 
 def test_execute_refuses_a_mismatched_transform():
