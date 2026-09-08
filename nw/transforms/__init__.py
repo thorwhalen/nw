@@ -474,6 +474,18 @@ class BaseTransform:
         # returning early.
         for ann in completed:
             project.graph.add_annotation(ann)
+        # A failed/blocked output's reason otherwise lives only in this
+        # in-memory result — gone the moment the caller drops it, and
+        # unexplained again on reload (nw#44).
+        for unproduced in (*failed, *blocked):
+            project.graph.add_unproduced_output(
+                unproduced.skeleton,
+                transform_name=self.name,
+                status=unproduced.status,
+                reason=unproduced.reason,
+                error=unproduced.error,
+                blocked_by=unproduced.blocked_by,
+            )
         return TransformResult(
             annotations=tuple(completed),
             artifacts=tuple(report.produced),

@@ -195,6 +195,17 @@ class RenderStrategyTransform(BaseTransform):
                 blocked_by=tuple(first.blocked_by),
             )
             is_blocked = first.status == "blocked"
+            # This override bypasses BaseTransform.execute, so it must record
+            # the unproduced output itself — the same self-stamping obligation
+            # `impl_version` already places on an overriding execute() (nw#44).
+            project.graph.add_unproduced_output(
+                unproduced.skeleton,
+                transform_name=self.name,
+                status=unproduced.status,
+                reason=unproduced.reason,
+                error=unproduced.error,
+                blocked_by=unproduced.blocked_by,
+            )
             return TransformResult(
                 annotations=(),
                 artifacts=tuple(report.produced),

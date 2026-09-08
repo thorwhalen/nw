@@ -187,10 +187,17 @@ def test_catalog_carries_generate_when(monkeypatch):
 
     reg = Registry(name="test", on_conflict="error")
     reg.register("test.static", Static())
-    reg.register("test.dynamic_by_default", type("D", (BaseTransform,), {
-        "name": "test.dynamic_by_default",
-        "output_kind": "annot://schema/test/v1",
-    })())
+    reg.register(
+        "test.dynamic_by_default",
+        type(
+            "D",
+            (BaseTransform,),
+            {
+                "name": "test.dynamic_by_default",
+                "output_kind": "annot://schema/test/v1",
+            },
+        )(),
+    )
     monkeypatch.setattr(t, "transforms", reg)
     entries = {e["name"]: e for e in transform_catalog()}
     assert entries["test.static"]["generate_when"] == "static"
@@ -229,9 +236,13 @@ def _annotation(key: str):
 class _Graph:
     def __init__(self):
         self.written = []
+        self.unproduced = []
 
     def add_annotation(self, ann):
         self.written.append(ann)
+
+    def add_unproduced_output(self, skeleton, **kwargs):
+        self.unproduced.append({"skeleton": skeleton, **kwargs})
 
 
 class _Project:
@@ -275,8 +286,9 @@ class _StubTransform(BaseTransform):
         )
         return plan, (inputs.primary[0],)
 
-    def execute(self, project, plan, skeleton, *, use_cache=True, force=False,
-                on_failure="halt"):
+    def execute(
+        self, project, plan, skeleton, *, use_cache=True, force=False, on_failure="halt"
+    ):
         key = plan.calls[0].arguments["key"]
         self.executed.append(key)
         self.execute_kwargs.append(
@@ -295,8 +307,11 @@ class _StubTransform(BaseTransform):
                 annotations=(ann,),
                 cost_usd_actual=1.0,
                 failed=(
-                    FailedOutput(skeleton=skeleton[0], status="failed",
-                                 reason="one output dropped"),
+                    FailedOutput(
+                        skeleton=skeleton[0],
+                        status="failed",
+                        reason="one output dropped",
+                    ),
                 ),
             )
         return TransformResult(annotations=(ann,), cost_usd_actual=1.0)
@@ -351,7 +366,9 @@ def test_fan_out_plan_names_the_item_a_plan_failure_died_on():
 
     with pytest.raises(RuntimeError) as caught:
         fan_out_plan(
-            Exploding(), _Project(), _items("a/1", "a/2"),
+            Exploding(),
+            _Project(),
+            _items("a/1", "a/2"),
             inputs_for=_inputs_for_factory(),
         )
     if sys.version_info >= (3, 11):
@@ -379,7 +396,9 @@ def test_fan_out_plan_cost_arithmetic_is_falaw18_honest():
     """Known sum + unknown count — an unpriced call is never a free call."""
     t = _StubTransform(unknown_cost_keys={"s1/p2"})
     fo = fan_out_plan(
-        t, _Project(), _items("s1/p1", "s1/p2", "s2/p1"),
+        t,
+        _Project(),
+        _items("s1/p1", "s1/p2", "s2/p1"),
         inputs_for=_inputs_for_factory(),
     )
     assert fo.known_cost_usd == 2.0
@@ -434,7 +453,9 @@ def test_fan_out_plan_makes_no_billable_calls():
 def test_execute_all_units_succeed():
     t = _StubTransform()
     project = _Project()
-    fo = fan_out_plan(t, project, _items("a/1", "a/2"), inputs_for=_inputs_for_factory())
+    fo = fan_out_plan(
+        t, project, _items("a/1", "a/2"), inputs_for=_inputs_for_factory()
+    )
     result = fan_out_execute(t, project, fo)
     assert result.is_complete
     assert [r.status for r in result.items] == ["succeeded", "succeeded"]
@@ -465,12 +486,17 @@ def test_execute_halt_blocks_units_after_the_first_failure():
     t = _StubTransform(fail_keys={"a/2"})
     project = _Project()
     fo = fan_out_plan(
-        t, project, _items("a/1", "a/2", "a/3", "a/4"),
+        t,
+        project,
+        _items("a/1", "a/2", "a/3", "a/4"),
         inputs_for=_inputs_for_factory(),
     )
     result = fan_out_execute(t, project, fo, on_failure="halt")
     assert [r.status for r in result.items] == [
-        "succeeded", "failed", "blocked", "blocked",
+        "succeeded",
+        "failed",
+        "blocked",
+        "blocked",
     ]
     assert t.executed == ["a/1", "a/2"], "halt stops submitting"
     assert "a/2" in result.items[2].reason, "blocked names its cause"
@@ -504,7 +530,9 @@ def test_execute_refuses_the_contradictory_cache_pair_before_any_unit_runs():
     rows, one per unit that already spent."""
     t = _StubTransform()
     project = _Project()
-    fo = fan_out_plan(t, project, _items("a/1", "a/2"), inputs_for=_inputs_for_factory())
+    fo = fan_out_plan(
+        t, project, _items("a/1", "a/2"), inputs_for=_inputs_for_factory()
+    )
 
     with pytest.raises(CacheModeConflict):
         fan_out_execute(t, project, fo, use_cache=False, force=True)
@@ -528,19 +556,33 @@ def test_execute_isolates_a_protocol_violating_none_result():
     None-returning execute escape mid-loop, discarding the whole record."""
 
     class Rogue(_StubTransform):
-        def execute(self, project, plan, skeleton, *, use_cache=True,
-                    force=False, on_failure="halt"):
+        def execute(
+            self,
+            project,
+            plan,
+            skeleton,
+            *,
+            use_cache=True,
+            force=False,
+            on_failure="halt",
+        ):
             key = plan.calls[0].arguments["key"]
             if key == "a/1":
                 return None  # protocol violation
             return super().execute(
-                project, plan, skeleton,
-                use_cache=use_cache, force=force, on_failure=on_failure,
+                project,
+                plan,
+                skeleton,
+                use_cache=use_cache,
+                force=force,
+                on_failure=on_failure,
             )
 
     t = Rogue()
     project = _Project()
-    fo = fan_out_plan(t, project, _items("a/1", "a/2"), inputs_for=_inputs_for_factory())
+    fo = fan_out_plan(
+        t, project, _items("a/1", "a/2"), inputs_for=_inputs_for_factory()
+    )
     result = fan_out_execute(t, project, fo)
     assert [r.status for r in result.items] == ["failed", "succeeded"]
     assert "AttributeError" in result.items[0].reason
@@ -553,7 +595,9 @@ def test_a_failed_unit_makes_the_run_cost_unknown():
     exact under-report the federation's unknown-cost rule forbids."""
     t = _StubTransform(fail_keys={"a/1"})
     project = _Project()
-    fo = fan_out_plan(t, project, _items("a/1", "a/2"), inputs_for=_inputs_for_factory())
+    fo = fan_out_plan(
+        t, project, _items("a/1", "a/2"), inputs_for=_inputs_for_factory()
+    )
     result = fan_out_execute(t, project, fo)
     assert result.has_unknown_costs is True
     assert result.to_record()["has_unknown_costs"] is True
@@ -582,7 +626,9 @@ def test_execute_tolerates_a_pre_nw25_override_without_on_failure():
 
     t = Legacy()
     project = _Project()
-    fo = fan_out_plan(t, project, _items("a/1", "a/2"), inputs_for=_inputs_for_factory())
+    fo = fan_out_plan(
+        t, project, _items("a/1", "a/2"), inputs_for=_inputs_for_factory()
+    )
     result = fan_out_execute(t, project, fo, on_failure="isolate")
     assert result.is_complete, "no TypeError — the keyword is withheld"
     # ... and a raising legacy unit is still isolated at the fan-out level:
@@ -616,9 +662,9 @@ def test_run_record_is_json_serializable_and_carries_identity():
     assert rows["a/1"]["annotation_ids"], "successes reference their annotations"
     assert rows["a/2"]["status"] == "failed"
     assert rows["a/2"]["annotation_ids"] == []
-    assert rows["a/1"]["instance_id"] == str(
-        work_item_instance_id(t.name, "a/1")
-    ), "the record carries the pure-function identity"
+    assert rows["a/1"]["instance_id"] == str(work_item_instance_id(t.name, "a/1")), (
+        "the record carries the pure-function identity"
+    )
 
 
 def test_work_items_never_reach_the_graph_document():

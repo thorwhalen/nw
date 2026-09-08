@@ -41,7 +41,13 @@ from nw.transforms._adapters.render_strategy import RenderStrategyParams
 from nw.transforms._provenance import derive_provenance
 
 
-_STRATEGY_NAMES = ("lipsync", "image_to_video", "text_to_video", "still", "composite_lipsync")
+_STRATEGY_NAMES = (
+    "lipsync",
+    "image_to_video",
+    "text_to_video",
+    "still",
+    "composite_lipsync",
+)
 _TRANSFORM_NAMES = tuple(f"shot_to_render_result.fal.{n}" for n in _STRATEGY_NAMES)
 
 
@@ -61,9 +67,12 @@ def _minimal_wav_bytes() -> bytes:
     sample_rate, n_frames = 8000, 8000 * 10
     data_size = n_frames
     header = (
-        b"RIFF" + struct.pack("<I", 36 + data_size) + b"WAVEfmt "
+        b"RIFF"
+        + struct.pack("<I", 36 + data_size)
+        + b"WAVEfmt "
         + struct.pack("<IHHIIHH", 16, 1, 1, sample_rate, sample_rate, 1, 8)
-        + b"data" + struct.pack("<I", data_size)
+        + b"data"
+        + struct.pack("<I", data_size)
     )
     return header + (b"\x80" * data_size)
 
@@ -76,7 +85,8 @@ def _minimal_png_bytes(w: int = 16, h: int = 16) -> bytes:
     def _chunk(typ: bytes, data: bytes) -> bytes:
         return (
             struct.pack(">I", len(data))
-            + typ + data
+            + typ
+            + data
             + struct.pack(">I", zlib.crc32(typ + data) & 0xFFFFFFFF)
         )
 
@@ -98,7 +108,9 @@ def _seed_project(tmp_path, *, strategy: str, with_environment: bool = True) -> 
     from nw.schema import SongInfo
 
     proj.update_spec(
-        song=SongInfo(audio_path="song/song.wav", duration_s=10.0, sample_rate=8000, bitrate=64000)
+        song=SongInfo(
+            audio_path="song/song.wav", duration_s=10.0, sample_rate=8000, bitrate=64000
+        )
     )
     if with_environment:
         proj.add_environment("bell_tower", description="Gothic bell tower")
@@ -108,10 +120,14 @@ def _seed_project(tmp_path, *, strategy: str, with_environment: bool = True) -> 
     proj.upsert_section(SectionSpec(id="verse", start_s=0.0, end_s=10.0))
     proj.upsert_shot(
         ShotSpec(
-            id="s01", start_s=0.0, end_s=8.0, section_id="verse",
+            id="s01",
+            start_s=0.0,
+            end_s=8.0,
+            section_id="verse",
             render_strategy=strategy,
             environment="bell_tower" if with_environment else "",
-            description="bell tower at moonlight", framing="medium",
+            description="bell tower at moonlight",
+            framing="medium",
         )
     )
     return proj
@@ -200,20 +216,34 @@ def test_base_transform_plan_is_not_implemented():
 
 
 def test_base_transform_complete_annotation_media_sets_artifact_id():
-    from lacing import Annotation, Artifact, MediaRef, Provenance, RationalTime, TimeInterval
+    from lacing import (
+        Annotation,
+        Artifact,
+        MediaRef,
+        Provenance,
+        RationalTime,
+        TimeInterval,
+    )
 
     iv = TimeInterval(RationalTime(0), RationalTime(24000))
     skel = Annotation(
-        id=uuid.uuid4(), tier="panels",
+        id=uuid.uuid4(),
+        tier="panels",
         reference=MediaRef(asset_id="a" * 64, interval=iv),
-        body={"panel_id": "p0"}, body_schema_uri="annot://schema/shot/v1",
+        body={"panel_id": "p0"},
+        body_schema_uri="annot://schema/shot/v1",
         provenance=Provenance(
-            was_generated_by="transform:t@1", was_attributed_to="agent:test",
-            was_derived_from=[], generated_at_time=RationalTime.now(), activity="derive",
+            was_generated_by="transform:t@1",
+            was_attributed_to="agent:test",
+            was_derived_from=[],
+            generated_at_time=RationalTime.now(),
+            activity="derive",
         ),
     )
     art = Artifact(
-        asset_id="b" * 64, kind="image", bytes_size=10,
+        asset_id="b" * 64,
+        kind="image",
+        bytes_size=10,
         provenance=skel.provenance,
     )
     completed = BaseTransform()._complete_annotation(skel, art)
@@ -227,12 +257,19 @@ def _skeleton_and_prov(body: dict):
 
     iv = TimeInterval(RationalTime(0), RationalTime(24000))
     prov = Provenance(
-        was_generated_by="transform:t@1", was_attributed_to="agent:test",
-        was_derived_from=[], generated_at_time=RationalTime.now(), activity="derive",
+        was_generated_by="transform:t@1",
+        was_attributed_to="agent:test",
+        was_derived_from=[],
+        generated_at_time=RationalTime.now(),
+        activity="derive",
     )
     skel = Annotation(
-        id=uuid.uuid4(), tier="t", reference=MediaRef(asset_id="a" * 64, interval=iv),
-        body=body, body_schema_uri="annot://schema/shot/v1", provenance=prov,
+        id=uuid.uuid4(),
+        tier="t",
+        reference=MediaRef(asset_id="a" * 64, interval=iv),
+        body=body,
+        body_schema_uri="annot://schema/shot/v1",
+        provenance=prov,
     )
     return skel, prov
 
@@ -243,13 +280,20 @@ def test_base_transform_complete_annotation_json_merges_materialized_payload(tmp
 
     skel, prov = _skeleton_and_prov({"caption": "<placeholder>", "framing": "medium"})
     json_file = tmp_path / "llm-out.json"
-    json_file.write_text('{"caption": "a bell tower at dusk", "camera": "slow push-in"}')
+    json_file.write_text(
+        '{"caption": "a bell tower at dusk", "camera": "slow push-in"}'
+    )
     art = Artifact(
-        asset_id="b" * 64, kind="json", path=json_file, bytes_size=json_file.stat().st_size,
+        asset_id="b" * 64,
+        kind="json",
+        path=json_file,
+        bytes_size=json_file.stat().st_size,
         provenance=prov,
     )
     completed = BaseTransform()._complete_annotation(skel, art)
-    assert completed.body["caption"] == "a bell tower at dusk"  # LLM value overwrote placeholder
+    assert (
+        completed.body["caption"] == "a bell tower at dusk"
+    )  # LLM value overwrote placeholder
     assert completed.body["camera"] == "slow push-in"  # new key added
     assert completed.body["framing"] == "medium"  # untouched skeleton field preserved
 
@@ -269,7 +313,9 @@ def test_base_transform_complete_annotation_text_still_requires_override(tmp_pat
     skel, prov = _skeleton_and_prov({})
     txt = tmp_path / "out.txt"
     txt.write_text("a bare string")
-    art = Artifact(asset_id="b" * 64, kind="text", path=txt, bytes_size=13, provenance=prov)
+    art = Artifact(
+        asset_id="b" * 64, kind="text", path=txt, bytes_size=13, provenance=prov
+    )
     with pytest.raises(NotImplementedError, match="override _complete_annotation"):
         BaseTransform()._complete_annotation(skel, art)
 
@@ -286,16 +332,25 @@ def test_derive_provenance_unions_input_ids_and_stamps_transform():
 
     def _ann() -> Annotation:
         return Annotation(
-            id=uuid.uuid4(), tier="t", reference=MediaRef(asset_id="a" * 64, interval=iv),
-            body={}, body_schema_uri="annot://schema/shot/v1",
+            id=uuid.uuid4(),
+            tier="t",
+            reference=MediaRef(asset_id="a" * 64, interval=iv),
+            body={},
+            body_schema_uri="annot://schema/shot/v1",
             provenance=Provenance(
-                was_generated_by="x", was_attributed_to="y", was_derived_from=[],
-                generated_at_time=RationalTime.now(), activity="create",
+                was_generated_by="x",
+                was_attributed_to="y",
+                was_derived_from=[],
+                generated_at_time=RationalTime.now(),
+                activity="create",
             ),
         )
 
     primary, ctx_a, ctx_b = _ann(), _ann(), _ann()
-    inputs = TransformInputs(primary=(primary,), context={"character-ref": (ctx_a, ctx_b)})
+    inputs = TransformInputs(
+        primary=(primary,), context={"character-ref": (ctx_a, ctx_b)}
+    )
+
     class _BeatToPanel(BaseTransform):
         name = "beat_to_panel.llm.default"
         output_kind = "annot://schema/panel/v1"
@@ -311,6 +366,7 @@ def test_derive_provenance_unions_input_ids_and_stamps_transform():
 
 def test_derive_provenance_respects_explicit_attribution():
     inputs = TransformInputs(primary=())
+
     class _T(BaseTransform):
         name = "t"
         output_kind = "annot://schema/panel/v1"
@@ -326,7 +382,9 @@ def test_derive_provenance_respects_explicit_attribution():
 
 
 @pytest.mark.parametrize("strategy", ["still", "text_to_video", "image_to_video"])
-def test_adapter_plan_matches_strategy_and_builds_render_result_skeleton(tmp_path, strategy):
+def test_adapter_plan_matches_strategy_and_builds_render_result_skeleton(
+    tmp_path, strategy
+):
     proj = _seed_project(tmp_path, strategy=strategy, with_environment=True)
     transform = get_transform(f"shot_to_render_result.fal.{strategy}")
     inputs = _shot_inputs(proj)
@@ -380,7 +438,9 @@ def test_adapter_still_full_round_trip_offline(tmp_path):
     transform = get_transform("shot_to_render_result.fal.still")
     inputs = _shot_inputs(proj)
 
-    plan, skeleton = transform.plan(proj, inputs, params=RenderStrategyParams(upload=False))
+    plan, skeleton = transform.plan(
+        proj, inputs, params=RenderStrategyParams(upload=False)
+    )
     assert len(plan.calls) == 0  # precondition: no network
 
     result = transform.execute(proj, plan, skeleton)
@@ -541,6 +601,9 @@ def test_execute_accepts_a_matching_skeleton_and_plan(monkeypatch):
         def add_annotation(self, ann):
             self.written.append(ann)
 
+        def add_unproduced_output(self, skeleton, **kwargs):
+            pass
+
     class _Project:
         graph = _Graph()
 
@@ -658,8 +721,12 @@ def test_stamping_voids_the_stale_cache_prediction():
     plan = Plan(
         calls=(
             CallPlan(
-                tool="t", application="m/a", arguments={"p": 1},
-                output_kind="image", estimated_cost_usd=0.25, cache_status="hit",
+                tool="t",
+                application="m/a",
+                arguments={"p": 1},
+                output_kind="image",
+                estimated_cost_usd=0.25,
+                cache_status="hit",
             ),
         )
     )

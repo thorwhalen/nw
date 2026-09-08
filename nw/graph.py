@@ -46,6 +46,8 @@ from .bodies import (
     ENVIRONMENT_REF_BODY_SCHEMA_URI,
     GENRE_ENVELOPE_BODY_SCHEMA_URI,
     GENRE_ENVELOPE_TIER,
+    UNPRODUCED_OUTPUT_BODY_SCHEMA_URI,
+    UNPRODUCED_OUTPUT_TIER,
     GenreEnvelopeBodyV1,
     SECTION_BODY_SCHEMA_URI,
     SHOT_BODY_SCHEMA_URI,
@@ -56,6 +58,7 @@ from .bodies import (
     EnvironmentRefBodyV1,
     SectionBodyV1,
     ShotBodyV1,
+    UnproducedOutputBodyV1,
     build_verifying_trace,
 )
 from .graph_backend import (
@@ -112,6 +115,12 @@ class StoredEnvironmentRef:
 class StoredDecision:
     annotation_id: UUID
     body: DecisionBodyV1
+
+
+@dataclass(frozen=True)
+class StoredUnproducedOutput:
+    annotation_id: UUID
+    body: UnproducedOutputBodyV1
 
 
 # ---------------------------------------------------------------------------
@@ -454,14 +463,21 @@ class ProjectGraph:
 
         Annotations with no ``was_derived_from`` parents get no trace — there
         is nothing to verify, and they are nobody's descendant.
+
+        It is also where an :meth:`add_unproduced_output` record for this
+        same ``(transform, upstream)`` pair is retired (nw#44): a successful
+        write is proof the thing that record described has now been produced.
         """
         from lacing import Tier, TierStereotype
 
         trace = self._verifying_trace_for(ann.id, ann.provenance.was_derived_from)
+        retire_key = _unproduced_output_key_for(ann)
         with self._open() as store:
             store.add_tier(Tier(name=ann.tier, stereotype=TierStereotype.NONE))
             store.add(ann)
             _add_trace(store, trace)
+            if retire_key is not None:
+                _retire_unproduced_outputs(store, retire_key)
 
     def remove_annotation(self, annotation_id: UUID) -> bool:
         """Remove one annotation from the project graph, with its verifying traces.
@@ -485,6 +501,94 @@ class ProjectGraph:
         with self._open() as store:
             removed = remove_annotations_with_traces(store, (annotation_id,))
         return annotation_id in removed
+
+    # -- unproduced outputs (nw#44) -------------------------------------------
+
+    def add_unproduced_output(
+        self,
+        skeleton: Annotation,
+        *,
+        transform_name: str,
+        status: str,
+        reason: str = "",
+        error: Optional[BaseException] = None,
+        blocked_by: tuple[int, ...] = (),
+        was_attributed_to: Optional[str] = None,
+    ) -> UUID:
+        """Persist why a planned output was never produced (nw#44).
+
+        Mirrors one entry of ``TransformResult.failed`` / ``.blocked``
+        (:class:`nw.transforms.FailedOutput`) — pass its ``skeleton``,
+        ``status``, ``reason``, ``error`` and ``blocked_by`` straight through.
+        Written under :data:`nw.bodies.UNPRODUCED_OUTPUT_BODY_SCHEMA_URI`,
+        never under ``skeleton.body_schema_uri`` (see the module's docstring
+        on why that tier is reserved for what was actually produced).
+
+        Parentless, like a verifying trace — the link to what it describes is
+        ``(transform_name, skeleton.provenance.was_derived_from)``, the same
+        pair :meth:`add_annotation` uses to retire it once a real output with
+        that identity is written.
+        """
+        from lacing import Tier, TierStereotype
+
+        parent_ids = tuple(dict.fromkeys(skeleton.provenance.was_derived_from))
+        body = UnproducedOutputBodyV1(
+            transform_name=transform_name,
+            upstream=tuple(str(p) for p in parent_ids),
+            output_kind=skeleton.body_schema_uri,
+            status=status,
+            reason=reason,
+            error_type=type(error).__name__ if error is not None else None,
+            blocked_by=tuple(blocked_by),
+        )
+        new_id = uuid4()
+        ann = Annotation(
+            id=new_id,
+            tier=UNPRODUCED_OUTPUT_TIER,
+            reference=MediaRef(
+                asset_id=self.asset_id, interval=TimeInterval.from_seconds(0, 0)
+            ),
+            body=body.model_dump(mode="json"),
+            body_schema_uri=UNPRODUCED_OUTPUT_BODY_SCHEMA_URI,
+            provenance=Provenance(
+                was_generated_by=f"transform:{transform_name}",
+                was_attributed_to=was_attributed_to or f"agent:{transform_name}",
+                was_derived_from=[],
+                generated_at_time=_now_rt(),
+                activity="record",
+            ),
+        )
+        with self._open() as store:
+            store.add_tier(
+                Tier(name=UNPRODUCED_OUTPUT_TIER, stereotype=TierStereotype.NONE)
+            )
+            store.add(ann)
+        return new_id
+
+    def unproduced_outputs(
+        self, *, transform_name: Optional[str] = None
+    ) -> list[StoredUnproducedOutput]:
+        """Every unproduced-output record still outstanding, oldest first.
+
+        A record disappears the moment :meth:`add_annotation` writes a real
+        output for the same ``(transform_name, upstream)`` pair — what this
+        returns is exactly "still missing", survives a reload, and is not a
+        cache of any in-memory ``TransformResult``.
+        """
+        with self._open_read() as store:
+            rows = _collect_typed(
+                store,
+                tier=UNPRODUCED_OUTPUT_TIER,
+                schema_uri=UNPRODUCED_OUTPUT_BODY_SCHEMA_URI,
+                model=UnproducedOutputBodyV1,
+                wrap=lambda ann, body: StoredUnproducedOutput(
+                    annotation_id=ann.id, body=body
+                ),
+                sort_key=lambda s: 0,  # insertion order, like decisions
+            )
+        if transform_name is not None:
+            rows = [r for r in rows if r.body.transform_name == transform_name]
+        return rows
 
     # -- verifying traces ----------------------------------------------------
 
@@ -1005,6 +1109,50 @@ def _add_trace(store: IntervalAnnotationStore, trace: Optional[Annotation]) -> N
 
     store.add_tier(Tier(name=VERIFYING_TRACE_TIER, stereotype=TierStereotype.NONE))
     store.add(trace)
+
+
+def _unproduced_output_key_for(ann: Annotation) -> Optional[tuple[str, frozenset]]:
+    """The ``(transform_name, upstream)`` retirement key a written annotation
+    settles, or ``None`` when it was not produced by a Transform.
+
+    Reads ``ann.provenance.was_generated_by``, which
+    :func:`nw.transforms._provenance.derive_provenance` always sets to
+    ``"transform:<name>@<impl_version>"`` on both a completed output and the
+    ``FailedOutput.skeleton`` an unproduced-output record was built from — so
+    the same parse recovers the same name from either side without either
+    module importing the other.
+    """
+    generated_by = ann.provenance.was_generated_by
+    if not isinstance(generated_by, str) or not generated_by.startswith("transform:"):
+        return None
+    name = generated_by[len("transform:") :].partition("@")[0]
+    if not name:
+        return None
+    return name, frozenset(ann.provenance.was_derived_from)
+
+
+def _retire_unproduced_outputs(
+    store: IntervalAnnotationStore, key: tuple[str, frozenset]
+) -> None:
+    """Remove every unproduced-output record matching ``key`` (nw#44).
+
+    ``key`` is ``(transform_name, upstream)`` — see
+    :func:`_unproduced_output_key_for`. A record's own ``upstream`` is stored
+    as strings (JSON has no UUID type), so the comparison stringifies
+    ``key``'s side rather than parsing the record's.
+    """
+    transform_name, upstream = key
+    wanted_upstream = frozenset(str(u) for u in upstream)
+    for ann in list(store.by_tier(UNPRODUCED_OUTPUT_TIER)):
+        if ann.body_schema_uri != UNPRODUCED_OUTPUT_BODY_SCHEMA_URI:
+            continue
+        if not isinstance(ann.body, dict):
+            continue
+        if ann.body.get("transform_name") != transform_name:
+            continue
+        if frozenset(ann.body.get("upstream") or ()) != wanted_upstream:
+            continue
+        store.remove(ann.id)
 
 
 def _upsert(

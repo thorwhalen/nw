@@ -119,9 +119,13 @@ def _report(calls, *, succeeded, failures=(), cache_hits=()):
 class _Graph:
     def __init__(self):
         self.written = []
+        self.unproduced = []
 
     def add_annotation(self, ann):
         self.written.append(ann)
+
+    def add_unproduced_output(self, skeleton, **kwargs):
+        self.unproduced.append({"skeleton": skeleton, **kwargs})
 
 
 class _Project:
@@ -157,7 +161,9 @@ def test_halt_is_the_default_and_re_raises_the_original_error(patch_execute):
 
     report = ExecutionReport(
         outcomes=(
-            CallOutcome(index=0, call=plan.calls[0], status="succeeded", artifact=arts[0]),
+            CallOutcome(
+                index=0, call=plan.calls[0], status="succeeded", artifact=arts[0]
+            ),
             CallOutcome(index=1, call=plan.calls[1], status="failed", error=boom),
             CallOutcome(
                 index=2,
@@ -181,7 +187,10 @@ def test_halt_is_the_default_and_re_raises_the_original_error(patch_execute):
 def test_halt_asks_falaw_to_stop_early(patch_execute):
     """`halt` must not pay for the rest of the plan before deciding to raise."""
     plan, skeleton = _plan(2), _skel(2)
-    arts = [_artifact("a", skeleton[0].provenance), _artifact("b", skeleton[1].provenance)]
+    arts = [
+        _artifact("a", skeleton[0].provenance),
+        _artifact("b", skeleton[1].provenance),
+    ]
     kwargs = {}
     patch_execute(_report(plan.calls, succeeded=arts), capture=kwargs)
 
@@ -192,7 +201,10 @@ def test_halt_asks_falaw_to_stop_early(patch_execute):
 
 def test_isolate_asks_falaw_to_keep_going(patch_execute):
     plan, skeleton = _plan(2), _skel(2)
-    arts = [_artifact("a", skeleton[0].provenance), _artifact("b", skeleton[1].provenance)]
+    arts = [
+        _artifact("a", skeleton[0].provenance),
+        _artifact("b", skeleton[1].provenance),
+    ]
     kwargs = {}
     patch_execute(_report(plan.calls, succeeded=arts), capture=kwargs)
 
@@ -227,23 +239,40 @@ def test_isolate_writes_the_successes_and_reports_the_rest(patch_execute):
     assert [f.status for f in result.failed] == ["failed"]
     assert [b.status for b in result.blocked] == ["blocked"]
     assert result.is_complete is False
+    assert len(project.graph.unproduced) == 2, (
+        "the failed AND blocked outputs are recorded"
+    )
+    assert [u["status"] for u in project.graph.unproduced] == ["failed", "blocked"]
+    assert [u["transform_name"] for u in project.graph.unproduced] == ["", ""]
 
 
 def test_a_failed_output_names_which_skeleton_is_missing(patch_execute):
     """A UI needs 'panel 47 is missing because X', not an unexplained hole."""
     plan, skeleton = _plan(3), _skel(3)
-    succeeded = {0: _artifact("a", skeleton[0].provenance), 2: _artifact("c", skeleton[2].provenance)}
+    succeeded = {
+        0: _artifact("a", skeleton[0].provenance),
+        2: _artifact("c", skeleton[2].provenance),
+    }
     patch_execute(
-        _report(plan.calls, succeeded=succeeded, failures={1: ("failed", "rate limited")})
+        _report(
+            plan.calls, succeeded=succeeded, failures={1: ("failed", "rate limited")}
+        )
     )
 
-    result = BaseTransform().execute(_Project(), plan, skeleton, on_failure="isolate")
+    project = _Project()
+    result = BaseTransform().execute(project, plan, skeleton, on_failure="isolate")
 
     (missing,) = result.failed
     assert missing.skeleton is skeleton[1], "the skeleton that was planned"
     assert missing.skeleton.body["index"] == 1
     assert missing.reason == "rate limited"
     assert isinstance(missing.error, RuntimeError)
+
+    (recorded,) = project.graph.unproduced
+    assert recorded["skeleton"] is skeleton[1]
+    assert recorded["status"] == "failed"
+    assert recorded["reason"] == "rate limited"
+    assert recorded["error"] is missing.error
 
 
 def test_a_blocked_output_says_what_blocked_it(patch_execute):
@@ -256,11 +285,15 @@ def test_a_blocked_output_says_what_blocked_it(patch_execute):
         )
     )
 
-    result = BaseTransform().execute(_Project(), plan, skeleton, on_failure="isolate")
+    project = _Project()
+    result = BaseTransform().execute(project, plan, skeleton, on_failure="isolate")
 
     (blocked,) = result.blocked
     assert blocked.blocked_by == (0,)
     assert "upstream" in blocked.reason
+
+    recorded = next(u for u in project.graph.unproduced if u["status"] == "blocked")
+    assert recorded["blocked_by"] == (0,)
 
 
 def test_skeletons_stay_aligned_when_a_middle_call_drops_out(patch_execute):
@@ -291,7 +324,10 @@ def test_skeletons_stay_aligned_when_a_middle_call_drops_out(patch_execute):
 
 def test_a_fully_successful_isolate_run_is_complete(patch_execute):
     plan, skeleton = _plan(2), _skel(2)
-    arts = [_artifact("a", skeleton[0].provenance), _artifact("b", skeleton[1].provenance)]
+    arts = [
+        _artifact("a", skeleton[0].provenance),
+        _artifact("b", skeleton[1].provenance),
+    ]
     patch_execute(_report(plan.calls, succeeded=dict(enumerate(arts))))
 
     result = BaseTransform().execute(_Project(), plan, skeleton, on_failure="isolate")
@@ -351,7 +387,9 @@ def test_an_unknown_cost_stays_distinguishable_from_zero(patch_execute):
 
 def test_an_unknown_policy_is_refused(patch_execute):
     plan, skeleton = _plan(1), _skel(1)
-    patch_execute(_report(plan.calls, succeeded={0: _artifact("a", skeleton[0].provenance)}))
+    patch_execute(
+        _report(plan.calls, succeeded={0: _artifact("a", skeleton[0].provenance)})
+    )
 
     with pytest.raises(ValueError, match="on_failure must be"):
         BaseTransform().execute(_Project(), plan, skeleton, on_failure="ignore")
@@ -560,7 +598,9 @@ def test_render_strategy_halt_raises_rather_than_returning_empty(patch_render_ex
 def test_render_strategy_refuses_an_unknown_policy(patch_render_execute):
     """Without this, any typo silently selects `isolate` and halt stops halting."""
     plan, skeleton = _plan(1), _render_skeleton()
-    patch_render_execute(_report(plan.calls, succeeded={0: _artifact("a", skeleton[0].provenance)}))
+    patch_render_execute(
+        _report(plan.calls, succeeded={0: _artifact("a", skeleton[0].provenance)})
+    )
 
     for bad in ("ignore", "HALT", "", None):
         with pytest.raises(ValueError, match="on_failure must be"):
@@ -601,7 +641,10 @@ def test_render_strategy_files_a_blocked_shot_under_blocked(patch_render_execute
 
 def test_render_strategy_costs_what_actually_ran(patch_render_execute):
     plan, skeleton = _plan(2, cost=5.0), _render_skeleton()
-    arts = {0: _artifact("a", skeleton[0].provenance), 1: _artifact("b", skeleton[0].provenance)}
+    arts = {
+        0: _artifact("a", skeleton[0].provenance),
+        1: _artifact("b", skeleton[0].provenance),
+    }
     patch_render_execute(_report(plan.calls, succeeded=arts, cache_hits={1}))
 
     result = _render_transform().execute(_RenderProject(), plan, skeleton)

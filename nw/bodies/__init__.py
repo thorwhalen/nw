@@ -10,6 +10,8 @@ with a matching ``body_schema_uri`` validates correctly. The schemas are:
 - ``annot://schema/decision/v1``       — provenance-rich decision log entry
 - ``annot://schema/render-result/v1``  — output of a render Transform
 - ``annot://schema/verifying-trace/v1`` — upstream value digests, for early cutoff
+- ``annot://schema/unproduced-output/v1`` — why a planned output was never
+  produced (nw#44), retired by a later successful retry
 - ``annot://schema/genre-envelope/v1`` — the resolved {genre, template, params}
   the project was created as (singleton per project)
 
@@ -33,6 +35,11 @@ from .render_result import (
 )
 from .section import SECTION_BODY_SCHEMA_URI, SectionBodyV1
 from .shot import SHOT_BODY_SCHEMA_URI, ShotBodyV1
+from .unproduced_output import (
+    UNPRODUCED_OUTPUT_BODY_SCHEMA_URI,
+    UNPRODUCED_OUTPUT_TIER,
+    UnproducedOutputBodyV1,
+)
 from .verifying_trace import (
     VERIFYING_TRACE_BODY_SCHEMA_URI,
     VERIFYING_TRACE_TIER,
@@ -59,6 +66,9 @@ __all__ = [
     "SectionBodyV1",
     "SHOT_BODY_SCHEMA_URI",
     "ShotBodyV1",
+    "UNPRODUCED_OUTPUT_BODY_SCHEMA_URI",
+    "UNPRODUCED_OUTPUT_TIER",
+    "UnproducedOutputBodyV1",
     "VERIFYING_TRACE_BODY_SCHEMA_URI",
     "VERIFYING_TRACE_TIER",
     "UpstreamDigestV1",
