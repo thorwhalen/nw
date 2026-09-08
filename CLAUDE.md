@@ -33,11 +33,16 @@ it. Layering: `lacing → nw → falaw.Plan → backends` — nothing above
   reaches `execute(..., secrets=)` as an `nw.Secrets` (a read-only
   `{provider: key}` mapping that redacts its `repr`, refuses pickling and is
   not JSON-serializable), passed accepts-it-or-not by `fan_out_execute` and
-  `jobs.enqueue` — the same seam as `on_failure` / `unit_instance_id`. It is
-  never persisted anywhere; `tests/test_execution_secrets.py` greps every
-  store, record and log for a sentinel. `BaseTransform.execute` binds a
-  `"fal"` secret as the fal credential for the call; an app owns its own
-  provider names (`"elevenlabs"` is braidio's).
+  `jobs.enqueue` — the same seam as `on_failure` / `unit_instance_id` — and
+  **also bound ambiently** around every unit / worker call, so a `"fal"`
+  secret is the fal credential even for an override that predates the seam.
+  It is never persisted anywhere; `tests/test_execution_secrets.py` greps
+  every store, record and log for a sentinel, and pins that every registered
+  Transform's `execute` declares the keyword. Free text nw persists that it
+  did not author (a unit's failure `reason`, a job's error) is run through
+  `nw.redact` first, because a provider can echo the key in an auth error.
+  `BaseTransform.execute` binds a `"fal"` secret as the fal credential for
+  the call; an app owns its own provider names (`"elevenlabs"` is braidio's).
 - **Freshness** (`nw/freshness.py`) — verifying-trace rebuild analysis with
   early cutoff (Salsa-style backdating). `stale_verdicts`/`stale_after`
   answer "what did *this* change invalidate"; `stale_verdicts_all`/`all_stale`

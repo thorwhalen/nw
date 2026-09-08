@@ -90,7 +90,7 @@ from au import (
 )
 from au.base import ComputationBackend
 
-from nw.secrets import as_secrets, using_secrets
+from nw.secrets import as_secrets, redact_exception, using_secrets
 
 _logger = logging.getLogger(__name__)
 
@@ -1102,7 +1102,12 @@ def _bind_worker(
                 extra_ctx if extra_ctx is not None else nullcontext(),
                 using_secrets(secrets),
             ):
-                result = call()
+                try:
+                    result = call()
+                except BaseException as e:
+                    # au persists the exception text as the job's error; a
+                    # provider echoing the key back would put it in the store.
+                    raise redact_exception(e, secrets)
         finally:
             # ``finally``, not a trailing statement: a render that raises must
             # still stop beating, or a dead job keeps claiming to be alive and

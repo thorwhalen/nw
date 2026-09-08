@@ -368,3 +368,106 @@ def test_base_transform_execute_binds_the_fal_secret_around_plan_execution(
     _Base().execute(project, Plan(calls=()), ())
     assert observed == [SENTINEL, None]
     assert current_fal_key() is None
+
+
+# ---------------------------------------------------------------------------
+# Review findings on the first cut (nw#78): the ambient binding, redaction,
+# registry-wide conformance, identity equality
+# ---------------------------------------------------------------------------
+
+
+class _LegacyFalSpender(_Legacy):
+    """A pre-seam override that spends fal: it never sees `secrets`, so the
+    only way the caller's key can reach its calls is the ambient binding."""
+
+    name = "test.legacy_fal"
+
+    def execute(self, project, plan, skeleton, *, use_cache=True, force=False):
+        self.seen.append(current_fal_key())
+        return super().execute(project, plan, skeleton)
+
+
+def test_fan_out_binds_the_fal_secret_even_for_a_non_accepting_override(project):
+    t = _LegacyFalSpender()
+    fo = _fan_out(t, project, _sections(project, "intro", "verse"))
+    result = fan_out_execute(t, project, fo, secrets={FAL_SECRET: SENTINEL})
+    assert result.is_complete
+    assert [s for s in t.seen if s != "<not offered>"] == [SENTINEL, SENTINEL]
+    assert current_fal_key() is None  # released after each unit
+
+
+def test_every_registered_transform_accepts_secrets():
+    """No registered Transform may silently bill the server's key: the ones
+    that override `execute` (nw's own shot renderers included) declare the
+    keyword, so `fan_out_execute` passes it and a direct call is not a
+    TypeError. reelee's pre-seam overrides are covered by the ambient
+    binding; nw's own must take the seam properly."""
+    import inspect
+
+    missing = [
+        name
+        for name in nw.list_transforms()
+        if "secrets" not in inspect.signature(nw.get_transform(name).execute).parameters
+    ]
+    assert missing == []
+
+
+def test_a_dispatch_without_the_keyword_still_runs_under_the_fal_binding(project):
+    """The worker binds the secret around the call regardless of the
+    callable's signature (replacing that binding with a no-op must fail here)."""
+    observed = []
+
+    def plain(proj, params):
+        observed.append(current_fal_key())
+        return {"ok": True}
+
+    job = jobs.enqueue(
+        project, "op", {"a": 1}, dispatch={"op": plain}, secrets={FAL_SECRET: SENTINEL}
+    )
+    job = _wait_terminal(project, job.job_id)
+    assert job.status == "succeeded", job.error
+    assert observed == [SENTINEL]
+    assert current_fal_key() is None
+
+
+def test_a_failing_job_never_persists_a_key_quoted_in_its_error(project, tmp_path):
+    """A provider echoing the key in an auth error would otherwise put it in
+    the au store and the job index, which persist the exception text."""
+
+    def boom(proj, params, *, secrets=None):
+        raise RuntimeError(f"401 from provider: key {secrets['elevenlabs']} rejected")
+
+    job = jobs.enqueue(
+        project, "op", {"a": 1}, dispatch={"op": boom}, secrets={"elevenlabs": SENTINEL}
+    )
+    job = _wait_terminal(project, job.job_id)
+    assert job.status == "failed"
+    assert "<redacted:elevenlabs>" in (job.error or "")
+    assert SENTINEL not in json.dumps(jobs.to_dict(job), default=str)
+    assert _grep_tree(tmp_path) == []
+
+
+def test_a_failing_unit_never_files_a_key_quoted_in_its_reason(project, tmp_path):
+    class _Echoes(_SpendsASecret):
+        name = "test.echoes"
+
+        def execute(self, project, plan, skeleton, *, secrets=None, **kw):
+            raise RuntimeError(f"rejected: {secrets['elevenlabs']}")
+
+    t = _Echoes()
+    fo = _fan_out(t, project, _sections(project, "intro"))
+    result = fan_out_execute(t, project, fo, secrets={"elevenlabs": SENTINEL})
+    (item,) = result.items
+    assert item.status == "failed"
+    assert "<redacted:elevenlabs>" in item.reason
+    assert SENTINEL not in str(item.error)  # the exception itself was scrubbed
+    assert SENTINEL not in json.dumps(result.to_record())
+    assert _grep_tree(tmp_path) == []
+
+
+def test_secrets_equality_is_identity_not_value():
+    a = Secrets(fal=SENTINEL)
+    assert a == a
+    assert a != Secrets(fal=SENTINEL)
+    assert a != {"fal": SENTINEL}  # a value comparison would be an oracle
+    assert len({a, Secrets(fal=SENTINEL)}) == 2

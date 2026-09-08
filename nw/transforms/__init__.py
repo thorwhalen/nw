@@ -66,7 +66,14 @@ from xdol import Registry
 from falaw import Plan, execute_plan_isolated
 from lacing import Annotation, Artifact
 
-from nw.secrets import FAL_SECRET, Secrets, as_secrets, using_secrets
+from nw.secrets import (
+    FAL_SECRET,
+    Secrets,
+    as_secrets,
+    redact,
+    redact_exception,
+    using_secrets,
+)
 from nw.transforms._cache_mode import CacheModeConflict, resolve_cache_mode
 from nw.transforms.fanout import (
     DFLT_GENERATE_WHEN,
@@ -353,7 +360,11 @@ class Transform(Protocol):
         :func:`nw.jobs.enqueue` pass it accepts-it-or-not, so an override
         that has no key to spend never sees it; :class:`BaseTransform` binds
         a :data:`~nw.secrets.FAL_SECRET` as the fal credential for the
-        duration of the call. See :mod:`nw.secrets`.
+        duration of the call, and ``fan_out_execute`` binds it around every
+        unit whether or not the keyword is accepted. An override that
+        declares the keyword and is called *directly* receives whatever the
+        caller passed — run it through :func:`nw.secrets.as_secrets` before
+        logging or formatting it. See :mod:`nw.secrets`.
         """
         ...
 
@@ -448,6 +459,7 @@ class BaseTransform:
         # for and the next consumer re-billed it (nw#72, falaw#49).
         cache_on, refresh = resolve_cache_mode(use_cache=use_cache, force=force)
         plan = stamp_transform_identity(plan, self)
+        secrets = as_secrets(secrets)
         # One engine, two policies. `halt` is `execute_plan` — falaw defines the
         # latter as exactly this call plus `artifacts_or_raise()` — so it keeps
         # re-raising the *original* typed exception, unwrapped, which is what
@@ -457,7 +469,7 @@ class BaseTransform:
         # released: a `"fal"` secret is the fal credential every call in the
         # plan authenticates with (``nw.secrets``). They reach nothing below —
         # not the report, not the artifacts, not the annotations.
-        with using_secrets(as_secrets(secrets)):
+        with using_secrets(secrets):
             report = execute_plan_isolated(
                 plan,
                 use_cache=cache_on,
@@ -496,14 +508,16 @@ class BaseTransform:
                     # an *unproduced output*, exactly like an execution failure.
                     if on_failure == "halt":
                         raise
+                    redact_exception(e, secrets)
                     failed.append(
                         FailedOutput(
                             skeleton=skel,
                             status="failed",
-                            reason=(
+                            reason=redact(
                                 f"the call succeeded but its result could not be "
                                 f"turned into a {self.output_kind or 'output'} "
-                                f"annotation: {type(e).__name__}: {e}"
+                                f"annotation: {type(e).__name__}: {e}",
+                                secrets,
                             ),
                             error=e,
                         )
@@ -878,6 +892,8 @@ __all__ = [
     "Secrets",
     "FAL_SECRET",
     "as_secrets",
+    "redact",
+    "redact_exception",
     "using_secrets",
     # fan-out (nw#26)
     "GenerateWhen",

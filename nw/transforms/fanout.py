@@ -75,7 +75,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 from falaw import Plan
 from lacing import Annotation, TimeInterval
 
-from nw.secrets import as_secrets
+from nw.secrets import as_secrets, redact, redact_exception, using_secrets
 from nw.transforms._cache_mode import resolve_cache_mode
 
 
@@ -600,11 +600,15 @@ def fan_out_execute(
     up front.
 
     ``secrets`` — the caller's per-call credentials (:class:`nw.Secrets`;
-    any mapping is coerced) — is forwarded to each unit's ``execute`` **only
-    when the implementation declares the keyword**, the same accepts-it-or-not
-    seam as ``on_failure`` and ``unit_instance_id``. It reaches nothing else:
-    not the units, not the run record (:meth:`FanOutResult.to_record`), not
-    a log line. A Transform with no key to spend never sees it.
+    any mapping is coerced) — reaches each unit two ways, so no registered
+    Transform can silently bill the server's key. It is **passed** to
+    ``execute`` when the implementation declares the keyword (the same
+    accepts-it-or-not seam as ``on_failure`` and ``unit_instance_id``), and it
+    is **bound** around every unit regardless — a ``"fal"`` secret is the fal
+    credential for the call (:func:`nw.secrets.using_secrets`) even for an
+    override that predates the seam. It reaches nothing else: not the units,
+    not the run record (:meth:`FanOutResult.to_record`; a failing unit's
+    ``reason`` is redacted), not a log line.
 
     Units run **sequentially**. Concurrency *within* a unit is falaw's
     (``execute_plan_isolated`` bounds it); concurrency *across* units is the
@@ -658,7 +662,8 @@ def fan_out_execute(
             # In memory, for this call: never in `unit`, never in the record.
             kwargs["secrets"] = secrets
         try:
-            result = transform.execute(project, unit.plan, unit.skeleton, **kwargs)
+            with using_secrets(secrets):
+                result = transform.execute(project, unit.plan, unit.skeleton, **kwargs)
             # Result interpretation stays INSIDE the try: an execute that
             # returns None (or a result whose properties raise) is a
             # protocol violation, but letting it escape mid-loop would
@@ -675,13 +680,16 @@ def fan_out_execute(
                 )
             )
         except Exception as e:  # noqa: BLE001 — per-unit isolation is the feature
+            # The message may quote the key (an auth error echoing it); the
+            # reason lands in the run record, so scrub before filing.
+            redact_exception(e, secrets)
             results.append(
                 FanOutItemResult(
                     item=unit.item,
                     instance_id=unit.instance_id,
                     status="failed",
                     error=e,
-                    reason=f"{type(e).__name__}: {e}",
+                    reason=redact(f"{type(e).__name__}: {e}", secrets),
                 )
             )
             if on_failure == "halt":

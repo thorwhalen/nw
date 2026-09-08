@@ -29,6 +29,7 @@ honest shape of wrapping pre-Transform code.
 from __future__ import annotations
 
 import uuid
+from collections.abc import Mapping
 from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -45,6 +46,7 @@ from .. import (
     register_transform,
 )
 from .._cache_mode import resolve_cache_mode
+from ...secrets import as_secrets, using_secrets
 from .._provenance import derive_provenance
 from ...bodies import (
     RENDER_RESULT_BODY_SCHEMA_URI,
@@ -148,8 +150,14 @@ class RenderStrategyTransform(BaseTransform):
         force: bool = False,
         on_failure: OnFailure = "halt",
         unit_instance_id: Optional[str] = None,
+        secrets: Optional[Mapping[str, str]] = None,
     ) -> TransformResult:
         """Render one shot. ``on_failure`` isolates at the *shot* boundary.
+
+        ``secrets`` — a ``"fal"`` entry is the fal credential every call in
+        the shot's plan authenticates with, bound for this call only (the
+        same seam :class:`~nw.transforms.BaseTransform` offers; this override
+        bypasses the base ``execute`` so it must bind it itself).
 
         This Transform composes N calls into **one** output, so there is no
         partial output to hand back: a strategy cannot materialize a shot from
@@ -177,9 +185,10 @@ class RenderStrategyTransform(BaseTransform):
         shot_id = skeleton[0].body["shot_id"]
         # materialize() needs only local paths — no upload required.
         prep = prepare_shot(project, shot_id, upload=False)
-        report = execute_plan_isolated(
-            plan, use_cache=cache_on, refresh=refresh, halt_on_failure=True
-        )
+        with using_secrets(as_secrets(secrets)):
+            report = execute_plan_isolated(
+                plan, use_cache=cache_on, refresh=refresh, halt_on_failure=True
+            )
         if not report.is_complete:
             if on_failure == "halt":
                 report.artifacts_or_raise()

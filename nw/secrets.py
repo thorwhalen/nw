@@ -127,14 +127,25 @@ class Secrets(Mapping[str, str]):
     def __deepcopy__(self, memo: dict) -> "Secrets":
         return self
 
+    # Identity equality, deliberately: ``Mapping.__eq__`` would compare the
+    # *values*, which makes ``secrets == {"fal": guess}`` an oracle.
+    def __eq__(self, other: object) -> bool:
+        return self is other
+
+    def __hash__(self) -> int:
+        return id(self)
+
 
 def as_secrets(secrets: Optional[Mapping[str, Optional[str]]]) -> Optional[Secrets]:
     """Coerce a caller-supplied mapping to :class:`Secrets`; empty → ``None``.
 
-    The nw entry points (:meth:`nw.BaseTransform.execute`,
-    :func:`nw.fan_out_execute`, :func:`nw.jobs.enqueue`) run every incoming
-    ``secrets`` through this, so a Transform only ever sees the redacting type
-    — a plain ``dict`` handed in at the top is a plain ``dict`` nowhere below.
+    The nw entry points — :meth:`nw.BaseTransform.execute`,
+    :func:`nw.fan_out_execute`, :func:`nw.jobs.enqueue` — run every incoming
+    ``secrets`` through this, so below *them* a Transform only ever sees the
+    redacting type. A Transform that **overrides** ``execute`` and is called
+    directly gets whatever the caller passed: an override that logs or
+    formats its ``secrets`` should ``as_secrets`` first (or the caller should
+    hand it a :class:`Secrets`), because a plain ``dict`` prints its values.
 
     >>> as_secrets(None) is None
     True
@@ -175,4 +186,53 @@ def using_secrets(
     return using_fal_credentials(key)
 
 
-__all__ = ["Secrets", "FAL_SECRET", "as_secrets", "using_secrets"]
+def redact(text: str, secrets: Optional[Mapping[str, Optional[str]]]) -> str:
+    """``text`` with every secret value replaced by ``<redacted:name>``.
+
+    For the places nw persists free text it did not author — an exception
+    message, a failure reason — while holding the values that must not land
+    there. Cheap, exact-substring, and a no-op with no secrets.
+
+    >>> redact("boom: key sk-1 rejected", {"fal": "sk-1"})
+    'boom: key <redacted:fal> rejected'
+    >>> redact("nothing here", None)
+    'nothing here'
+    """
+    coerced = as_secrets(secrets)
+    if not coerced or not text:
+        return text
+    for name, value in coerced.items():
+        text = text.replace(value, f"<redacted:{name}>")
+    return text
+
+
+def redact_exception(
+    error: BaseException, secrets: Optional[Mapping[str, Optional[str]]]
+) -> BaseException:
+    """Scrub secret values out of ``error``'s message and notes, in place.
+
+    Keeps the exception's *type* — the thing callers classify on — and returns
+    the same object so it can be re-raised. Applied where nw lets an
+    exception escape toward a store it does not own (the job worker) or files
+    it into a record it does (a fan-out unit's ``reason``).
+    """
+    coerced = as_secrets(secrets)
+    if not coerced:
+        return error
+    error.args = tuple(
+        redact(a, coerced) if isinstance(a, str) else a for a in error.args
+    )
+    notes = getattr(error, "__notes__", None)
+    if notes:
+        error.__notes__ = [redact(n, coerced) for n in notes]
+    return error
+
+
+__all__ = [
+    "Secrets",
+    "FAL_SECRET",
+    "as_secrets",
+    "using_secrets",
+    "redact",
+    "redact_exception",
+]

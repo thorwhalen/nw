@@ -154,11 +154,13 @@ A server rendering on a caller's bring-your-own credential hands it to
 provenance, a cache key, a run record, the job index or a log line; the type
 redacts its `repr`, refuses pickling and is not JSON-serializable, so the
 accident raises instead of leaking. `fan_out_execute` and `nw.jobs.enqueue`
-pass it accepts-it-or-not, exactly like `on_failure`: a Transform with no key
-to spend never sees it. `BaseTransform.execute` binds a `"fal"` secret as the
-fal credential for the duration of the call; an app declares the keyword on
-its own paid Transforms and reads the provider it calls (braidio reads
-`"elevenlabs"`).
+pass it accepts-it-or-not, exactly like `on_failure`, and bind it around the
+call regardless — so a `"fal"` secret is the fal credential even for an
+`execute` override that predates the seam. `BaseTransform.execute` (and nw's
+own shot renderers) bind it the same way; an app declares the keyword on its
+own paid Transforms and reads the provider it calls (braidio reads
+`"elevenlabs"`). A failure message that quotes the key is redacted before it
+reaches a run record or the job index.
 
 ```python
 result = t.execute(proj, plan, skeleton, secrets={"fal": caller_fal_key})
