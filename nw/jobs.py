@@ -66,6 +66,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
 import os
 import statistics
 import tempfile
@@ -88,6 +89,8 @@ from au import (
     ThreadBackend,
 )
 from au.base import ComputationBackend
+
+_logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:  # pragma: no cover — annotations only
     from .pricing import PlanQuote
@@ -421,7 +424,10 @@ def estimate(
     is the safe answer; repeating yesterday's is not.
 
     Without a plan the gate falls back to ``params["estimated_usd"]``, whose
-    provenance nw cannot see; ``quote`` is then ``None`` to say so.
+    provenance nw cannot see; ``quote`` is then ``None`` to say so. When there
+    *is* a quote it carries ``caller_estimated_usd`` — what the caller passed,
+    reported beside today's number rather than discarded, so a surface can
+    show the movement.
     """
     quote = _quote_params(params)
     estimated = _estimated_usd(params, quote=quote)
@@ -435,8 +441,25 @@ def estimate(
         "has_unknown_costs": has_unknown,
         "approval_threshold_usd": threshold,
         "requires_approval": requires_approval,
-        "quote": quote.to_dict() if quote is not None else None,
+        # The caller's own figure travels *inside* the quote rather than being
+        # dropped: a surface that can say "you were quoted X, it is Y today"
+        # is the point of re-quoting, and silently discarding X leaves nothing
+        # to show the movement against.
+        "quote": (
+            {**quote.to_dict(), "caller_estimated_usd": _caller_estimated_usd(params)}
+            if quote is not None
+            else None
+        ),
     }
+
+
+def _caller_estimated_usd(params) -> float | None:
+    """The ``estimated_usd`` the caller passed in, or ``None`` if none was.
+
+    Reported, never trusted: when a plan is supplied this number loses to the
+    re-quote, and nw cannot see where it came from.
+    """
+    return params.get("estimated_usd") if isinstance(params, Mapping) else None
 
 
 def _estimated_usd(params, *, quote: "PlanQuote | None" = None) -> float | None:
@@ -449,7 +472,18 @@ def _estimated_usd(params, *, quote: "PlanQuote | None" = None) -> float | None:
     quote = quote if quote is not None else _quote_params(params)
     if quote is not None:
         return quote.total_usd
-    return params.get("estimated_usd") if isinstance(params, Mapping) else None
+    return _caller_estimated_usd(params)
+
+
+UNREADABLE_PLAN_REASON = (
+    "params['plan'] could not be read as a falaw Plan, so its cost cannot be "
+    "quoted; see the server log for what went wrong"
+)
+"""Why a quote came back unknown when the plan itself was unreadable.
+
+A fixed sentence rather than the exception text: this string reaches a job
+surface, and an exception's message is written for an operator reading a log,
+not for whoever is deciding whether to approve a spend."""
 
 
 def _quote_params(params) -> "PlanQuote | None":
@@ -459,27 +493,23 @@ def _quote_params(params) -> "PlanQuote | None":
     the caller's own ``estimated_usd`` is the fallback, and it is a figure nw
     cannot vouch for.
 
-    Accepts either a live :class:`falaw.Plan` or the dict a serialized one
-    round-trips through, because a job's ``params`` cross a store. A plan that
-    is neither re-quotes as an empty-basis plan, i.e. *unknown*.
+    Accepts whatever :func:`_plan_for_identity` accepts — a live
+    :class:`falaw.Plan` or the ``plan_to_dict`` dict a job's ``params`` can
+    actually carry through the index. Anything else is *unknown*: this
+    function never raises, because refusing to name a price is the safe answer
+    at a cost gate, and :func:`_default_idempotency_key` is where an
+    unidentifiable plan is refused loudly.
     """
-    from falaw import Plan, plan_from_dict
-
     from .pricing import current_quote, unquotable
 
     plan = params.get("plan") if isinstance(params, Mapping) else None
     if plan is None:
         return None
-    if isinstance(plan, Mapping):
-        try:
-            plan = plan_from_dict(dict(plan))
-        except Exception as exc:  # noqa: BLE001 — an unreadable plan is *unknown*
-            return unquotable(f"params['plan'] is not readable: {exc}")
-    if not isinstance(plan, Plan):
-        return unquotable(
-            f"params['plan'] is a {type(plan).__name__}, not a falaw Plan"
-        )
-    return current_quote(plan)
+    try:
+        return current_quote(_plan_for_identity(plan))
+    except Exception:  # noqa: BLE001 — an unreadable plan is *unknown*
+        _logger.warning("could not read params['plan'] to re-quote it", exc_info=True)
+        return unquotable(UNREADABLE_PLAN_REASON)
 
 
 def list_jobs(
@@ -1482,11 +1512,36 @@ def _default_idempotency_key(project, kind, params) -> str:
     if plan is not None:
         from falaw import plan_hash
 
-        basis = plan_hash(plan)
+        basis = plan_hash(_plan_for_identity(plan))
     else:
         basis = json.dumps(_jsonable(params), sort_keys=True, default=str)
     blob = f"{Path(project.root).resolve()}:{kind}:{basis}".encode("utf-8")
     return hashlib.sha256(blob).hexdigest()
+
+
+def _plan_for_identity(plan):
+    """``params["plan"]`` as a :class:`falaw.Plan`, or a loud refusal.
+
+    A job's ``params`` are JSON-serialized into the index, so a caller with a
+    live ``Plan`` passes it through :func:`falaw.plan_to_dict` first — and that
+    dict has to hash to the same digest the object would, or the same render
+    submitted twice would dedup under two different keys and bill twice.
+    Rebuilding it here is what makes both forms one identity.
+
+    Anything that is neither raises, per this function's "refuse loudly"
+    contract: a plan that cannot be identified is not submittable.
+    """
+    from falaw import Plan, plan_from_dict
+
+    if isinstance(plan, Plan):
+        return plan
+    if isinstance(plan, Mapping):
+        return plan_from_dict(dict(plan))
+    raise TypeError(
+        f"params['plan'] must be a falaw Plan or a plan_to_dict() dict, "
+        f"got {type(plan).__name__}. A plan that cannot be identified is not "
+        f"submittable — see nw.jobs._default_idempotency_key."
+    )
 
 
 def _jsonable(params):

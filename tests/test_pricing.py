@@ -21,6 +21,7 @@ from falaw import (
     catalogue_cost_basis,
     plan_generate_image,
     plan_hash,
+    plan_to_dict,
 )
 from falaw.reprice import DFLT_PRICERS, LLM_RATES_PRICER, Pricer
 from falaw.cost import estimate_call_cost
@@ -233,6 +234,48 @@ def test_payload_without_calls_is_a_known_zero():
     assert quote_render_decision({}).total_usd == 0.0
 
 
+def test_stored_total_is_reported_as_the_as_of_figure():
+    plan = Plan(calls=(_priced_call(),))
+    payload = {
+        "calls": cost_records(plan),
+        "total_estimated_cost_usd": plan.total_cost_usd,
+    }
+    quote = quote_render_decision(payload)
+    assert quote.as_of_total_usd == plan.total_cost_usd
+    assert quote.status == "unchanged"
+
+
+def test_a_total_that_contradicts_its_calls_is_unknown():
+    """A payload's own headline is neither discarded nor believed.
+
+    ``{"calls": [], "total_estimated_cost_usd": 3.0}`` is a broken record.
+    Answering "$0, unchanged" would report a stored $3 as a *known zero* — the
+    None-means-unknown invariant, violated by a payload nw's writer never
+    produces but a hand-edit can.
+    """
+    quote = quote_render_decision({"calls": [], "total_estimated_cost_usd": 3.0})
+    assert quote.status == "unknown"
+    assert quote.total_usd is None
+    assert quote.as_of_total_usd == 3.0
+    assert "does not match" in quote.reason
+
+
+def test_a_null_stored_total_leaves_the_calls_to_speak():
+    payload = {
+        "calls": cost_records(Plan(calls=(_priced_call(),))),
+        "total_estimated_cost_usd": None,
+    }
+    assert quote_render_decision(payload).status == "unchanged"
+
+
+def test_basis_changed_is_surfaced_on_the_quote_and_its_dict():
+    plan = Plan(calls=(_priced_call(),))
+    moved = current_quote(plan, pricers=_doubling_pricers())
+    assert moved.basis_changed is True
+    assert moved.to_dict()["basis_changed"] is True
+    assert current_quote(plan).basis_changed is False
+
+
 # ---------------------------------------------------------------------------
 # cache identity — the invariant repricing must not disturb
 # ---------------------------------------------------------------------------
@@ -296,7 +339,6 @@ def test_gate_still_falls_back_when_no_plan_is_supplied(project):
 
 
 def test_gate_reprices_a_serialized_plan(project):
-    from falaw import plan_to_dict
 
     plan = Plan(calls=(_priced_call(),))
     out = jobs.estimate(project, "render", {"plan": plan_to_dict(plan)})
@@ -307,7 +349,72 @@ def test_gate_refuses_a_plan_shaped_thing_that_is_not_a_plan(project):
     out = jobs.estimate(project, "render", {"plan": "not a plan"})
     assert out["estimated_usd"] is None
     assert out["requires_approval"] is True
-    assert "not a falaw Plan" in out["quote"]["reason"]
+    assert out["quote"]["reason"] == jobs.UNREADABLE_PLAN_REASON
+
+
+def test_gate_reason_is_a_fixed_sentence_not_an_exception_text(project):
+    """The reason reaches a spend surface; an exception message is for a log."""
+    out = jobs.estimate(project, "render", {"plan": {"calls": "not a list"}})
+    assert out["quote"]["reason"] == jobs.UNREADABLE_PLAN_REASON
+
+
+def test_gate_reports_the_callers_figure_beside_todays(project):
+    plan = Plan(calls=(_priced_call(),))
+    out = jobs.estimate(project, "render", {"plan": plan, "estimated_usd": 0.01})
+    assert out["quote"]["caller_estimated_usd"] == 0.01
+    assert out["quote"]["total_usd"] == plan.total_cost_usd
+
+
+def _doubled_quote(plan, **_):
+    """``current_quote`` as if every rate in the catalogue had doubled."""
+    return current_quote(plan, pricers=_doubling_pricers())
+
+
+def test_a_serialized_plan_hashes_to_what_the_object_hashes_to(project):
+    """The enqueue path is only real if both forms are one identity.
+
+    A job's ``params`` are JSON-serialized into the index, so a caller holding
+    a live ``Plan`` passes ``plan_to_dict(plan)``. If that dict keyed
+    differently from the object, the same render submitted twice would dedup
+    under two keys and bill twice.
+    """
+    plan = Plan(calls=(_priced_call(),))
+    assert jobs._default_idempotency_key(
+        project, "render", {"plan": plan}
+    ) == jobs._default_idempotency_key(
+        project, "render", {"plan": plan_to_dict(plan)}
+    )
+
+
+def test_an_unidentifiable_plan_is_refused_loudly(project):
+    with pytest.raises(TypeError, match="plan_to_dict"):
+        jobs._default_idempotency_key(project, "render", {"plan": "not a plan"})
+
+
+def test_enqueue_dedups_across_a_rate_change(project, monkeypatch):
+    """A price that moved must not move the job's identity.
+
+    The regression this guards: falaw 0.0.46 re-quoted premium calls tenfold,
+    and had that number reached ``plan_hash`` a resumed render would have
+    re-run — and re-billed — work already paid for.
+    """
+    import nw.pricing as pricing
+
+    plan = Plan(calls=(_priced_call(),))
+    params = {"plan": plan_to_dict(plan)}
+    dispatch = {"render": lambda project, params, **kw: {"ok": True}}
+
+    first = jobs.enqueue(project, "render", params, dispatch=dispatch)
+    assert first.cost.estimated_usd == plan.total_cost_usd
+
+    # ...and now the rate table moves underneath an identical resubmission.
+    monkeypatch.setattr(pricing, "current_quote", _doubled_quote)
+    assert jobs.estimate(project, "render", params)["estimated_usd"] != (
+        first.cost.estimated_usd
+    )  # the price really did move
+
+    second = jobs.enqueue(project, "render", params, dispatch=dispatch)
+    assert second.job_id == first.job_id  # ...and the identity did not
 
 
 def test_enqueued_job_records_the_gate_s_estimate(project):

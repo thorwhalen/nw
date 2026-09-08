@@ -43,7 +43,8 @@ Two things this module deliberately does **not** do:
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
+from math import isclose
 from typing import Any, Iterable, Literal, Mapping, Optional, Sequence
 
 from falaw import (
@@ -97,10 +98,12 @@ class PlanQuote:
     call. Read it for the audit view; :attr:`total_usd` is the headline."""
 
     reason: str = ""
-    """Why no plan could be re-quoted at all, when that is the situation.
+    """Why the *whole* quote is unknown, when that is the situation.
 
-    Set only by :func:`unquotable`; empty for a real re-quote, where the
-    per-call reasons live on :attr:`repriced` instead."""
+    Set by :func:`unquotable` (the thing handed in was not a plan) and by
+    :func:`quote_render_decision` (the payload contradicts itself). Empty for
+    an ordinary re-quote, where the per-call reasons live on
+    :attr:`repriced` instead."""
 
     @property
     def has_unknown_costs(self) -> bool:
@@ -110,6 +113,18 @@ class PlanQuote:
         re-quote time rather than at plan time.
         """
         return self.total_usd is None
+
+    @property
+    def basis_changed(self) -> bool:
+        """True when a rate table moved underneath at least one call.
+
+        The audit answer the frozen number could never give: it separates "the
+        price changed because the *table* changed" from "the price changed
+        because the plan did". Read it beside :attr:`status` — a ``changed``
+        with this ``False`` is a caller quoting different quantities, not a
+        repricing event.
+        """
+        return any(c.basis_changed for c in self.repriced.calls)
 
     @property
     def delta_usd(self) -> Optional[float]:
@@ -135,6 +150,7 @@ class PlanQuote:
             "as_of_total_usd": self.as_of_total_usd,
             "delta_usd": self.delta_usd,
             "has_unknown_costs": self.has_unknown_costs,
+            "basis_changed": self.basis_changed,
             "unpriced_call_count": len(self.repriced.unpriced),
             "reason": self.reason,
         }
@@ -321,6 +337,21 @@ def quote_from_cost_records(
     )
 
 
+TOTAL_AGREEMENT_ABS_TOL_USD = 1e-9
+"""How far a payload's stored total may sit from its calls' sum and still agree.
+
+Floating-point slack on a sum of a handful of costs, nothing more — far below
+the smallest sub-cent figure any rate table quotes, so it can never absorb a
+real disagreement.
+"""
+
+DISAGREEING_TOTAL_REASON = (
+    "the payload's total_estimated_cost_usd does not match the sum of its "
+    "calls, so neither figure can be trusted as this render's price"
+)
+"""Why a payload with an internally inconsistent total re-prices as unknown."""
+
+
 def quote_render_decision(
     payload: Mapping[str, Any],
     *,
@@ -337,12 +368,43 @@ def quote_render_decision(
     can say what it costs today, and saying so is better than repeating a
     number that has since moved.
 
-    >>> quote_render_decision({"calls": [], "total_estimated_cost_usd": 3.0}).status
-    'unchanged'
+    The stored ``total_estimated_cost_usd`` is the payload's own headline, so
+    it — not the calls' sum — is reported as :attr:`PlanQuote.as_of_total_usd`.
+    When the two **disagree**, the whole payload is *unknown*: a total of $3
+    over a payload whose calls sum to $0 is a broken record, and answering
+    "$0, unchanged" would report a stored $3 as a known zero. nw's own writer
+    never produces such a payload; a hand-edited or truncated one can, and
+    unknown is the only honest reading of it.
+
+    >>> broken = quote_render_decision(
+    ...     {"calls": [], "total_estimated_cost_usd": 3.0})
+    >>> broken.status, broken.total_usd, broken.as_of_total_usd
+    ('unknown', None, 3.0)
     >>> stale = quote_render_decision(
     ...     {"calls": [{"tool": "t", "application": "a",
-    ...                 "estimated_cost_usd": 3.0}]})
+    ...                 "estimated_cost_usd": 3.0}],
+    ...      "total_estimated_cost_usd": 3.0})
     >>> stale.status, stale.total_usd, stale.as_of_total_usd
     ('unknown', None, 3.0)
     """
-    return quote_from_cost_records(payload.get("calls"), pricers=pricers)
+    quote = quote_from_cost_records(payload.get("calls"), pricers=pricers)
+    stored = _as_cost(payload.get("total_estimated_cost_usd"))
+    if stored is None:
+        return quote
+    if quote.as_of_total_usd is None:
+        # The calls already said "unknown, back then", while the stored total
+        # counted that unpriceable call as ``0.0`` (what ``total_cost_usd``
+        # does). Keep the honest ``None`` rather than adopting a headline that
+        # reads an unknown as free.
+        return quote
+    if not isclose(
+        stored, quote.as_of_total_usd, abs_tol=TOTAL_AGREEMENT_ABS_TOL_USD
+    ):
+        return replace(
+            quote,
+            total_usd=None,
+            status="unknown",
+            as_of_total_usd=stored,
+            reason=DISAGREEING_TOTAL_REASON,
+        )
+    return replace(quote, as_of_total_usd=stored)
