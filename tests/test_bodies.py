@@ -13,6 +13,7 @@ from nw.bodies import (
     ENVIRONMENT_REF_BODY_SCHEMA_URI,
     SECTION_BODY_SCHEMA_URI,
     SHOT_BODY_SCHEMA_URI,
+    UNPRODUCED_OUTPUT_BODY_SCHEMA_URI,
 )
 
 
@@ -47,7 +48,24 @@ from nw.bodies import (
         ),
         (
             DECISION_BODY_SCHEMA_URI,
-            {"kind": "render_shot", "payload": {"shot_id": "s01", "quality": "balanced"}},
+            {
+                "kind": "render_shot",
+                "payload": {"shot_id": "s01", "quality": "balanced"},
+            },
+        ),
+        (
+            UNPRODUCED_OUTPUT_BODY_SCHEMA_URI,
+            {
+                "transform_name": "t",
+                "instance_id": None,
+                "call_index": 0,
+                "upstream": ("11111111-1111-1111-1111-111111111111",),
+                "output_kind": "annot://schema/render-result/v1",
+                "status": "failed",
+                "reason": "rate limited",
+                "error_type": None,
+                "blocked_by": (),
+            },
         ),
     ],
 )
@@ -63,7 +81,7 @@ def test_body_validates_against_registered_schema(uri, body):
     [
         # Missing required fields.
         (SECTION_BODY_SCHEMA_URI, {"label": "verse"}),  # no section_id
-        (SHOT_BODY_SCHEMA_URI, {"section_id": "v"}),    # no shot_id
+        (SHOT_BODY_SCHEMA_URI, {"section_id": "v"}),  # no shot_id
         (CHARACTER_REF_BODY_SCHEMA_URI, {"description": "x"}),  # no name
         # Extra forbidden fields.
         (
@@ -149,6 +167,25 @@ def test_character_ref_field_names_match_artful_model_sheet():
     for field in shared:
         assert field in sheet_fields, f"artful.ModelSheet lost {field!r}"
         assert field in ref_fields, f"CharacterRefBodyV1 lost {field!r}"
-        assert (
-            ref_fields[field].annotation == sheet_fields[field].annotation
-        ), f"{field!r} types drifted between nw and artful"
+        assert ref_fields[field].annotation == sheet_fields[field].annotation, (
+            f"{field!r} types drifted between nw and artful"
+        )
+
+
+# ---------------------------------------------------------------------------
+# unproduced-output (nw#44) — the URI is a stability pin
+# ---------------------------------------------------------------------------
+
+
+def test_unproduced_output_uri_is_pinned():
+    """A body-schema URI is an on-disk address, not a version to bump lightly.
+
+    nw.graph._unproduced_output_key_matches (nw.graph.add_annotation's
+    retirement path) reads records by re-querying
+    UNPRODUCED_OUTPUT_BODY_SCHEMA_URI, and a project's existing rows are
+    written under whatever URI was live when they were recorded — bumping
+    this string to /v2 without a migration orphans every already-written
+    /v1 row: it stops being read back by unproduced_outputs() and stops
+    being retired by add_annotation, becoming a permanent, silent blocker.
+    """
+    assert UNPRODUCED_OUTPUT_BODY_SCHEMA_URI == "annot://schema/unproduced-output/v1"

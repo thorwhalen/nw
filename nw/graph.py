@@ -25,6 +25,7 @@ written (see :meth:`ProjectGraph.add_annotation`).
 
 from __future__ import annotations
 
+import logging
 from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
@@ -46,6 +47,8 @@ from .bodies import (
     ENVIRONMENT_REF_BODY_SCHEMA_URI,
     GENRE_ENVELOPE_BODY_SCHEMA_URI,
     GENRE_ENVELOPE_TIER,
+    UNPRODUCED_OUTPUT_BODY_SCHEMA_URI,
+    UNPRODUCED_OUTPUT_TIER,
     GenreEnvelopeBodyV1,
     SECTION_BODY_SCHEMA_URI,
     SHOT_BODY_SCHEMA_URI,
@@ -56,6 +59,7 @@ from .bodies import (
     EnvironmentRefBodyV1,
     SectionBodyV1,
     ShotBodyV1,
+    UnproducedOutputBodyV1,
     build_verifying_trace,
 )
 from .graph_backend import (
@@ -75,6 +79,9 @@ from .migrate import (
     open_project_graph_readonly,
     project_asset_id,
 )
+
+
+_logger = logging.getLogger("nw.graph")
 
 
 # ---------------------------------------------------------------------------
@@ -112,6 +119,12 @@ class StoredEnvironmentRef:
 class StoredDecision:
     annotation_id: UUID
     body: DecisionBodyV1
+
+
+@dataclass(frozen=True)
+class StoredUnproducedOutput:
+    annotation_id: UUID
+    body: UnproducedOutputBodyV1
 
 
 # ---------------------------------------------------------------------------
@@ -436,7 +449,13 @@ class ProjectGraph:
 
     # -- arbitrary annotations (for things that don't fit a typed bucket) ----
 
-    def add_annotation(self, ann: Annotation) -> None:
+    def add_annotation(
+        self,
+        ann: Annotation,
+        *,
+        instance_id: Optional[str] = None,
+        call_index: Optional[int] = None,
+    ) -> None:
         """Write one annotation to the project graph, plus its verifying trace.
 
         Registers ``ann.tier`` if it isn't a known tier yet — ``SqliteStore``
@@ -454,14 +473,34 @@ class ProjectGraph:
 
         Annotations with no ``was_derived_from`` parents get no trace — there
         is nothing to verify, and they are nobody's descendant.
+
+        It is also where a matching :meth:`add_unproduced_output` record is
+        retired (nw#44): a successful write is proof the thing that record
+        described has now been produced. ``instance_id`` / ``call_index``
+        identify *this write's* unit precisely (see
+        :mod:`nw.bodies.unproduced_output`'s module docstring for the key);
+        omit ``instance_id`` only when it is not known — the retirement then
+        falls back to ``(transform_name, call_index, upstream)``, which still
+        cannot distinguish two DIFFERENT units sharing both an upstream set
+        and a ``call_index`` (the residual case the module docstring names),
+        so it may retire nothing, or (rarely) the wrong record.
+
+        **Bypassing this method (a raw ``store.add``) leaves a matching
+        unproduced-output record in place** — it reads as a live blocker
+        after reload even though this write produced the thing it described.
         """
         from lacing import Tier, TierStereotype
 
         trace = self._verifying_trace_for(ann.id, ann.provenance.was_derived_from)
+        retire_key = _unproduced_output_key_for(
+            ann, instance_id=instance_id, call_index=call_index
+        )
         with self._open() as store:
             store.add_tier(Tier(name=ann.tier, stereotype=TierStereotype.NONE))
             store.add(ann)
             _add_trace(store, trace)
+            if retire_key is not None:
+                _retire_unproduced_outputs(store, retire_key)
 
     def remove_annotation(self, annotation_id: UUID) -> bool:
         """Remove one annotation from the project graph, with its verifying traces.
@@ -485,6 +524,125 @@ class ProjectGraph:
         with self._open() as store:
             removed = remove_annotations_with_traces(store, (annotation_id,))
         return annotation_id in removed
+
+    # -- unproduced outputs (nw#44) -------------------------------------------
+
+    def add_unproduced_output(
+        self,
+        skeleton: Annotation,
+        *,
+        transform_name: str,
+        status: str,
+        reason: str = "",
+        error: Optional[BaseException] = None,
+        blocked_by: tuple[int, ...] = (),
+        instance_id: Optional[str] = None,
+        call_index: Optional[int] = None,
+        was_attributed_to: Optional[str] = None,
+    ) -> UUID:
+        """Persist why a planned output was never produced (nw#44).
+
+        Mirrors one entry of ``TransformResult.failed`` / ``.blocked``
+        (:class:`nw.transforms.FailedOutput`) — pass its ``skeleton``,
+        ``status``, ``reason``, ``error`` and ``blocked_by`` straight through.
+        Written under :data:`nw.bodies.UNPRODUCED_OUTPUT_BODY_SCHEMA_URI`,
+        never under ``skeleton.body_schema_uri`` (see the module's docstring
+        on why that tier is reserved for what was actually produced).
+
+        ``instance_id`` (a fan-out unit's
+        :func:`~nw.transforms.fanout.work_item_instance_id`) and
+        ``call_index`` (this output's position within its ``execute()``
+        call's skeleton tuple) together form the identity
+        :meth:`add_annotation` retires by — see
+        :mod:`nw.bodies.unproduced_output`'s module docstring for the full
+        key. **Dedupes on that identity**: a record already outstanding for
+        the same key is removed before this one is written, so a unit
+        failing twice leaves one current record, not two.
+
+        Parentless, like a verifying trace.
+
+        ``reason`` never stores raw exception text — see the module
+        docstring's "reason never carries raw exception text". When
+        ``error`` is given, the original ``reason`` is logged
+        (``logging.getLogger("nw.graph")``, ``WARNING``) and the persisted
+        ``reason`` becomes a fixed sentence naming ``error``'s type.
+        """
+        from lacing import Tier, TierStereotype
+
+        parent_ids = tuple(dict.fromkeys(skeleton.provenance.was_derived_from))
+        stored_reason = reason
+        if error is not None:
+            _logger.warning(
+                "nw#44 unproduced output (%s, %s): %s", transform_name, status, reason
+            )
+            stored_reason = f"{type(error).__name__}: see logs for details"
+        body = UnproducedOutputBodyV1(
+            transform_name=transform_name,
+            instance_id=instance_id,
+            call_index=call_index,
+            upstream=tuple(str(p) for p in parent_ids),
+            output_kind=skeleton.body_schema_uri,
+            status=status,
+            reason=stored_reason,
+            error_type=type(error).__name__ if error is not None else None,
+            blocked_by=tuple(blocked_by),
+        )
+        new_id = uuid4()
+        ann = Annotation(
+            id=new_id,
+            tier=UNPRODUCED_OUTPUT_TIER,
+            reference=MediaRef(
+                asset_id=self.asset_id, interval=TimeInterval.from_seconds(0, 0)
+            ),
+            body=body.model_dump(mode="json"),
+            body_schema_uri=UNPRODUCED_OUTPUT_BODY_SCHEMA_URI,
+            provenance=Provenance(
+                was_generated_by=f"transform:{transform_name}",
+                was_attributed_to=was_attributed_to or f"agent:{transform_name}",
+                was_derived_from=[],
+                generated_at_time=_now_rt(),
+                activity="record",
+            ),
+        )
+        dedupe_key = (
+            transform_name,
+            instance_id,
+            call_index,
+            frozenset(str(p) for p in parent_ids),
+        )
+        with self._open() as store:
+            store.add_tier(
+                Tier(name=UNPRODUCED_OUTPUT_TIER, stereotype=TierStereotype.NONE)
+            )
+            _retire_unproduced_outputs(store, dedupe_key)
+            store.add(ann)
+        return new_id
+
+    def unproduced_outputs(
+        self, *, transform_name: Optional[str] = None
+    ) -> list[StoredUnproducedOutput]:
+        """Every unproduced-output record still outstanding, oldest first.
+
+        A record disappears the moment :meth:`add_annotation` writes a real
+        output for the same identity, or another :meth:`add_unproduced_output`
+        call for the same identity supersedes it (dedupe) — what this
+        returns is exactly "still missing", survives a reload, and is not a
+        cache of any in-memory ``TransformResult``.
+        """
+        with self._open_read() as store:
+            rows = _collect_typed(
+                store,
+                tier=UNPRODUCED_OUTPUT_TIER,
+                schema_uri=UNPRODUCED_OUTPUT_BODY_SCHEMA_URI,
+                model=UnproducedOutputBodyV1,
+                wrap=lambda ann, body: StoredUnproducedOutput(
+                    annotation_id=ann.id, body=body
+                ),
+                sort_key=lambda s: 0,  # insertion order, like decisions
+            )
+        if transform_name is not None:
+            rows = [r for r in rows if r.body.transform_name == transform_name]
+        return rows
 
     # -- verifying traces ----------------------------------------------------
 
@@ -1005,6 +1163,86 @@ def _add_trace(store: IntervalAnnotationStore, trace: Optional[Annotation]) -> N
 
     store.add_tier(Tier(name=VERIFYING_TRACE_TIER, stereotype=TierStereotype.NONE))
     store.add(trace)
+
+
+_UnproducedOutputKey = tuple[str, Optional[str], Optional[int], frozenset]
+"""``(transform_name, instance_id, call_index, upstream)`` — see
+:mod:`nw.bodies.unproduced_output`'s module docstring for why all four are
+needed rather than ``(transform_name, upstream)`` alone."""
+
+
+def _unproduced_output_key_for(
+    ann: Annotation,
+    *,
+    instance_id: Optional[str] = None,
+    call_index: Optional[int] = None,
+) -> Optional[_UnproducedOutputKey]:
+    """The retirement key a written annotation settles, or ``None`` when it
+    was not produced by a Transform.
+
+    Reads ``ann.provenance.was_generated_by``, which
+    :func:`nw.transforms._provenance.derive_provenance` always sets to
+    ``"transform:<name>@<impl_version>"`` on both a completed output and the
+    ``FailedOutput.skeleton`` an unproduced-output record was built from — so
+    the same parse recovers the same ``transform_name`` from either side
+    without either module importing the other. ``instance_id`` /
+    ``call_index`` are the caller's, passed straight through — this function
+    only resolves the name and ``upstream``.
+    """
+    generated_by = ann.provenance.was_generated_by
+    if not isinstance(generated_by, str) or not generated_by.startswith("transform:"):
+        return None
+    name = generated_by[len("transform:") :].partition("@")[0]
+    if not name:
+        return None
+    upstream = frozenset(str(p) for p in ann.provenance.was_derived_from)
+    return name, instance_id, call_index, upstream
+
+
+def _unproduced_output_key_matches(body: dict, key: _UnproducedOutputKey) -> bool:
+    """Whether a stored unproduced-output ``body`` settles ``key``.
+
+    ``instance_id`` identifies the fan-out **unit** — matching on it alone
+    would collapse two *different calls of the same unit's own plan* (a
+    Transform is free to plan more than one call per work item) into one
+    key, so ``call_index`` still has to agree even when both sides carry an
+    ``instance_id``. ``upstream`` is dropped from that comparison, though: a
+    retried unit is free to re-plan its calls against a different upstream
+    shape and still be the same unit.
+
+    Without ``instance_id`` (a non-fan-out call, or a Transform that does
+    not forward ``unit_instance_id``), the fallback pair — ``call_index``
+    *and* ``upstream`` — must both match; either alone is exactly the
+    collision this key exists to avoid (a batch call's other outputs share
+    ``upstream``; two different calls in two different batches can share an
+    index).
+    """
+    transform_name, instance_id, call_index, upstream = key
+    if body.get("transform_name") != transform_name:
+        return False
+    if body.get("call_index") != call_index:
+        return False
+    body_instance_id = body.get("instance_id")
+    if instance_id is not None and body_instance_id is not None:
+        return body_instance_id == instance_id
+    return frozenset(body.get("upstream") or ()) == upstream
+
+
+def _retire_unproduced_outputs(
+    store: IntervalAnnotationStore, key: _UnproducedOutputKey
+) -> None:
+    """Remove every unproduced-output record matching ``key`` (nw#44).
+
+    Also the dedupe primitive :meth:`ProjectGraph.add_unproduced_output`
+    calls on itself before writing a new record for the same identity.
+    """
+    for ann in list(store.by_tier(UNPRODUCED_OUTPUT_TIER)):
+        if ann.body_schema_uri != UNPRODUCED_OUTPUT_BODY_SCHEMA_URI:
+            continue
+        if not isinstance(ann.body, dict):
+            continue
+        if _unproduced_output_key_matches(ann.body, key):
+            store.remove(ann.id)
 
 
 def _upsert(

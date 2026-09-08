@@ -292,6 +292,7 @@ class Transform(Protocol):
         use_cache: bool = True,
         force: bool = False,
         on_failure: OnFailure = "halt",
+        unit_instance_id: Optional[str] = None,
     ) -> TransformResult:
         """Run ``plan``, complete ``skeleton``, write to the graph, return result.
 
@@ -318,6 +319,16 @@ class Transform(Protocol):
            it, or catch ``TypeError``. Everything inheriting
            :class:`BaseTransform`'s ``execute`` — the common case — already
            does.
+
+        ``unit_instance_id`` (nw#44) is the same accepts-it-or-not shape,
+        newer still: :func:`~nw.transforms.fanout.fan_out_execute` passes a
+        fan-out unit's own
+        :func:`~nw.transforms.fanout.work_item_instance_id` here, when
+        accepted, as the precise identity an unproduced-output record is
+        retired by. Not a Transform's concern beyond forwarding it to
+        :meth:`nw.graph.ProjectGraph.add_unproduced_output` /
+        :meth:`~nw.graph.ProjectGraph.add_annotation` — :class:`BaseTransform`
+        already does.
         """
         ...
 
@@ -389,6 +400,7 @@ class BaseTransform:
         use_cache: bool = True,
         force: bool = False,
         on_failure: OnFailure = "halt",
+        unit_instance_id: Optional[str] = None,
     ) -> TransformResult:
         if len(skeleton) != len(plan.calls):
             raise ValueError(
@@ -429,12 +441,18 @@ class BaseTransform:
         # pair panel 48's artifact onto panel 47's skeleton the moment one call
         # dropped out, silently, which is the defect this issue named.
         completed: list[Annotation] = []
+        completed_indices: list[int] = []
         failed: list[FailedOutput] = []
+        failed_indices: list[int] = []
         blocked: list[FailedOutput] = []
-        for skel, outcome in zip(skeleton, report.outcomes, strict=True):
+        blocked_indices: list[int] = []
+        for i, (skel, outcome) in enumerate(
+            zip(skeleton, report.outcomes, strict=True)
+        ):
             if outcome.ok:
                 try:
                     completed.append(self._complete_annotation(skel, outcome.artifact))
+                    completed_indices.append(i)
                 except Exception as e:  # noqa: BLE001 — see below
                     # A call that **succeeded and was billed** can still fail to
                     # become an annotation: falaw degrades an unreadable asset to
@@ -458,6 +476,7 @@ class BaseTransform:
                             error=e,
                         )
                     )
+                    failed_indices.append(i)
                 continue
             unproduced = FailedOutput(
                 skeleton=skel,
@@ -466,14 +485,39 @@ class BaseTransform:
                 error=outcome.error,
                 blocked_by=tuple(outcome.blocked_by),
             )
-            (blocked if outcome.status == "blocked" else failed).append(unproduced)
+            if outcome.status == "blocked":
+                blocked.append(unproduced)
+                blocked_indices.append(i)
+            else:
+                failed.append(unproduced)
+                failed_indices.append(i)
 
         # Successes reach the graph before the failure is reported. They are
         # paid for; discarding them because a sibling call failed is the waste
         # falaw#20 removed one layer down, and it would be reintroduced here by
-        # returning early.
-        for ann in completed:
-            project.graph.add_annotation(ann)
+        # returning early. `call_index`/`unit_instance_id` are the identity a
+        # matching unproduced-output record is retired by (nw#44) — passed
+        # through so a retry's success clears its own record.
+        for i, ann in zip(completed_indices, completed):
+            project.graph.add_annotation(
+                ann, instance_id=unit_instance_id, call_index=i
+            )
+        # A failed/blocked output's reason otherwise lives only in this
+        # in-memory result — gone the moment the caller drops it, and
+        # unexplained again on reload (nw#44).
+        for i, unproduced in zip(
+            (*failed_indices, *blocked_indices), (*failed, *blocked)
+        ):
+            project.graph.add_unproduced_output(
+                unproduced.skeleton,
+                transform_name=self.name,
+                status=unproduced.status,
+                reason=unproduced.reason,
+                error=unproduced.error,
+                blocked_by=unproduced.blocked_by,
+                instance_id=unit_instance_id,
+                call_index=i,
+            )
         return TransformResult(
             annotations=tuple(completed),
             artifacts=tuple(report.produced),

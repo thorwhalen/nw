@@ -26,7 +26,9 @@ it. Layering: `lacing → nw → falaw.Plan → backends` — nothing above
   (default `dynamic`: fail expensive-looking; it is what lets a cost gate tell
   a real pre-quote from an honest unknown), per-unit isolation in
   `fan_out_execute` on top of falaw's per-call isolation, and work items in
-  the **run record** (`FanOutResult.to_record()`), never the graph document.
+  the **run record** (`FanOutResult.to_record()`), never the graph document —
+  except *why* a unit's output was never produced (nw#44,
+  `annot://schema/unproduced-output/v1`, keyed by `unit.instance_id`).
 - **Freshness** (`nw/freshness.py`) — verifying-trace rebuild analysis with
   early cutoff (Salsa-style backdating). `stale_verdicts`/`stale_after`
   answer "what did *this* change invalidate"; `stale_verdicts_all`/`all_stale`

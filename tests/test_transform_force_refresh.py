@@ -117,9 +117,13 @@ def _skeleton():
 class _Graph:
     def __init__(self):
         self.written: list[Annotation] = []
+        self.unproduced: list[dict] = []
 
-    def add_annotation(self, annotation):
+    def add_annotation(self, annotation, **kwargs):
         self.written.append(annotation)
+
+    def add_unproduced_output(self, skeleton, **kwargs):
+        self.unproduced.append({"skeleton": skeleton, **kwargs})
 
 
 class _Project:

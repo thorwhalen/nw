@@ -29,6 +29,7 @@ honest shape of wrapping pre-Transform code.
 from __future__ import annotations
 
 import uuid
+from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -146,6 +147,7 @@ class RenderStrategyTransform(BaseTransform):
         use_cache: bool = True,
         force: bool = False,
         on_failure: OnFailure = "halt",
+        unit_instance_id: Optional[str] = None,
     ) -> TransformResult:
         """Render one shot. ``on_failure`` isolates at the *shot* boundary.
 
@@ -195,6 +197,19 @@ class RenderStrategyTransform(BaseTransform):
                 blocked_by=tuple(first.blocked_by),
             )
             is_blocked = first.status == "blocked"
+            # This override bypasses BaseTransform.execute, so it must record
+            # the unproduced output itself — the same self-stamping obligation
+            # `impl_version` already places on an overriding execute() (nw#44).
+            project.graph.add_unproduced_output(
+                unproduced.skeleton,
+                transform_name=self.name,
+                status=unproduced.status,
+                reason=unproduced.reason,
+                error=unproduced.error,
+                blocked_by=unproduced.blocked_by,
+                instance_id=unit_instance_id,
+                call_index=0,
+            )
             return TransformResult(
                 annotations=(),
                 artifacts=tuple(report.produced),
@@ -222,7 +237,9 @@ class RenderStrategyTransform(BaseTransform):
                 }
             }
         )
-        project.graph.add_annotation(completed)
+        project.graph.add_annotation(
+            completed, instance_id=unit_instance_id, call_index=0
+        )
         return TransformResult(
             annotations=(completed,),
             artifacts=tuple(artifacts),

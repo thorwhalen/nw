@@ -131,6 +131,21 @@ class-level `name` / `input_kinds` / `output_kind` / `params_model` /
 `is_batch`. `params_model` is a Pydantic model, which is what gives an MCP
 server or a CLI a JSON Schema for the Transform for free.
 
+### A blocked or failed output still tells you why, after reload
+
+`execute(..., on_failure="isolate")` runs what can be run and reports the
+rest instead of raising: `result.failed` / `result.blocked` are
+`FailedOutput`s carrying a `reason` (and, for a blocked one, `blocked_by`).
+That reason is also persisted — `proj.graph.unproduced_outputs()` reads it
+back after a reload, and it disappears on its own the moment a retry
+produces the real output.
+
+```python
+result = t.execute(proj, plan, skeleton, on_failure="isolate")
+[f.reason for f in result.failed]          # in this response
+[u.body.reason for u in proj.graph.unproduced_outputs()]  # survives reload
+```
+
 ## prepare → plan → execute, with a budget gate
 
 The **shot** render unit makes the same split concrete, and it is why cost is
@@ -490,6 +505,7 @@ nw.FrozenSegment, nw.Gap
     nw.FreshnessVerdict,
 )
 nw.annotations_at_tier, nw.iter_all_annotations, nw.open_project_stores
+nw.ProjectGraph.unproduced_outputs  # why a blocked/failed output was never produced
 
 # Experiments
 nw.clone_project, nw.apply_to_projects, nw.summarize_all
