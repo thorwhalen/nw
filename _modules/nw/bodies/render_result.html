@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.bodies.render_result &mdash; nw 0.0.47 documentation</title>
+  <title>nw.bodies.render_result &mdash; nw 0.0.48 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=4f34e5f2"></script>
+      <script src="../../../_static/documentation_options.js?v=a72e4630"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -65,6 +65,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/inspect.html">nw.inspect</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/jobs.html">nw.jobs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/migrate.html">nw.migrate</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/pricing.html">nw.pricing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/project.html">nw.project</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/renderers.html">nw.renderers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/renderers/_common.html">nw.renderers._common</a></li>
@@ -116,8 +117,10 @@
 
 <span class="sd">A render-result records that a shot was rendered: which strategy ran, where</span>
 <span class="sd">the output landed, the video :class:`lacing.Artifact` it produced, and the</span>
-<span class="sd">estimated cost. Its ``provenance.was_derived_from`` includes the shot</span>
-<span class="sd">annotation's id, so a freshness traversal from the shot finds the render.</span>
+<span class="sd">cost as quoted at plan time (``total_estimated_cost_usd`` is an as-of figure,</span>
+<span class="sd">never a current one — see its field description and :mod:`nw.pricing`). Its</span>
+<span class="sd">``provenance.was_derived_from`` includes the shot annotation's id, so a</span>
+<span class="sd">freshness traversal from the shot finds the render.</span>
 
 <span class="sd">This is the ``output_kind`` of the render-strategy Transforms (see</span>
 <span class="sd">``nw.transforms._adapters.render_strategy``). It is intentionally small —</span>
@@ -167,7 +170,16 @@
     <span class="p">)</span>
     <span class="n">total_estimated_cost_usd</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="mf">0.0</span><span class="p">,</span>
-        <span class="n">description</span><span class="o">=</span><span class="s2">"Plan-time cost estimate for the render (sum of CallPlan costs)."</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">"Cost of the render **as quoted at plan time** (sum of CallPlan "</span>
+            <span class="s2">"costs). A fact about the moment it was written, not a current "</span>
+            <span class="s2">"price: falaw's rate tables move — 0.0.46 re-quoted premium LLM "</span>
+            <span class="s2">"calls tenfold upward — so presenting this figure as today's cost "</span>
+            <span class="s2">"under-quotes the run. To report a current number, re-quote the "</span>
+            <span class="s2">"render's plan through ``nw.pricing.current_quote`` (or the stored "</span>
+            <span class="s2">"decision payload through ``nw.pricing.quote_render_decision``), "</span>
+            <span class="s2">"which answers ``None`` — unknown, never free — when it cannot."</span>
+        <span class="p">),</span>
     <span class="p">)</span></div>
 
 

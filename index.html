@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Welcome to nw’s documentation! &mdash; nw 0.0.47 documentation</title>
+  <title>Welcome to nw’s documentation! &mdash; nw 0.0.48 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=4f34e5f2"></script>
+      <script src="_static/documentation_options.js?v=a72e4630"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -67,6 +67,7 @@
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/inspect.html">nw.inspect</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/jobs.html">nw.jobs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/migrate.html">nw.migrate</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/pricing.html">nw.pricing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/project.html">nw.project</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/renderers.html">nw.renderers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/renderers/_common.html">nw.renderers._common</a></li>
@@ -134,6 +135,7 @@
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.FrozenSegment"><code class="docutils literal notranslate"><span class="pre">FrozenSegment</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.Gap"><code class="docutils literal notranslate"><span class="pre">Gap</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.Genre"><code class="docutils literal notranslate"><span class="pre">Genre</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.PlanQuote"><code class="docutils literal notranslate"><span class="pre">PlanQuote</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.Project"><code class="docutils literal notranslate"><span class="pre">Project</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.ProjectGraph"><code class="docutils literal notranslate"><span class="pre">ProjectGraph</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.ProjectSpec"><code class="docutils literal notranslate"><span class="pre">ProjectSpec</span></code></a></li>
@@ -158,7 +160,9 @@
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.clone_project"><code class="docutils literal notranslate"><span class="pre">clone_project()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.collect_orphan_traces"><code class="docutils literal notranslate"><span class="pre">collect_orphan_traces()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.compose_report"><code class="docutils literal notranslate"><span class="pre">compose_report()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.cost_records"><code class="docutils literal notranslate"><span class="pre">cost_records()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.create_genre_project"><code class="docutils literal notranslate"><span class="pre">create_genre_project()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.current_quote"><code class="docutils literal notranslate"><span class="pre">current_quote()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.derived_from"><code class="docutils literal notranslate"><span class="pre">derived_from()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.descendants_of"><code class="docutils literal notranslate"><span class="pre">descendants_of()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.describe_genre"><code class="docutils literal notranslate"><span class="pre">describe_genre()</span></code></a></li>
@@ -182,10 +186,13 @@
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.open_project_stores"><code class="docutils literal notranslate"><span class="pre">open_project_stores()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.open_storyboard"><code class="docutils literal notranslate"><span class="pre">open_storyboard()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.parse_ref"><code class="docutils literal notranslate"><span class="pre">parse_ref()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.plan_from_cost_records"><code class="docutils literal notranslate"><span class="pre">plan_from_cost_records()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.plan_render_panel_images"><code class="docutils literal notranslate"><span class="pre">plan_render_panel_images()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.plan_render_shot"><code class="docutils literal notranslate"><span class="pre">plan_render_shot()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.prepare_shot"><code class="docutils literal notranslate"><span class="pre">prepare_shot()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.project_asset_id"><code class="docutils literal notranslate"><span class="pre">project_asset_id()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.quote_from_cost_records"><code class="docutils literal notranslate"><span class="pre">quote_from_cost_records()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.quote_render_decision"><code class="docutils literal notranslate"><span class="pre">quote_render_decision()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.recommend_genre"><code class="docutils literal notranslate"><span class="pre">recommend_genre()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.register_genre"><code class="docutils literal notranslate"><span class="pre">register_genre()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.register_genre_initializer"><code class="docutils literal notranslate"><span class="pre">register_genre_initializer()</span></code></a></li>
@@ -205,6 +212,7 @@
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.storyboard_from_shots"><code class="docutils literal notranslate"><span class="pre">storyboard_from_shots()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.summarize_all"><code class="docutils literal notranslate"><span class="pre">summarize_all()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.transform_catalog"><code class="docutils literal notranslate"><span class="pre">transform_catalog()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.unquotable"><code class="docutils literal notranslate"><span class="pre">unquotable()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.work_item_instance_id"><code class="docutils literal notranslate"><span class="pre">work_item_instance_id()</span></code></a></li>
 </ul>
 </li>
@@ -367,6 +375,7 @@
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/jobs.html#nw.jobs.JobCost"><code class="docutils literal notranslate"><span class="pre">JobCost</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/jobs.html#nw.jobs.JobProgress"><code class="docutils literal notranslate"><span class="pre">JobProgress</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/jobs.html#nw.jobs.JobsConfig"><code class="docutils literal notranslate"><span class="pre">JobsConfig</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/jobs.html#nw.jobs.UNREADABLE_PLAN_REASON"><code class="docutils literal notranslate"><span class="pre">UNREADABLE_PLAN_REASON</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/jobs.html#nw.jobs.cancel_job"><code class="docutils literal notranslate"><span class="pre">cancel_job()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/jobs.html#nw.jobs.enqueue"><code class="docutils literal notranslate"><span class="pre">enqueue()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/jobs.html#nw.jobs.estimate"><code class="docutils literal notranslate"><span class="pre">estimate()</span></code></a></li>
@@ -383,6 +392,19 @@
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/migrate.html#nw.migrate.open_project_graph"><code class="docutils literal notranslate"><span class="pre">open_project_graph()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/migrate.html#nw.migrate.open_project_graph_readonly"><code class="docutils literal notranslate"><span class="pre">open_project_graph_readonly()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/migrate.html#nw.migrate.project_asset_id"><code class="docutils literal notranslate"><span class="pre">project_asset_id()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/pricing.html">nw.pricing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/pricing.html#nw.pricing.DISAGREEING_TOTAL_REASON"><code class="docutils literal notranslate"><span class="pre">DISAGREEING_TOTAL_REASON</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/pricing.html#nw.pricing.PlanQuote"><code class="docutils literal notranslate"><span class="pre">PlanQuote</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/pricing.html#nw.pricing.QuoteStatus"><code class="docutils literal notranslate"><span class="pre">QuoteStatus</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/pricing.html#nw.pricing.TOTAL_AGREEMENT_ABS_TOL_USD"><code class="docutils literal notranslate"><span class="pre">TOTAL_AGREEMENT_ABS_TOL_USD</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/pricing.html#nw.pricing.cost_records"><code class="docutils literal notranslate"><span class="pre">cost_records()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/pricing.html#nw.pricing.current_quote"><code class="docutils literal notranslate"><span class="pre">current_quote()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/pricing.html#nw.pricing.plan_from_cost_records"><code class="docutils literal notranslate"><span class="pre">plan_from_cost_records()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/pricing.html#nw.pricing.quote_from_cost_records"><code class="docutils literal notranslate"><span class="pre">quote_from_cost_records()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/pricing.html#nw.pricing.quote_render_decision"><code class="docutils literal notranslate"><span class="pre">quote_render_decision()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/pricing.html#nw.pricing.unquotable"><code class="docutils literal notranslate"><span class="pre">unquotable()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/project.html">nw.project</a><ul>
@@ -527,7 +549,7 @@
 <li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
 <li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
 </ul>
-<p>Release: 0.0.47</p>
+<p>Release: 0.0.48</p>
 <p>Last change: Sep 08, 2026</p>
 </section>
 

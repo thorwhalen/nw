@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; nw 0.0.47 documentation</title>
+  <title>Index &mdash; nw 0.0.48 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=4f34e5f2"></script>
+      <script src="_static/documentation_options.js?v=a72e4630"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -65,6 +65,7 @@
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/inspect.html">nw.inspect</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/jobs.html">nw.jobs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/migrate.html">nw.migrate</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/pricing.html">nw.pricing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/project.html">nw.project</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/renderers.html">nw.renderers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/renderers/_common.html">nw.renderers._common</a></li>
@@ -128,6 +129,7 @@
  | <a href="#N"><strong>N</strong></a>
  | <a href="#O"><strong>O</strong></a>
  | <a href="#P"><strong>P</strong></a>
+ | <a href="#Q"><strong>Q</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
  | <a href="#T"><strong>T</strong></a>
@@ -197,6 +199,12 @@
         <li><a href="module_docs/nw/transforms.html#nw.transforms.TransformResult.artifacts">(nw.transforms.TransformResult attribute)</a>
 </li>
       </ul></li>
+      <li><a href="module_docs/nw.html#nw.PlanQuote.as_of_total_usd">as_of_total_usd (nw.PlanQuote attribute)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/pricing.html#nw.pricing.PlanQuote.as_of_total_usd">(nw.pricing.PlanQuote attribute)</a>
+</li>
+      </ul></li>
       <li><a href="module_docs/nw.html#nw.ShotPreparation.audio_slice_path">audio_slice_path (nw.ShotPreparation attribute)</a>
 
       <ul>
@@ -227,10 +235,16 @@
         <li><a href="module_docs/nw/transforms.html#nw.transforms.BaseTransform">(class in nw.transforms)</a>
 </li>
       </ul></li>
-      <li><a href="module_docs/nw/jobs.html#nw.jobs.DurationLearningMiddleware.before_compute">before_compute() (nw.jobs.DurationLearningMiddleware method)</a>
+      <li><a href="module_docs/nw.html#nw.PlanQuote.basis_changed">basis_changed (nw.PlanQuote property)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/pricing.html#nw.pricing.PlanQuote.basis_changed">(nw.pricing.PlanQuote property)</a>
 </li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="module_docs/nw/jobs.html#nw.jobs.DurationLearningMiddleware.before_compute">before_compute() (nw.jobs.DurationLearningMiddleware method)</a>
+</li>
       <li><a href="module_docs/nw.html#nw.TransformResult.blocked">blocked (nw.TransformResult attribute)</a>
 
       <ul>
@@ -303,8 +317,6 @@
       </ul></li>
       <li><a href="module_docs/nw/delivery.html#nw.delivery.check_delivery_source">check_delivery_source() (in module nw.delivery)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module_docs/nw/delivery.html#nw.delivery.check_title">check_title() (in module nw.delivery)</a>
 </li>
       <li><a href="module_docs/nw.html#nw.clone_project">clone_project() (in module nw)</a>
@@ -313,6 +325,8 @@
         <li><a href="module_docs/nw/experiment.html#nw.experiment.clone_project">(in module nw.experiment)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module_docs/nw.html#nw.collect_orphan_traces">collect_orphan_traces() (in module nw)</a>
 
       <ul>
@@ -339,6 +353,12 @@
         <li><a href="module_docs/nw/genres.html#nw.genres.Genre.cost_profile">(nw.genres.Genre attribute)</a>
 </li>
       </ul></li>
+      <li><a href="module_docs/nw.html#nw.cost_records">cost_records() (in module nw)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/pricing.html#nw.pricing.cost_records">(in module nw.pricing)</a>
+</li>
+      </ul></li>
       <li><a href="module_docs/nw.html#nw.FanOutResult.cost_usd_actual">cost_usd_actual (nw.FanOutResult property)</a>
 
       <ul>
@@ -355,6 +375,12 @@
 
       <ul>
         <li><a href="module_docs/nw/genres.html#nw.genres.create_genre_project">(in module nw.genres)</a>
+</li>
+      </ul></li>
+      <li><a href="module_docs/nw.html#nw.current_quote">current_quote() (in module nw)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/pricing.html#nw.pricing.current_quote">(in module nw.pricing)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -391,10 +417,16 @@
       </ul></li>
       <li><a href="module_docs/nw/delivery.html#nw.delivery.DELIVERY_FUNCTIONS">DELIVERY_FUNCTIONS (in module nw.delivery)</a>
 </li>
-      <li><a href="module_docs/nw/transforms/_provenance.html#nw.transforms._provenance.derive_provenance">derive_provenance() (in module nw.transforms._provenance)</a>
+      <li><a href="module_docs/nw.html#nw.PlanQuote.delta_usd">delta_usd (nw.PlanQuote property)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/pricing.html#nw.pricing.PlanQuote.delta_usd">(nw.pricing.PlanQuote property)</a>
 </li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="module_docs/nw/transforms/_provenance.html#nw.transforms._provenance.derive_provenance">derive_provenance() (in module nw.transforms._provenance)</a>
+</li>
       <li><a href="module_docs/nw.html#nw.derived_from">derived_from() (in module nw)</a>
 
       <ul>
@@ -416,6 +448,8 @@
       <li><a href="module_docs/nw/transforms/fanout.html#nw.transforms.fanout.DFLT_GENERATE_WHEN">DFLT_GENERATE_WHEN (in module nw.transforms.fanout)</a>
 </li>
       <li><a href="module_docs/nw/transforms.html#nw.transforms.DFLT_IMPL_VERSION">DFLT_IMPL_VERSION (in module nw.transforms)</a>
+</li>
+      <li><a href="module_docs/nw/pricing.html#nw.pricing.DISAGREEING_TOTAL_REASON">DISAGREEING_TOTAL_REASON (in module nw.pricing)</a>
 </li>
       <li><a href="module_docs/nw/renderers/_common.html#nw.renderers._common.download_to">download_to() (in module nw.renderers._common)</a>
 </li>
@@ -460,6 +494,8 @@
       <li><a href="module_docs/nw.html#nw.FailedOutput.error">error (nw.FailedOutput attribute)</a>
 </li>
       <li><a href="module_docs/nw/jobs.html#nw.jobs.estimate">estimate() (in module nw.jobs)</a>
+</li>
+      <li><a href="module_docs/nw/jobs.html#nw.jobs.JobCost.estimated_usd">estimated_usd (nw.jobs.JobCost attribute)</a>
 </li>
       <li><a href="module_docs/nw.html#nw.Transform.execute">execute() (nw.Transform method)</a>
 
@@ -673,6 +709,10 @@
 
       <ul>
         <li><a href="module_docs/nw.html#nw.FanOutResult.has_unknown_costs">(nw.FanOutResult property)</a>
+</li>
+        <li><a href="module_docs/nw.html#nw.PlanQuote.has_unknown_costs">(nw.PlanQuote property)</a>
+</li>
+        <li><a href="module_docs/nw/pricing.html#nw.pricing.PlanQuote.has_unknown_costs">(nw.pricing.PlanQuote property)</a>
 </li>
         <li><a href="module_docs/nw.html#nw.TransformResult.has_unknown_costs">(nw.TransformResult attribute)</a>
 </li>
@@ -1071,6 +1111,8 @@
 </li>
         <li><a href="module_docs/nw/migrate.html#module-nw.migrate">nw.migrate</a>
 </li>
+        <li><a href="module_docs/nw/pricing.html#module-nw.pricing">nw.pricing</a>
+</li>
         <li><a href="module_docs/nw/project.html#module-nw.project">nw.project</a>
 </li>
         <li><a href="module_docs/nw/renderers.html#module-nw.renderers">nw.renderers</a>
@@ -1255,6 +1297,13 @@
 
       <ul>
         <li><a href="module_docs/nw/migrate.html#module-nw.migrate">module</a>
+</li>
+      </ul></li>
+      <li>
+    nw.pricing
+
+      <ul>
+        <li><a href="module_docs/nw/pricing.html#module-nw.pricing">module</a>
 </li>
       </ul></li>
       <li>
@@ -1459,6 +1508,12 @@
         <li><a href="module_docs/nw/transforms.html#nw.transforms.Transform.plan">(nw.transforms.Transform method)</a>
 </li>
       </ul></li>
+      <li><a href="module_docs/nw.html#nw.plan_from_cost_records">plan_from_cost_records() (in module nw)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/pricing.html#nw.pricing.plan_from_cost_records">(in module nw.pricing)</a>
+</li>
+      </ul></li>
       <li><a href="module_docs/nw.html#nw.plan_render_panel_images">plan_render_panel_images() (in module nw)</a>
 
       <ul>
@@ -1473,6 +1528,12 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="module_docs/nw.html#nw.PlanQuote">PlanQuote (class in nw)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/pricing.html#nw.pricing.PlanQuote">(class in nw.pricing)</a>
+</li>
+      </ul></li>
       <li><a href="module_docs/nw/jobs.html#nw.jobs.predict_total_s">predict_total_s() (in module nw.jobs)</a>
 </li>
       <li><a href="module_docs/nw.html#nw.prepare_shot">prepare_shot() (in module nw)</a>
@@ -1522,6 +1583,28 @@
   </ul></td>
 </tr></table>
 
+<h2 id="Q">Q</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="module_docs/nw.html#nw.quote_from_cost_records">quote_from_cost_records() (in module nw)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/pricing.html#nw.pricing.quote_from_cost_records">(in module nw.pricing)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="module_docs/nw.html#nw.quote_render_decision">quote_render_decision() (in module nw)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/pricing.html#nw.pricing.quote_render_decision">(in module nw.pricing)</a>
+</li>
+      </ul></li>
+      <li><a href="module_docs/nw/pricing.html#nw.pricing.QuoteStatus">QuoteStatus (in module nw.pricing)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -1538,7 +1621,13 @@
 </li>
       </ul></li>
       <li><a href="module_docs/nw.html#nw.FailedOutput.reason">reason (nw.FailedOutput attribute)</a>
+
+      <ul>
+        <li><a href="module_docs/nw.html#nw.PlanQuote.reason">(nw.PlanQuote attribute)</a>
 </li>
+        <li><a href="module_docs/nw/pricing.html#nw.pricing.PlanQuote.reason">(nw.pricing.PlanQuote attribute)</a>
+</li>
+      </ul></li>
       <li><a href="module_docs/nw.html#nw.recommend_genre">recommend_genre() (in module nw)</a>
 
       <ul>
@@ -1603,6 +1692,12 @@
 </li>
       <li><a href="module_docs/nw/transforms/_adapters/render_strategy.html#nw.transforms._adapters.render_strategy.RenderStrategyTransform">RenderStrategyTransform (class in nw.transforms._adapters.render_strategy)</a>
 </li>
+      <li><a href="module_docs/nw.html#nw.PlanQuote.repriced">repriced (nw.PlanQuote attribute)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/pricing.html#nw.pricing.PlanQuote.repriced">(nw.pricing.PlanQuote attribute)</a>
+</li>
+      </ul></li>
       <li><a href="module_docs/nw/transforms.html#nw.transforms.resolve_cache_mode">resolve_cache_mode() (in module nw.transforms)</a>
 
       <ul>
@@ -1741,14 +1836,14 @@
       </ul></li>
       <li><a href="module_docs/nw.html#nw.FailedOutput.skeleton">skeleton (nw.FailedOutput attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module_docs/nw.html#nw.SongInfo">SongInfo (class in nw)</a>
 
       <ul>
         <li><a href="module_docs/nw/schema.html#nw.schema.SongInfo">(class in nw.schema)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module_docs/nw.html#nw.ProjectSummary.stages_done">stages_done (nw.ProjectSummary property)</a>
 
       <ul>
@@ -1784,7 +1879,13 @@
 </li>
       </ul></li>
       <li><a href="module_docs/nw.html#nw.FailedOutput.status">status (nw.FailedOutput attribute)</a>
+
+      <ul>
+        <li><a href="module_docs/nw.html#nw.PlanQuote.status">(nw.PlanQuote attribute)</a>
 </li>
+        <li><a href="module_docs/nw/pricing.html#nw.pricing.PlanQuote.status">(nw.pricing.PlanQuote attribute)</a>
+</li>
+      </ul></li>
       <li><a href="module_docs/nw/renderers/still.html#nw.renderers.still.StillStrategy">StillStrategy (class in nw.renderers.still)</a>
 </li>
       <li><a href="module_docs/nw/graph.html#nw.graph.StoredCharacterRef">StoredCharacterRef (class in nw.graph)</a>
@@ -1866,6 +1967,10 @@
 </li>
         <li><a href="module_docs/nw/genres.html#nw.genres.Template.to_dict">(nw.genres.Template method)</a>
 </li>
+        <li><a href="module_docs/nw.html#nw.PlanQuote.to_dict">(nw.PlanQuote method)</a>
+</li>
+        <li><a href="module_docs/nw/pricing.html#nw.pricing.PlanQuote.to_dict">(nw.pricing.PlanQuote method)</a>
+</li>
         <li><a href="module_docs/nw.html#nw.Template.to_dict">(nw.Template method)</a>
 </li>
       </ul></li>
@@ -1879,10 +1984,18 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="module_docs/nw/pricing.html#nw.pricing.TOTAL_AGREEMENT_ABS_TOL_USD">TOTAL_AGREEMENT_ABS_TOL_USD (in module nw.pricing)</a>
+</li>
       <li><a href="module_docs/nw.html#nw.Project.total_spend_usd">total_spend_usd() (nw.Project method)</a>
 
       <ul>
         <li><a href="module_docs/nw/project.html#nw.project.Project.total_spend_usd">(nw.project.Project method)</a>
+</li>
+      </ul></li>
+      <li><a href="module_docs/nw.html#nw.PlanQuote.total_usd">total_usd (nw.PlanQuote attribute)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/pricing.html#nw.pricing.PlanQuote.total_usd">(nw.pricing.PlanQuote attribute)</a>
 </li>
       </ul></li>
       <li><a href="module_docs/nw.html#nw.Transform">Transform (class in nw)</a>
@@ -1929,6 +2042,14 @@
         <li><a href="module_docs/nw/transforms.html#nw.transforms.FanOutPlan.unknown_call_count">(nw.transforms.FanOutPlan property)</a>
 </li>
       </ul></li>
+      <li><a href="module_docs/nw.html#nw.unquotable">unquotable() (in module nw)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/pricing.html#nw.pricing.unquotable">(in module nw.pricing)</a>
+</li>
+      </ul></li>
+      <li><a href="module_docs/nw/jobs.html#nw.jobs.UNREADABLE_PLAN_REASON">UNREADABLE_PLAN_REASON (in module nw.jobs)</a>
+</li>
       <li><a href="module_docs/nw.html#nw.Project.update_spec">update_spec() (nw.Project method)</a>
 
       <ul>
@@ -1937,14 +2058,14 @@
       </ul></li>
       <li><a href="module_docs/nw/renderers/_common.html#nw.renderers._common.upload_local_file">upload_local_file() (in module nw.renderers._common)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module_docs/nw/graph.html#nw.graph.ProjectGraph.upsert_character_ref">upsert_character_ref() (nw.graph.ProjectGraph method)</a>
 
       <ul>
         <li><a href="module_docs/nw.html#nw.ProjectGraph.upsert_character_ref">(nw.ProjectGraph method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module_docs/nw/graph.html#nw.graph.ProjectGraph.upsert_environment_ref">upsert_environment_ref() (nw.graph.ProjectGraph method)</a>
 
       <ul>

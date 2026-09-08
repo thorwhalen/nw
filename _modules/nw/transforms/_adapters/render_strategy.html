@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.transforms._adapters.render_strategy &mdash; nw 0.0.47 documentation</title>
+  <title>nw.transforms._adapters.render_strategy &mdash; nw 0.0.48 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=4f34e5f2"></script>
+      <script src="../../../../_static/documentation_options.js?v=a72e4630"></script>
       <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -65,6 +65,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../module_docs/nw/inspect.html">nw.inspect</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../module_docs/nw/jobs.html">nw.jobs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../module_docs/nw/migrate.html">nw.migrate</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../module_docs/nw/pricing.html">nw.pricing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../module_docs/nw/project.html">nw.project</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../module_docs/nw/renderers.html">nw.renderers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../module_docs/nw/renderers/_common.html">nw.renderers._common</a></li>
@@ -240,6 +241,10 @@
                 <span class="n">output_path</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span>
                 <span class="n">artifact_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                 <span class="n">duration_s</span><span class="o">=</span><span class="n">prep</span><span class="o">.</span><span class="n">duration_s</span><span class="p">,</span>
+                <span class="c1"># Quoted now, from the plan built two lines up — so it is</span>
+                <span class="c1"># current at the moment it is written and as-of ever after.</span>
+                <span class="c1"># A reader wanting today's price re-quotes with</span>
+                <span class="c1"># `nw.pricing.current_quote` (nw#74).</span>
                 <span class="n">total_estimated_cost_usd</span><span class="o">=</span><span class="n">plan</span><span class="o">.</span><span class="n">total_cost_usd</span><span class="p">,</span>
             <span class="p">)</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(),</span>
             <span class="n">body_schema_uri</span><span class="o">=</span><span class="n">RENDER_RESULT_BODY_SCHEMA_URI</span><span class="p">,</span>

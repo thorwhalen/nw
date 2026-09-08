@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.bodies.render_result &mdash; nw 0.0.47 documentation</title>
+  <title>nw.bodies.render_result &mdash; nw 0.0.48 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=4f34e5f2"></script>
+      <script src="../../../_static/documentation_options.js?v=a72e4630"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -74,6 +74,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../inspect.html">nw.inspect</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../jobs.html">nw.jobs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../migrate.html">nw.migrate</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pricing.html">nw.pricing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../project.html">nw.project</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../renderers.html">nw.renderers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../renderers/_common.html">nw.renderers._common</a></li>
@@ -124,8 +125,10 @@
 <p>URI: <code class="docutils literal notranslate"><span class="pre">annot://schema/render-result/v1</span></code></p>
 <p>A render-result records that a shot was rendered: which strategy ran, where
 the output landed, the video <code class="xref py py-class docutils literal notranslate"><span class="pre">lacing.Artifact</span></code> it produced, and the
-estimated cost. Its <code class="docutils literal notranslate"><span class="pre">provenance.was_derived_from</span></code> includes the shot
-annotation’s id, so a freshness traversal from the shot finds the render.</p>
+cost as quoted at plan time (<code class="docutils literal notranslate"><span class="pre">total_estimated_cost_usd</span></code> is an as-of figure,
+never a current one — see its field description and <a class="reference internal" href="../pricing.html#module-nw.pricing" title="nw.pricing"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nw.pricing</span></code></a>). Its
+<code class="docutils literal notranslate"><span class="pre">provenance.was_derived_from</span></code> includes the shot annotation’s id, so a
+freshness traversal from the shot finds the render.</p>
 <p>This is the <code class="docutils literal notranslate"><span class="pre">output_kind</span></code> of the render-strategy Transforms (see
 <code class="docutils literal notranslate"><span class="pre">nw.transforms._adapters.render_strategy</span></code>). It is intentionally small —
 the heavy data (the actual mp4) is the referenced Artifact, not the body.</p>

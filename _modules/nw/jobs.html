@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.jobs &mdash; nw 0.0.47 documentation</title>
+  <title>nw.jobs &mdash; nw 0.0.48 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=4f34e5f2"></script>
+      <script src="../../_static/documentation_options.js?v=a72e4630"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -65,6 +65,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/inspect.html">nw.inspect</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/jobs.html">nw.jobs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/migrate.html">nw.migrate</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/pricing.html">nw.pricing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/project.html">nw.project</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers.html">nw.renderers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/_common.html">nw.renderers._common</a></li>
@@ -161,6 +162,14 @@
 <span class="sd">  actually billed contributes ``0.0`` to the sum — so a bare ``$0`` means</span>
 <span class="sd">  *either* "nothing was spent" *or* "we do not know what was spent", and a</span>
 <span class="sd">  spend surface that cannot tell them apart shows the second as free.</span>
+<span class="sd">- **An estimate is re-quoted, never remembered.** When ``params["plan"]`` is</span>
+<span class="sd">  supplied, :func:`estimate` and :func:`enqueue` price it through</span>
+<span class="sd">  :func:`nw.pricing.current_quote` at today's rates rather than trusting a</span>
+<span class="sd">  caller-supplied ``estimated_usd`` frozen at plan time — falaw's rate tables</span>
+<span class="sd">  move, and a stale figure under-quotes the run (nw#74). Descriptive only:</span>
+<span class="sd">  ``cost_basis`` stays out of ``plan_hash``, so the idempotency key above is</span>
+<span class="sd">  byte-identical to what it was before repricing existed, and a resumed render</span>
+<span class="sd">  still dedups onto work already paid for.</span>
 
 <span class="sd">All tunables are keyword-configurable via :class:`JobsConfig`; defaults live at</span>
 <span class="sd">the top of this module — no magic numbers below.</span>
@@ -170,6 +179,7 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">hashlib</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">statistics</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span>
@@ -181,7 +191,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">asdict</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">au</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">au</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
@@ -192,6 +202,11 @@
     <span class="n">ThreadBackend</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">au.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">ComputationBackend</span>
+
+<span class="n">_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>  <span class="c1"># pragma: no cover — annotations only</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">.pricing</span><span class="w"> </span><span class="kn">import</span> <span class="n">PlanQuote</span>
 
 
 <span class="c1"># ---------------------------------------------------------------------------</span>
@@ -286,6 +301,13 @@
 <span class="nd">@dataclass</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">JobCost</span><span class="p">:</span>
     <span class="n">estimated_usd</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">"""Predicted spend, re-quoted at today's rates when a plan was supplied.</span>
+
+<span class="sd">    ``None`` means unknown, and unknown always requires approval — it is what</span>
+<span class="sd">    a plan whose calls carry no :class:`falaw.CostBasis` re-prices to. Never</span>
+<span class="sd">    the plan-time figure passed in alongside such a plan: that number was true</span>
+<span class="sd">    when it was written and falaw's rate tables have moved since (nw#74).</span>
+<span class="sd">    """</span>
     <span class="n">actual_usd</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">cache_hit_savings_usd</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">actual_is_lower_bound</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
@@ -408,7 +430,14 @@
 <span class="sd">        project: the ``nw.Project`` the render operates on.</span>
 <span class="sd">        kind: dispatch key selecting the render callable (e.g.</span>
 <span class="sd">            ``"journey.full_auto"``, ``"panel.animate"``).</span>
-<span class="sd">        params: render parameters (also the ETA-key + default-idempotency basis).</span>
+<span class="sd">        params: render parameters (also the ETA-key + default-idempotency</span>
+<span class="sd">            basis). A ``"plan"`` entry must be a **``falaw.plan_to_dict``</span>
+<span class="sd">            dict, not a live** :class:`falaw.Plan`: the whole ``params``</span>
+<span class="sd">            mapping is JSON-serialized into the job index, so a ``Plan``</span>
+<span class="sd">            object raises there. The dict hashes to the identical</span>
+<span class="sd">            ``plan_hash`` (:func:`_plan_for_identity`) and re-quotes the same</span>
+<span class="sd">            way, so nothing is lost by serializing it — :func:`estimate`,</span>
+<span class="sd">            which never writes a record, accepts either.</span>
 <span class="sd">        on_event: sink for the render's lifecycle events (reelee wires this to</span>
 <span class="sd">            its ``agent_log`` / SSE tail). Events are stamped with</span>
 <span class="sd">            ``job_id``/``run_id`` and mirrored into progress/cost/eta.</span>
@@ -476,7 +505,10 @@
             <span class="s2">"cancel_requested"</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
             <span class="s2">"pct_floor"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
             <span class="s2">"progress"</span><span class="p">:</span> <span class="p">{},</span>
-            <span class="s2">"cost"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"estimated_usd"</span><span class="p">:</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"estimated_usd"</span><span class="p">)},</span>
+            <span class="c1"># Same gate, same rule: a supplied plan is re-quoted at today's</span>
+            <span class="c1"># rates and its answer wins, so the tray never shows a frozen</span>
+            <span class="c1"># figure as this job's price (nw#74).</span>
+            <span class="s2">"cost"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"estimated_usd"</span><span class="p">:</span> <span class="n">_estimated_usd</span><span class="p">(</span><span class="n">params</span><span class="p">)},</span>
             <span class="s2">"artifact_ref"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
             <span class="s2">"result"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
             <span class="s2">"error"</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
@@ -510,12 +542,32 @@
 <span class="w">    </span><span class="sd">"""Dry-run cost gate **without enqueueing**.</span>
 
 <span class="sd">    Returns ``{estimated_usd, has_unknown_costs, approval_threshold_usd,</span>
-<span class="sd">    requires_approval}``. Unknown cost always requires approval (preserves the</span>
-<span class="sd">    one-price-per-clip gate). reelee computes the falaw-``Plan`` cost and either</span>
-<span class="sd">    passes it via ``params["estimated_usd"]`` or overrides this per its own</span>
-<span class="sd">    policy.</span>
+<span class="sd">    requires_approval, quote}``. Unknown cost always requires approval</span>
+<span class="sd">    (preserves the one-price-per-clip gate).</span>
+
+<span class="sd">    **The gate quotes, it does not remember.** When ``params["plan"]`` is</span>
+<span class="sd">    present its cost is re-quoted at today's rates through</span>
+<span class="sd">    :func:`nw.pricing.current_quote`, and a caller-supplied</span>
+<span class="sd">    ``params["estimated_usd"]`` is ignored — exactly as</span>
+<span class="sd">    :func:`_default_idempotency_key` ignores it for the dedup basis. A</span>
+<span class="sd">    persisted plan's figure is frozen at plan time, and falaw's rate tables</span>
+<span class="sd">    move (0.0.46 re-quoted premium LLM calls tenfold upward), so gating on</span>
+<span class="sd">    the stored number under-quotes the run: the one direction a spend</span>
+<span class="sd">    decision must never err in (nw#74).</span>
+
+<span class="sd">    A supplied plan that cannot be re-quoted — no ``cost_basis`` on its calls,</span>
+<span class="sd">    an unparseable payload, a model that has left the catalogue — yields</span>
+<span class="sd">    ``estimated_usd=None``, which requires approval. Refusing to name a price</span>
+<span class="sd">    is the safe answer; repeating yesterday's is not.</span>
+
+<span class="sd">    Without a plan the gate falls back to ``params["estimated_usd"]``, whose</span>
+<span class="sd">    provenance nw cannot see; ``quote`` is then ``None`` to say so. When there</span>
+<span class="sd">    *is* a quote it carries ``caller_estimated_usd`` — what the caller passed,</span>
+<span class="sd">    reported beside today's number rather than discarded, so a surface can</span>
+<span class="sd">    show the movement.</span>
 <span class="sd">    """</span>
-    <span class="n">estimated</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"estimated_usd"</span><span class="p">)</span>
+    <span class="n">quote</span> <span class="o">=</span> <span class="n">_quote_params</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+    <span class="n">estimated</span> <span class="o">=</span> <span class="n">_estimated_usd</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">quote</span><span class="o">=</span><span class="n">quote</span><span class="p">)</span>
     <span class="n">has_unknown</span> <span class="o">=</span> <span class="n">estimated</span> <span class="ow">is</span> <span class="kc">None</span>
     <span class="n">threshold</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">approval_threshold_usd</span>
     <span class="n">requires_approval</span> <span class="o">=</span> <span class="n">has_unknown</span> <span class="ow">or</span> <span class="p">(</span>
@@ -526,8 +578,76 @@
         <span class="s2">"has_unknown_costs"</span><span class="p">:</span> <span class="n">has_unknown</span><span class="p">,</span>
         <span class="s2">"approval_threshold_usd"</span><span class="p">:</span> <span class="n">threshold</span><span class="p">,</span>
         <span class="s2">"requires_approval"</span><span class="p">:</span> <span class="n">requires_approval</span><span class="p">,</span>
+        <span class="c1"># The caller's own figure travels *inside* the quote rather than being</span>
+        <span class="c1"># dropped: a surface that can say "you were quoted X, it is Y today"</span>
+        <span class="c1"># is the point of re-quoting, and silently discarding X leaves nothing</span>
+        <span class="c1"># to show the movement against.</span>
+        <span class="s2">"quote"</span><span class="p">:</span> <span class="p">(</span>
+            <span class="p">{</span><span class="o">**</span><span class="n">quote</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(),</span> <span class="s2">"caller_estimated_usd"</span><span class="p">:</span> <span class="n">_caller_estimated_usd</span><span class="p">(</span><span class="n">params</span><span class="p">)}</span>
+            <span class="k">if</span> <span class="n">quote</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="k">else</span> <span class="kc">None</span>
+        <span class="p">),</span>
     <span class="p">}</span></div>
 
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_caller_estimated_usd</span><span class="p">(</span><span class="n">params</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""The ``estimated_usd`` the caller passed in, or ``None`` if none was.</span>
+
+<span class="sd">    Reported, never trusted: when a plan is supplied this number loses to the</span>
+<span class="sd">    re-quote, and nw cannot see where it came from.</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"estimated_usd"</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_estimated_usd</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">quote</span><span class="p">:</span> <span class="s2">"PlanQuote | None"</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""This job's price today: the re-quoted plan, else the caller's figure.</span>
+
+<span class="sd">    ``None`` means unknown — never free, and never the stale number that came</span>
+<span class="sd">    in with the plan. Pass ``quote`` to reuse one already computed for these</span>
+<span class="sd">    same ``params``; it is re-derived when omitted.</span>
+<span class="sd">    """</span>
+    <span class="n">quote</span> <span class="o">=</span> <span class="n">quote</span> <span class="k">if</span> <span class="n">quote</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">_quote_params</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">quote</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">quote</span><span class="o">.</span><span class="n">total_usd</span>
+    <span class="k">return</span> <span class="n">_caller_estimated_usd</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+
+
+<span class="n">UNREADABLE_PLAN_REASON</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">"params['plan'] could not be read as a falaw Plan, so its cost cannot be "</span>
+    <span class="s2">"quoted; see the server log for what went wrong"</span>
+<span class="p">)</span>
+<span class="sd">"""Why a quote came back unknown when the plan itself was unreadable.</span>
+
+<span class="sd">A fixed sentence rather than the exception text: this string reaches a job</span>
+<span class="sd">surface, and an exception's message is written for an operator reading a log,</span>
+<span class="sd">not for whoever is deciding whether to approve a spend."""</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_quote_params</span><span class="p">(</span><span class="n">params</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"PlanQuote | None"</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Today's price for ``params["plan"]``, or ``None`` when no plan is given.</span>
+
+<span class="sd">    ``None`` means "nw was handed no plan to quote", never "this is free" —</span>
+<span class="sd">    the caller's own ``estimated_usd`` is the fallback, and it is a figure nw</span>
+<span class="sd">    cannot vouch for.</span>
+
+<span class="sd">    Accepts whatever :func:`_plan_for_identity` accepts — a live</span>
+<span class="sd">    :class:`falaw.Plan` or the ``plan_to_dict`` dict a job's ``params`` can</span>
+<span class="sd">    actually carry through the index. Anything else is *unknown*: this</span>
+<span class="sd">    function never raises, because refusing to name a price is the safe answer</span>
+<span class="sd">    at a cost gate, and :func:`_default_idempotency_key` is where an</span>
+<span class="sd">    unidentifiable plan is refused loudly.</span>
+<span class="sd">    """</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">.pricing</span><span class="w"> </span><span class="kn">import</span> <span class="n">current_quote</span><span class="p">,</span> <span class="n">unquotable</span>
+
+    <span class="n">plan</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"plan"</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">plan</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">current_quote</span><span class="p">(</span><span class="n">_plan_for_identity</span><span class="p">(</span><span class="n">plan</span><span class="p">))</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>  <span class="c1"># noqa: BLE001 — an unreadable plan is *unknown*</span>
+        <span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"could not read params['plan'] to re-quote it"</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">unquotable</span><span class="p">(</span><span class="n">UNREADABLE_PLAN_REASON</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="list_jobs">
@@ -1560,11 +1680,36 @@
     <span class="k">if</span> <span class="n">plan</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">falaw</span><span class="w"> </span><span class="kn">import</span> <span class="n">plan_hash</span>
 
-        <span class="n">basis</span> <span class="o">=</span> <span class="n">plan_hash</span><span class="p">(</span><span class="n">plan</span><span class="p">)</span>
+        <span class="n">basis</span> <span class="o">=</span> <span class="n">plan_hash</span><span class="p">(</span><span class="n">_plan_for_identity</span><span class="p">(</span><span class="n">plan</span><span class="p">))</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">basis</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">_jsonable</span><span class="p">(</span><span class="n">params</span><span class="p">),</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
     <span class="n">blob</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">Path</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">root</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">basis</span><span class="si">}</span><span class="s2">"</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">"utf-8"</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">(</span><span class="n">blob</span><span class="p">)</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_plan_for_identity</span><span class="p">(</span><span class="n">plan</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""``params["plan"]`` as a :class:`falaw.Plan`, or a loud refusal.</span>
+
+<span class="sd">    A job's ``params`` are JSON-serialized into the index, so a caller with a</span>
+<span class="sd">    live ``Plan`` passes it through :func:`falaw.plan_to_dict` first — and that</span>
+<span class="sd">    dict has to hash to the same digest the object would, or the same render</span>
+<span class="sd">    submitted twice would dedup under two different keys and bill twice.</span>
+<span class="sd">    Rebuilding it here is what makes both forms one identity.</span>
+
+<span class="sd">    Anything that is neither raises, per this function's "refuse loudly"</span>
+<span class="sd">    contract: a plan that cannot be identified is not submittable.</span>
+<span class="sd">    """</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">falaw</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plan</span><span class="p">,</span> <span class="n">plan_from_dict</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">plan</span><span class="p">,</span> <span class="n">Plan</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">plan</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">plan</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">plan_from_dict</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">plan</span><span class="p">))</span>
+    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">"params['plan'] must be a falaw Plan or a plan_to_dict() dict, "</span>
+        <span class="sa">f</span><span class="s2">"got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">plan</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">. A plan that cannot be identified is not "</span>
+        <span class="sa">f</span><span class="s2">"submittable — see nw.jobs._default_idempotency_key."</span>
+    <span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_jsonable</span><span class="p">(</span><span class="n">params</span><span class="p">):</span>

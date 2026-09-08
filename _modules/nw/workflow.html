@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.workflow &mdash; nw 0.0.47 documentation</title>
+  <title>nw.workflow &mdash; nw 0.0.48 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=4f34e5f2"></script>
+      <script src="../../_static/documentation_options.js?v=a72e4630"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -65,6 +65,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/inspect.html">nw.inspect</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/jobs.html">nw.jobs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/migrate.html">nw.migrate</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/pricing.html">nw.pricing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/project.html">nw.project</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers.html">nw.renderers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/_common.html">nw.renderers._common</a></li>
@@ -177,6 +178,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">falaw</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plan</span><span class="p">,</span> <span class="n">execute_plan</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">lacing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Artifact</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">.pricing</span><span class="w"> </span><span class="kn">import</span> <span class="n">cost_records</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.project</span><span class="w"> </span><span class="kn">import</span> <span class="n">Project</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.renderers</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_strategy</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">ShotSpec</span>
@@ -428,6 +430,15 @@
 <span class="sd">    reelee freshness traversal from the shot will find the render output.</span>
 <span class="sd">    Cost, model ids, and call ids are persisted in the decision payload so</span>
 <span class="sd">    a later inspector view can show "what fired and what it cost."</span>
+
+<span class="sd">    Every cost in the payload is **as quoted at plan time**, including</span>
+<span class="sd">    ``total_estimated_cost_usd``. Rate tables move (falaw 0.0.46 re-quoted</span>
+<span class="sd">    premium LLM calls tenfold upward), so a reader that presents one of these</span>
+<span class="sd">    figures as a *current* price under-quotes the run — the one direction a</span>
+<span class="sd">    spend decision must never err in. Each call row therefore carries its</span>
+<span class="sd">    :class:`falaw.CostBasis` (:func:`nw.pricing.cost_records`), which is what</span>
+<span class="sd">    lets :func:`nw.pricing.quote_render_decision` re-quote the whole payload</span>
+<span class="sd">    at today's rates and say ``unknown`` where it cannot (nw#74).</span>
 <span class="sd">    """</span>
     <span class="c1"># Find the shot's annotation id in the graph.</span>
     <span class="n">shot_anns</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">shots</span><span class="p">()</span>
@@ -442,15 +453,7 @@
         <span class="s2">"output_path"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">root</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">output</span><span class="o">.</span><span class="n">is_relative_to</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
         <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">output</span><span class="p">),</span>
-        <span class="s2">"calls"</span><span class="p">:</span> <span class="p">[</span>
-            <span class="p">{</span>
-                <span class="s2">"tool"</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">tool</span><span class="p">,</span>
-                <span class="s2">"application"</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">application</span><span class="p">,</span>
-                <span class="s2">"estimated_cost_usd"</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">estimated_cost_usd</span><span class="p">,</span>
-                <span class="s2">"cache_status"</span><span class="p">:</span> <span class="n">c</span><span class="o">.</span><span class="n">cache_status</span><span class="p">,</span>
-            <span class="p">}</span>
-            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">plan</span><span class="o">.</span><span class="n">calls</span>
-        <span class="p">],</span>
+        <span class="s2">"calls"</span><span class="p">:</span> <span class="n">cost_records</span><span class="p">(</span><span class="n">plan</span><span class="p">),</span>
         <span class="s2">"artifacts"</span><span class="p">:</span> <span class="p">[</span>
             <span class="p">{</span>
                 <span class="s2">"asset_id"</span><span class="p">:</span> <span class="n">a</span><span class="o">.</span><span class="n">asset_id</span><span class="p">,</span>
@@ -461,6 +464,9 @@
             <span class="p">}</span>
             <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">artifacts</span>
         <span class="p">],</span>
+        <span class="c1"># As-quoted-at-plan-time, like every figure above it. Re-quote the</span>
+        <span class="c1"># payload with `nw.pricing.quote_render_decision` before reporting</span>
+        <span class="c1"># this as a current price.</span>
         <span class="s2">"total_estimated_cost_usd"</span><span class="p">:</span> <span class="n">plan</span><span class="o">.</span><span class="n">total_cost_usd</span><span class="p">,</span>
     <span class="p">}</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">.bodies</span><span class="w"> </span><span class="kn">import</span> <span class="n">DecisionBodyV1</span>

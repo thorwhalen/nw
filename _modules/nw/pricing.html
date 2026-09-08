@@ -1,0 +1,575 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>nw.pricing &mdash; nw 0.0.48 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=a72e4630"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            nw
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw.html">nw</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies.html">nw.bodies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/character_ref.html">nw.bodies.character_ref</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/decision.html">nw.bodies.decision</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/environment_ref.html">nw.bodies.environment_ref</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/genre_envelope.html">nw.bodies.genre_envelope</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/render_result.html">nw.bodies.render_result</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/section.html">nw.bodies.section</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/shot.html">nw.bodies.shot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/verifying_trace.html">nw.bodies.verifying_trace</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/delivery.html">nw.delivery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/experiment.html">nw.experiment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/freshness.html">nw.freshness</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/genres.html">nw.genres</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/graph.html">nw.graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/graph_backend.html">nw.graph_backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/inspect.html">nw.inspect</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/jobs.html">nw.jobs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/migrate.html">nw.migrate</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/pricing.html">nw.pricing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/project.html">nw.project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers.html">nw.renderers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/_common.html">nw.renderers._common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/composite_lipsync.html">nw.renderers.composite_lipsync</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/image_to_video.html">nw.renderers.image_to_video</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/lipsync.html">nw.renderers.lipsync</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/still.html">nw.renderers.still</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/text_to_video.html">nw.renderers.text_to_video</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/schema.html">nw.schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/script_segmentation.html">nw.script_segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/storyboard.html">nw.storyboard</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/transforms.html">nw.transforms</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/transforms/_adapters.html">nw.transforms._adapters</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/transforms/_adapters/render_strategy.html">nw.transforms._adapters.render_strategy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/transforms/_cache_mode.html">nw.transforms._cache_mode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/transforms/_provenance.html">nw.transforms._provenance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/transforms/fanout.html">nw.transforms.fanout</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/workflow.html">nw.workflow</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">nw</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">nw.pricing</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for nw.pricing</h1><div class="highlight"><pre>
+<span></span><span class="sd">"""Re-quoting a persisted plan at today's rates (nw#74).</span>
+
+<span class="sd">nw writes cost figures into places that are **read back later**: a</span>
+<span class="sd">render-decision payload, a ``RenderResultBodyV1`` body, a job's cost gate.</span>
+<span class="sd">Each of those numbers is a :attr:`falaw.CallPlan.estimated_cost_usd` frozen at</span>
+<span class="sd">plan time. falaw's rate tables move — 0.0.46 re-quoted every premium LLM call</span>
+<span class="sd">*tenfold upward* — so a figure nw stored before a table moves under-quotes the</span>
+<span class="sd">run it is later used to describe or gate. Under-quoting is the one direction a</span>
+<span class="sd">spend decision must never err in.</span>
+
+<span class="sd">falaw 0.0.49 (falaw#60) supplies the two halves of the fix:</span>
+<span class="sd">:class:`falaw.CostBasis` (which pricer, what it priced, the quantity hints,</span>
+<span class="sd">the rate table and its content digest) and :func:`falaw.reprice_plan` (pure</span>
+<span class="sd">data: no network, no billing API, no cache peek). This module is nw's single</span>
+<span class="sd">adoption point for them, and it enforces one rule:</span>
+
+<span class="sd">**A stored figure is never reported as current.** Reading a persisted cost</span>
+<span class="sd">means calling :func:`current_quote` first and reporting</span>
+<span class="sd">:attr:`PlanQuote.total_usd` with :attr:`PlanQuote.status` beside it. A plan</span>
+<span class="sd">whose calls carry no basis re-prices to ``None`` — *unknown*, never its stale</span>
+<span class="sd">number, and never zero.</span>
+
+<span class="sd">Two things this module deliberately does **not** do:</span>
+
+<span class="sd">- **It does not touch cache identity.** ``cost_basis`` is descriptive: falaw</span>
+<span class="sd">  omits it from the serialized call when unset and keeps it out of</span>
+<span class="sd">  ``plan_hash`` and the per-call cache key. So a resumed render still dedups</span>
+<span class="sd">  on the same digest, and :func:`nw.jobs.enqueue`'s idempotency key is unmoved</span>
+<span class="sd">  by anything here — ``tests/test_pricing.py`` pins that.</span>
+<span class="sd">- **It does not re-quote money already spent.**</span>
+<span class="sd">  :meth:`nw.Project.total_spend_usd` sums what was *billed*, and a receipt is</span>
+<span class="sd">  not a quote: re-pricing it at today's rates would rewrite history. Its</span>
+<span class="sd">  estimate-based fallback is an as-of figure and says so.</span>
+
+<span class="sd">&gt;&gt;&gt; from falaw import CallPlan, Plan</span>
+<span class="sd">&gt;&gt;&gt; stale = CallPlan(tool="text_to_video", application="fal-ai/x",</span>
+<span class="sd">...                  arguments={}, output_kind="video",</span>
+<span class="sd">...                  estimated_cost_usd=0.25)</span>
+<span class="sd">&gt;&gt;&gt; quote = current_quote(Plan(calls=(stale,)))</span>
+<span class="sd">&gt;&gt;&gt; quote.status, quote.total_usd, quote.as_of_total_usd</span>
+<span class="sd">('unknown', None, 0.25)</span>
+<span class="sd">"""</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">replace</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">math</span><span class="w"> </span><span class="kn">import</span> <span class="n">isclose</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">falaw</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">CallPlan</span><span class="p">,</span>
+    <span class="n">Plan</span><span class="p">,</span>
+    <span class="n">cost_basis_from_dict</span><span class="p">,</span>
+    <span class="n">cost_basis_to_dict</span><span class="p">,</span>
+    <span class="n">reprice_plan</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">falaw.reprice</span><span class="w"> </span><span class="kn">import</span> <span class="n">DFLT_PRICERS</span><span class="p">,</span> <span class="n">Pricer</span><span class="p">,</span> <span class="n">RepricedPlan</span>
+
+
+<span class="n">QuoteStatus</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"unchanged"</span><span class="p">,</span> <span class="s2">"changed"</span><span class="p">,</span> <span class="s2">"unknown"</span><span class="p">]</span>
+<span class="sd">"""What a re-quote was able to say about a whole plan.</span>
+
+<span class="sd">- ``"unchanged"`` — every billable call re-quoted, and the total did not move.</span>
+<span class="sd">- ``"changed"`` — re-quoted, and at least one call's price moved. The total in</span>
+<span class="sd">  :attr:`PlanQuote.total_usd` is today's; the stored one was yesterday's.</span>
+<span class="sd">- ``"unknown"`` — at least one billable call could not be re-quoted (no basis,</span>
+<span class="sd">  no pricer, a model that left the catalogue, a table that moved out from</span>
+<span class="sd">  under it). :attr:`PlanQuote.total_usd` is ``None``: unknown, never free, and</span>
+<span class="sd">  never the frozen figure.</span>
+<span class="sd">"""</span>
+
+
+<div class="viewcode-block" id="PlanQuote">
+<a class="viewcode-back" href="../../module_docs/nw/pricing.html#nw.PlanQuote">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PlanQuote</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Today's price for a persisted plan, with the stale figure alongside.</span>
+
+<span class="sd">    The stale figure is kept — as :attr:`as_of_total_usd`, explicitly named</span>
+<span class="sd">    "as of then" — because an audit surface wants to show the movement. What</span>
+<span class="sd">    it must never do is *present* it as current; that is what</span>
+<span class="sd">    :attr:`total_usd` and :attr:`status` are for.</span>
+<span class="sd">    """</span>
+
+    <span class="n">total_usd</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span>
+<span class="w">    </span><span class="sd">"""Today's billable total, or ``None`` when any billable call is</span>
+<span class="sd">    unpriceable today. ``None`` means unknown, never free (nw invariant #2)."""</span>
+
+    <span class="n">status</span><span class="p">:</span> <span class="n">QuoteStatus</span>
+<span class="w">    </span><span class="sd">"""Which of the three cases this plan fell into — see :data:`QuoteStatus`."""</span>
+
+    <span class="n">as_of_total_usd</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span>
+<span class="w">    </span><span class="sd">"""What the persisted plan said, ``None`` if it already said unknown.</span>
+
+<span class="sd">    A fact about the moment it was written. Render it labelled as such, or</span>
+<span class="sd">    not at all."""</span>
+
+    <span class="n">repriced</span><span class="p">:</span> <span class="n">RepricedPlan</span>
+<span class="w">    </span><span class="sd">"""falaw's per-call diff — ``status``, ``basis_changed``, ``reason`` per</span>
+<span class="sd">    call. Read it for the audit view; :attr:`total_usd` is the headline."""</span>
+
+    <span class="n">reason</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
+<span class="w">    </span><span class="sd">"""Why the *whole* quote is unknown, when that is the situation.</span>
+
+<span class="sd">    Set by :func:`unquotable` (the thing handed in was not a plan) and by</span>
+<span class="sd">    :func:`quote_render_decision` (the payload contradicts itself). Empty for</span>
+<span class="sd">    an ordinary re-quote, where the per-call reasons live on</span>
+<span class="sd">    :attr:`repriced` instead."""</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">has_unknown_costs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""True when the total cannot be known — the gate's refusal condition.</span>
+
+<span class="sd">        The same judgement as :attr:`falaw.Plan.has_unknown_costs`, made at</span>
+<span class="sd">        re-quote time rather than at plan time.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_usd</span> <span class="ow">is</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">basis_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""True when a rate table moved underneath at least one call.</span>
+
+<span class="sd">        The audit answer the frozen number could never give: it separates "the</span>
+<span class="sd">        price changed because the *table* changed" from "the price changed</span>
+<span class="sd">        because the plan did". Read it beside :attr:`status` — a ``changed``</span>
+<span class="sd">        with this ``False`` is a caller quoting different quantities, not a</span>
+<span class="sd">        repricing event.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">basis_changed</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">repriced</span><span class="o">.</span><span class="n">calls</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">delta_usd</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""``total_usd - as_of_total_usd``, or ``None`` when either is unknown.</span>
+
+<span class="sd">        ``None`` rather than ``0.0``: a plan that lost its price did not move</span>
+<span class="sd">        by zero.</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_usd</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">as_of_total_usd</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_usd</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">as_of_total_usd</span>
+
+<div class="viewcode-block" id="PlanQuote.to_dict">
+<a class="viewcode-back" href="../../module_docs/nw/pricing.html#nw.PlanQuote.to_dict">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""JSON-able headline for a surface (an API response, a job record).</span>
+
+<span class="sd">        Deliberately not the whole per-call diff: a spend surface needs the</span>
+<span class="sd">        number, whether it is knowable, and whether it moved. Reach into</span>
+<span class="sd">        :attr:`repriced` for the rest.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">"total_usd"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_usd</span><span class="p">,</span>
+            <span class="s2">"status"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="p">,</span>
+            <span class="s2">"as_of_total_usd"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">as_of_total_usd</span><span class="p">,</span>
+            <span class="s2">"delta_usd"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">delta_usd</span><span class="p">,</span>
+            <span class="s2">"has_unknown_costs"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_unknown_costs</span><span class="p">,</span>
+            <span class="s2">"basis_changed"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">basis_changed</span><span class="p">,</span>
+            <span class="s2">"unpriced_call_count"</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">repriced</span><span class="o">.</span><span class="n">unpriced</span><span class="p">),</span>
+            <span class="s2">"reason"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">reason</span><span class="p">,</span>
+        <span class="p">}</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="unquotable">
+<a class="viewcode-back" href="../../module_docs/nw/pricing.html#nw.unquotable">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">unquotable</span><span class="p">(</span><span class="n">reason</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PlanQuote</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""A quote for something that could not be re-quoted at all.</span>
+
+<span class="sd">    For the caller who was handed a *plan-shaped* thing that turned out not to</span>
+<span class="sd">    be a plan — an unparseable payload, an object of the wrong type. The honest</span>
+<span class="sd">    answer is ``None`` (unknown), not the frozen figure that came with it, and</span>
+<span class="sd">    not ``0.0``.</span>
+
+<span class="sd">    :attr:`PlanQuote.repriced` is an empty :class:`falaw.RepricedPlan`: there</span>
+<span class="sd">    were no calls to diff. Read :attr:`PlanQuote.reason` for what went wrong.</span>
+
+<span class="sd">    &gt;&gt;&gt; q = unquotable("params['plan'] is not a falaw Plan")</span>
+<span class="sd">    &gt;&gt;&gt; q.status, q.total_usd, q.has_unknown_costs</span>
+<span class="sd">    ('unknown', None, True)</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="n">PlanQuote</span><span class="p">(</span>
+        <span class="n">total_usd</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">status</span><span class="o">=</span><span class="s2">"unknown"</span><span class="p">,</span>
+        <span class="n">as_of_total_usd</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">repriced</span><span class="o">=</span><span class="n">RepricedPlan</span><span class="p">(</span><span class="n">plan</span><span class="o">=</span><span class="n">Plan</span><span class="p">(</span><span class="n">calls</span><span class="o">=</span><span class="p">()),</span> <span class="n">calls</span><span class="o">=</span><span class="p">()),</span>
+        <span class="n">reason</span><span class="o">=</span><span class="n">reason</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="current_quote">
+<a class="viewcode-back" href="../../module_docs/nw/pricing.html#nw.current_quote">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">current_quote</span><span class="p">(</span>
+    <span class="n">plan</span><span class="p">:</span> <span class="n">Plan</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">pricers</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Pricer</span><span class="p">]</span> <span class="o">=</span> <span class="n">DFLT_PRICERS</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PlanQuote</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Re-quote ``plan`` at today's rates and report the result honestly.</span>
+
+<span class="sd">    Pure data — :func:`falaw.reprice_plan` reads the committed rate tables and</span>
+<span class="sd">    does arithmetic. No network, no billing API, no cache peek, so this is</span>
+<span class="sd">    safe to call anywhere a ``plan()`` is (nw invariant #1).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        plan: The plan to re-quote — typically one just rebuilt from a stored</span>
+<span class="sd">            payload with :func:`plan_from_cost_records`.</span>
+<span class="sd">        pricers: Pricing rules by :attr:`falaw.CostBasis.pricer`. The seam for</span>
+<span class="sd">            a caller with reconciled numbers of their own; see</span>
+<span class="sd">            :class:`falaw.reprice.Pricer`.</span>
+
+<span class="sd">    &gt;&gt;&gt; from falaw import Plan</span>
+<span class="sd">    &gt;&gt;&gt; current_quote(Plan(calls=())).status</span>
+<span class="sd">    'unchanged'</span>
+<span class="sd">    """</span>
+    <span class="n">repriced</span> <span class="o">=</span> <span class="n">reprice_plan</span><span class="p">(</span><span class="n">plan</span><span class="p">,</span> <span class="n">pricers</span><span class="o">=</span><span class="n">pricers</span><span class="p">)</span>
+    <span class="n">total</span> <span class="o">=</span> <span class="n">_billable_total</span><span class="p">(</span><span class="n">repriced</span><span class="o">.</span><span class="n">plan</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">total</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">status</span><span class="p">:</span> <span class="n">QuoteStatus</span> <span class="o">=</span> <span class="s2">"unknown"</span>
+    <span class="k">elif</span> <span class="n">repriced</span><span class="o">.</span><span class="n">changed</span><span class="p">:</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="s2">"changed"</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="s2">"unchanged"</span>
+    <span class="k">return</span> <span class="n">PlanQuote</span><span class="p">(</span>
+        <span class="n">total_usd</span><span class="o">=</span><span class="n">total</span><span class="p">,</span>
+        <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">,</span>
+        <span class="n">as_of_total_usd</span><span class="o">=</span><span class="n">_billable_total</span><span class="p">(</span><span class="n">plan</span><span class="p">),</span>
+        <span class="n">repriced</span><span class="o">=</span><span class="n">repriced</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_billable_total</span><span class="p">(</span><span class="n">plan</span><span class="p">:</span> <span class="n">Plan</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""``plan.total_cost_usd``, or ``None`` when a billable call has no price.</span>
+
+<span class="sd">    :attr:`falaw.Plan.total_cost_usd` sums ``billable_cost_usd``, which reads</span>
+<span class="sd">    an unknown cost as ``0.0`` so sums stay well-defined. That is the right</span>
+<span class="sd">    default for falaw and the wrong one to *report*: nw's invariant is that</span>
+<span class="sd">    ``None`` means unknown, never free. A cache hit is genuinely free, so</span>
+<span class="sd">    ``has_unknown_costs`` — which ignores hits — is the correct gate.</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">plan</span><span class="o">.</span><span class="n">has_unknown_costs</span> <span class="k">else</span> <span class="n">plan</span><span class="o">.</span><span class="n">total_cost_usd</span>
+
+
+<span class="c1"># ---------------------------------------------------------------------------</span>
+<span class="c1"># Persisting calls in a re-quotable shape</span>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="cost_records">
+<a class="viewcode-back" href="../../module_docs/nw/pricing.html#nw.cost_records">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">cost_records</span><span class="p">(</span><span class="n">plan</span><span class="p">:</span> <span class="n">Plan</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">"""The JSON-able per-call cost rows nw persists in a decision payload.</span>
+
+<span class="sd">    A serialized call cannot be re-quoted from ``application`` and</span>
+<span class="sd">    ``arguments`` alone — the quantity hints that priced it are estimator-only</span>
+<span class="sd">    and never reach the wire arguments. Carrying ``cost_basis`` alongside the</span>
+<span class="sd">    frozen figure is what makes the row re-quotable later by</span>
+<span class="sd">    :func:`quote_from_cost_records`.</span>
+
+<span class="sd">    ``cost_basis`` is omitted when unset, exactly as falaw omits it, so a row</span>
+<span class="sd">    written by a caller that records no basis is byte-identical to what nw</span>
+<span class="sd">    wrote before nw#74.</span>
+
+<span class="sd">    &gt;&gt;&gt; from falaw import CallPlan, Plan</span>
+<span class="sd">    &gt;&gt;&gt; call = CallPlan(tool="t", application="a", arguments={},</span>
+<span class="sd">    ...                 output_kind="video", estimated_cost_usd=1.0)</span>
+<span class="sd">    &gt;&gt;&gt; sorted(cost_records(Plan(calls=(call,)))[0])</span>
+<span class="sd">    ['application', 'cache_status', 'estimated_cost_usd', 'tool']</span>
+<span class="sd">    """</span>
+    <span class="n">rows</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">call</span> <span class="ow">in</span> <span class="n">plan</span><span class="o">.</span><span class="n">calls</span><span class="p">:</span>
+        <span class="n">row</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">"tool"</span><span class="p">:</span> <span class="n">call</span><span class="o">.</span><span class="n">tool</span><span class="p">,</span>
+            <span class="s2">"application"</span><span class="p">:</span> <span class="n">call</span><span class="o">.</span><span class="n">application</span><span class="p">,</span>
+            <span class="s2">"estimated_cost_usd"</span><span class="p">:</span> <span class="n">call</span><span class="o">.</span><span class="n">estimated_cost_usd</span><span class="p">,</span>
+            <span class="s2">"cache_status"</span><span class="p">:</span> <span class="n">call</span><span class="o">.</span><span class="n">cache_status</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="n">call</span><span class="o">.</span><span class="n">cost_basis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">row</span><span class="p">[</span><span class="s2">"cost_basis"</span><span class="p">]</span> <span class="o">=</span> <span class="n">cost_basis_to_dict</span><span class="p">(</span><span class="n">call</span><span class="o">.</span><span class="n">cost_basis</span><span class="p">)</span>
+        <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rows</span></div>
+
+
+
+<div class="viewcode-block" id="plan_from_cost_records">
+<a class="viewcode-back" href="../../module_docs/nw/pricing.html#nw.plan_from_cost_records">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">plan_from_cost_records</span><span class="p">(</span><span class="n">records</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">Plan</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Rebuild a re-quotable :class:`falaw.Plan` from :func:`cost_records` rows.</span>
+
+<span class="sd">    The result is a **pricing** plan, not an executable one: ``arguments`` is</span>
+<span class="sd">    empty and ``output_kind`` is a placeholder, because a stored cost row does</span>
+<span class="sd">    not carry the wire payload and re-pricing does not read it. Never hand one</span>
+<span class="sd">    of these to :func:`falaw.execute_plan` — build a fresh plan for that.</span>
+
+<span class="sd">    Rows missing ``cost_basis`` come back basis-free, which is exactly what</span>
+<span class="sd">    makes them re-price as ``"no_basis"`` (unknown) rather than as their</span>
+<span class="sd">    frozen number.</span>
+<span class="sd">    """</span>
+    <span class="n">calls</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+        <span class="n">CallPlan</span><span class="p">(</span>
+            <span class="n">tool</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"tool"</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">""</span><span class="p">),</span>
+            <span class="n">application</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"application"</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">""</span><span class="p">),</span>
+            <span class="n">arguments</span><span class="o">=</span><span class="p">{},</span>
+            <span class="n">output_kind</span><span class="o">=</span><span class="n">_REQUOTE_ONLY_OUTPUT_KIND</span><span class="p">,</span>
+            <span class="n">estimated_cost_usd</span><span class="o">=</span><span class="n">_as_cost</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"estimated_cost_usd"</span><span class="p">)),</span>
+            <span class="n">cache_status</span><span class="o">=</span><span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"cache_status"</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">"unknown"</span><span class="p">,</span>
+            <span class="n">cost_basis</span><span class="o">=</span><span class="p">(</span>
+                <span class="n">cost_basis_from_dict</span><span class="p">(</span><span class="n">basis</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">basis</span> <span class="o">:=</span> <span class="n">row</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"cost_basis"</span><span class="p">),</span> <span class="n">Mapping</span><span class="p">)</span>
+                <span class="k">else</span> <span class="kc">None</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">records</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">Plan</span><span class="p">(</span><span class="n">calls</span><span class="o">=</span><span class="n">calls</span><span class="p">)</span></div>
+
+
+
+<span class="n">_REQUOTE_ONLY_OUTPUT_KIND</span> <span class="o">=</span> <span class="s2">"video"</span>
+<span class="sd">"""Placeholder ``output_kind`` for a plan rebuilt for pricing only.</span>
+
+<span class="sd">``CallPlan`` requires one and re-pricing never reads it. Naming the constant</span>
+<span class="sd">(rather than inlining a bare string) is what keeps a reader from mistaking a</span>
+<span class="sd">pricing plan for a faithful round-trip of the original.</span>
+<span class="sd">"""</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_as_cost</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""A stored cost as a float, or ``None`` for anything that is not a number.</span>
+
+<span class="sd">    A payload written by an older nw, or hand-edited, can hold ``null`` or a</span>
+<span class="sd">    string here. Coercing junk to ``0.0`` would report an unpriceable call as</span>
+<span class="sd">    free — the exact failure this module exists to prevent.</span>
+<span class="sd">    """</span>
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span> <span class="k">else</span> <span class="kc">None</span>
+
+
+<div class="viewcode-block" id="quote_from_cost_records">
+<a class="viewcode-back" href="../../module_docs/nw/pricing.html#nw.quote_from_cost_records">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">quote_from_cost_records</span><span class="p">(</span>
+    <span class="n">records</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]],</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">pricers</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Pricer</span><span class="p">]</span> <span class="o">=</span> <span class="n">DFLT_PRICERS</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PlanQuote</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Today's price for the calls stored in a decision payload.</span>
+
+<span class="sd">    The read-back half of :func:`cost_records`. ``None`` or a non-sequence</span>
+<span class="sd">    (a payload that recorded no calls at all) yields an empty plan's quote —</span>
+<span class="sd">    ``total_usd == 0.0``, ``status == "unchanged"`` — because "no calls" is a</span>
+<span class="sd">    known zero, not an unknown.</span>
+<span class="sd">    """</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="n">records</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">records</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">)</span> <span class="k">else</span> <span class="p">()</span>
+    <span class="k">return</span> <span class="n">current_quote</span><span class="p">(</span>
+        <span class="n">plan_from_cost_records</span><span class="p">(</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rows</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">)),</span>
+        <span class="n">pricers</span><span class="o">=</span><span class="n">pricers</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<span class="n">TOTAL_AGREEMENT_ABS_TOL_USD</span> <span class="o">=</span> <span class="mf">1e-9</span>
+<span class="sd">"""How far a payload's stored total may sit from its calls' sum and still agree.</span>
+
+<span class="sd">Floating-point slack on a sum of a handful of costs, nothing more — far below</span>
+<span class="sd">the smallest sub-cent figure any rate table quotes, so it can never absorb a</span>
+<span class="sd">real disagreement.</span>
+<span class="sd">"""</span>
+
+<span class="n">DISAGREEING_TOTAL_REASON</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">"the payload's total_estimated_cost_usd does not match the sum of its "</span>
+    <span class="s2">"calls, so neither figure can be trusted as this render's price"</span>
+<span class="p">)</span>
+<span class="sd">"""Why a payload with an internally inconsistent total re-prices as unknown."""</span>
+
+
+<div class="viewcode-block" id="quote_render_decision">
+<a class="viewcode-back" href="../../module_docs/nw/pricing.html#nw.quote_render_decision">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">quote_render_decision</span><span class="p">(</span>
+    <span class="n">payload</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">pricers</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Pricer</span><span class="p">]</span> <span class="o">=</span> <span class="n">DFLT_PRICERS</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PlanQuote</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Today's price for a ``render_shot`` decision payload.</span>
+
+<span class="sd">    The counterpart to what :func:`nw.workflow._record_render_decision` wrote.</span>
+<span class="sd">    Read this — never ``payload["total_estimated_cost_usd"]`` — whenever a</span>
+<span class="sd">    stored render cost is about to be shown or gated on as a *current* figure.</span>
+
+<span class="sd">    A payload written before nw#74 carries no per-call basis, so it re-quotes</span>
+<span class="sd">    as ``"unknown"`` with ``total_usd`` ``None``. That is the point: nobody</span>
+<span class="sd">    can say what it costs today, and saying so is better than repeating a</span>
+<span class="sd">    number that has since moved.</span>
+
+<span class="sd">    The stored ``total_estimated_cost_usd`` is the payload's own headline, so</span>
+<span class="sd">    it — not the calls' sum — is reported as :attr:`PlanQuote.as_of_total_usd`.</span>
+<span class="sd">    When the two **disagree**, the whole payload is *unknown*: a total of $3</span>
+<span class="sd">    over a payload whose calls sum to $0 is a broken record, and answering</span>
+<span class="sd">    "$0, unchanged" would report a stored $3 as a known zero. nw's own writer</span>
+<span class="sd">    never produces such a payload; a hand-edited or truncated one can, and</span>
+<span class="sd">    unknown is the only honest reading of it.</span>
+
+<span class="sd">    &gt;&gt;&gt; broken = quote_render_decision(</span>
+<span class="sd">    ...     {"calls": [], "total_estimated_cost_usd": 3.0})</span>
+<span class="sd">    &gt;&gt;&gt; broken.status, broken.total_usd, broken.as_of_total_usd</span>
+<span class="sd">    ('unknown', None, 3.0)</span>
+<span class="sd">    &gt;&gt;&gt; stale = quote_render_decision(</span>
+<span class="sd">    ...     {"calls": [{"tool": "t", "application": "a",</span>
+<span class="sd">    ...                 "estimated_cost_usd": 3.0}],</span>
+<span class="sd">    ...      "total_estimated_cost_usd": 3.0})</span>
+<span class="sd">    &gt;&gt;&gt; stale.status, stale.total_usd, stale.as_of_total_usd</span>
+<span class="sd">    ('unknown', None, 3.0)</span>
+<span class="sd">    """</span>
+    <span class="n">quote</span> <span class="o">=</span> <span class="n">quote_from_cost_records</span><span class="p">(</span><span class="n">payload</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"calls"</span><span class="p">),</span> <span class="n">pricers</span><span class="o">=</span><span class="n">pricers</span><span class="p">)</span>
+    <span class="n">stored</span> <span class="o">=</span> <span class="n">_as_cost</span><span class="p">(</span><span class="n">payload</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"total_estimated_cost_usd"</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">stored</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">quote</span>
+    <span class="k">if</span> <span class="n">quote</span><span class="o">.</span><span class="n">as_of_total_usd</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># The calls already said "unknown, back then", while the stored total</span>
+        <span class="c1"># counted that unpriceable call as ``0.0`` (what ``total_cost_usd``</span>
+        <span class="c1"># does). Keep the honest ``None`` rather than adopting a headline that</span>
+        <span class="c1"># reads an unknown as free.</span>
+        <span class="k">return</span> <span class="n">quote</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">isclose</span><span class="p">(</span><span class="n">stored</span><span class="p">,</span> <span class="n">quote</span><span class="o">.</span><span class="n">as_of_total_usd</span><span class="p">,</span> <span class="n">abs_tol</span><span class="o">=</span><span class="n">TOTAL_AGREEMENT_ABS_TOL_USD</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">replace</span><span class="p">(</span>
+            <span class="n">quote</span><span class="p">,</span>
+            <span class="n">total_usd</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">status</span><span class="o">=</span><span class="s2">"unknown"</span><span class="p">,</span>
+            <span class="n">as_of_total_usd</span><span class="o">=</span><span class="n">stored</span><span class="p">,</span>
+            <span class="n">reason</span><span class="o">=</span><span class="n">DISAGREEING_TOTAL_REASON</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">replace</span><span class="p">(</span><span class="n">quote</span><span class="p">,</span> <span class="n">as_of_total_usd</span><span class="o">=</span><span class="n">stored</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p></p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

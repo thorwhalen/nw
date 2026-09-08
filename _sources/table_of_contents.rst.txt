@@ -21,6 +21,7 @@
    module_docs/nw/inspect
    module_docs/nw/jobs
    module_docs/nw/migrate
+   module_docs/nw/pricing
    module_docs/nw/project
    module_docs/nw/renderers
    module_docs/nw/renderers/_common

@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.jobs &mdash; nw 0.0.47 documentation</title>
+  <title>nw.jobs &mdash; nw 0.0.48 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=4f34e5f2"></script>
+      <script src="../../_static/documentation_options.js?v=a72e4630"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -80,6 +80,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.jobs.JobCost"><code class="docutils literal notranslate"><span class="pre">JobCost</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#nw.jobs.JobCost.actual_is_lower_bound"><code class="docutils literal notranslate"><span class="pre">JobCost.actual_is_lower_bound</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.jobs.JobCost.estimated_usd"><code class="docutils literal notranslate"><span class="pre">JobCost.estimated_usd</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.jobs.JobProgress"><code class="docutils literal notranslate"><span class="pre">JobProgress</span></code></a></li>
@@ -99,6 +100,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#nw.jobs.JobsConfig.stale_running_s"><code class="docutils literal notranslate"><span class="pre">JobsConfig.stale_running_s</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.jobs.UNREADABLE_PLAN_REASON"><code class="docutils literal notranslate"><span class="pre">UNREADABLE_PLAN_REASON</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.jobs.cancel_job"><code class="docutils literal notranslate"><span class="pre">cancel_job()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.jobs.enqueue"><code class="docutils literal notranslate"><span class="pre">enqueue()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.jobs.estimate"><code class="docutils literal notranslate"><span class="pre">estimate()</span></code></a></li>
@@ -110,6 +112,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="migrate.html">nw.migrate</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pricing.html">nw.pricing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="project.html">nw.project</a></li>
 <li class="toctree-l1"><a class="reference internal" href="renderers.html">nw.renderers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="renderers/_common.html">nw.renderers._common</a></li>
@@ -204,6 +207,14 @@ paired with <code class="docutils literal notranslate"><span class="pre">actual_
 actually billed contributes <code class="docutils literal notranslate"><span class="pre">0.0</span></code> to the sum — so a bare <code class="docutils literal notranslate"><span class="pre">$0</span></code> means
 <em>either</em> “nothing was spent” <em>or</em> “we do not know what was spent”, and a
 spend surface that cannot tell them apart shows the second as free.</p></li>
+<li><p><strong>An estimate is re-quoted, never remembered.</strong> When <code class="docutils literal notranslate"><span class="pre">params[&quot;plan&quot;]</span></code> is
+supplied, <a class="reference internal" href="#nw.jobs.estimate" title="nw.jobs.estimate"><code class="xref py py-func docutils literal notranslate"><span class="pre">estimate()</span></code></a> and <a class="reference internal" href="#nw.jobs.enqueue" title="nw.jobs.enqueue"><code class="xref py py-func docutils literal notranslate"><span class="pre">enqueue()</span></code></a> price it through
+<a class="reference internal" href="pricing.html#nw.pricing.current_quote" title="nw.pricing.current_quote"><code class="xref py py-func docutils literal notranslate"><span class="pre">nw.pricing.current_quote()</span></code></a> at today’s rates rather than trusting a
+caller-supplied <code class="docutils literal notranslate"><span class="pre">estimated_usd</span></code> frozen at plan time — falaw’s rate tables
+move, and a stale figure under-quotes the run (nw#74). Descriptive only:
+<code class="docutils literal notranslate"><span class="pre">cost_basis</span></code> stays out of <code class="docutils literal notranslate"><span class="pre">plan_hash</span></code>, so the idempotency key above is
+byte-identical to what it was before repricing existed, and a resumed render
+still dedups onto work already paid for.</p></li>
 </ul>
 <p>All tunables are keyword-configurable via <a class="reference internal" href="#nw.jobs.JobsConfig" title="nw.jobs.JobsConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">JobsConfig</span></code></a>; defaults live at
 the top of this module — no magic numbers below.</p>
@@ -292,6 +303,16 @@ exists to make impossible.</p>
 <p><code class="docutils literal notranslate"><span class="pre">None</span></code> means the render never reported either way — an older caller, or
 a job that died before finishing. <code class="docutils literal notranslate"><span class="pre">None</span></code> is not <code class="docutils literal notranslate"><span class="pre">False</span></code>: absence of the
 flag is not a claim that the total is exact.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.jobs.JobCost.estimated_usd">
+<span class="sig-name descname"><span class="pre">estimated_usd</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#nw.jobs.JobCost.estimated_usd" title="Link to this definition"></a></dt>
+<dd><p>Predicted spend, re-quoted at today’s rates when a plan was supplied.</p>
+<p><code class="docutils literal notranslate"><span class="pre">None</span></code> means unknown, and unknown always requires approval — it is what
+a plan whose calls carry no <code class="xref py py-class docutils literal notranslate"><span class="pre">falaw.CostBasis</span></code> re-prices to. Never
+the plan-time figure passed in alongside such a plan: that number was true
+when it was written and falaw’s rate tables have moved since (nw#74).</p>
 </dd></dl>
 
 </dd></dl>
@@ -394,6 +415,15 @@ slower reap, while an eager one destroys a live job’s record.</p>
 
 </dd></dl>
 
+<dl class="py data">
+<dt class="sig sig-object py" id="nw.jobs.UNREADABLE_PLAN_REASON">
+<span class="sig-prename descclassname"><span class="pre">nw.jobs.</span></span><span class="sig-name descname"><span class="pre">UNREADABLE_PLAN_REASON</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&quot;params['plan']</span> <span class="pre">could</span> <span class="pre">not</span> <span class="pre">be</span> <span class="pre">read</span> <span class="pre">as</span> <span class="pre">a</span> <span class="pre">falaw</span> <span class="pre">Plan,</span> <span class="pre">so</span> <span class="pre">its</span> <span class="pre">cost</span> <span class="pre">cannot</span> <span class="pre">be</span> <span class="pre">quoted;</span> <span class="pre">see</span> <span class="pre">the</span> <span class="pre">server</span> <span class="pre">log</span> <span class="pre">for</span> <span class="pre">what</span> <span class="pre">went</span> <span class="pre">wrong&quot;</span></span><a class="headerlink" href="#nw.jobs.UNREADABLE_PLAN_REASON" title="Link to this definition"></a></dt>
+<dd><p>Why a quote came back unknown when the plan itself was unreadable.</p>
+<p>A fixed sentence rather than the exception text: this string reaches a job
+surface, and an exception’s message is written for an operator reading a log,
+not for whoever is deciding whether to approve a spend.</p>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="nw.jobs.cancel_job">
 <span class="sig-prename descclassname"><span class="pre">nw.jobs.</span></span><span class="sig-name descname"><span class="pre">cancel_job</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">job_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nw.jobs.JobsConfig" title="nw.jobs.JobsConfig"><span class="pre">JobsConfig</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">JobsConfig(n_min=3,</span> <span class="pre">sample_window_k=20,</span> <span class="pre">pct_ceil=99,</span> <span class="pre">overrun_factor=1.5,</span> <span class="pre">cache_hit_floor_s=0.5,</span> <span class="pre">dur_buckets_s=(4.0,</span> <span class="pre">8.0,</span> <span class="pre">12.0),</span> <span class="pre">prior_total_s={'image':</span> <span class="pre">12.0,</span> <span class="pre">'video':</span> <span class="pre">90.0,</span> <span class="pre">'audio':</span> <span class="pre">15.0},</span> <span class="pre">default_prior_total_s=30.0,</span> <span class="pre">stale_running_s=900.0,</span> <span class="pre">heartbeat_interval_s=20.0,</span> <span class="pre">heartbeat_stale_s=120.0,</span> <span class="pre">approval_threshold_usd=1.0,</span> <span class="pre">jobs_dirname='.nw/jobs')</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#nw.jobs.Job" title="nw.jobs.Job"><span class="pre">Job</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/nw/jobs.html#cancel_job"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.jobs.cancel_job" title="Link to this definition"></a></dt>
@@ -429,7 +459,14 @@ already exists, that job is returned instead of launching a duplicate.</p>
 <li><p><strong>project</strong> – the <code class="docutils literal notranslate"><span class="pre">nw.Project</span></code> the render operates on.</p></li>
 <li><p><strong>kind</strong> – dispatch key selecting the render callable (e.g.
 <code class="docutils literal notranslate"><span class="pre">&quot;journey.full_auto&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;panel.animate&quot;</span></code>).</p></li>
-<li><p><strong>params</strong> – render parameters (also the ETA-key + default-idempotency basis).</p></li>
+<li><p><strong>params</strong> – render parameters (also the ETA-key + default-idempotency
+basis). A <code class="docutils literal notranslate"><span class="pre">&quot;plan&quot;</span></code> entry must be a <strong>``falaw.plan_to_dict``
+dict, not a live</strong> <code class="xref py py-class docutils literal notranslate"><span class="pre">falaw.Plan</span></code>: the whole <code class="docutils literal notranslate"><span class="pre">params</span></code>
+mapping is JSON-serialized into the job index, so a <code class="docutils literal notranslate"><span class="pre">Plan</span></code>
+object raises there. The dict hashes to the identical
+<code class="docutils literal notranslate"><span class="pre">plan_hash</span></code> (<code class="xref py py-func docutils literal notranslate"><span class="pre">_plan_for_identity()</span></code>) and re-quotes the same
+way, so nothing is lost by serializing it — <a class="reference internal" href="#nw.jobs.estimate" title="nw.jobs.estimate"><code class="xref py py-func docutils literal notranslate"><span class="pre">estimate()</span></code></a>,
+which never writes a record, accepts either.</p></li>
 <li><p><strong>on_event</strong> – sink for the render’s lifecycle events (reelee wires this to
 its <code class="docutils literal notranslate"><span class="pre">agent_log</span></code> / SSE tail). Events are stamped with
 <code class="docutils literal notranslate"><span class="pre">job_id</span></code>/<code class="docutils literal notranslate"><span class="pre">run_id</span></code> and mirrored into progress/cost/eta.</p></li>
@@ -465,10 +502,26 @@ which otherwise fall back to owner/env in a background job because
 <span class="sig-prename descclassname"><span class="pre">nw.jobs.</span></span><span class="sig-name descname"><span class="pre">estimate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#nw.jobs.JobsConfig" title="nw.jobs.JobsConfig"><span class="pre">JobsConfig</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">JobsConfig(n_min=3,</span> <span class="pre">sample_window_k=20,</span> <span class="pre">pct_ceil=99,</span> <span class="pre">overrun_factor=1.5,</span> <span class="pre">cache_hit_floor_s=0.5,</span> <span class="pre">dur_buckets_s=(4.0,</span> <span class="pre">8.0,</span> <span class="pre">12.0),</span> <span class="pre">prior_total_s={'image':</span> <span class="pre">12.0,</span> <span class="pre">'video':</span> <span class="pre">90.0,</span> <span class="pre">'audio':</span> <span class="pre">15.0},</span> <span class="pre">default_prior_total_s=30.0,</span> <span class="pre">stale_running_s=900.0,</span> <span class="pre">heartbeat_interval_s=20.0,</span> <span class="pre">heartbeat_stale_s=120.0,</span> <span class="pre">approval_threshold_usd=1.0,</span> <span class="pre">jobs_dirname='.nw/jobs')</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../../_modules/nw/jobs.html#estimate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.jobs.estimate" title="Link to this definition"></a></dt>
 <dd><p>Dry-run cost gate <strong>without enqueueing</strong>.</p>
 <p>Returns <code class="docutils literal notranslate"><span class="pre">{estimated_usd,</span> <span class="pre">has_unknown_costs,</span> <span class="pre">approval_threshold_usd,</span>
-<span class="pre">requires_approval}</span></code>. Unknown cost always requires approval (preserves the
-one-price-per-clip gate). reelee computes the falaw-<code class="docutils literal notranslate"><span class="pre">Plan</span></code> cost and either
-passes it via <code class="docutils literal notranslate"><span class="pre">params[&quot;estimated_usd&quot;]</span></code> or overrides this per its own
-policy.</p>
+<span class="pre">requires_approval,</span> <span class="pre">quote}</span></code>. Unknown cost always requires approval
+(preserves the one-price-per-clip gate).</p>
+<p><strong>The gate quotes, it does not remember.</strong> When <code class="docutils literal notranslate"><span class="pre">params[&quot;plan&quot;]</span></code> is
+present its cost is re-quoted at today’s rates through
+<a class="reference internal" href="pricing.html#nw.pricing.current_quote" title="nw.pricing.current_quote"><code class="xref py py-func docutils literal notranslate"><span class="pre">nw.pricing.current_quote()</span></code></a>, and a caller-supplied
+<code class="docutils literal notranslate"><span class="pre">params[&quot;estimated_usd&quot;]</span></code> is ignored — exactly as
+<code class="xref py py-func docutils literal notranslate"><span class="pre">_default_idempotency_key()</span></code> ignores it for the dedup basis. A
+persisted plan’s figure is frozen at plan time, and falaw’s rate tables
+move (0.0.46 re-quoted premium LLM calls tenfold upward), so gating on
+the stored number under-quotes the run: the one direction a spend
+decision must never err in (nw#74).</p>
+<p>A supplied plan that cannot be re-quoted — no <code class="docutils literal notranslate"><span class="pre">cost_basis</span></code> on its calls,
+an unparseable payload, a model that has left the catalogue — yields
+<code class="docutils literal notranslate"><span class="pre">estimated_usd=None</span></code>, which requires approval. Refusing to name a price
+is the safe answer; repeating yesterday’s is not.</p>
+<p>Without a plan the gate falls back to <code class="docutils literal notranslate"><span class="pre">params[&quot;estimated_usd&quot;]</span></code>, whose
+provenance nw cannot see; <code class="docutils literal notranslate"><span class="pre">quote</span></code> is then <code class="docutils literal notranslate"><span class="pre">None</span></code> to say so. When there
+<em>is</em> a quote it carries <code class="docutils literal notranslate"><span class="pre">caller_estimated_usd</span></code> — what the caller passed,
+reported beside today’s number rather than discarded, so a surface can
+show the movement.</p>
 </dd></dl>
 
 <dl class="py function">

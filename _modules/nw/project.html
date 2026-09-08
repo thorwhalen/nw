@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.project &mdash; nw 0.0.47 documentation</title>
+  <title>nw.project &mdash; nw 0.0.48 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=4f34e5f2"></script>
+      <script src="../../_static/documentation_options.js?v=a72e4630"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -65,6 +65,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/inspect.html">nw.inspect</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/jobs.html">nw.jobs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/migrate.html">nw.migrate</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/pricing.html">nw.pricing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/project.html">nw.project</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers.html">nw.renderers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/_common.html">nw.renderers._common</a></li>
@@ -913,6 +914,17 @@
 <span class="sd">        back to its ``total_estimated_cost_usd`` when no artifact costs were</span>
 <span class="sd">        recorded.</span>
 
+<span class="sd">        **Deliberately not re-quoted.** This is money that was *billed*, and a</span>
+<span class="sd">        receipt is not a quote: re-pricing it through</span>
+<span class="sd">        :func:`nw.pricing.current_quote` would rewrite history at today's</span>
+<span class="sd">        rates. The consequence is that the estimate-based fallback is an</span>
+<span class="sd">        as-of-then figure — falaw's tables have moved since (0.0.46 tenfold</span>
+<span class="sd">        upward on premium LLM calls), so a decision that recorded no artifact</span>
+<span class="sd">        costs contributes what it was quoted then, not what the same render</span>
+<span class="sd">        would cost now. That is the right answer for "what did this project</span>
+<span class="sd">        spend"; it is the wrong one for "what would this cost today", and</span>
+<span class="sd">        :func:`nw.pricing.quote_render_decision` is what answers that (nw#74).</span>
+
 <span class="sd">        Walks **every store scope** (graph, storyboard, alignment), not just</span>
 <span class="sd">        the project graph: a decision written to the storyboard scope is money</span>
 <span class="sd">        that was spent, and counting only one scope would silently *under*-report</span>
@@ -1128,7 +1140,13 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_decision_spend_usd</span><span class="p">(</span><span class="n">payload</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Money recorded on one decision payload, actual costs preferred."""</span>
+<span class="w">    </span><span class="sd">"""Money recorded on one decision payload, actual costs preferred.</span>
+
+<span class="sd">    The ``total_estimated_cost_usd`` fallback is read **as written** — a</span>
+<span class="sd">    spend record, quoted at plan time. Re-quoting it here would answer a</span>
+<span class="sd">    different question (see :meth:`Project.total_spend_usd`); the function</span>
+<span class="sd">    that answers *that* one is :func:`nw.pricing.quote_render_decision`.</span>
+<span class="sd">    """</span>
     <span class="n">artifacts</span> <span class="o">=</span> <span class="n">payload</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"artifacts"</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">artifacts</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
         <span class="n">costs</span> <span class="o">=</span> <span class="p">[</span>

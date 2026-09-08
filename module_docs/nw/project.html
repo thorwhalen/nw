@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.project &mdash; nw 0.0.47 documentation</title>
+  <title>nw.project &mdash; nw 0.0.48 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=4f34e5f2"></script>
+      <script src="../../_static/documentation_options.js?v=a72e4630"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -25,7 +25,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="nw.renderers" href="renderers.html" />
-    <link rel="prev" title="nw.migrate" href="migrate.html" /> 
+    <link rel="prev" title="nw.pricing" href="pricing.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -68,6 +68,7 @@
 <li class="toctree-l1"><a class="reference internal" href="inspect.html">nw.inspect</a></li>
 <li class="toctree-l1"><a class="reference internal" href="jobs.html">nw.jobs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="migrate.html">nw.migrate</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pricing.html">nw.pricing</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">nw.project</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#nw.project.CharacterImage"><code class="docutils literal notranslate"><span class="pre">CharacterImage</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.project.Project"><code class="docutils literal notranslate"><span class="pre">Project</span></code></a><ul>
@@ -312,6 +313,16 @@ path with placeholder metadata).</p>
 <p>Prefers each decision’s <em>actual</em> per-artifact <code class="docutils literal notranslate"><span class="pre">cost_usd</span></code> and falls
 back to its <code class="docutils literal notranslate"><span class="pre">total_estimated_cost_usd</span></code> when no artifact costs were
 recorded.</p>
+<p><strong>Deliberately not re-quoted.</strong> This is money that was <em>billed</em>, and a
+receipt is not a quote: re-pricing it through
+<a class="reference internal" href="pricing.html#nw.pricing.current_quote" title="nw.pricing.current_quote"><code class="xref py py-func docutils literal notranslate"><span class="pre">nw.pricing.current_quote()</span></code></a> would rewrite history at today’s
+rates. The consequence is that the estimate-based fallback is an
+as-of-then figure — falaw’s tables have moved since (0.0.46 tenfold
+upward on premium LLM calls), so a decision that recorded no artifact
+costs contributes what it was quoted then, not what the same render
+would cost now. That is the right answer for “what did this project
+spend”; it is the wrong one for “what would this cost today”, and
+<a class="reference internal" href="pricing.html#nw.pricing.quote_render_decision" title="nw.pricing.quote_render_decision"><code class="xref py py-func docutils literal notranslate"><span class="pre">nw.pricing.quote_render_decision()</span></code></a> is what answers that (nw#74).</p>
 <p>Walks <strong>every store scope</strong> (graph, storyboard, alignment), not just
 the project graph: a decision written to the storyboard scope is money
 that was spent, and counting only one scope would silently <em>under</em>-report
@@ -347,7 +358,7 @@ rest as project.json metadata.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="migrate.html" class="btn btn-neutral float-left" title="nw.migrate" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pricing.html" class="btn btn-neutral float-left" title="nw.pricing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="renderers.html" class="btn btn-neutral float-right" title="nw.renderers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

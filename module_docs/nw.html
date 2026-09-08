@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw &mdash; nw 0.0.47 documentation</title>
+  <title>nw &mdash; nw 0.0.48 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=4f34e5f2"></script>
+      <script src="../_static/documentation_options.js?v=a72e4630"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -123,6 +123,18 @@
 <li class="toctree-l3"><a class="reference internal" href="#nw.Genre.template"><code class="docutils literal notranslate"><span class="pre">Genre.template()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.Genre.templates"><code class="docutils literal notranslate"><span class="pre">Genre.templates</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.Genre.to_dict"><code class="docutils literal notranslate"><span class="pre">Genre.to_dict()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.PlanQuote"><code class="docutils literal notranslate"><span class="pre">PlanQuote</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#nw.PlanQuote.as_of_total_usd"><code class="docutils literal notranslate"><span class="pre">PlanQuote.as_of_total_usd</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.PlanQuote.basis_changed"><code class="docutils literal notranslate"><span class="pre">PlanQuote.basis_changed</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.PlanQuote.delta_usd"><code class="docutils literal notranslate"><span class="pre">PlanQuote.delta_usd</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.PlanQuote.has_unknown_costs"><code class="docutils literal notranslate"><span class="pre">PlanQuote.has_unknown_costs</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.PlanQuote.reason"><code class="docutils literal notranslate"><span class="pre">PlanQuote.reason</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.PlanQuote.repriced"><code class="docutils literal notranslate"><span class="pre">PlanQuote.repriced</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.PlanQuote.status"><code class="docutils literal notranslate"><span class="pre">PlanQuote.status</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.PlanQuote.to_dict"><code class="docutils literal notranslate"><span class="pre">PlanQuote.to_dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.PlanQuote.total_usd"><code class="docutils literal notranslate"><span class="pre">PlanQuote.total_usd</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.Project"><code class="docutils literal notranslate"><span class="pre">Project</span></code></a><ul>
@@ -242,7 +254,9 @@
 <li class="toctree-l2"><a class="reference internal" href="#nw.clone_project"><code class="docutils literal notranslate"><span class="pre">clone_project()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.collect_orphan_traces"><code class="docutils literal notranslate"><span class="pre">collect_orphan_traces()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.compose_report"><code class="docutils literal notranslate"><span class="pre">compose_report()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.cost_records"><code class="docutils literal notranslate"><span class="pre">cost_records()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.create_genre_project"><code class="docutils literal notranslate"><span class="pre">create_genre_project()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.current_quote"><code class="docutils literal notranslate"><span class="pre">current_quote()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.derived_from"><code class="docutils literal notranslate"><span class="pre">derived_from()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.descendants_of"><code class="docutils literal notranslate"><span class="pre">descendants_of()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.describe_genre"><code class="docutils literal notranslate"><span class="pre">describe_genre()</span></code></a></li>
@@ -266,10 +280,13 @@
 <li class="toctree-l2"><a class="reference internal" href="#nw.open_project_stores"><code class="docutils literal notranslate"><span class="pre">open_project_stores()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.open_storyboard"><code class="docutils literal notranslate"><span class="pre">open_storyboard()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.parse_ref"><code class="docutils literal notranslate"><span class="pre">parse_ref()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.plan_from_cost_records"><code class="docutils literal notranslate"><span class="pre">plan_from_cost_records()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.plan_render_panel_images"><code class="docutils literal notranslate"><span class="pre">plan_render_panel_images()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.plan_render_shot"><code class="docutils literal notranslate"><span class="pre">plan_render_shot()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.prepare_shot"><code class="docutils literal notranslate"><span class="pre">prepare_shot()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.project_asset_id"><code class="docutils literal notranslate"><span class="pre">project_asset_id()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.quote_from_cost_records"><code class="docutils literal notranslate"><span class="pre">quote_from_cost_records()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.quote_render_decision"><code class="docutils literal notranslate"><span class="pre">quote_render_decision()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.recommend_genre"><code class="docutils literal notranslate"><span class="pre">recommend_genre()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.register_genre"><code class="docutils literal notranslate"><span class="pre">register_genre()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.register_genre_initializer"><code class="docutils literal notranslate"><span class="pre">register_genre_initializer()</span></code></a></li>
@@ -289,6 +306,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#nw.storyboard_from_shots"><code class="docutils literal notranslate"><span class="pre">storyboard_from_shots()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.summarize_all"><code class="docutils literal notranslate"><span class="pre">summarize_all()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.transform_catalog"><code class="docutils literal notranslate"><span class="pre">transform_catalog()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.unquotable"><code class="docutils literal notranslate"><span class="pre">unquotable()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.work_item_instance_id"><code class="docutils literal notranslate"><span class="pre">work_item_instance_id()</span></code></a></li>
 </ul>
 </li>
@@ -310,6 +328,7 @@
 <li class="toctree-l1"><a class="reference internal" href="nw/inspect.html">nw.inspect</a></li>
 <li class="toctree-l1"><a class="reference internal" href="nw/jobs.html">nw.jobs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="nw/migrate.html">nw.migrate</a></li>
+<li class="toctree-l1"><a class="reference internal" href="nw/pricing.html">nw.pricing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="nw/project.html">nw.project</a></li>
 <li class="toctree-l1"><a class="reference internal" href="nw/renderers.html">nw.renderers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="nw/renderers/_common.html">nw.renderers._common</a></li>
@@ -378,6 +397,10 @@ know.</p></li>
 (Plan/Execute over rendering; records render-result provenance).</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">nw.renderers</span></code> — render strategies.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">nw.genres</span></code> — production genres (the reusable project specialization).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nw.pricing</span></code> — re-quoting a <em>persisted</em> plan at today’s rates
+(<a class="reference internal" href="#nw.current_quote" title="nw.current_quote"><code class="xref py py-func docutils literal notranslate"><span class="pre">current_quote()</span></code></a>, <a class="reference internal" href="#nw.PlanQuote" title="nw.PlanQuote"><code class="xref py py-class docutils literal notranslate"><span class="pre">PlanQuote</span></code></a>). Any stored cost figure is an
+as-of-then fact; reporting one as current under-quotes the run once falaw’s
+rate tables move, so read it back through here (nw#74).</p></li>
 </ul>
 <p>On rendering provenance and partial re-render (why choices, not just content,
 are recorded as linked artifacts), see
@@ -845,6 +868,90 @@ consumer needs no app-specific knowledge to render the catalog.</p>
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="nw.PlanQuote">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.</span></span><span class="sig-name descname"><span class="pre">PlanQuote</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_usd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'unchanged'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'changed'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'unknown'</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_of_total_usd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">repriced</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">RepricedPlan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reason</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/pricing.html#PlanQuote"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.PlanQuote" title="Link to this definition"></a></dt>
+<dd><p>Today’s price for a persisted plan, with the stale figure alongside.</p>
+<p>The stale figure is kept — as <a class="reference internal" href="#nw.PlanQuote.as_of_total_usd" title="nw.PlanQuote.as_of_total_usd"><code class="xref py py-attr docutils literal notranslate"><span class="pre">as_of_total_usd</span></code></a>, explicitly named
+“as of then” — because an audit surface wants to show the movement. What
+it must never do is <em>present</em> it as current; that is what
+<a class="reference internal" href="#nw.PlanQuote.total_usd" title="nw.PlanQuote.total_usd"><code class="xref py py-attr docutils literal notranslate"><span class="pre">total_usd</span></code></a> and <a class="reference internal" href="#nw.PlanQuote.status" title="nw.PlanQuote.status"><code class="xref py py-attr docutils literal notranslate"><span class="pre">status</span></code></a> are for.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.PlanQuote.as_of_total_usd">
+<span class="sig-name descname"><span class="pre">as_of_total_usd</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#nw.PlanQuote.as_of_total_usd" title="Link to this definition"></a></dt>
+<dd><p>What the persisted plan said, <code class="docutils literal notranslate"><span class="pre">None</span></code> if it already said unknown.</p>
+<p>A fact about the moment it was written. Render it labelled as such, or
+not at all.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nw.PlanQuote.basis_changed">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">basis_changed</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></span><a class="headerlink" href="#nw.PlanQuote.basis_changed" title="Link to this definition"></a></dt>
+<dd><p>True when a rate table moved underneath at least one call.</p>
+<p>The audit answer the frozen number could never give: it separates “the
+price changed because the <em>table</em> changed” from “the price changed
+because the plan did”. Read it beside <a class="reference internal" href="#nw.PlanQuote.status" title="nw.PlanQuote.status"><code class="xref py py-attr docutils literal notranslate"><span class="pre">status</span></code></a> — a <code class="docutils literal notranslate"><span class="pre">changed</span></code>
+with this <code class="docutils literal notranslate"><span class="pre">False</span></code> is a caller quoting different quantities, not a
+repricing event.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nw.PlanQuote.delta_usd">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">delta_usd</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#nw.PlanQuote.delta_usd" title="Link to this definition"></a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">total_usd</span> <span class="pre">-</span> <span class="pre">as_of_total_usd</span></code>, or <code class="docutils literal notranslate"><span class="pre">None</span></code> when either is unknown.</p>
+<p><code class="docutils literal notranslate"><span class="pre">None</span></code> rather than <code class="docutils literal notranslate"><span class="pre">0.0</span></code>: a plan that lost its price did not move
+by zero.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nw.PlanQuote.has_unknown_costs">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">has_unknown_costs</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></span><a class="headerlink" href="#nw.PlanQuote.has_unknown_costs" title="Link to this definition"></a></dt>
+<dd><p>True when the total cannot be known — the gate’s refusal condition.</p>
+<p>The same judgement as <code class="xref py py-attr docutils literal notranslate"><span class="pre">falaw.Plan.has_unknown_costs</span></code>, made at
+re-quote time rather than at plan time.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.PlanQuote.reason">
+<span class="sig-name descname"><span class="pre">reason</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#nw.PlanQuote.reason" title="Link to this definition"></a></dt>
+<dd><p>Why the <em>whole</em> quote is unknown, when that is the situation.</p>
+<p>Set by <a class="reference internal" href="#nw.unquotable" title="nw.unquotable"><code class="xref py py-func docutils literal notranslate"><span class="pre">unquotable()</span></code></a> (the thing handed in was not a plan) and by
+<a class="reference internal" href="#nw.quote_render_decision" title="nw.quote_render_decision"><code class="xref py py-func docutils literal notranslate"><span class="pre">quote_render_decision()</span></code></a> (the payload contradicts itself). Empty for
+an ordinary re-quote, where the per-call reasons live on
+<a class="reference internal" href="#nw.PlanQuote.repriced" title="nw.PlanQuote.repriced"><code class="xref py py-attr docutils literal notranslate"><span class="pre">repriced</span></code></a> instead.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.PlanQuote.repriced">
+<span class="sig-name descname"><span class="pre">repriced</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">RepricedPlan</span></span><a class="headerlink" href="#nw.PlanQuote.repriced" title="Link to this definition"></a></dt>
+<dd><p>falaw’s per-call diff — <code class="docutils literal notranslate"><span class="pre">status</span></code>, <code class="docutils literal notranslate"><span class="pre">basis_changed</span></code>, <code class="docutils literal notranslate"><span class="pre">reason</span></code> per
+call. Read it for the audit view; <a class="reference internal" href="#nw.PlanQuote.total_usd" title="nw.PlanQuote.total_usd"><code class="xref py py-attr docutils literal notranslate"><span class="pre">total_usd</span></code></a> is the headline.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.PlanQuote.status">
+<span class="sig-name descname"><span class="pre">status</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'unchanged'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'changed'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'unknown'</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#nw.PlanQuote.status" title="Link to this definition"></a></dt>
+<dd><p>Which of the three cases this plan fell into — see <code class="xref py py-data docutils literal notranslate"><span class="pre">QuoteStatus</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.PlanQuote.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/nw/pricing.html#PlanQuote.to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.PlanQuote.to_dict" title="Link to this definition"></a></dt>
+<dd><p>JSON-able headline for a surface (an API response, a job record).</p>
+<p>Deliberately not the whole per-call diff: a spend surface needs the
+number, whether it is knowable, and whether it moved. Reach into
+<a class="reference internal" href="#nw.PlanQuote.repriced" title="nw.PlanQuote.repriced"><code class="xref py py-attr docutils literal notranslate"><span class="pre">repriced</span></code></a> for the rest.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.PlanQuote.total_usd">
+<span class="sig-name descname"><span class="pre">total_usd</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#nw.PlanQuote.total_usd" title="Link to this definition"></a></dt>
+<dd><p>Today’s billable total, or <code class="docutils literal notranslate"><span class="pre">None</span></code> when any billable call is
+unpriceable today. <code class="docutils literal notranslate"><span class="pre">None</span></code> means unknown, never free (nw invariant #2).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="nw.Project">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.</span></span><span class="sig-name descname"><span class="pre">Project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Path</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_migrate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/project.html#Project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.Project" title="Link to this definition"></a></dt>
 <dd><p>A folder-backed nw project.</p>
@@ -990,6 +1097,16 @@ path with placeholder metadata).</p>
 <p>Prefers each decision’s <em>actual</em> per-artifact <code class="docutils literal notranslate"><span class="pre">cost_usd</span></code> and falls
 back to its <code class="docutils literal notranslate"><span class="pre">total_estimated_cost_usd</span></code> when no artifact costs were
 recorded.</p>
+<p><strong>Deliberately not re-quoted.</strong> This is money that was <em>billed</em>, and a
+receipt is not a quote: re-pricing it through
+<a class="reference internal" href="nw/pricing.html#nw.pricing.current_quote" title="nw.pricing.current_quote"><code class="xref py py-func docutils literal notranslate"><span class="pre">nw.pricing.current_quote()</span></code></a> would rewrite history at today’s
+rates. The consequence is that the estimate-based fallback is an
+as-of-then figure — falaw’s tables have moved since (0.0.46 tenfold
+upward on premium LLM calls), so a decision that recorded no artifact
+costs contributes what it was quoted then, not what the same render
+would cost now. That is the right answer for “what did this project
+spend”; it is the wrong one for “what would this cost today”, and
+<a class="reference internal" href="nw/pricing.html#nw.pricing.quote_render_decision" title="nw.pricing.quote_render_decision"><code class="xref py py-func docutils literal notranslate"><span class="pre">nw.pricing.quote_render_decision()</span></code></a> is what answers that (nw#74).</p>
 <p>Walks <strong>every store scope</strong> (graph, storyboard, alignment), not just
 the project graph: a decision written to the storyboard scope is money
 that was spent, and counting only one scope would silently <em>under</em>-report
@@ -1795,6 +1912,27 @@ is worse than carrying it.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="nw.cost_records">
+<span class="sig-prename descclassname"><span class="pre">nw.</span></span><span class="sig-name descname"><span class="pre">cost_records</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plan</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Plan</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/nw/pricing.html#cost_records"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.cost_records" title="Link to this definition"></a></dt>
+<dd><p>The JSON-able per-call cost rows nw persists in a decision payload.</p>
+<p>A serialized call cannot be re-quoted from <code class="docutils literal notranslate"><span class="pre">application</span></code> and
+<code class="docutils literal notranslate"><span class="pre">arguments</span></code> alone — the quantity hints that priced it are estimator-only
+and never reach the wire arguments. Carrying <code class="docutils literal notranslate"><span class="pre">cost_basis</span></code> alongside the
+frozen figure is what makes the row re-quotable later by
+<a class="reference internal" href="#nw.quote_from_cost_records" title="nw.quote_from_cost_records"><code class="xref py py-func docutils literal notranslate"><span class="pre">quote_from_cost_records()</span></code></a>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">cost_basis</span></code> is omitted when unset, exactly as falaw omits it, so a row
+written by a caller that records no basis is byte-identical to what nw
+wrote before nw#74.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">falaw</span><span class="w"> </span><span class="kn">import</span> <span class="n">CallPlan</span><span class="p">,</span> <span class="n">Plan</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">call</span> <span class="o">=</span> <span class="n">CallPlan</span><span class="p">(</span><span class="n">tool</span><span class="o">=</span><span class="s2">"t"</span><span class="p">,</span> <span class="n">application</span><span class="o">=</span><span class="s2">"a"</span><span class="p">,</span> <span class="n">arguments</span><span class="o">=</span><span class="p">{},</span>
+<span class="gp">... </span>                <span class="n">output_kind</span><span class="o">=</span><span class="s2">"video"</span><span class="p">,</span> <span class="n">estimated_cost_usd</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">sorted</span><span class="p">(</span><span class="n">cost_records</span><span class="p">(</span><span class="n">Plan</span><span class="p">(</span><span class="n">calls</span><span class="o">=</span><span class="p">(</span><span class="n">call</span><span class="p">,)))[</span><span class="mi">0</span><span class="p">])</span>
+<span class="go">['application', 'cache_status', 'estimated_cost_usd', 'tool']</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="nw.create_genre_project">
 <span class="sig-prename descclassname"><span class="pre">nw.</span></span><span class="sig-name descname"><span class="pre">create_genre_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">genre</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">caller</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/nw/genres.html#create_genre_project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.create_genre_project" title="Link to this definition"></a></dt>
 <dd><p>Create + seed a new project for a PLUGGED-IN <code class="docutils literal notranslate"><span class="pre">genre</span></code> in <code class="docutils literal notranslate"><span class="pre">caller</span></code>’s space.</p>
@@ -1810,6 +1948,31 @@ association survives this call returning; read it back via
 <a class="reference internal" href="#nw.Project.resolved_genre" title="nw.Project.resolved_genre"><code class="xref py py-meth docutils literal notranslate"><span class="pre">nw.Project.resolved_genre()</span></code></a>.</p>
 <p>Raises <code class="xref py py-class docutils literal notranslate"><span class="pre">KeyError</span></code> on an unknown genre/template, or a genre with no registered
 factory (a host’s own genre is created by the host, not via this path).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.current_quote">
+<span class="sig-prename descclassname"><span class="pre">nw.</span></span><span class="sig-name descname"><span class="pre">current_quote</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plan</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Plan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pricers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">~falaw.reprice.Pricer]</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'llm_rates':</span> <span class="pre">Pricer(quote=&lt;function</span> <span class="pre">_quote_from_llm_rates&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'falaw/data/llm_rates.json'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;functools._lru_cache_wrapper</span> <span class="pre">object&gt;)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'model_catalogue'</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Pricer(quote</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;function</span> <span class="pre">_quote_from_catalogue&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'falaw/data/models.json'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;functools._lru_cache_wrapper</span> <span class="pre">object&gt;)}</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="nw/pricing.html#nw.pricing.PlanQuote" title="nw.pricing.PlanQuote"><span class="pre">PlanQuote</span></a></span></span><a class="reference internal" href="../_modules/nw/pricing.html#current_quote"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.current_quote" title="Link to this definition"></a></dt>
+<dd><p>Re-quote <code class="docutils literal notranslate"><span class="pre">plan</span></code> at today’s rates and report the result honestly.</p>
+<p>Pure data — <code class="xref py py-func docutils literal notranslate"><span class="pre">falaw.reprice_plan()</span></code> reads the committed rate tables and
+does arithmetic. No network, no billing API, no cache peek, so this is
+safe to call anywhere a <code class="docutils literal notranslate"><span class="pre">plan()</span></code> is (nw invariant #1).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>plan</strong> – The plan to re-quote — typically one just rebuilt from a stored
+payload with <a class="reference internal" href="#nw.plan_from_cost_records" title="nw.plan_from_cost_records"><code class="xref py py-func docutils literal notranslate"><span class="pre">plan_from_cost_records()</span></code></a>.</p></li>
+<li><p><strong>pricers</strong> – Pricing rules by <code class="xref py py-attr docutils literal notranslate"><span class="pre">falaw.CostBasis.pricer</span></code>. The seam for
+a caller with reconciled numbers of their own; see
+<code class="xref py py-class docutils literal notranslate"><span class="pre">falaw.reprice.Pricer</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">falaw</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plan</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">current_quote</span><span class="p">(</span><span class="n">Plan</span><span class="p">(</span><span class="n">calls</span><span class="o">=</span><span class="p">()))</span><span class="o">.</span><span class="n">status</span>
+<span class="go">'unchanged'</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -2125,6 +2288,19 @@ accepting <code class="docutils literal notranslate"><span class="pre">cut</span
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="nw.plan_from_cost_records">
+<span class="sig-prename descclassname"><span class="pre">nw.</span></span><span class="sig-name descname"><span class="pre">plan_from_cost_records</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">records</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">Mapping</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Plan</span></span></span><a class="reference internal" href="../_modules/nw/pricing.html#plan_from_cost_records"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.plan_from_cost_records" title="Link to this definition"></a></dt>
+<dd><p>Rebuild a re-quotable <code class="xref py py-class docutils literal notranslate"><span class="pre">falaw.Plan</span></code> from <a class="reference internal" href="#nw.cost_records" title="nw.cost_records"><code class="xref py py-func docutils literal notranslate"><span class="pre">cost_records()</span></code></a> rows.</p>
+<p>The result is a <strong>pricing</strong> plan, not an executable one: <code class="docutils literal notranslate"><span class="pre">arguments</span></code> is
+empty and <code class="docutils literal notranslate"><span class="pre">output_kind</span></code> is a placeholder, because a stored cost row does
+not carry the wire payload and re-pricing does not read it. Never hand one
+of these to <code class="xref py py-func docutils literal notranslate"><span class="pre">falaw.execute_plan()</span></code> — build a fresh plan for that.</p>
+<p>Rows missing <code class="docutils literal notranslate"><span class="pre">cost_basis</span></code> come back basis-free, which is exactly what
+makes them re-price as <code class="docutils literal notranslate"><span class="pre">&quot;no_basis&quot;</span></code> (unknown) rather than as their
+frozen number.</p>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="nw.plan_render_panel_images">
 <span class="sig-prename descclassname"><span class="pre">nw.</span></span><span class="sig-name descname"><span class="pre">plan_render_panel_images</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">storyboard</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Storyboard</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">quality</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'balanced'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'landscape_16_9'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_missing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Plan</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/nw/storyboard.html#plan_render_panel_images"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.plan_render_panel_images" title="Link to this definition"></a></dt>
 <dd><p>Build a Plan that generates a seed image for each panel that lacks one.</p>
@@ -2212,6 +2388,48 @@ ready to plan.</p>
 asset_id matches whatever a downstream consumer would compute via
 <code class="xref py py-func docutils literal notranslate"><span class="pre">lacing.hash_file()</span></code>. Falls back to a stable derived id when the
 song isn’t available yet.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.quote_from_cost_records">
+<span class="sig-prename descclassname"><span class="pre">nw.</span></span><span class="sig-name descname"><span class="pre">quote_from_cost_records</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">records</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">~typing.Any]]</span> <span class="pre">|</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pricers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mapping[str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">~falaw.reprice.Pricer]</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'llm_rates':</span> <span class="pre">Pricer(quote=&lt;function</span> <span class="pre">_quote_from_llm_rates&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'falaw/data/llm_rates.json'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;functools._lru_cache_wrapper</span> <span class="pre">object&gt;)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">'model_catalogue'</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Pricer(quote</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">&lt;function</span> <span class="pre">_quote_from_catalogue&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'falaw/data/models.json'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">version</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;functools._lru_cache_wrapper</span> <span class="pre">object&gt;)}</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="nw/pricing.html#nw.pricing.PlanQuote" title="nw.pricing.PlanQuote"><span class="pre">PlanQuote</span></a></span></span><a class="reference internal" href="../_modules/nw/pricing.html#quote_from_cost_records"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.quote_from_cost_records" title="Link to this definition"></a></dt>
+<dd><p>Today’s price for the calls stored in a decision payload.</p>
+<p>The read-back half of <a class="reference internal" href="#nw.cost_records" title="nw.cost_records"><code class="xref py py-func docutils literal notranslate"><span class="pre">cost_records()</span></code></a>. <code class="docutils literal notranslate"><span class="pre">None</span></code> or a non-sequence
+(a payload that recorded no calls at all) yields an empty plan’s quote —
+<code class="docutils literal notranslate"><span class="pre">total_usd</span> <span class="pre">==</span> <span class="pre">0.0</span></code>, <code class="docutils literal notranslate"><span class="pre">status</span> <span class="pre">==</span> <span class="pre">&quot;unchanged&quot;</span></code> — because “no calls” is a
+known zero, not an unknown.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.quote_render_decision">
+<span class="sig-prename descclassname"><span class="pre">nw.</span></span><span class="sig-name descname"><span class="pre">quote_render_decision</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">payload:</span> <span class="pre">~typing.Mapping[str,</span> <span class="pre">~typing.Any],</span> <span class="pre">*,</span> <span class="pre">pricers:</span> <span class="pre">~typing.Mapping[str,</span> <span class="pre">~falaw.reprice.Pricer]</span> <span class="pre">=</span> <span class="pre">{'llm_rates':</span> <span class="pre">Pricer(quote=&lt;function</span> <span class="pre">_quote_from_llm_rates&gt;,</span> <span class="pre">table='falaw/data/llm_rates.json',</span> <span class="pre">version=&lt;functools._lru_cache_wrapper</span> <span class="pre">object&gt;),</span> <span class="pre">'model_catalogue':</span> <span class="pre">Pricer(quote=&lt;function</span> <span class="pre">_quote_from_catalogue&gt;,</span> <span class="pre">table='falaw/data/models.json',</span> <span class="pre">version=&lt;functools._lru_cache_wrapper</span> <span class="pre">object&gt;)}</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="nw/pricing.html#nw.pricing.PlanQuote" title="nw.pricing.PlanQuote"><span class="pre">PlanQuote</span></a></span></span><a class="reference internal" href="../_modules/nw/pricing.html#quote_render_decision"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.quote_render_decision" title="Link to this definition"></a></dt>
+<dd><p>Today’s price for a <code class="docutils literal notranslate"><span class="pre">render_shot</span></code> decision payload.</p>
+<p>The counterpart to what <code class="xref py py-func docutils literal notranslate"><span class="pre">nw.workflow._record_render_decision()</span></code> wrote.
+Read this — never <code class="docutils literal notranslate"><span class="pre">payload[&quot;total_estimated_cost_usd&quot;]</span></code> — whenever a
+stored render cost is about to be shown or gated on as a <em>current</em> figure.</p>
+<p>A payload written before nw#74 carries no per-call basis, so it re-quotes
+as <code class="docutils literal notranslate"><span class="pre">&quot;unknown&quot;</span></code> with <code class="docutils literal notranslate"><span class="pre">total_usd</span></code> <code class="docutils literal notranslate"><span class="pre">None</span></code>. That is the point: nobody
+can say what it costs today, and saying so is better than repeating a
+number that has since moved.</p>
+<p>The stored <code class="docutils literal notranslate"><span class="pre">total_estimated_cost_usd</span></code> is the payload’s own headline, so
+it — not the calls’ sum — is reported as <a class="reference internal" href="#nw.PlanQuote.as_of_total_usd" title="nw.PlanQuote.as_of_total_usd"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PlanQuote.as_of_total_usd</span></code></a>.
+When the two <strong>disagree</strong>, the whole payload is <em>unknown</em>: a total of $3
+over a payload whose calls sum to $0 is a broken record, and answering
+“$0, unchanged” would report a stored $3 as a known zero. nw’s own writer
+never produces such a payload; a hand-edited or truncated one can, and
+unknown is the only honest reading of it.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">broken</span> <span class="o">=</span> <span class="n">quote_render_decision</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="p">{</span><span class="s2">"calls"</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">"total_estimated_cost_usd"</span><span class="p">:</span> <span class="mf">3.0</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">broken</span><span class="o">.</span><span class="n">status</span><span class="p">,</span> <span class="n">broken</span><span class="o">.</span><span class="n">total_usd</span><span class="p">,</span> <span class="n">broken</span><span class="o">.</span><span class="n">as_of_total_usd</span>
+<span class="go">('unknown', None, 3.0)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stale</span> <span class="o">=</span> <span class="n">quote_render_decision</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="p">{</span><span class="s2">"calls"</span><span class="p">:</span> <span class="p">[{</span><span class="s2">"tool"</span><span class="p">:</span> <span class="s2">"t"</span><span class="p">,</span> <span class="s2">"application"</span><span class="p">:</span> <span class="s2">"a"</span><span class="p">,</span>
+<span class="gp">... </span>                <span class="s2">"estimated_cost_usd"</span><span class="p">:</span> <span class="mf">3.0</span><span class="p">}],</span>
+<span class="gp">... </span>     <span class="s2">"total_estimated_cost_usd"</span><span class="p">:</span> <span class="mf">3.0</span><span class="p">})</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stale</span><span class="o">.</span><span class="n">status</span><span class="p">,</span> <span class="n">stale</span><span class="o">.</span><span class="n">total_usd</span><span class="p">,</span> <span class="n">stale</span><span class="o">.</span><span class="n">as_of_total_usd</span>
+<span class="go">('unknown', None, 3.0)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -2527,6 +2745,23 @@ Entry shape:</p>
 is the params model’s JSON Schema — <code class="docutils literal notranslate"><span class="pre">{}</span></code> for a Transform with no
 params — and is what an MCP tool definition is built from. The whole
 list is JSON-serializable as returned.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.unquotable">
+<span class="sig-prename descclassname"><span class="pre">nw.</span></span><span class="sig-name descname"><span class="pre">unquotable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reason</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="nw/pricing.html#nw.pricing.PlanQuote" title="nw.pricing.PlanQuote"><span class="pre">PlanQuote</span></a></span></span><a class="reference internal" href="../_modules/nw/pricing.html#unquotable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.unquotable" title="Link to this definition"></a></dt>
+<dd><p>A quote for something that could not be re-quoted at all.</p>
+<p>For the caller who was handed a <em>plan-shaped</em> thing that turned out not to
+be a plan — an unparseable payload, an object of the wrong type. The honest
+answer is <code class="docutils literal notranslate"><span class="pre">None</span></code> (unknown), not the frozen figure that came with it, and
+not <code class="docutils literal notranslate"><span class="pre">0.0</span></code>.</p>
+<p><a class="reference internal" href="#nw.PlanQuote.repriced" title="nw.PlanQuote.repriced"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PlanQuote.repriced</span></code></a> is an empty <code class="xref py py-class docutils literal notranslate"><span class="pre">falaw.RepricedPlan</span></code>: there
+were no calls to diff. Read <a class="reference internal" href="#nw.PlanQuote.reason" title="nw.PlanQuote.reason"><code class="xref py py-attr docutils literal notranslate"><span class="pre">PlanQuote.reason</span></code></a> for what went wrong.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">q</span> <span class="o">=</span> <span class="n">unquotable</span><span class="p">(</span><span class="s2">"params['plan'] is not a falaw Plan"</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">q</span><span class="o">.</span><span class="n">status</span><span class="p">,</span> <span class="n">q</span><span class="o">.</span><span class="n">total_usd</span><span class="p">,</span> <span class="n">q</span><span class="o">.</span><span class="n">has_unknown_costs</span>
+<span class="go">('unknown', None, True)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">

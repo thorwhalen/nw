@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.renderers.text_to_video &mdash; nw 0.0.47 documentation</title>
+  <title>nw.renderers.text_to_video &mdash; nw 0.0.48 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=4f34e5f2"></script>
+      <script src="../../../_static/documentation_options.js?v=a72e4630"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -65,6 +65,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/inspect.html">nw.inspect</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/jobs.html">nw.jobs</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/migrate.html">nw.migrate</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/pricing.html">nw.pricing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/project.html">nw.project</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/renderers.html">nw.renderers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/renderers/_common.html">nw.renderers._common</a></li>
@@ -127,6 +128,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">falaw</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">CallPlan</span><span class="p">,</span>
     <span class="n">Plan</span><span class="p">,</span>
+    <span class="n">catalogue_cost_basis</span><span class="p">,</span>
     <span class="n">make_call_plan</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">falaw.cost</span><span class="w"> </span><span class="kn">import</span> <span class="n">estimate_call_cost</span>
@@ -173,6 +175,14 @@
             <span class="n">arguments</span><span class="o">=</span><span class="p">{</span><span class="s2">"prompt"</span><span class="p">:</span> <span class="n">prompt</span><span class="p">},</span>
             <span class="n">output_kind</span><span class="o">=</span><span class="s2">"video"</span><span class="p">,</span>
             <span class="n">estimated_cost_usd</span><span class="o">=</span><span class="n">cost</span><span class="p">,</span>
+            <span class="c1"># This strategy hand-builds its call rather than going through a</span>
+            <span class="c1"># `plan_*`, so nothing stamps the basis for it. Without one the</span>
+            <span class="c1"># call re-prices as `no_basis` — unknown — and a stored quote for</span>
+            <span class="c1"># this shot can never be refreshed (nw#74). `seconds` is the only</span>
+            <span class="c1"># quantity `estimate_call_cost` saw, and it is estimator-only: it</span>
+            <span class="c1"># never reaches `arguments`, which is exactly why the basis has to</span>
+            <span class="c1"># carry it.</span>
+            <span class="n">cost_basis</span><span class="o">=</span><span class="n">catalogue_cost_basis</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">seconds</span><span class="o">=</span><span class="n">prep</span><span class="o">.</span><span class="n">duration_s</span><span class="p">),</span>
             <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">"shot_id"</span><span class="p">:</span> <span class="n">prep</span><span class="o">.</span><span class="n">shot_id</span><span class="p">,</span> <span class="s2">"strategy"</span><span class="p">:</span> <span class="s2">"text_to_video"</span><span class="p">},</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">Plan</span><span class="p">(</span><span class="n">calls</span><span class="o">=</span><span class="p">(</span><span class="n">call</span><span class="p">,))</span>
