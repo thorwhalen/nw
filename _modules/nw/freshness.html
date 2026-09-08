@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.freshness &mdash; nw 0.0.46 documentation</title>
+  <title>nw.freshness &mdash; nw 0.0.47 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=eb4c61eb"></script>
+      <script src="../../_static/documentation_options.js?v=4f34e5f2"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -137,12 +137,29 @@
 <span class="sd">frontier is **stale** when any of these holds, and **fresh** only when none</span>
 <span class="sd">does:</span>
 
+<span class="sd">- ``X`` itself carries an **unknown** ``generated_at_time`` — lacing's tick-0</span>
+<span class="sd">  ``UNKNOWN_GENERATED_AT`` sentinel (rows written through the REST path</span>
+<span class="sd">  before lacing#35 still carry it; lacing#44). A row that cannot be placed</span>
+<span class="sd">  in time is unverifiable, and it is never read as "the oldest thing in the</span>
+<span class="sd">  project". Regenerating ``X`` writes a fresh stamp, so this clears itself,</span>
 <span class="sd">- no verifying trace was recorded for ``X`` (:mod:`nw.bodies.verifying_trace`),</span>
 <span class="sd">- the trace was written under a different digest scheme,</span>
 <span class="sd">- the trace's upstream set is not exactly ``X.provenance.was_derived_from``,</span>
 <span class="sd">- a recorded upstream annotation no longer exists,</span>
 <span class="sd">- a recorded upstream is **itself stale** — its value is about to change,</span>
 <span class="sd">- a recorded upstream's *current* value digest differs from the recorded one.</span>
+
+<span class="sd">**A tick-0 *parent* is not a verdict.** Only ``X``'s own stamp is checked.</span>
+<span class="sd">Freshness has been digest-verified since nw#39: whether ``X``'s inputs</span>
+<span class="sd">changed is answered by comparing the parents' *current* value digests to</span>
+<span class="sd">the ones ``X`` recorded, and a parent's unknown timestamp says nothing about</span>
+<span class="sd">that. Staling ``X`` for a tick-0 parent would also never converge — a</span>
+<span class="sd">legacy authored root is never regenerated, so no recompute could clear it,</span>
+<span class="sd">only the timestamp backfill (lacing#46) — and a ``regen_all_stale`` loop</span>
+<span class="sd">built on this walk would spend forever on every project with a legacy REST</span>
+<span class="sd">root. The one place a timestamp *does* decide something is the trace</span>
+<span class="sd">backfill's bless walk (:func:`nw.graph.backfill_traces`), which now refuses</span>
+<span class="sd">any row it cannot place against its parents.</span>
 
 <span class="sd">Two consequences worth stating, because both are easy to get backwards:</span>
 
@@ -215,6 +232,7 @@
 <span class="c1"># Stable strings: they surface in reelee's freshness UI and in test assertions.</span>
 
 <span class="n">REASON_FRESH</span> <span class="o">=</span> <span class="s2">"verified-fresh"</span>
+<span class="n">REASON_GENERATED_AT_UNKNOWN</span> <span class="o">=</span> <span class="s2">"generated-at-unknown"</span>
 <span class="n">REASON_NO_TRACE</span> <span class="o">=</span> <span class="s2">"no-trace"</span>
 <span class="n">REASON_SCHEME_CHANGED</span> <span class="o">=</span> <span class="s2">"digest-scheme-changed"</span>
 <span class="n">REASON_TRACE_PARENTS_DIFFER</span> <span class="o">=</span> <span class="s2">"trace-parents-differ"</span>
@@ -225,6 +243,7 @@
 <span class="n">REASON_PROVENANCE_CYCLE</span> <span class="o">=</span> <span class="s2">"provenance-cycle"</span>
 
 <span class="n">STALE_REASONS</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">REASON_GENERATED_AT_UNKNOWN</span><span class="p">,</span>
     <span class="n">REASON_NO_TRACE</span><span class="p">,</span>
     <span class="n">REASON_SCHEME_CHANGED</span><span class="p">,</span>
     <span class="n">REASON_TRACE_PARENTS_DIFFER</span><span class="p">,</span>
@@ -388,6 +407,11 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_classify</span><span class="p">(</span><span class="n">node_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FreshnessVerdict</span><span class="p">:</span>
         <span class="n">ann</span> <span class="o">=</span> <span class="n">by_id</span><span class="p">[</span><span class="n">node_id</span><span class="p">]</span>
         <span class="n">parents</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">provenance</span><span class="o">.</span><span class="n">was_derived_from</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ann</span><span class="o">.</span><span class="n">provenance</span><span class="o">.</span><span class="n">generated_at_is_known</span><span class="p">:</span>
+            <span class="c1"># Checked before the trace: a trace can match its parents'</span>
+            <span class="c1"># digests and the row still cannot be placed in time (lacing#44).</span>
+            <span class="c1"># Own stamp only — regenerating the row clears it.</span>
+            <span class="k">return</span> <span class="n">FreshnessVerdict</span><span class="p">(</span><span class="n">ann</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">REASON_GENERATED_AT_UNKNOWN</span><span class="p">)</span>
         <span class="n">trace</span> <span class="o">=</span> <span class="n">traces</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">node_id</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">trace</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">FreshnessVerdict</span><span class="p">(</span><span class="n">ann</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">REASON_NO_TRACE</span><span class="p">)</span>
@@ -408,6 +432,8 @@
             <span class="n">parent</span> <span class="o">=</span> <span class="n">by_id</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pid</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">parent</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">FreshnessVerdict</span><span class="p">(</span><span class="n">ann</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">REASON_UPSTREAM_MISSING</span><span class="p">,</span> <span class="n">pid</span><span class="p">)</span>
+            <span class="c1"># Deliberately no timestamp check on the parent: see the module</span>
+            <span class="c1"># docstring, "A tick-0 parent is not a verdict".</span>
             <span class="k">if</span> <span class="n">pid</span> <span class="ow">in</span> <span class="n">recursion_scope</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">pid</span> <span class="ow">in</span> <span class="n">resolving</span><span class="p">:</span>
                     <span class="c1"># `pid` is an ancestor still being classified, so this edge</span>

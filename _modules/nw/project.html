@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.project &mdash; nw 0.0.46 documentation</title>
+  <title>nw.project &mdash; nw 0.0.47 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=eb4c61eb"></script>
+      <script src="../../_static/documentation_options.js?v=4f34e5f2"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -170,7 +170,7 @@
     <span class="p">)</span>
 
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">lacing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeInterval</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">lacing</span><span class="w"> </span><span class="kn">import</span> <span class="n">UNKNOWN_GENERATED_AT</span><span class="p">,</span> <span class="n">TimeInterval</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.bodies</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">CharacterRefBodyV1</span><span class="p">,</span>
@@ -1070,18 +1070,31 @@
 <span class="p">)</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_iso_utc</span><span class="p">(</span><span class="n">rt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""A lacing ``RationalTime`` wall clock → an ISO-8601 UTC string."""</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_iso_utc</span><span class="p">(</span><span class="n">rt</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""A lacing ``RationalTime`` wall clock → an ISO-8601 UTC string.</span>
+
+<span class="sd">    ``None`` for lacing's tick-0 UNKNOWN sentinel (lacing#44) — rendering it</span>
+<span class="sd">    would print 1970-01-01, which is the epoch reading the sentinel forbids.</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">rt</span> <span class="o">==</span> <span class="n">UNKNOWN_GENERATED_AT</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
     <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">rt</span><span class="o">.</span><span class="n">to_seconds</span><span class="p">(),</span> <span class="n">tz</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_last_touched</span><span class="p">(</span><span class="n">indexed</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
-<span class="w">    </span><span class="sd">"""``(iso_timestamp, seconds_since)`` of the most recent graph write."""</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">indexed</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
-    <span class="n">newest</span> <span class="o">=</span> <span class="n">indexed</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">provenance</span><span class="o">.</span><span class="n">generated_at_time</span>
-    <span class="n">at</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">newest</span><span class="o">.</span><span class="n">to_seconds</span><span class="p">(),</span> <span class="n">tz</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">at</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span> <span class="nb">max</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span> <span class="o">-</span> <span class="n">at</span><span class="p">)</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">())</span>
+<span class="w">    </span><span class="sd">"""``(iso_timestamp, seconds_since)`` of the most recent graph write.</span>
+
+<span class="sd">    Rows with an unknown generation time do not count: they sort first, and</span>
+<span class="sd">    they carry no information about when the graph was last touched.</span>
+<span class="sd">    """</span>
+    <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">ann</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">indexed</span><span class="p">):</span>
+        <span class="n">newest</span> <span class="o">=</span> <span class="n">ann</span><span class="o">.</span><span class="n">provenance</span><span class="o">.</span><span class="n">generated_at_time</span>
+        <span class="k">if</span> <span class="n">newest</span> <span class="o">==</span> <span class="n">UNKNOWN_GENERATED_AT</span><span class="p">:</span>
+            <span class="k">break</span>  <span class="c1"># sorted ascending: everything before it is unknown too</span>
+        <span class="n">at</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">newest</span><span class="o">.</span><span class="n">to_seconds</span><span class="p">(),</span> <span class="n">tz</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
+        <span class="n">since</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span> <span class="o">-</span> <span class="n">at</span><span class="p">)</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">at</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span> <span class="n">since</span>
+    <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_last_authored_change</span><span class="p">(</span><span class="n">indexed</span><span class="p">):</span>

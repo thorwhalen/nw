@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.graph &mdash; nw 0.0.46 documentation</title>
+  <title>nw.graph &mdash; nw 0.0.47 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=eb4c61eb"></script>
+      <script src="../../_static/documentation_options.js?v=4f34e5f2"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -1051,6 +1051,29 @@
                         <span class="sa">f</span><span class="s2">"parent(s) missing: </span><span class="si">{</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">m</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">missing</span><span class="p">]</span><span class="si">}</span><span class="s2"> — "</span>
                         <span class="s2">"genuinely upstream-missing; a fabricated trace "</span>
                         <span class="s2">"would hide a real hole"</span>
+                    <span class="p">),</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
+            <span class="k">continue</span>
+        <span class="n">unplaceable</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">i</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="o">*</span><span class="n">parents</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">by_id</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">provenance</span><span class="o">.</span><span class="n">generated_at_is_known</span>
+        <span class="p">]</span>
+        <span class="k">if</span> <span class="n">unplaceable</span><span class="p">:</span>
+            <span class="c1"># Tick 0 is lacing's UNKNOWN sentinel, not the epoch (lacing#44).</span>
+            <span class="c1"># The timestamp rule below cannot order this row against its</span>
+            <span class="c1"># parents — and a tick-0 PARENT would read older than every child,</span>
+            <span class="c1"># blessing a row that is not verifiable. It stays stale</span>
+            <span class="c1"># (generated-at-unknown) until the timestamp itself is backfilled.</span>
+            <span class="n">skipped</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="s2">"annotation_id"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
+                    <span class="s2">"reason"</span><span class="p">:</span> <span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">"generated_at_time unknown (tick 0, lacing#44) on "</span>
+                        <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">u</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">u</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">unplaceable</span><span class="p">]</span><span class="si">}</span><span class="s2"> — cannot be ordered "</span>
+                        <span class="s2">"against its parents; unverifiable stays stale. "</span>
+                        <span class="s2">"Backfill the timestamp, then re-run"</span>
                     <span class="p">),</span>
                 <span class="p">}</span>
             <span class="p">)</span>

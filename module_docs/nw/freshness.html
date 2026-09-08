@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.freshness &mdash; nw 0.0.46 documentation</title>
+  <title>nw.freshness &mdash; nw 0.0.47 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=eb4c61eb"></script>
+      <script src="../../_static/documentation_options.js?v=4f34e5f2"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -148,6 +148,11 @@ imported screenplay would read stale forever). An annotation <code class="docuti
 frontier is <strong>stale</strong> when any of these holds, and <strong>fresh</strong> only when none
 does:</p>
 <ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">X</span></code> itself carries an <strong>unknown</strong> <code class="docutils literal notranslate"><span class="pre">generated_at_time</span></code> — lacing’s tick-0
+<code class="docutils literal notranslate"><span class="pre">UNKNOWN_GENERATED_AT</span></code> sentinel (rows written through the REST path
+before lacing#35 still carry it; lacing#44). A row that cannot be placed
+in time is unverifiable, and it is never read as “the oldest thing in the
+project”. Regenerating <code class="docutils literal notranslate"><span class="pre">X</span></code> writes a fresh stamp, so this clears itself,</p></li>
 <li><p>no verifying trace was recorded for <code class="docutils literal notranslate"><span class="pre">X</span></code> (<a class="reference internal" href="bodies/verifying_trace.html#module-nw.bodies.verifying_trace" title="nw.bodies.verifying_trace"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nw.bodies.verifying_trace</span></code></a>),</p></li>
 <li><p>the trace was written under a different digest scheme,</p></li>
 <li><p>the trace’s upstream set is not exactly <code class="docutils literal notranslate"><span class="pre">X.provenance.was_derived_from</span></code>,</p></li>
@@ -155,6 +160,17 @@ does:</p>
 <li><p>a recorded upstream is <strong>itself stale</strong> — its value is about to change,</p></li>
 <li><p>a recorded upstream’s <em>current</em> value digest differs from the recorded one.</p></li>
 </ul>
+<p><strong>A tick-0 *parent* is not a verdict.</strong> Only <code class="docutils literal notranslate"><span class="pre">X</span></code>’s own stamp is checked.
+Freshness has been digest-verified since nw#39: whether <code class="docutils literal notranslate"><span class="pre">X</span></code>’s inputs
+changed is answered by comparing the parents’ <em>current</em> value digests to
+the ones <code class="docutils literal notranslate"><span class="pre">X</span></code> recorded, and a parent’s unknown timestamp says nothing about
+that. Staling <code class="docutils literal notranslate"><span class="pre">X</span></code> for a tick-0 parent would also never converge — a
+legacy authored root is never regenerated, so no recompute could clear it,
+only the timestamp backfill (lacing#46) — and a <code class="docutils literal notranslate"><span class="pre">regen_all_stale</span></code> loop
+built on this walk would spend forever on every project with a legacy REST
+root. The one place a timestamp <em>does</em> decide something is the trace
+backfill’s bless walk (<a class="reference internal" href="graph.html#nw.graph.backfill_traces" title="nw.graph.backfill_traces"><code class="xref py py-func docutils literal notranslate"><span class="pre">nw.graph.backfill_traces()</span></code></a>), which now refuses
+any row it cannot place against its parents.</p>
 <p>Two consequences worth stating, because both are easy to get backwards:</p>
 <p><strong>The comparison lives on the edge, not on the node.</strong> It is tempting to
 classify <code class="docutils literal notranslate"><span class="pre">X</span></code> as fresh and then prune the walk there. That is wrong: <code class="docutils literal notranslate"><span class="pre">X</span></code>
@@ -215,7 +231,7 @@ not require re-deriving the walk by hand.</p>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="nw.freshness.STALE_REASONS">
-<span class="sig-prename descclassname"><span class="pre">nw.freshness.</span></span><span class="sig-name descname"><span class="pre">STALE_REASONS</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('no-trace',</span> <span class="pre">'digest-scheme-changed',</span> <span class="pre">'trace-parents-differ',</span> <span class="pre">'trace-unreadable',</span> <span class="pre">'upstream-missing',</span> <span class="pre">'upstream-stale',</span> <span class="pre">'upstream-changed',</span> <span class="pre">'provenance-cycle')</span></span><a class="headerlink" href="#nw.freshness.STALE_REASONS" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">nw.freshness.</span></span><span class="sig-name descname"><span class="pre">STALE_REASONS</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('generated-at-unknown',</span> <span class="pre">'no-trace',</span> <span class="pre">'digest-scheme-changed',</span> <span class="pre">'trace-parents-differ',</span> <span class="pre">'trace-unreadable',</span> <span class="pre">'upstream-missing',</span> <span class="pre">'upstream-stale',</span> <span class="pre">'upstream-changed',</span> <span class="pre">'provenance-cycle')</span></span><a class="headerlink" href="#nw.freshness.STALE_REASONS" title="Link to this definition"></a></dt>
 <dd><p>Every reason that resolves to <em>stale</em>. <code class="xref py py-data docutils literal notranslate"><span class="pre">REASON_FRESH</span></code> is the only
 verdict that does not, which is the invariant that keeps “unverifiable means
 stale” true by construction rather than by review.</p>
