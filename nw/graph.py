@@ -479,10 +479,11 @@ class ProjectGraph:
         described has now been produced. ``instance_id`` / ``call_index``
         identify *this write's* unit precisely (see
         :mod:`nw.bodies.unproduced_output`'s module docstring for the key);
-        omit both only when neither is known — the retirement then falls back
-        to ``(transform_name, upstream)`` alone, which cannot distinguish two
-        units sharing an upstream set and so may retire nothing, or (rarely)
-        the wrong record.
+        omit ``instance_id`` only when it is not known — the retirement then
+        falls back to ``(transform_name, call_index, upstream)``, which still
+        cannot distinguish two DIFFERENT units sharing both an upstream set
+        and a ``call_index`` (the residual case the module docstring names),
+        so it may retire nothing, or (rarely) the wrong record.
 
         **Bypassing this method (a raw ``store.add``) leaves a matching
         unproduced-output record in place** — it reads as a live blocker

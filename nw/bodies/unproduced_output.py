@@ -45,7 +45,12 @@ still-outstanding record. The real key is:
 - ``(transform_name, call_index, upstream)`` otherwise — ``call_index`` is
   this output's position within its ``execute()`` call's ``skeleton`` tuple,
   which disambiguates multiple outputs of one batch call that share
-  identical upstream parents even with no fan-out involved.
+  identical upstream parents even with no fan-out involved. This fallback
+  is still not a full identity: two DIFFERENT units run outside a fan-out
+  (no ``instance_id`` threaded at all) with identical upstream parents and
+  the same ``call_index`` still alias, and one succeeding retires the
+  other's record too — the residual version of the original bug, scoped to
+  callers that never pass ``unit_instance_id``.
 
 :meth:`~nw.graph.ProjectGraph.add_unproduced_output` **dedupes on this key**:
 a second record for the same identity replaces the first rather than
