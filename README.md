@@ -167,11 +167,11 @@ inspection only.
 `nw.pricing` is the one place nw re-quotes. Give it a plan (or the calls stored in a render decision) and it answers with today's price, the stale one beside it, and which of the two you are allowed to show:
 
 ```python
-quote = nw.current_quote(plan)          # or nw.quote_render_decision(payload)
-quote.total_usd        # today's price, or None
-quote.status           # "unchanged" | "changed" | "unknown"
+quote = nw.current_quote(plan)  # or nw.quote_render_decision(payload)
+quote.total_usd  # today's price, or None
+quote.status  # "unchanged" | "changed" | "unknown"
 quote.as_of_total_usd  # what the plan said when it was written
-quote.delta_usd        # the movement, or None if either side is unknown
+quote.delta_usd  # the movement, or None if either side is unknown
 ```
 
 `None` means **unknown, never free**. A call carrying no `falaw.CostBasis` — one hand-built outside a `plan_*`, or planned before falaw 0.0.49 — cannot be re-quoted at all, so it comes back unknown rather than repeating its frozen number. `nw.jobs.estimate` and `nw.jobs.enqueue` follow the same rule: when `params["plan"]` is supplied they price *it*, and a caller-supplied `estimated_usd` is ignored. Repricing is descriptive only — `cost_basis` never enters `plan_hash`, so a job's idempotency key and falaw's per-call cache key are byte-identical to what they were before, and a resumed render still dedups onto work already paid for.
