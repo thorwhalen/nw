@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.graph &mdash; nw 0.0.48 documentation</title>
+  <title>nw.graph &mdash; nw 0.0.49 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=a72e4630"></script>
+      <script src="../../_static/documentation_options.js?v=0356c229"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -58,6 +58,7 @@
 <li class="toctree-l1"><a class="reference internal" href="bodies/render_result.html">nw.bodies.render_result</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bodies/section.html">nw.bodies.section</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bodies/shot.html">nw.bodies.shot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/unproduced_output.html">nw.bodies.unproduced_output</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bodies/verifying_trace.html">nw.bodies.verifying_trace</a></li>
 <li class="toctree-l1"><a class="reference internal" href="delivery.html">nw.delivery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="experiment.html">nw.experiment</a></li>
@@ -66,10 +67,12 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">nw.graph</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#nw.graph.ProjectGraph"><code class="docutils literal notranslate"><span class="pre">ProjectGraph</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#nw.graph.ProjectGraph.add_annotation"><code class="docutils literal notranslate"><span class="pre">ProjectGraph.add_annotation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.graph.ProjectGraph.add_unproduced_output"><code class="docutils literal notranslate"><span class="pre">ProjectGraph.add_unproduced_output()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.graph.ProjectGraph.append_decision"><code class="docutils literal notranslate"><span class="pre">ProjectGraph.append_decision()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.graph.ProjectGraph.genre_envelope"><code class="docutils literal notranslate"><span class="pre">ProjectGraph.genre_envelope()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.graph.ProjectGraph.remove_annotation"><code class="docutils literal notranslate"><span class="pre">ProjectGraph.remove_annotation()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.graph.ProjectGraph.set_genre_envelope"><code class="docutils literal notranslate"><span class="pre">ProjectGraph.set_genre_envelope()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nw.graph.ProjectGraph.unproduced_outputs"><code class="docutils literal notranslate"><span class="pre">ProjectGraph.unproduced_outputs()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.graph.ProjectGraph.upsert_character_ref"><code class="docutils literal notranslate"><span class="pre">ProjectGraph.upsert_character_ref()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.graph.ProjectGraph.upsert_environment_ref"><code class="docutils literal notranslate"><span class="pre">ProjectGraph.upsert_environment_ref()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nw.graph.ProjectGraph.upsert_section"><code class="docutils literal notranslate"><span class="pre">ProjectGraph.upsert_section()</span></code></a></li>
@@ -81,6 +84,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#nw.graph.StoredEnvironmentRef"><code class="docutils literal notranslate"><span class="pre">StoredEnvironmentRef</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.graph.StoredSection"><code class="docutils literal notranslate"><span class="pre">StoredSection</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.graph.StoredShot"><code class="docutils literal notranslate"><span class="pre">StoredShot</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.graph.StoredUnproducedOutput"><code class="docutils literal notranslate"><span class="pre">StoredUnproducedOutput</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.graph.all_project_stores"><code class="docutils literal notranslate"><span class="pre">all_project_stores()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.graph.annotations_at_tier"><code class="docutils literal notranslate"><span class="pre">annotations_at_tier()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.graph.backfill_traces"><code class="docutils literal notranslate"><span class="pre">backfill_traces()</span></code></a></li>
@@ -174,7 +178,7 @@ reads/writes from different processes are safe (SqliteStore is
 file-locked).</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="nw.graph.ProjectGraph.add_annotation">
-<span class="sig-name descname"><span class="pre">add_annotation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ann</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Annotation</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/nw/graph.html#ProjectGraph.add_annotation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.graph.ProjectGraph.add_annotation" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">add_annotation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ann</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Annotation</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">call_index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../../_modules/nw/graph.html#ProjectGraph.add_annotation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.graph.ProjectGraph.add_annotation" title="Link to this definition"></a></dt>
 <dd><p>Write one annotation to the project graph, plus its verifying trace.</p>
 <p>Registers <code class="docutils literal notranslate"><span class="pre">ann.tier</span></code> if it isn’t a known tier yet — <code class="docutils literal notranslate"><span class="pre">SqliteStore</span></code>
 enforces a foreign key on <code class="docutils literal notranslate"><span class="pre">tier</span></code>, so writing under a fresh tier
@@ -189,6 +193,46 @@ with production callsites in three repos. Writing at persist time
 also covers the paths that build a <code class="docutils literal notranslate"><span class="pre">Provenance</span></code> by hand.</p>
 <p>Annotations with no <code class="docutils literal notranslate"><span class="pre">was_derived_from</span></code> parents get no trace — there
 is nothing to verify, and they are nobody’s descendant.</p>
+<p>It is also where a matching <a class="reference internal" href="#nw.graph.ProjectGraph.add_unproduced_output" title="nw.graph.ProjectGraph.add_unproduced_output"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_unproduced_output()</span></code></a> record is
+retired (nw#44): a successful write is proof the thing that record
+described has now been produced. <code class="docutils literal notranslate"><span class="pre">instance_id</span></code> / <code class="docutils literal notranslate"><span class="pre">call_index</span></code>
+identify <em>this write’s</em> unit precisely (see
+<a class="reference internal" href="bodies/unproduced_output.html#module-nw.bodies.unproduced_output" title="nw.bodies.unproduced_output"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nw.bodies.unproduced_output</span></code></a>’s module docstring for the key);
+omit <code class="docutils literal notranslate"><span class="pre">instance_id</span></code> only when it is not known — the retirement then
+falls back to <code class="docutils literal notranslate"><span class="pre">(transform_name,</span> <span class="pre">call_index,</span> <span class="pre">upstream)</span></code>, which still
+cannot distinguish two DIFFERENT units sharing both an upstream set
+and a <code class="docutils literal notranslate"><span class="pre">call_index</span></code> (the residual case the module docstring names),
+so it may retire nothing, or (rarely) the wrong record.</p>
+<p><strong>Bypassing this method (a raw ``store.add``) leaves a matching
+unproduced-output record in place</strong> — it reads as a live blocker
+after reload even though this write produced the thing it described.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.graph.ProjectGraph.add_unproduced_output">
+<span class="sig-name descname"><span class="pre">add_unproduced_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">skeleton</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Annotation</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reason</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">BaseException</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blocked_by</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">call_index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">was_attributed_to</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">UUID</span></span></span><a class="reference internal" href="../../_modules/nw/graph.html#ProjectGraph.add_unproduced_output"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.graph.ProjectGraph.add_unproduced_output" title="Link to this definition"></a></dt>
+<dd><p>Persist why a planned output was never produced (nw#44).</p>
+<p>Mirrors one entry of <code class="docutils literal notranslate"><span class="pre">TransformResult.failed</span></code> / <code class="docutils literal notranslate"><span class="pre">.blocked</span></code>
+(<a class="reference internal" href="../nw.html#nw.FailedOutput" title="nw.transforms.FailedOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">nw.transforms.FailedOutput</span></code></a>) — pass its <code class="docutils literal notranslate"><span class="pre">skeleton</span></code>,
+<code class="docutils literal notranslate"><span class="pre">status</span></code>, <code class="docutils literal notranslate"><span class="pre">reason</span></code>, <code class="docutils literal notranslate"><span class="pre">error</span></code> and <code class="docutils literal notranslate"><span class="pre">blocked_by</span></code> straight through.
+Written under <code class="xref py py-data docutils literal notranslate"><span class="pre">nw.bodies.UNPRODUCED_OUTPUT_BODY_SCHEMA_URI</span></code>,
+never under <code class="docutils literal notranslate"><span class="pre">skeleton.body_schema_uri</span></code> (see the module’s docstring
+on why that tier is reserved for what was actually produced).</p>
+<p><code class="docutils literal notranslate"><span class="pre">instance_id</span></code> (a fan-out unit’s
+<a class="reference internal" href="transforms/fanout.html#nw.transforms.fanout.work_item_instance_id" title="nw.transforms.fanout.work_item_instance_id"><code class="xref py py-func docutils literal notranslate"><span class="pre">work_item_instance_id()</span></code></a>) and
+<code class="docutils literal notranslate"><span class="pre">call_index</span></code> (this output’s position within its <code class="docutils literal notranslate"><span class="pre">execute()</span></code>
+call’s skeleton tuple) together form the identity
+<a class="reference internal" href="#nw.graph.ProjectGraph.add_annotation" title="nw.graph.ProjectGraph.add_annotation"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_annotation()</span></code></a> retires by — see
+<a class="reference internal" href="bodies/unproduced_output.html#module-nw.bodies.unproduced_output" title="nw.bodies.unproduced_output"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nw.bodies.unproduced_output</span></code></a>’s module docstring for the full
+key. <strong>Dedupes on that identity</strong>: a record already outstanding for
+the same key is removed before this one is written, so a unit
+failing twice leaves one current record, not two.</p>
+<p>Parentless, like a verifying trace.</p>
+<p><code class="docutils literal notranslate"><span class="pre">reason</span></code> never stores raw exception text — see the module
+docstring’s “reason never carries raw exception text”. When
+<code class="docutils literal notranslate"><span class="pre">error</span></code> is given, the original <code class="docutils literal notranslate"><span class="pre">reason</span></code> is logged
+(<code class="docutils literal notranslate"><span class="pre">logging.getLogger(&quot;nw.graph&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">WARNING</span></code>) and the persisted
+<code class="docutils literal notranslate"><span class="pre">reason</span></code> becomes a fixed sentence naming <code class="docutils literal notranslate"><span class="pre">error</span></code>’s type.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -236,6 +280,17 @@ removed either way).</p>
 re-initializing replaces the recorded envelope in place — the
 annotation id is stable across replacements, like every entity
 upsert. A no-op write (same envelope) writes nothing.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.graph.ProjectGraph.unproduced_outputs">
+<span class="sig-name descname"><span class="pre">unproduced_outputs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#nw.graph.StoredUnproducedOutput" title="nw.graph.StoredUnproducedOutput"><span class="pre">StoredUnproducedOutput</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/nw/graph.html#ProjectGraph.unproduced_outputs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.graph.ProjectGraph.unproduced_outputs" title="Link to this definition"></a></dt>
+<dd><p>Every unproduced-output record still outstanding, oldest first.</p>
+<p>A record disappears the moment <a class="reference internal" href="#nw.graph.ProjectGraph.add_annotation" title="nw.graph.ProjectGraph.add_annotation"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_annotation()</span></code></a> writes a real
+output for the same identity, or another <a class="reference internal" href="#nw.graph.ProjectGraph.add_unproduced_output" title="nw.graph.ProjectGraph.add_unproduced_output"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_unproduced_output()</span></code></a>
+call for the same identity supersedes it (dedupe) — what this
+returns is exactly “still missing”, survives a reload, and is not a
+cache of any in-memory <code class="docutils literal notranslate"><span class="pre">TransformResult</span></code>.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -291,6 +346,11 @@ upsert. A no-op write (same envelope) writes nothing.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="nw.graph.StoredShot">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.graph.</span></span><span class="sig-name descname"><span class="pre">StoredShot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">annotation_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'UUID'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'TimeInterval'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">body</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'ShotBodyV1'</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nw/graph.html#StoredShot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.graph.StoredShot" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.graph.StoredUnproducedOutput">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.graph.</span></span><span class="sig-name descname"><span class="pre">StoredUnproducedOutput</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">annotation_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'UUID'</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">body</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="s"><span class="pre">'UnproducedOutputBodyV1'</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nw/graph.html#StoredUnproducedOutput"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.graph.StoredUnproducedOutput" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">

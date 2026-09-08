@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.bodies &mdash; nw 0.0.48 documentation</title>
+  <title>nw.bodies &mdash; nw 0.0.49 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=a72e4630"></script>
+      <script src="../../_static/documentation_options.js?v=0356c229"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -79,6 +79,10 @@
 <li class="toctree-l3"><a class="reference internal" href="#nw.bodies.ShotBodyV1.model_config"><code class="docutils literal notranslate"><span class="pre">ShotBodyV1.model_config</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#nw.bodies.UnproducedOutputBodyV1"><code class="docutils literal notranslate"><span class="pre">UnproducedOutputBodyV1</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#nw.bodies.UnproducedOutputBodyV1.model_config"><code class="docutils literal notranslate"><span class="pre">UnproducedOutputBodyV1.model_config</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#nw.bodies.UpstreamDigestV1"><code class="docutils literal notranslate"><span class="pre">UpstreamDigestV1</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#nw.bodies.UpstreamDigestV1.model_config"><code class="docutils literal notranslate"><span class="pre">UpstreamDigestV1.model_config</span></code></a></li>
 </ul>
@@ -97,6 +101,7 @@
 <li class="toctree-l1"><a class="reference internal" href="bodies/render_result.html">nw.bodies.render_result</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bodies/section.html">nw.bodies.section</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bodies/shot.html">nw.bodies.shot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bodies/unproduced_output.html">nw.bodies.unproduced_output</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bodies/verifying_trace.html">nw.bodies.verifying_trace</a></li>
 <li class="toctree-l1"><a class="reference internal" href="delivery.html">nw.delivery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="experiment.html">nw.experiment</a></li>
@@ -165,6 +170,8 @@ with a matching <code class="docutils literal notranslate"><span class="pre">bod
 <li><p><code class="docutils literal notranslate"><span class="pre">annot://schema/decision/v1</span></code>       — provenance-rich decision log entry</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">annot://schema/render-result/v1</span></code>  — output of a render Transform</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">annot://schema/verifying-trace/v1</span></code> — upstream value digests, for early cutoff</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">annot://schema/unproduced-output/v1</span></code> — why a planned output was never
+produced (nw#44), retired by a later successful retry</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">annot://schema/genre-envelope/v1</span></code> — the resolved {genre, template, params}
 the project was created as (singleton per project)</p></li>
 </ul>
@@ -260,6 +267,23 @@ persisted record and the creation-time contract can never drift apart.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nw.bodies.ShotBodyV1.model_config">
 <span class="sig-name descname"><span class="pre">model_config</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'extra':</span> <span class="pre">'forbid',</span> <span class="pre">'frozen':</span> <span class="pre">True}</span></span><a class="headerlink" href="#nw.bodies.ShotBodyV1.model_config" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.bodies.UnproducedOutputBodyV1">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.bodies.</span></span><span class="sig-name descname"><span class="pre">UnproducedOutputBodyV1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">call_index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upstream</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_kind</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reason</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blocked_by</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">()</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/nw/bodies/unproduced_output.html#UnproducedOutputBodyV1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.bodies.UnproducedOutputBodyV1" title="Link to this definition"></a></dt>
+<dd><p>Body of an unproduced-output record.</p>
+<p><code class="docutils literal notranslate"><span class="pre">status</span></code> mirrors <a class="reference internal" href="transforms/fanout.html#nw.transforms.fanout.UnitStatus" title="nw.transforms.fanout.UnitStatus"><code class="xref py py-class docutils literal notranslate"><span class="pre">nw.transforms.fanout.UnitStatus</span></code></a>’s two
+unproduced cases: <code class="docutils literal notranslate"><span class="pre">&quot;failed&quot;</span></code> (the call itself failed) or <code class="docutils literal notranslate"><span class="pre">&quot;blocked&quot;</span></code>
+(an upstream call in the same plan failed first). <code class="docutils literal notranslate"><span class="pre">upstream</span></code> is stored
+for the <code class="docutils literal notranslate"><span class="pre">call_index</span></code> fallback identity (see the module docstring); it
+is not itself a sufficient key.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.bodies.UnproducedOutputBodyV1.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'extra':</span> <span class="pre">'forbid',</span> <span class="pre">'frozen':</span> <span class="pre">True}</span></span><a class="headerlink" href="#nw.bodies.UnproducedOutputBodyV1.model_config" title="Link to this definition"></a></dt>
 <dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
 </dd></dl>
 

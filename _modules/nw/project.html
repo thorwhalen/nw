@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.project &mdash; nw 0.0.48 documentation</title>
+  <title>nw.project &mdash; nw 0.0.49 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=a72e4630"></script>
+      <script src="../../_static/documentation_options.js?v=0356c229"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -55,6 +55,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/render_result.html">nw.bodies.render_result</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/section.html">nw.bodies.section</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/shot.html">nw.bodies.shot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/unproduced_output.html">nw.bodies.unproduced_output</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/verifying_trace.html">nw.bodies.verifying_trace</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/delivery.html">nw.delivery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/experiment.html">nw.experiment</a></li>
@@ -186,7 +187,7 @@
     <span class="n">iter_all_annotations</span><span class="p">,</span>
     <span class="n">remove_annotations_with_traces</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.bodies</span><span class="w"> </span><span class="kn">import</span> <span class="n">GENRE_ENVELOPE_TIER</span><span class="p">,</span> <span class="n">VERIFYING_TRACE_TIER</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.bodies</span><span class="w"> </span><span class="kn">import</span> <span class="n">GENRE_ENVELOPE_TIER</span><span class="p">,</span> <span class="n">UNPRODUCED_OUTPUT_TIER</span><span class="p">,</span> <span class="n">VERIFYING_TRACE_TIER</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.migrate</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">_TIER_CHARACTER_REF</span><span class="p">,</span>
     <span class="n">_TIER_DECISION</span><span class="p">,</span>
@@ -211,7 +212,7 @@
 
 
 <span class="n">_BOOKKEEPING_TIERS</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span>
-    <span class="p">{</span><span class="n">_TIER_DECISION</span><span class="p">,</span> <span class="n">VERIFYING_TRACE_TIER</span><span class="p">,</span> <span class="n">GENRE_ENVELOPE_TIER</span><span class="p">}</span>
+    <span class="p">{</span><span class="n">_TIER_DECISION</span><span class="p">,</span> <span class="n">VERIFYING_TRACE_TIER</span><span class="p">,</span> <span class="n">GENRE_ENVELOPE_TIER</span><span class="p">,</span> <span class="n">UNPRODUCED_OUTPUT_TIER</span><span class="p">}</span>
 <span class="p">)</span>
 <span class="sd">"""Tiers that record *what nw did*, not *what the project is*.</span>
 
@@ -219,7 +220,11 @@
 <span class="sd">excluded from both halves of it: they are neither an authored change nor a</span>
 <span class="sd">downstream consequence of one. The genre envelope qualifies on both counts:</span>
 <span class="sd">it is parentless and written at creation, so without this it would shadow</span>
-<span class="sd">the user's actual last authored change."""</span>
+<span class="sd">the user's actual last authored change. ``unproduced-output`` (nw#44)</span>
+<span class="sd">qualifies for the same reason as a verifying trace: parentless, and written</span>
+<span class="sd">*after* the run it describes, so it would shadow the real last-authored</span>
+<span class="sd">answer with "an isolate run's own bookkeeping" the moment one records</span>
+<span class="sd">anything."""</span>
 
 
 <span class="c1"># ---------------------------------------------------------------------------</span>

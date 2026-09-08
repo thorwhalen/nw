@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.transforms.fanout &mdash; nw 0.0.48 documentation</title>
+  <title>nw.transforms.fanout &mdash; nw 0.0.49 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=a72e4630"></script>
+      <script src="../../../_static/documentation_options.js?v=0356c229"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -58,6 +58,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../bodies/render_result.html">nw.bodies.render_result</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../bodies/section.html">nw.bodies.section</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../bodies/shot.html">nw.bodies.shot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bodies/unproduced_output.html">nw.bodies.unproduced_output</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../bodies/verifying_trace.html">nw.bodies.verifying_trace</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../delivery.html">nw.delivery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../experiment.html">nw.experiment</a></li>
@@ -179,7 +180,14 @@ isolation on top of falaw#20’s per-call isolation.</p></li>
 <li><p><a class="reference internal" href="#nw.transforms.fanout.FanOutResult" title="nw.transforms.fanout.FanOutResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">FanOutResult</span></code></a> — work items live in the <strong>run record</strong>
 (<a class="reference internal" href="#nw.transforms.fanout.FanOutResult.to_record" title="nw.transforms.fanout.FanOutResult.to_record"><code class="xref py py-meth docutils literal notranslate"><span class="pre">FanOutResult.to_record()</span></code></a>), never in the graph document.
 Materialising instances into the document would mutate it on execution
-and break its digest.</p></li>
+and break its digest. One exception, deliberately narrow: <strong>why</strong> a unit’s
+output was never produced is a graph sidecar (nw#44,
+<code class="docutils literal notranslate"><span class="pre">annot://schema/unproduced-output/v1</span></code>,
+<a class="reference internal" href="../graph.html#nw.graph.ProjectGraph.add_unproduced_output" title="nw.graph.ProjectGraph.add_unproduced_output"><code class="xref py py-meth docutils literal notranslate"><span class="pre">nw.graph.ProjectGraph.add_unproduced_output()</span></code></a>) — the reason and
+status, not the work item itself. It is keyed by <code class="docutils literal notranslate"><span class="pre">unit.instance_id</span></code>
+(passed to an <code class="docutils literal notranslate"><span class="pre">execute()</span></code> that accepts <code class="docutils literal notranslate"><span class="pre">unit_instance_id</span></code>, the same
+accepts-it-or-not seam <code class="docutils literal notranslate"><span class="pre">on_failure</span></code> uses), never by the item’s
+<code class="docutils literal notranslate"><span class="pre">attributes</span></code> or <code class="docutils literal notranslate"><span class="pre">scope_interval</span></code>.</p></li>
 </ul>
 <p>Deliberately NOT here (recorded in nw#26 so nobody re-litigates): a general
 re-entrant scheduler (a fan-out of independent plans needs bounded

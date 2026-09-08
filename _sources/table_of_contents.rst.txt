@@ -11,6 +11,7 @@
    module_docs/nw/bodies/render_result
    module_docs/nw/bodies/section
    module_docs/nw/bodies/shot
+   module_docs/nw/bodies/unproduced_output
    module_docs/nw/bodies/verifying_trace
    module_docs/nw/delivery
    module_docs/nw/experiment

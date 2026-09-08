@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.transforms._adapters.render_strategy &mdash; nw 0.0.48 documentation</title>
+  <title>nw.transforms._adapters.render_strategy &mdash; nw 0.0.49 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../../_static/documentation_options.js?v=a72e4630"></script>
+      <script src="../../../../_static/documentation_options.js?v=0356c229"></script>
       <script src="../../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -55,6 +55,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../../module_docs/nw/bodies/render_result.html">nw.bodies.render_result</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../module_docs/nw/bodies/section.html">nw.bodies.section</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../module_docs/nw/bodies/shot.html">nw.bodies.shot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../module_docs/nw/bodies/unproduced_output.html">nw.bodies.unproduced_output</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../module_docs/nw/bodies/verifying_trace.html">nw.bodies.verifying_trace</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../module_docs/nw/delivery.html">nw.delivery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../module_docs/nw/experiment.html">nw.experiment</a></li>
@@ -143,6 +144,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">ConfigDict</span><span class="p">,</span> <span class="n">Field</span>
 
@@ -267,6 +269,7 @@
         <span class="n">use_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">on_failure</span><span class="p">:</span> <span class="n">OnFailure</span> <span class="o">=</span> <span class="s2">"halt"</span><span class="p">,</span>
+        <span class="n">unit_instance_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TransformResult</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Render one shot. ``on_failure`` isolates at the *shot* boundary.</span>
 
@@ -316,6 +319,19 @@
                 <span class="n">blocked_by</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">first</span><span class="o">.</span><span class="n">blocked_by</span><span class="p">),</span>
             <span class="p">)</span>
             <span class="n">is_blocked</span> <span class="o">=</span> <span class="n">first</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="s2">"blocked"</span>
+            <span class="c1"># This override bypasses BaseTransform.execute, so it must record</span>
+            <span class="c1"># the unproduced output itself — the same self-stamping obligation</span>
+            <span class="c1"># `impl_version` already places on an overriding execute() (nw#44).</span>
+            <span class="n">project</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add_unproduced_output</span><span class="p">(</span>
+                <span class="n">unproduced</span><span class="o">.</span><span class="n">skeleton</span><span class="p">,</span>
+                <span class="n">transform_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="n">status</span><span class="o">=</span><span class="n">unproduced</span><span class="o">.</span><span class="n">status</span><span class="p">,</span>
+                <span class="n">reason</span><span class="o">=</span><span class="n">unproduced</span><span class="o">.</span><span class="n">reason</span><span class="p">,</span>
+                <span class="n">error</span><span class="o">=</span><span class="n">unproduced</span><span class="o">.</span><span class="n">error</span><span class="p">,</span>
+                <span class="n">blocked_by</span><span class="o">=</span><span class="n">unproduced</span><span class="o">.</span><span class="n">blocked_by</span><span class="p">,</span>
+                <span class="n">instance_id</span><span class="o">=</span><span class="n">unit_instance_id</span><span class="p">,</span>
+                <span class="n">call_index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="p">)</span>
             <span class="k">return</span> <span class="n">TransformResult</span><span class="p">(</span>
                 <span class="n">annotations</span><span class="o">=</span><span class="p">(),</span>
                 <span class="n">artifacts</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">report</span><span class="o">.</span><span class="n">produced</span><span class="p">),</span>
@@ -343,7 +359,9 @@
                 <span class="p">}</span>
             <span class="p">}</span>
         <span class="p">)</span>
-        <span class="n">project</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add_annotation</span><span class="p">(</span><span class="n">completed</span><span class="p">)</span>
+        <span class="n">project</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add_annotation</span><span class="p">(</span>
+            <span class="n">completed</span><span class="p">,</span> <span class="n">instance_id</span><span class="o">=</span><span class="n">unit_instance_id</span><span class="p">,</span> <span class="n">call_index</span><span class="o">=</span><span class="mi">0</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="n">TransformResult</span><span class="p">(</span>
             <span class="n">annotations</span><span class="o">=</span><span class="p">(</span><span class="n">completed</span><span class="p">,),</span>
             <span class="n">artifacts</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">artifacts</span><span class="p">),</span>

@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Welcome to nw’s documentation! &mdash; nw 0.0.48 documentation</title>
+  <title>Welcome to nw’s documentation! &mdash; nw 0.0.49 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=a72e4630"></script>
+      <script src="_static/documentation_options.js?v=0356c229"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -57,6 +57,7 @@
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/render_result.html">nw.bodies.render_result</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/section.html">nw.bodies.section</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/shot.html">nw.bodies.shot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/unproduced_output.html">nw.bodies.unproduced_output</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/verifying_trace.html">nw.bodies.verifying_trace</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/delivery.html">nw.delivery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/experiment.html">nw.experiment</a></li>
@@ -147,11 +148,13 @@
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.ShotReport"><code class="docutils literal notranslate"><span class="pre">ShotReport</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.ShotSpec"><code class="docutils literal notranslate"><span class="pre">ShotSpec</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.SongInfo"><code class="docutils literal notranslate"><span class="pre">SongInfo</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.StoredUnproducedOutput"><code class="docutils literal notranslate"><span class="pre">StoredUnproducedOutput</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.Strategy"><code class="docutils literal notranslate"><span class="pre">Strategy</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.Template"><code class="docutils literal notranslate"><span class="pre">Template</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.Transform"><code class="docutils literal notranslate"><span class="pre">Transform</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.TransformInputs"><code class="docutils literal notranslate"><span class="pre">TransformInputs</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.TransformResult"><code class="docutils literal notranslate"><span class="pre">TransformResult</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.UnproducedOutputBodyV1"><code class="docutils literal notranslate"><span class="pre">UnproducedOutputBodyV1</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.WorkItem"><code class="docutils literal notranslate"><span class="pre">WorkItem</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.all_stale"><code class="docutils literal notranslate"><span class="pre">all_stale()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.annotations_at_tier"><code class="docutils literal notranslate"><span class="pre">annotations_at_tier()</span></code></a></li>
@@ -224,6 +227,7 @@
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies.html#nw.bodies.RenderResultBodyV1"><code class="docutils literal notranslate"><span class="pre">RenderResultBodyV1</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies.html#nw.bodies.SectionBodyV1"><code class="docutils literal notranslate"><span class="pre">SectionBodyV1</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies.html#nw.bodies.ShotBodyV1"><code class="docutils literal notranslate"><span class="pre">ShotBodyV1</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies.html#nw.bodies.UnproducedOutputBodyV1"><code class="docutils literal notranslate"><span class="pre">UnproducedOutputBodyV1</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies.html#nw.bodies.UpstreamDigestV1"><code class="docutils literal notranslate"><span class="pre">UpstreamDigestV1</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies.html#nw.bodies.VerifyingTraceBodyV1"><code class="docutils literal notranslate"><span class="pre">VerifyingTraceBodyV1</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies.html#nw.bodies.build_verifying_trace"><code class="docutils literal notranslate"><span class="pre">build_verifying_trace()</span></code></a></li>
@@ -256,6 +260,14 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/shot.html">nw.bodies.shot</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies/shot.html#nw.bodies.shot.ShotBodyV1"><code class="docutils literal notranslate"><span class="pre">ShotBodyV1</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/unproduced_output.html">nw.bodies.unproduced_output</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies/unproduced_output.html#why-a-sidecar-tier-rather-than-the-output-kind-s-own-schema">Why a sidecar tier rather than the output kind’s own schema</a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies/unproduced_output.html#identity-and-lifecycle">Identity and lifecycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies/unproduced_output.html#two-properties-this-schema-deliberately-shares-with-the-verifying-trace">Two properties this schema deliberately shares with the verifying trace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies/unproduced_output.html#reason-never-carries-raw-exception-text"><code class="docutils literal notranslate"><span class="pre">reason</span></code> never carries raw exception text</a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies/unproduced_output.html#nw.bodies.unproduced_output.UnproducedOutputBodyV1"><code class="docutils literal notranslate"><span class="pre">UnproducedOutputBodyV1</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/verifying_trace.html">nw.bodies.verifying_trace</a><ul>
@@ -338,6 +350,7 @@
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/graph.html#nw.graph.StoredEnvironmentRef"><code class="docutils literal notranslate"><span class="pre">StoredEnvironmentRef</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/graph.html#nw.graph.StoredSection"><code class="docutils literal notranslate"><span class="pre">StoredSection</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/graph.html#nw.graph.StoredShot"><code class="docutils literal notranslate"><span class="pre">StoredShot</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/graph.html#nw.graph.StoredUnproducedOutput"><code class="docutils literal notranslate"><span class="pre">StoredUnproducedOutput</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/graph.html#nw.graph.all_project_stores"><code class="docutils literal notranslate"><span class="pre">all_project_stores()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/graph.html#nw.graph.annotations_at_tier"><code class="docutils literal notranslate"><span class="pre">annotations_at_tier()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="module_docs/nw/graph.html#nw.graph.backfill_traces"><code class="docutils literal notranslate"><span class="pre">backfill_traces()</span></code></a></li>
@@ -549,7 +562,7 @@
 <li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
 <li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
 </ul>
-<p>Release: 0.0.48</p>
+<p>Release: 0.0.49</p>
 <p>Last change: Sep 08, 2026</p>
 </section>
 

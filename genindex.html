@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; nw 0.0.48 documentation</title>
+  <title>Index &mdash; nw 0.0.49 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=a72e4630"></script>
+      <script src="_static/documentation_options.js?v=0356c229"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -55,6 +55,7 @@
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/render_result.html">nw.bodies.render_result</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/section.html">nw.bodies.section</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/shot.html">nw.bodies.shot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/unproduced_output.html">nw.bodies.unproduced_output</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/verifying_trace.html">nw.bodies.verifying_trace</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/delivery.html">nw.delivery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/experiment.html">nw.experiment</a></li>
@@ -153,6 +154,12 @@
 
       <ul>
         <li><a href="module_docs/nw/project.html#nw.project.Project.add_character">(nw.project.Project method)</a>
+</li>
+      </ul></li>
+      <li><a href="module_docs/nw/graph.html#nw.graph.ProjectGraph.add_unproduced_output">add_unproduced_output() (nw.graph.ProjectGraph method)</a>
+
+      <ul>
+        <li><a href="module_docs/nw.html#nw.ProjectGraph.add_unproduced_output">(nw.ProjectGraph method)</a>
 </li>
       </ul></li>
       <li><a href="module_docs/nw/jobs.html#nw.jobs.DurationLearningMiddleware.after_compute">after_compute() (nw.jobs.DurationLearningMiddleware method)</a>
@@ -996,6 +1003,10 @@
 </li>
         <li><a href="module_docs/nw/bodies.html#nw.bodies.ShotBodyV1.model_config">(nw.bodies.ShotBodyV1 attribute)</a>
 </li>
+        <li><a href="module_docs/nw/bodies/unproduced_output.html#nw.bodies.unproduced_output.UnproducedOutputBodyV1.model_config">(nw.bodies.unproduced_output.UnproducedOutputBodyV1 attribute)</a>
+</li>
+        <li><a href="module_docs/nw/bodies.html#nw.bodies.UnproducedOutputBodyV1.model_config">(nw.bodies.UnproducedOutputBodyV1 attribute)</a>
+</li>
         <li><a href="module_docs/nw/bodies.html#nw.bodies.UpstreamDigestV1.model_config">(nw.bodies.UpstreamDigestV1 attribute)</a>
 </li>
         <li><a href="module_docs/nw/bodies/verifying_trace.html#nw.bodies.verifying_trace.UpstreamDigestV1.model_config">(nw.bodies.verifying_trace.UpstreamDigestV1 attribute)</a>
@@ -1064,6 +1075,8 @@
 </li>
         <li><a href="module_docs/nw/transforms.html#nw.transforms.WorkItem.model_config">(nw.transforms.WorkItem attribute)</a>
 </li>
+        <li><a href="module_docs/nw.html#nw.UnproducedOutputBodyV1.model_config">(nw.UnproducedOutputBodyV1 attribute)</a>
+</li>
         <li><a href="module_docs/nw.html#nw.WorkItem.model_config">(nw.WorkItem attribute)</a>
 </li>
       </ul></li>
@@ -1090,6 +1103,8 @@
         <li><a href="module_docs/nw/bodies/section.html#module-nw.bodies.section">nw.bodies.section</a>
 </li>
         <li><a href="module_docs/nw/bodies/shot.html#module-nw.bodies.shot">nw.bodies.shot</a>
+</li>
+        <li><a href="module_docs/nw/bodies/unproduced_output.html#module-nw.bodies.unproduced_output">nw.bodies.unproduced_output</a>
 </li>
         <li><a href="module_docs/nw/bodies/verifying_trace.html#module-nw.bodies.verifying_trace">nw.bodies.verifying_trace</a>
 </li>
@@ -1225,6 +1240,13 @@
 
       <ul>
         <li><a href="module_docs/nw/bodies/shot.html#module-nw.bodies.shot">module</a>
+</li>
+      </ul></li>
+      <li>
+    nw.bodies.unproduced_output
+
+      <ul>
+        <li><a href="module_docs/nw/bodies/unproduced_output.html#module-nw.bodies.unproduced_output">module</a>
 </li>
       </ul></li>
       <li>
@@ -1898,6 +1920,12 @@
 </li>
       <li><a href="module_docs/nw/graph.html#nw.graph.StoredShot">StoredShot (class in nw.graph)</a>
 </li>
+      <li><a href="module_docs/nw.html#nw.StoredUnproducedOutput">StoredUnproducedOutput (class in nw)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/graph.html#nw.graph.StoredUnproducedOutput">(class in nw.graph)</a>
+</li>
+      </ul></li>
       <li><a href="module_docs/nw.html#nw.storyboard_db_path">storyboard_db_path() (in module nw)</a>
 
       <ul>
@@ -2042,6 +2070,20 @@
         <li><a href="module_docs/nw/transforms.html#nw.transforms.FanOutPlan.unknown_call_count">(nw.transforms.FanOutPlan property)</a>
 </li>
       </ul></li>
+      <li><a href="module_docs/nw/graph.html#nw.graph.ProjectGraph.unproduced_outputs">unproduced_outputs() (nw.graph.ProjectGraph method)</a>
+
+      <ul>
+        <li><a href="module_docs/nw.html#nw.ProjectGraph.unproduced_outputs">(nw.ProjectGraph method)</a>
+</li>
+      </ul></li>
+      <li><a href="module_docs/nw.html#nw.UnproducedOutputBodyV1">UnproducedOutputBodyV1 (class in nw)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/bodies.html#nw.bodies.UnproducedOutputBodyV1">(class in nw.bodies)</a>
+</li>
+        <li><a href="module_docs/nw/bodies/unproduced_output.html#nw.bodies.unproduced_output.UnproducedOutputBodyV1">(class in nw.bodies.unproduced_output)</a>
+</li>
+      </ul></li>
       <li><a href="module_docs/nw.html#nw.unquotable">unquotable() (in module nw)</a>
 
       <ul>
@@ -2050,6 +2092,8 @@
       </ul></li>
       <li><a href="module_docs/nw/jobs.html#nw.jobs.UNREADABLE_PLAN_REASON">UNREADABLE_PLAN_REASON (in module nw.jobs)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module_docs/nw.html#nw.Project.update_spec">update_spec() (nw.Project method)</a>
 
       <ul>
@@ -2058,8 +2102,6 @@
       </ul></li>
       <li><a href="module_docs/nw/renderers/_common.html#nw.renderers._common.upload_local_file">upload_local_file() (in module nw.renderers._common)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module_docs/nw/graph.html#nw.graph.ProjectGraph.upsert_character_ref">upsert_character_ref() (nw.graph.ProjectGraph method)</a>
 
       <ul>

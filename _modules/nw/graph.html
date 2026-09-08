@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.graph &mdash; nw 0.0.48 documentation</title>
+  <title>nw.graph &mdash; nw 0.0.49 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=a72e4630"></script>
+      <script src="../../_static/documentation_options.js?v=0356c229"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -55,6 +55,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/render_result.html">nw.bodies.render_result</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/section.html">nw.bodies.section</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/shot.html">nw.bodies.shot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/unproduced_output.html">nw.bodies.unproduced_output</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/verifying_trace.html">nw.bodies.verifying_trace</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/delivery.html">nw.delivery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/experiment.html">nw.experiment</a></li>
@@ -138,6 +139,7 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">contextmanager</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
@@ -159,6 +161,8 @@
     <span class="n">ENVIRONMENT_REF_BODY_SCHEMA_URI</span><span class="p">,</span>
     <span class="n">GENRE_ENVELOPE_BODY_SCHEMA_URI</span><span class="p">,</span>
     <span class="n">GENRE_ENVELOPE_TIER</span><span class="p">,</span>
+    <span class="n">UNPRODUCED_OUTPUT_BODY_SCHEMA_URI</span><span class="p">,</span>
+    <span class="n">UNPRODUCED_OUTPUT_TIER</span><span class="p">,</span>
     <span class="n">GenreEnvelopeBodyV1</span><span class="p">,</span>
     <span class="n">SECTION_BODY_SCHEMA_URI</span><span class="p">,</span>
     <span class="n">SHOT_BODY_SCHEMA_URI</span><span class="p">,</span>
@@ -169,6 +173,7 @@
     <span class="n">EnvironmentRefBodyV1</span><span class="p">,</span>
     <span class="n">SectionBodyV1</span><span class="p">,</span>
     <span class="n">ShotBodyV1</span><span class="p">,</span>
+    <span class="n">UnproducedOutputBodyV1</span><span class="p">,</span>
     <span class="n">build_verifying_trace</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.graph_backend</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
@@ -188,6 +193,9 @@
     <span class="n">open_project_graph_readonly</span><span class="p">,</span>
     <span class="n">project_asset_id</span><span class="p">,</span>
 <span class="p">)</span>
+
+
+<span class="n">_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">"nw.graph"</span><span class="p">)</span>
 
 
 <span class="c1"># ---------------------------------------------------------------------------</span>
@@ -239,6 +247,15 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">StoredDecision</span><span class="p">:</span>
     <span class="n">annotation_id</span><span class="p">:</span> <span class="n">UUID</span>
     <span class="n">body</span><span class="p">:</span> <span class="n">DecisionBodyV1</span></div>
+
+
+
+<div class="viewcode-block" id="StoredUnproducedOutput">
+<a class="viewcode-back" href="../../module_docs/nw/graph.html#nw.StoredUnproducedOutput">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">StoredUnproducedOutput</span><span class="p">:</span>
+    <span class="n">annotation_id</span><span class="p">:</span> <span class="n">UUID</span>
+    <span class="n">body</span><span class="p">:</span> <span class="n">UnproducedOutputBodyV1</span></div>
 
 
 
@@ -589,7 +606,13 @@
 
 <div class="viewcode-block" id="ProjectGraph.add_annotation">
 <a class="viewcode-back" href="../../module_docs/nw/graph.html#nw.ProjectGraph.add_annotation">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">add_annotation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ann</span><span class="p">:</span> <span class="n">Annotation</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_annotation</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">ann</span><span class="p">:</span> <span class="n">Annotation</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">instance_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">call_index</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Write one annotation to the project graph, plus its verifying trace.</span>
 
 <span class="sd">        Registers ``ann.tier`` if it isn't a known tier yet — ``SqliteStore``</span>
@@ -607,14 +630,34 @@
 
 <span class="sd">        Annotations with no ``was_derived_from`` parents get no trace — there</span>
 <span class="sd">        is nothing to verify, and they are nobody's descendant.</span>
+
+<span class="sd">        It is also where a matching :meth:`add_unproduced_output` record is</span>
+<span class="sd">        retired (nw#44): a successful write is proof the thing that record</span>
+<span class="sd">        described has now been produced. ``instance_id`` / ``call_index``</span>
+<span class="sd">        identify *this write's* unit precisely (see</span>
+<span class="sd">        :mod:`nw.bodies.unproduced_output`'s module docstring for the key);</span>
+<span class="sd">        omit ``instance_id`` only when it is not known — the retirement then</span>
+<span class="sd">        falls back to ``(transform_name, call_index, upstream)``, which still</span>
+<span class="sd">        cannot distinguish two DIFFERENT units sharing both an upstream set</span>
+<span class="sd">        and a ``call_index`` (the residual case the module docstring names),</span>
+<span class="sd">        so it may retire nothing, or (rarely) the wrong record.</span>
+
+<span class="sd">        **Bypassing this method (a raw ``store.add``) leaves a matching</span>
+<span class="sd">        unproduced-output record in place** — it reads as a live blocker</span>
+<span class="sd">        after reload even though this write produced the thing it described.</span>
 <span class="sd">        """</span>
         <span class="kn">from</span><span class="w"> </span><span class="nn">lacing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tier</span><span class="p">,</span> <span class="n">TierStereotype</span>
 
         <span class="n">trace</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_verifying_trace_for</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">ann</span><span class="o">.</span><span class="n">provenance</span><span class="o">.</span><span class="n">was_derived_from</span><span class="p">)</span>
+        <span class="n">retire_key</span> <span class="o">=</span> <span class="n">_unproduced_output_key_for</span><span class="p">(</span>
+            <span class="n">ann</span><span class="p">,</span> <span class="n">instance_id</span><span class="o">=</span><span class="n">instance_id</span><span class="p">,</span> <span class="n">call_index</span><span class="o">=</span><span class="n">call_index</span>
+        <span class="p">)</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open</span><span class="p">()</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
             <span class="n">store</span><span class="o">.</span><span class="n">add_tier</span><span class="p">(</span><span class="n">Tier</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">ann</span><span class="o">.</span><span class="n">tier</span><span class="p">,</span> <span class="n">stereotype</span><span class="o">=</span><span class="n">TierStereotype</span><span class="o">.</span><span class="n">NONE</span><span class="p">))</span>
             <span class="n">store</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ann</span><span class="p">)</span>
-            <span class="n">_add_trace</span><span class="p">(</span><span class="n">store</span><span class="p">,</span> <span class="n">trace</span><span class="p">)</span></div>
+            <span class="n">_add_trace</span><span class="p">(</span><span class="n">store</span><span class="p">,</span> <span class="n">trace</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">retire_key</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">_retire_unproduced_outputs</span><span class="p">(</span><span class="n">store</span><span class="p">,</span> <span class="n">retire_key</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ProjectGraph.remove_annotation">
@@ -641,6 +684,131 @@
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open</span><span class="p">()</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
             <span class="n">removed</span> <span class="o">=</span> <span class="n">remove_annotations_with_traces</span><span class="p">(</span><span class="n">store</span><span class="p">,</span> <span class="p">(</span><span class="n">annotation_id</span><span class="p">,))</span>
         <span class="k">return</span> <span class="n">annotation_id</span> <span class="ow">in</span> <span class="n">removed</span></div>
+
+
+    <span class="c1"># -- unproduced outputs (nw#44) -------------------------------------------</span>
+
+<div class="viewcode-block" id="ProjectGraph.add_unproduced_output">
+<a class="viewcode-back" href="../../module_docs/nw/graph.html#nw.ProjectGraph.add_unproduced_output">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_unproduced_output</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">skeleton</span><span class="p">:</span> <span class="n">Annotation</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">transform_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">status</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">reason</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span><span class="p">,</span>
+        <span class="n">error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="ne">BaseException</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">blocked_by</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
+        <span class="n">instance_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">call_index</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">was_attributed_to</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UUID</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Persist why a planned output was never produced (nw#44).</span>
+
+<span class="sd">        Mirrors one entry of ``TransformResult.failed`` / ``.blocked``</span>
+<span class="sd">        (:class:`nw.transforms.FailedOutput`) — pass its ``skeleton``,</span>
+<span class="sd">        ``status``, ``reason``, ``error`` and ``blocked_by`` straight through.</span>
+<span class="sd">        Written under :data:`nw.bodies.UNPRODUCED_OUTPUT_BODY_SCHEMA_URI`,</span>
+<span class="sd">        never under ``skeleton.body_schema_uri`` (see the module's docstring</span>
+<span class="sd">        on why that tier is reserved for what was actually produced).</span>
+
+<span class="sd">        ``instance_id`` (a fan-out unit's</span>
+<span class="sd">        :func:`~nw.transforms.fanout.work_item_instance_id`) and</span>
+<span class="sd">        ``call_index`` (this output's position within its ``execute()``</span>
+<span class="sd">        call's skeleton tuple) together form the identity</span>
+<span class="sd">        :meth:`add_annotation` retires by — see</span>
+<span class="sd">        :mod:`nw.bodies.unproduced_output`'s module docstring for the full</span>
+<span class="sd">        key. **Dedupes on that identity**: a record already outstanding for</span>
+<span class="sd">        the same key is removed before this one is written, so a unit</span>
+<span class="sd">        failing twice leaves one current record, not two.</span>
+
+<span class="sd">        Parentless, like a verifying trace.</span>
+
+<span class="sd">        ``reason`` never stores raw exception text — see the module</span>
+<span class="sd">        docstring's "reason never carries raw exception text". When</span>
+<span class="sd">        ``error`` is given, the original ``reason`` is logged</span>
+<span class="sd">        (``logging.getLogger("nw.graph")``, ``WARNING``) and the persisted</span>
+<span class="sd">        ``reason`` becomes a fixed sentence naming ``error``'s type.</span>
+<span class="sd">        """</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">lacing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tier</span><span class="p">,</span> <span class="n">TierStereotype</span>
+
+        <span class="n">parent_ids</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">skeleton</span><span class="o">.</span><span class="n">provenance</span><span class="o">.</span><span class="n">was_derived_from</span><span class="p">))</span>
+        <span class="n">stored_reason</span> <span class="o">=</span> <span class="n">reason</span>
+        <span class="k">if</span> <span class="n">error</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">"nw#44 unproduced output (</span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">): </span><span class="si">%s</span><span class="s2">"</span><span class="p">,</span> <span class="n">transform_name</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">reason</span>
+            <span class="p">)</span>
+            <span class="n">stored_reason</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">error</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: see logs for details"</span>
+        <span class="n">body</span> <span class="o">=</span> <span class="n">UnproducedOutputBodyV1</span><span class="p">(</span>
+            <span class="n">transform_name</span><span class="o">=</span><span class="n">transform_name</span><span class="p">,</span>
+            <span class="n">instance_id</span><span class="o">=</span><span class="n">instance_id</span><span class="p">,</span>
+            <span class="n">call_index</span><span class="o">=</span><span class="n">call_index</span><span class="p">,</span>
+            <span class="n">upstream</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">parent_ids</span><span class="p">),</span>
+            <span class="n">output_kind</span><span class="o">=</span><span class="n">skeleton</span><span class="o">.</span><span class="n">body_schema_uri</span><span class="p">,</span>
+            <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">,</span>
+            <span class="n">reason</span><span class="o">=</span><span class="n">stored_reason</span><span class="p">,</span>
+            <span class="n">error_type</span><span class="o">=</span><span class="nb">type</span><span class="p">(</span><span class="n">error</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="k">if</span> <span class="n">error</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">blocked_by</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">blocked_by</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="n">new_id</span> <span class="o">=</span> <span class="n">uuid4</span><span class="p">()</span>
+        <span class="n">ann</span> <span class="o">=</span> <span class="n">Annotation</span><span class="p">(</span>
+            <span class="nb">id</span><span class="o">=</span><span class="n">new_id</span><span class="p">,</span>
+            <span class="n">tier</span><span class="o">=</span><span class="n">UNPRODUCED_OUTPUT_TIER</span><span class="p">,</span>
+            <span class="n">reference</span><span class="o">=</span><span class="n">MediaRef</span><span class="p">(</span>
+                <span class="n">asset_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asset_id</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="n">TimeInterval</span><span class="o">.</span><span class="n">from_seconds</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="p">),</span>
+            <span class="n">body</span><span class="o">=</span><span class="n">body</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"json"</span><span class="p">),</span>
+            <span class="n">body_schema_uri</span><span class="o">=</span><span class="n">UNPRODUCED_OUTPUT_BODY_SCHEMA_URI</span><span class="p">,</span>
+            <span class="n">provenance</span><span class="o">=</span><span class="n">Provenance</span><span class="p">(</span>
+                <span class="n">was_generated_by</span><span class="o">=</span><span class="sa">f</span><span class="s2">"transform:</span><span class="si">{</span><span class="n">transform_name</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                <span class="n">was_attributed_to</span><span class="o">=</span><span class="n">was_attributed_to</span> <span class="ow">or</span> <span class="sa">f</span><span class="s2">"agent:</span><span class="si">{</span><span class="n">transform_name</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                <span class="n">was_derived_from</span><span class="o">=</span><span class="p">[],</span>
+                <span class="n">generated_at_time</span><span class="o">=</span><span class="n">_now_rt</span><span class="p">(),</span>
+                <span class="n">activity</span><span class="o">=</span><span class="s2">"record"</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+        <span class="n">dedupe_key</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">transform_name</span><span class="p">,</span>
+            <span class="n">instance_id</span><span class="p">,</span>
+            <span class="n">call_index</span><span class="p">,</span>
+            <span class="nb">frozenset</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">parent_ids</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open</span><span class="p">()</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
+            <span class="n">store</span><span class="o">.</span><span class="n">add_tier</span><span class="p">(</span>
+                <span class="n">Tier</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">UNPRODUCED_OUTPUT_TIER</span><span class="p">,</span> <span class="n">stereotype</span><span class="o">=</span><span class="n">TierStereotype</span><span class="o">.</span><span class="n">NONE</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">_retire_unproduced_outputs</span><span class="p">(</span><span class="n">store</span><span class="p">,</span> <span class="n">dedupe_key</span><span class="p">)</span>
+            <span class="n">store</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">ann</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_id</span></div>
+
+
+<div class="viewcode-block" id="ProjectGraph.unproduced_outputs">
+<a class="viewcode-back" href="../../module_docs/nw/graph.html#nw.ProjectGraph.unproduced_outputs">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">unproduced_outputs</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">transform_name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">StoredUnproducedOutput</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""Every unproduced-output record still outstanding, oldest first.</span>
+
+<span class="sd">        A record disappears the moment :meth:`add_annotation` writes a real</span>
+<span class="sd">        output for the same identity, or another :meth:`add_unproduced_output`</span>
+<span class="sd">        call for the same identity supersedes it (dedupe) — what this</span>
+<span class="sd">        returns is exactly "still missing", survives a reload, and is not a</span>
+<span class="sd">        cache of any in-memory ``TransformResult``.</span>
+<span class="sd">        """</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open_read</span><span class="p">()</span> <span class="k">as</span> <span class="n">store</span><span class="p">:</span>
+            <span class="n">rows</span> <span class="o">=</span> <span class="n">_collect_typed</span><span class="p">(</span>
+                <span class="n">store</span><span class="p">,</span>
+                <span class="n">tier</span><span class="o">=</span><span class="n">UNPRODUCED_OUTPUT_TIER</span><span class="p">,</span>
+                <span class="n">schema_uri</span><span class="o">=</span><span class="n">UNPRODUCED_OUTPUT_BODY_SCHEMA_URI</span><span class="p">,</span>
+                <span class="n">model</span><span class="o">=</span><span class="n">UnproducedOutputBodyV1</span><span class="p">,</span>
+                <span class="n">wrap</span><span class="o">=</span><span class="k">lambda</span> <span class="n">ann</span><span class="p">,</span> <span class="n">body</span><span class="p">:</span> <span class="n">StoredUnproducedOutput</span><span class="p">(</span>
+                    <span class="n">annotation_id</span><span class="o">=</span><span class="n">ann</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="n">body</span>
+                <span class="p">),</span>
+                <span class="n">sort_key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>  <span class="c1"># insertion order, like decisions</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">transform_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">rows</span> <span class="o">=</span> <span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rows</span> <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">transform_name</span> <span class="o">==</span> <span class="n">transform_name</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">rows</span></div>
 
 
     <span class="c1"># -- verifying traces ----------------------------------------------------</span>
@@ -1190,6 +1358,86 @@
 
     <span class="n">store</span><span class="o">.</span><span class="n">add_tier</span><span class="p">(</span><span class="n">Tier</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">VERIFYING_TRACE_TIER</span><span class="p">,</span> <span class="n">stereotype</span><span class="o">=</span><span class="n">TierStereotype</span><span class="o">.</span><span class="n">NONE</span><span class="p">))</span>
     <span class="n">store</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">trace</span><span class="p">)</span>
+
+
+<span class="n">_UnproducedOutputKey</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="nb">frozenset</span><span class="p">]</span>
+<span class="sd">"""``(transform_name, instance_id, call_index, upstream)`` — see</span>
+<span class="sd">:mod:`nw.bodies.unproduced_output`'s module docstring for why all four are</span>
+<span class="sd">needed rather than ``(transform_name, upstream)`` alone."""</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_unproduced_output_key_for</span><span class="p">(</span>
+    <span class="n">ann</span><span class="p">:</span> <span class="n">Annotation</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">instance_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">call_index</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">_UnproducedOutputKey</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""The retirement key a written annotation settles, or ``None`` when it</span>
+<span class="sd">    was not produced by a Transform.</span>
+
+<span class="sd">    Reads ``ann.provenance.was_generated_by``, which</span>
+<span class="sd">    :func:`nw.transforms._provenance.derive_provenance` always sets to</span>
+<span class="sd">    ``"transform:&lt;name&gt;@&lt;impl_version&gt;"`` on both a completed output and the</span>
+<span class="sd">    ``FailedOutput.skeleton`` an unproduced-output record was built from — so</span>
+<span class="sd">    the same parse recovers the same ``transform_name`` from either side</span>
+<span class="sd">    without either module importing the other. ``instance_id`` /</span>
+<span class="sd">    ``call_index`` are the caller's, passed straight through — this function</span>
+<span class="sd">    only resolves the name and ``upstream``.</span>
+<span class="sd">    """</span>
+    <span class="n">generated_by</span> <span class="o">=</span> <span class="n">ann</span><span class="o">.</span><span class="n">provenance</span><span class="o">.</span><span class="n">was_generated_by</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">generated_by</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">generated_by</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"transform:"</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">generated_by</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="s2">"transform:"</span><span class="p">)</span> <span class="p">:]</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s2">"@"</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">name</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">upstream</span> <span class="o">=</span> <span class="nb">frozenset</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">ann</span><span class="o">.</span><span class="n">provenance</span><span class="o">.</span><span class="n">was_derived_from</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">name</span><span class="p">,</span> <span class="n">instance_id</span><span class="p">,</span> <span class="n">call_index</span><span class="p">,</span> <span class="n">upstream</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_unproduced_output_key_matches</span><span class="p">(</span><span class="n">body</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">_UnproducedOutputKey</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Whether a stored unproduced-output ``body`` settles ``key``.</span>
+
+<span class="sd">    ``instance_id`` identifies the fan-out **unit** — matching on it alone</span>
+<span class="sd">    would collapse two *different calls of the same unit's own plan* (a</span>
+<span class="sd">    Transform is free to plan more than one call per work item) into one</span>
+<span class="sd">    key, so ``call_index`` still has to agree even when both sides carry an</span>
+<span class="sd">    ``instance_id``. ``upstream`` is dropped from that comparison, though: a</span>
+<span class="sd">    retried unit is free to re-plan its calls against a different upstream</span>
+<span class="sd">    shape and still be the same unit.</span>
+
+<span class="sd">    Without ``instance_id`` (a non-fan-out call, or a Transform that does</span>
+<span class="sd">    not forward ``unit_instance_id``), the fallback pair — ``call_index``</span>
+<span class="sd">    *and* ``upstream`` — must both match; either alone is exactly the</span>
+<span class="sd">    collision this key exists to avoid (a batch call's other outputs share</span>
+<span class="sd">    ``upstream``; two different calls in two different batches can share an</span>
+<span class="sd">    index).</span>
+<span class="sd">    """</span>
+    <span class="n">transform_name</span><span class="p">,</span> <span class="n">instance_id</span><span class="p">,</span> <span class="n">call_index</span><span class="p">,</span> <span class="n">upstream</span> <span class="o">=</span> <span class="n">key</span>
+    <span class="k">if</span> <span class="n">body</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"transform_name"</span><span class="p">)</span> <span class="o">!=</span> <span class="n">transform_name</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">body</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"call_index"</span><span class="p">)</span> <span class="o">!=</span> <span class="n">call_index</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+    <span class="n">body_instance_id</span> <span class="o">=</span> <span class="n">body</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"instance_id"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">instance_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">body_instance_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">body_instance_id</span> <span class="o">==</span> <span class="n">instance_id</span>
+    <span class="k">return</span> <span class="nb">frozenset</span><span class="p">(</span><span class="n">body</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"upstream"</span><span class="p">)</span> <span class="ow">or</span> <span class="p">())</span> <span class="o">==</span> <span class="n">upstream</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_retire_unproduced_outputs</span><span class="p">(</span>
+    <span class="n">store</span><span class="p">:</span> <span class="n">IntervalAnnotationStore</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">_UnproducedOutputKey</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Remove every unproduced-output record matching ``key`` (nw#44).</span>
+
+<span class="sd">    Also the dedupe primitive :meth:`ProjectGraph.add_unproduced_output`</span>
+<span class="sd">    calls on itself before writing a new record for the same identity.</span>
+<span class="sd">    """</span>
+    <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">store</span><span class="o">.</span><span class="n">by_tier</span><span class="p">(</span><span class="n">UNPRODUCED_OUTPUT_TIER</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">ann</span><span class="o">.</span><span class="n">body_schema_uri</span> <span class="o">!=</span> <span class="n">UNPRODUCED_OUTPUT_BODY_SCHEMA_URI</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">body</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">_unproduced_output_key_matches</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">body</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+            <span class="n">store</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_upsert</span><span class="p">(</span>
