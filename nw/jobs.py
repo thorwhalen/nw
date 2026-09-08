@@ -49,6 +49,14 @@ Design decisions (from the ``nw.jobs``-on-``au`` design report,
   actually billed contributes ``0.0`` to the sum — so a bare ``$0`` means
   *either* "nothing was spent" *or* "we do not know what was spent", and a
   spend surface that cannot tell them apart shows the second as free.
+- **An estimate is re-quoted, never remembered.** When ``params["plan"]`` is
+  supplied, :func:`estimate` and :func:`enqueue` price it through
+  :func:`nw.pricing.current_quote` at today's rates rather than trusting a
+  caller-supplied ``estimated_usd`` frozen at plan time — falaw's rate tables
+  move, and a stale figure under-quotes the run (nw#74). Descriptive only:
+  ``cost_basis`` stays out of ``plan_hash``, so the idempotency key above is
+  byte-identical to what it was before repricing existed, and a resumed render
+  still dedups onto work already paid for.
 
 All tunables are keyword-configurable via :class:`JobsConfig`; defaults live at
 the top of this module — no magic numbers below.
@@ -69,7 +77,7 @@ from contextlib import AbstractContextManager, nullcontext, suppress
 from dataclasses import dataclass, field, asdict
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, TYPE_CHECKING
 
 import au
 from au import (
@@ -80,6 +88,9 @@ from au import (
     ThreadBackend,
 )
 from au.base import ComputationBackend
+
+if TYPE_CHECKING:  # pragma: no cover — annotations only
+    from .pricing import PlanQuote
 
 
 # ---------------------------------------------------------------------------
@@ -166,6 +177,13 @@ class JobProgress:
 @dataclass
 class JobCost:
     estimated_usd: float | None = None
+    """Predicted spend, re-quoted at today's rates when a plan was supplied.
+
+    ``None`` means unknown, and unknown always requires approval — it is what
+    a plan whose calls carry no :class:`falaw.CostBasis` re-prices to. Never
+    the plan-time figure passed in alongside such a plan: that number was true
+    when it was written and falaw's rate tables have moved since (nw#74).
+    """
     actual_usd: float | None = None
     cache_hit_savings_usd: float | None = None
     actual_is_lower_bound: bool | None = None
@@ -350,7 +368,10 @@ def enqueue(
             "cancel_requested": False,
             "pct_floor": None,
             "progress": {},
-            "cost": {"estimated_usd": params.get("estimated_usd")},
+            # Same gate, same rule: a supplied plan is re-quoted at today's
+            # rates and its answer wins, so the tray never shows a frozen
+            # figure as this job's price (nw#74).
+            "cost": {"estimated_usd": _estimated_usd(params)},
             "artifact_ref": None,
             "result": None,
             "error": None,
@@ -381,12 +402,29 @@ def estimate(
     """Dry-run cost gate **without enqueueing**.
 
     Returns ``{estimated_usd, has_unknown_costs, approval_threshold_usd,
-    requires_approval}``. Unknown cost always requires approval (preserves the
-    one-price-per-clip gate). reelee computes the falaw-``Plan`` cost and either
-    passes it via ``params["estimated_usd"]`` or overrides this per its own
-    policy.
+    requires_approval, quote}``. Unknown cost always requires approval
+    (preserves the one-price-per-clip gate).
+
+    **The gate quotes, it does not remember.** When ``params["plan"]`` is
+    present its cost is re-quoted at today's rates through
+    :func:`nw.pricing.current_quote`, and a caller-supplied
+    ``params["estimated_usd"]`` is ignored — exactly as
+    :func:`_default_idempotency_key` ignores it for the dedup basis. A
+    persisted plan's figure is frozen at plan time, and falaw's rate tables
+    move (0.0.46 re-quoted premium LLM calls tenfold upward), so gating on
+    the stored number under-quotes the run: the one direction a spend
+    decision must never err in (nw#74).
+
+    A supplied plan that cannot be re-quoted — no ``cost_basis`` on its calls,
+    an unparseable payload, a model that has left the catalogue — yields
+    ``estimated_usd=None``, which requires approval. Refusing to name a price
+    is the safe answer; repeating yesterday's is not.
+
+    Without a plan the gate falls back to ``params["estimated_usd"]``, whose
+    provenance nw cannot see; ``quote`` is then ``None`` to say so.
     """
-    estimated = params.get("estimated_usd")
+    quote = _quote_params(params)
+    estimated = _estimated_usd(params, quote=quote)
     has_unknown = estimated is None
     threshold = config.approval_threshold_usd
     requires_approval = has_unknown or (
@@ -397,7 +435,51 @@ def estimate(
         "has_unknown_costs": has_unknown,
         "approval_threshold_usd": threshold,
         "requires_approval": requires_approval,
+        "quote": quote.to_dict() if quote is not None else None,
     }
+
+
+def _estimated_usd(params, *, quote: "PlanQuote | None" = None) -> float | None:
+    """This job's price today: the re-quoted plan, else the caller's figure.
+
+    ``None`` means unknown — never free, and never the stale number that came
+    in with the plan. Pass ``quote`` to reuse one already computed for these
+    same ``params``; it is re-derived when omitted.
+    """
+    quote = quote if quote is not None else _quote_params(params)
+    if quote is not None:
+        return quote.total_usd
+    return params.get("estimated_usd") if isinstance(params, Mapping) else None
+
+
+def _quote_params(params) -> "PlanQuote | None":
+    """Today's price for ``params["plan"]``, or ``None`` when no plan is given.
+
+    ``None`` means "nw was handed no plan to quote", never "this is free" —
+    the caller's own ``estimated_usd`` is the fallback, and it is a figure nw
+    cannot vouch for.
+
+    Accepts either a live :class:`falaw.Plan` or the dict a serialized one
+    round-trips through, because a job's ``params`` cross a store. A plan that
+    is neither re-quotes as an empty-basis plan, i.e. *unknown*.
+    """
+    from falaw import Plan, plan_from_dict
+
+    from .pricing import current_quote, unquotable
+
+    plan = params.get("plan") if isinstance(params, Mapping) else None
+    if plan is None:
+        return None
+    if isinstance(plan, Mapping):
+        try:
+            plan = plan_from_dict(dict(plan))
+        except Exception as exc:  # noqa: BLE001 — an unreadable plan is *unknown*
+            return unquotable(f"params['plan'] is not readable: {exc}")
+    if not isinstance(plan, Plan):
+        return unquotable(
+            f"params['plan'] is a {type(plan).__name__}, not a falaw Plan"
+        )
+    return current_quote(plan)
 
 
 def list_jobs(

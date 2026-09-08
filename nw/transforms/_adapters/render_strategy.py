@@ -122,6 +122,10 @@ class RenderStrategyTransform(BaseTransform):
                 output_path="",
                 artifact_id=None,
                 duration_s=prep.duration_s,
+                # Quoted now, from the plan built two lines up — so it is
+                # current at the moment it is written and as-of ever after.
+                # A reader wanting today's price re-quotes with
+                # `nw.pricing.current_quote` (nw#74).
                 total_estimated_cost_usd=plan.total_cost_usd,
             ).model_dump(),
             body_schema_uri=RENDER_RESULT_BODY_SCHEMA_URI,

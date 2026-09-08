@@ -14,6 +14,7 @@ from typing import TYPE_CHECKING
 from falaw import (
     CallPlan,
     Plan,
+    catalogue_cost_basis,
     make_call_plan,
 )
 from falaw.cost import estimate_call_cost
@@ -58,6 +59,14 @@ class TextToVideoStrategy:
             arguments={"prompt": prompt},
             output_kind="video",
             estimated_cost_usd=cost,
+            # This strategy hand-builds its call rather than going through a
+            # `plan_*`, so nothing stamps the basis for it. Without one the
+            # call re-prices as `no_basis` — unknown — and a stored quote for
+            # this shot can never be refreshed (nw#74). `seconds` is the only
+            # quantity `estimate_call_cost` saw, and it is estimator-only: it
+            # never reaches `arguments`, which is exactly why the basis has to
+            # carry it.
+            cost_basis=catalogue_cost_basis(record.id, seconds=prep.duration_s),
             metadata={"shot_id": prep.shot_id, "strategy": "text_to_video"},
         )
         return Plan(calls=(call,))

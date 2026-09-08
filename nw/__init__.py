@@ -22,6 +22,10 @@ Public surface:
   (Plan/Execute over rendering; records render-result provenance).
 - ``nw.renderers`` — render strategies.
 - ``nw.genres`` — production genres (the reusable project specialization).
+- ``nw.pricing`` — re-quoting a *persisted* plan at today's rates
+  (:func:`current_quote`, :class:`PlanQuote`). Any stored cost figure is an
+  as-of-then fact; reporting one as current under-quotes the run once falaw's
+  rate tables move, so read it back through here (nw#74).
 
 On rendering provenance and partial re-render (why choices, not just content,
 are recorded as linked artifacts), see
@@ -34,6 +38,7 @@ from . import freshness  # noqa: F401  — `nw.freshness.stale_verdicts(...)`
 from . import inspect  # noqa: F401  — `nw.inspect.shot_report(...)`
 from . import migrate  # noqa: F401  — `nw.migrate.migrate_to_graph(...)`
 from . import storyboard as _storyboard_module  # noqa: F401
+from . import pricing  # noqa: F401  — `nw.pricing.current_quote(...)`
 from . import jobs  # noqa: F401  — `nw.jobs.enqueue(...)` async render-job facade over au
 from .experiment import apply_to_projects, clone_project, summarize_all
 from .inspect import (
@@ -43,6 +48,16 @@ from .inspect import (
     ShotReport,
     compose_report,
     shot_report,
+)
+from .pricing import (
+    PlanQuote,
+    QuoteStatus,
+    cost_records,
+    current_quote,
+    plan_from_cost_records,
+    quote_from_cost_records,
+    quote_render_decision,
+    unquotable,
 )
 from .project import CharacterImage, Project
 from .graph import (
@@ -238,6 +253,15 @@ __all__ = [
     "open_storyboard",
     "plan_render_panel_images",
     "plan_render_shot",
+    # re-quoting persisted plan costs (nw#74)
+    "PlanQuote",
+    "QuoteStatus",
+    "cost_records",
+    "current_quote",
+    "plan_from_cost_records",
+    "quote_from_cost_records",
+    "quote_render_decision",
+    "unquotable",
     "prepare_shot",
     "project_asset_id",
     "register_genre",

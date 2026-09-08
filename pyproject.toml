@@ -39,7 +39,11 @@ dependencies = [
     # split (falaw#49) that `Transform.execute(force=True)` now routes through
     # so a forced re-run keeps what it paid for (nw#72). `refresh=` is a
     # TypeError on anything older, so this is a hard floor, not a preference.
-    "falaw>=0.0.45",
+    # Raised to >=0.0.49 for `reprice_plan` / `CallPlan.cost_basis` /
+    # `catalogue_cost_basis` (falaw#60): `nw.pricing` re-quotes every persisted
+    # plan figure nw reports as current, and the two names are an ImportError
+    # on anything older, so this is a hard floor, not a preference (nw#74).
+    "falaw>=0.0.49",
     # >=0.0.25 for `lacing.digest.annotation_value_digest` — the content digest
     # `nw.freshness` compares to cut off early. 0.0.24 does NOT have it, so a
     # lower floor resolves to a lacing without the symbol and fails at import

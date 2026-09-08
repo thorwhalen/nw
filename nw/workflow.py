@@ -65,6 +65,7 @@ from typing import Optional
 from falaw import Plan, execute_plan
 from lacing import Artifact
 
+from .pricing import cost_records
 from .project import Project
 from .renderers import get_strategy
 from .schema import ShotSpec
@@ -304,6 +305,15 @@ def _record_render_decision(
     reelee freshness traversal from the shot will find the render output.
     Cost, model ids, and call ids are persisted in the decision payload so
     a later inspector view can show "what fired and what it cost."
+
+    Every cost in the payload is **as quoted at plan time**, including
+    ``total_estimated_cost_usd``. Rate tables move (falaw 0.0.46 re-quoted
+    premium LLM calls tenfold upward), so a reader that presents one of these
+    figures as a *current* price under-quotes the run — the one direction a
+    spend decision must never err in. Each call row therefore carries its
+    :class:`falaw.CostBasis` (:func:`nw.pricing.cost_records`), which is what
+    lets :func:`nw.pricing.quote_render_decision` re-quote the whole payload
+    at today's rates and say ``unknown`` where it cannot (nw#74).
     """
     # Find the shot's annotation id in the graph.
     shot_anns = project.graph.shots()
@@ -318,15 +328,7 @@ def _record_render_decision(
         "output_path": str(output.relative_to(project.root))
         if output.is_relative_to(project.root)
         else str(output),
-        "calls": [
-            {
-                "tool": c.tool,
-                "application": c.application,
-                "estimated_cost_usd": c.estimated_cost_usd,
-                "cache_status": c.cache_status,
-            }
-            for c in plan.calls
-        ],
+        "calls": cost_records(plan),
         "artifacts": [
             {
                 "asset_id": a.asset_id,
@@ -337,6 +339,9 @@ def _record_render_decision(
             }
             for a in artifacts
         ],
+        # As-quoted-at-plan-time, like every figure above it. Re-quote the
+        # payload with `nw.pricing.quote_render_decision` before reporting
+        # this as a current price.
         "total_estimated_cost_usd": plan.total_cost_usd,
     }
     from .bodies import DecisionBodyV1

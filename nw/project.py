@@ -755,6 +755,17 @@ class Project:
         back to its ``total_estimated_cost_usd`` when no artifact costs were
         recorded.
 
+        **Deliberately not re-quoted.** This is money that was *billed*, and a
+        receipt is not a quote: re-pricing it through
+        :func:`nw.pricing.current_quote` would rewrite history at today's
+        rates. The consequence is that the estimate-based fallback is an
+        as-of-then figure — falaw's tables have moved since (0.0.46 tenfold
+        upward on premium LLM calls), so a decision that recorded no artifact
+        costs contributes what it was quoted then, not what the same render
+        would cost now. That is the right answer for "what did this project
+        spend"; it is the wrong one for "what would this cost today", and
+        :func:`nw.pricing.quote_render_decision` is what answers that (nw#74).
+
         Walks **every store scope** (graph, storyboard, alignment), not just
         the project graph: a decision written to the storyboard scope is money
         that was spent, and counting only one scope would silently *under*-report
@@ -965,7 +976,13 @@ def _last_authored_change(indexed):
 
 
 def _decision_spend_usd(payload: dict[str, Any]) -> float:
-    """Money recorded on one decision payload, actual costs preferred."""
+    """Money recorded on one decision payload, actual costs preferred.
+
+    The ``total_estimated_cost_usd`` fallback is read **as written** — a
+    spend record, quoted at plan time. Re-quoting it here would answer a
+    different question (see :meth:`Project.total_spend_usd`); the function
+    that answers *that* one is :func:`nw.pricing.quote_render_decision`.
+    """
     artifacts = payload.get("artifacts")
     if isinstance(artifacts, list):
         costs = [
