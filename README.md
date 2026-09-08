@@ -257,8 +257,13 @@ verdicts = nw.stale_verdicts_all(proj.root)  # ... with reasons
 ```
 
 The rule is asymmetric on purpose: anything unverifiable — no trace, a deleted
-input, a trace that no longer covers the current parents — counts as **stale**.
-Over-reporting costs a recompute; under-reporting serves a stale artifact. For
+input, a trace that no longer covers the current parents, an annotation whose
+own `generated_at_time` is lacing's tick-0 UNKNOWN sentinel (`generated-at-unknown`,
+lacing#44) — counts as **stale**. Over-reporting costs a recompute; under-reporting
+serves a stale artifact. The unknown-stamp case is on the row's *own* stamp only:
+regenerating the row clears it. A tick-0 *parent* is not a verdict — freshness is
+digest-verified, and a legacy root's stamp is cleared only by the timestamp
+backfill, which nothing downstream waits on. For
 the scoped walk that also means **no migration**: annotations written before
 traces existed behave exactly as they did under pure reachability. The snapshot
 form is stricter: on a pre-trace project it reports every derived annotation

@@ -414,6 +414,38 @@ def test_resumption_brief_records_last_session_and_gap(tmp_path):
     assert brief.gap_seconds < 300  # just written
 
 
+def test_resumption_brief_renders_an_unknown_decision_time_as_none(tmp_path):
+    """A tick-0 stamp is lacing's UNKNOWN sentinel (lacing#44), not the epoch:
+    the brief must not print 1970-01-01, and an unknown row must not count
+    as the last graph write."""
+    from tests.unknown_time import by_id, restamp_unknown
+
+    proj = _seeded(tmp_path)
+    proj.log_decision("legacy_thing", note="a")
+    proj.log_decision("recent_thing", note="b")
+    legacy = next(
+        a
+        for a in iter_all_annotations(proj.root)
+        if a.body.get("kind") == "legacy_thing"
+    )
+    restamp_unknown(proj, legacy)
+
+    brief = proj.resumption_brief()
+    at_by_kind = {d.kind: d.at for d in brief.recent_decisions}
+    assert at_by_kind["legacy_thing"] is None
+    assert at_by_kind["recent_thing"] is not None
+    assert brief.last_session_at is not None
+    assert brief.gap_seconds is not None and brief.gap_seconds < 300
+
+    # Every row unknown: there is no "last touched" to report.
+    for ann in list(by_id(proj).values()):
+        restamp_unknown(proj, ann)
+    brief = proj.resumption_brief()
+    assert brief.last_session_at is None
+    assert brief.gap_seconds is None
+    assert all(d.at is None for d in brief.recent_decisions)
+
+
 def test_resumption_brief_lists_unrendered_shots(tmp_path):
     proj = _seeded(tmp_path)
     (proj.shot_dir("s01")).mkdir(parents=True, exist_ok=True)
