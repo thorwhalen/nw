@@ -119,7 +119,7 @@ class _Graph:
         self.written: list[Annotation] = []
         self.unproduced: list[dict] = []
 
-    def add_annotation(self, annotation):
+    def add_annotation(self, annotation, **kwargs):
         self.written.append(annotation)
 
     def add_unproduced_output(self, skeleton, **kwargs):

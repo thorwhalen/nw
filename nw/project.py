@@ -73,7 +73,7 @@ from .graph import (
     iter_all_annotations,
     remove_annotations_with_traces,
 )
-from .bodies import GENRE_ENVELOPE_TIER, VERIFYING_TRACE_TIER
+from .bodies import GENRE_ENVELOPE_TIER, UNPRODUCED_OUTPUT_TIER, VERIFYING_TRACE_TIER
 from .migrate import (
     _TIER_CHARACTER_REF,
     _TIER_DECISION,
@@ -98,7 +98,7 @@ from .schema import (
 
 
 _BOOKKEEPING_TIERS = frozenset(
-    {_TIER_DECISION, VERIFYING_TRACE_TIER, GENRE_ENVELOPE_TIER}
+    {_TIER_DECISION, VERIFYING_TRACE_TIER, GENRE_ENVELOPE_TIER, UNPRODUCED_OUTPUT_TIER}
 )
 """Tiers that record *what nw did*, not *what the project is*.
 
@@ -106,7 +106,11 @@ The resumption brief is a statement about project content, so these are
 excluded from both halves of it: they are neither an authored change nor a
 downstream consequence of one. The genre envelope qualifies on both counts:
 it is parentless and written at creation, so without this it would shadow
-the user's actual last authored change."""
+the user's actual last authored change. ``unproduced-output`` (nw#44)
+qualifies for the same reason as a verifying trace: parentless, and written
+*after* the run it describes, so it would shadow the real last-authored
+answer with "an isolate run's own bookkeeping" the moment one records
+anything."""
 
 
 # ---------------------------------------------------------------------------

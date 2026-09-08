@@ -62,6 +62,7 @@ from .pricing import (
 from .project import CharacterImage, Project
 from .graph import (
     ProjectGraph,
+    StoredUnproducedOutput,
     annotations_at_tier,
     backfill_traces,
     collect_orphan_traces,
@@ -70,6 +71,7 @@ from .graph import (
     iter_all_annotations,
     open_project_stores,
 )
+from .bodies import UNPRODUCED_OUTPUT_BODY_SCHEMA_URI, UnproducedOutputBodyV1
 from .freshness import (
     FreshnessVerdict,
     all_stale,
@@ -213,6 +215,9 @@ __all__ = [
     "create_genre_project",
     "Project",
     "ProjectGraph",
+    "StoredUnproducedOutput",
+    "UNPRODUCED_OUTPUT_BODY_SCHEMA_URI",
+    "UnproducedOutputBodyV1",
     "ProjectSpec",
     "ProjectSummary",
     "ResumptionBrief",

@@ -36,7 +36,14 @@ The pieces, and the rule each one carries:
 - :class:`FanOutResult` — work items live in the **run record**
   (:meth:`FanOutResult.to_record`), never in the graph document.
   Materialising instances into the document would mutate it on execution
-  and break its digest.
+  and break its digest. One exception, deliberately narrow: **why** a unit's
+  output was never produced is a graph sidecar (nw#44,
+  ``annot://schema/unproduced-output/v1``,
+  :meth:`nw.graph.ProjectGraph.add_unproduced_output`) — the reason and
+  status, not the work item itself. It is keyed by ``unit.instance_id``
+  (passed to an ``execute()`` that accepts ``unit_instance_id``, the same
+  accepts-it-or-not seam ``on_failure`` uses), never by the item's
+  ``attributes`` or ``scope_interval``.
 
 Deliberately NOT here (recorded in nw#26 so nobody re-litigates): a general
 re-entrant scheduler (a fan-out of independent plans needs bounded
@@ -519,21 +526,22 @@ class FanOutResult:
         }
 
 
-def _accepts_on_failure(execute: Callable) -> bool:
-    """Whether ``execute`` accepts the ``on_failure`` keyword.
+def _accepts_keyword(execute: Callable, name: str) -> bool:
+    """Whether ``execute`` accepts the keyword ``name``.
 
     The Protocol's own warning: ``runtime_checkable`` compares method names,
     not signatures, and ~18 pre-nw#25 overrides in the federation take no
     ``on_failure`` — passing it would raise ``TypeError`` at call time. The
     documented guidance for "a caller iterating over arbitrary registered
-    Transforms" is to pass it only where accepted; this is that check.
+    Transforms" is to pass a keyword only where accepted; this is that check,
+    reused for ``on_failure`` (nw#25) and ``unit_instance_id`` (nw#44).
     """
     try:
         sig = inspect.signature(execute)
     except (TypeError, ValueError):
         return False
     params = sig.parameters
-    return "on_failure" in params or any(
+    return name in params or any(
         p.kind is inspect.Parameter.VAR_KEYWORD for p in params.values()
     )
 
@@ -605,7 +613,8 @@ def fan_out_execute(
             "misattribute every instance id in the run record (and skip the "
             "executing transform's own impl_version stamp)."
         )
-    pass_on_failure = _accepts_on_failure(transform.execute)
+    pass_on_failure = _accepts_keyword(transform.execute, "on_failure")
+    pass_instance_id = _accepts_keyword(transform.execute, "unit_instance_id")
 
     results: list[FanOutItemResult] = []
     halted_by: Optional[str] = None
@@ -623,6 +632,10 @@ def fan_out_execute(
         kwargs: dict[str, Any] = {"use_cache": use_cache, "force": force}
         if pass_on_failure:
             kwargs["on_failure"] = on_failure
+        if pass_instance_id:
+            # The precise identity nw#44's unproduced-output record retires
+            # by — without it, two units sharing an upstream set can alias.
+            kwargs["unit_instance_id"] = str(unit.instance_id)
         try:
             result = transform.execute(project, unit.plan, unit.skeleton, **kwargs)
             # Result interpretation stays INSIDE the try: an execute that

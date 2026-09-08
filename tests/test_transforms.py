@@ -598,7 +598,7 @@ def test_execute_accepts_a_matching_skeleton_and_plan(monkeypatch):
         def __init__(self):
             self.written = []
 
-        def add_annotation(self, ann):
+        def add_annotation(self, ann, **kwargs):
             self.written.append(ann)
 
         def add_unproduced_output(self, skeleton, **kwargs):

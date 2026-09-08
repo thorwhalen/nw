@@ -121,7 +121,7 @@ class _Graph:
         self.written = []
         self.unproduced = []
 
-    def add_annotation(self, ann):
+    def add_annotation(self, ann, **kwargs):
         self.written.append(ann)
 
     def add_unproduced_output(self, skeleton, **kwargs):
