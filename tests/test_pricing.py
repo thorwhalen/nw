@@ -381,9 +381,7 @@ def test_a_serialized_plan_hashes_to_what_the_object_hashes_to(project):
     plan = Plan(calls=(_priced_call(),))
     assert jobs._default_idempotency_key(
         project, "render", {"plan": plan}
-    ) == jobs._default_idempotency_key(
-        project, "render", {"plan": plan_to_dict(plan)}
-    )
+    ) == jobs._default_idempotency_key(project, "render", {"plan": plan_to_dict(plan)})
 
 
 def test_an_unidentifiable_plan_is_refused_loudly(project):

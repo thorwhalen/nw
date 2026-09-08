@@ -397,9 +397,7 @@ def quote_render_decision(
         # does). Keep the honest ``None`` rather than adopting a headline that
         # reads an unknown as free.
         return quote
-    if not isclose(
-        stored, quote.as_of_total_usd, abs_tol=TOTAL_AGREEMENT_ABS_TOL_USD
-    ):
+    if not isclose(stored, quote.as_of_total_usd, abs_tol=TOTAL_AGREEMENT_ABS_TOL_USD):
         return replace(
             quote,
             total_usd=None,
