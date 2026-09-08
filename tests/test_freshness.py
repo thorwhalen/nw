@@ -35,6 +35,7 @@ from nw.bodies import (
 )
 from nw.freshness import (
     REASON_FRESH,
+    REASON_GENERATED_AT_UNKNOWN,
     REASON_NO_TRACE,
     REASON_PROVENANCE_CYCLE,
     REASON_SCHEME_CHANGED,
@@ -715,3 +716,84 @@ def test_snapshot_and_traversal_orders_are_deterministic(tmp_path):
     descendants = nw.descendants_of(proj.root, a_id)
     assert descendants == sorted(descendants, key=_key)
     assert _ids(descendants) == {b.id, c.id, extra.id}
+
+
+# --- unknown generation time (lacing#44) --------------------------------------
+# Tick 0 in ``generated_at_time`` is lacing's UNKNOWN sentinel, not the epoch.
+# Rows written through the REST path before lacing#35 carry it. The rule:
+# unplaceable in time means unverifiable, hence stale — never "oldest".
+
+
+def _restamp_unknown(proj, ann: Annotation) -> Annotation:
+    """Rewrite ``ann`` in place with ``generated_at_time`` at tick 0, raw.
+
+    Raw ``store.add``, not ``add_annotation``: the value is unchanged, so any
+    trace that names it (or that it recorded) still matches every digest.
+    That is the point — without the rule, these rows read verified-fresh.
+    """
+    updated = ann.model_copy(
+        update={
+            "provenance": ann.provenance.model_copy(
+                update={"generated_at_time": RationalTime.zero()}
+            )
+        }
+    )
+    assert updated.provenance.generated_at_is_known is False
+    _remove(proj, ann.id)
+    with proj.graph._open() as store:
+        store.add(updated)
+    return updated
+
+
+def _by_id(proj) -> dict[UUID, Annotation]:
+    return {a.id: a for a in nw.iter_all_annotations(proj.root)}
+
+
+@pytest.mark.parametrize("which", ["child", "parent", "both"])
+def test_an_unknown_generation_time_is_stale_never_oldest(tmp_path, which):
+    """parent=0, child=0, both=0: every combination reads stale, and the
+    verdict names the rule, not a digest mismatch it did not find."""
+    proj = nw.Project.init(tmp_path / "p")
+    a_id = _authored(proj)
+    b = _derived(proj, (a_id,), body={"shot_id": "s01", "url": "b"})
+    # Sanity: a freshly built chain is verified-fresh before the restamp.
+    assert _reason_for(proj, a_id, b.id) == REASON_FRESH
+
+    if which in ("child", "both"):
+        _restamp_unknown(proj, b)
+    if which in ("parent", "both"):
+        _restamp_unknown(proj, _by_id(proj)[a_id])
+
+    verdict = {v.annotation.id: v for v in nw.stale_verdicts(proj.root, a_id)}[b.id]
+    assert verdict.is_stale
+    assert verdict.reason == REASON_GENERATED_AT_UNKNOWN
+    assert REASON_GENERATED_AT_UNKNOWN in STALE_REASONS
+    # The parent decided it only when the child itself could be placed.
+    assert verdict.upstream_id == (a_id if which == "parent" else None)
+    # The snapshot walk agrees — this is what a freshness indicator reads.
+    assert b.id in _ids(nw.all_stale(proj.root))
+    assert b.id in _ids(nw.stale_after(proj.root, a_id))
+
+
+def test_an_unknown_parent_is_unverifiable_not_ancient(tmp_path):
+    """The bug in one line: a tick-0 parent used to sort as older than every
+    child, so nothing downstream of it ever looked out of date."""
+    proj, a_id, b, c = _chain(tmp_path)
+    _restamp_unknown(proj, _by_id(proj)[a_id])
+    verdicts = {v.annotation.id: v for v in nw.stale_verdicts_all(proj.root)}
+    assert verdicts[b.id].reason == REASON_GENERATED_AT_UNKNOWN
+    assert verdicts[b.id].upstream_id == a_id
+    # C's own parent B is placeable; B is stale, so C is upstream-stale.
+    assert verdicts[c.id].reason == REASON_UPSTREAM_STALE
+    assert verdicts[c.id].upstream_id == b.id
+
+
+def test_a_parentless_unknown_row_is_never_stale_itself(tmp_path):
+    """Parentless annotations stay out of the walk (an imported screenplay
+    must not read stale forever) — an unknown timestamp does not change that.
+    It only taints what derives from it."""
+    proj = nw.Project.init(tmp_path / "p")
+    a_id = _authored(proj)
+    _restamp_unknown(proj, _by_id(proj)[a_id])
+    assert a_id not in _ids(nw.all_stale(proj.root))
+    assert nw.stale_verdicts_all(proj.root) == []

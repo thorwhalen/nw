@@ -47,7 +47,10 @@ dependencies = [
     # >=0.0.31 for the store-migration ladder's registered v1->v2 step and
     # the widened ProvenanceRef union (lacing#14/D5): nw opens its project
     # stores with migrate=True, which needs the step to exist.
-    "lacing>=0.0.31",
+    # >=0.0.39 for `Provenance.generated_at_is_known` / `UNKNOWN_GENERATED_AT`
+    # (lacing#44): the freshness rule reads tick 0 as unknown-hence-stale
+    # through that property, and it is an AttributeError on anything older.
+    "lacing>=0.0.39",
     "xdol>=0.1.11",
     "artful>=0.0.2",
     "au>=0.1.1",

@@ -872,6 +872,29 @@ def backfill_traces(project_root: str | Path, *, execute: bool = False) -> dict:
                 }
             )
             continue
+        unplaceable = [
+            i
+            for i in (ann.id, *parents)
+            if not by_id[i].provenance.generated_at_is_known
+        ]
+        if unplaceable:
+            # Tick 0 is lacing's UNKNOWN sentinel, not the epoch (lacing#44).
+            # The timestamp rule below cannot order this row against its
+            # parents — and a tick-0 PARENT would read older than every child,
+            # blessing a row that is not verifiable. It stays stale
+            # (generated-at-unknown) until the timestamp itself is backfilled.
+            skipped.append(
+                {
+                    "annotation_id": str(ann.id),
+                    "reason": (
+                        f"generated_at_time unknown (tick 0, lacing#44) on "
+                        f"{[str(u) for u in unplaceable]} — cannot be ordered "
+                        "against its parents; unverifiable stays stale. "
+                        "Backfill the timestamp, then re-run"
+                    ),
+                }
+            )
+            continue
         own_t = ann.provenance.generated_at_time.to_seconds()
         edited = [
             p

@@ -25,6 +25,11 @@ imported screenplay would read stale forever). An annotation ``X`` on the
 frontier is **stale** when any of these holds, and **fresh** only when none
 does:
 
+- ``X``, or a recorded upstream, carries an **unknown** ``generated_at_time``
+  — lacing's tick-0 ``UNKNOWN_GENERATED_AT`` sentinel (rows written through
+  the REST path before lacing#35 still carry it; lacing#44). A row that
+  cannot be placed in time cannot be verified against anything, and it is
+  never read as "the oldest thing in the project",
 - no verifying trace was recorded for ``X`` (:mod:`nw.bodies.verifying_trace`),
 - the trace was written under a different digest scheme,
 - the trace's upstream set is not exactly ``X.provenance.was_derived_from``,
@@ -103,6 +108,7 @@ from .graph import iter_all_annotations
 # Stable strings: they surface in reelee's freshness UI and in test assertions.
 
 REASON_FRESH = "verified-fresh"
+REASON_GENERATED_AT_UNKNOWN = "generated-at-unknown"
 REASON_NO_TRACE = "no-trace"
 REASON_SCHEME_CHANGED = "digest-scheme-changed"
 REASON_TRACE_PARENTS_DIFFER = "trace-parents-differ"
@@ -113,6 +119,7 @@ REASON_UPSTREAM_CHANGED = "upstream-changed"
 REASON_PROVENANCE_CYCLE = "provenance-cycle"
 
 STALE_REASONS: tuple[str, ...] = (
+    REASON_GENERATED_AT_UNKNOWN,
     REASON_NO_TRACE,
     REASON_SCHEME_CHANGED,
     REASON_TRACE_PARENTS_DIFFER,
@@ -264,6 +271,10 @@ def _verdicts_for(
     def _classify(node_id: UUID) -> FreshnessVerdict:
         ann = by_id[node_id]
         parents = tuple(dict.fromkeys(ann.provenance.was_derived_from))
+        if not ann.provenance.generated_at_is_known:
+            # Checked before the trace: a trace can match its parents'
+            # digests and the row still cannot be placed in time (lacing#44).
+            return FreshnessVerdict(ann, True, REASON_GENERATED_AT_UNKNOWN)
         trace = traces.get(node_id)
         if trace is None:
             return FreshnessVerdict(ann, True, REASON_NO_TRACE)
@@ -284,6 +295,10 @@ def _verdicts_for(
             parent = by_id.get(pid)
             if parent is None:
                 return FreshnessVerdict(ann, True, REASON_UPSTREAM_MISSING, pid)
+            if not parent.provenance.generated_at_is_known:
+                # A parentless parent takes no verdict of its own, so this is
+                # the only place a tick-0 *authored* row is ever seen.
+                return FreshnessVerdict(ann, True, REASON_GENERATED_AT_UNKNOWN, pid)
             if pid in recursion_scope:
                 if pid in resolving:
                     # `pid` is an ancestor still being classified, so this edge

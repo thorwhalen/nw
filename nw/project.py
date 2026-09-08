@@ -58,7 +58,7 @@ def _seconds_to_rt(seconds: float):
     )
 
 
-from lacing import TimeInterval
+from lacing import UNKNOWN_GENERATED_AT, TimeInterval
 
 from .bodies import (
     CharacterRefBodyV1,
@@ -907,18 +907,31 @@ _ENVIRONMENT_REF_FIELDS = (
 )
 
 
-def _iso_utc(rt) -> str:
-    """A lacing ``RationalTime`` wall clock → an ISO-8601 UTC string."""
+def _iso_utc(rt) -> Optional[str]:
+    """A lacing ``RationalTime`` wall clock → an ISO-8601 UTC string.
+
+    ``None`` for lacing's tick-0 UNKNOWN sentinel (lacing#44) — rendering it
+    would print 1970-01-01, which is the epoch reading the sentinel forbids.
+    """
+    if rt == UNKNOWN_GENERATED_AT:
+        return None
     return datetime.fromtimestamp(rt.to_seconds(), tz=timezone.utc).isoformat()
 
 
 def _last_touched(indexed) -> tuple[Optional[str], Optional[float]]:
-    """``(iso_timestamp, seconds_since)`` of the most recent graph write."""
-    if not indexed:
-        return None, None
-    newest = indexed[-1][1].provenance.generated_at_time
-    at = datetime.fromtimestamp(newest.to_seconds(), tz=timezone.utc)
-    return at.isoformat(), max(0.0, (datetime.now(timezone.utc) - at).total_seconds())
+    """``(iso_timestamp, seconds_since)`` of the most recent graph write.
+
+    Rows with an unknown generation time do not count: they sort first, and
+    they carry no information about when the graph was last touched.
+    """
+    for _, ann in reversed(indexed):
+        newest = ann.provenance.generated_at_time
+        if newest == UNKNOWN_GENERATED_AT:
+            break  # sorted ascending: everything before it is unknown too
+        at = datetime.fromtimestamp(newest.to_seconds(), tz=timezone.utc)
+        since = max(0.0, (datetime.now(timezone.utc) - at).total_seconds())
+        return at.isoformat(), since
+    return None, None
 
 
 def _last_authored_change(indexed):

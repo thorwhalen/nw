@@ -19,6 +19,8 @@ from __future__ import annotations
 
 from uuid import UUID, uuid4
 
+import pytest
+
 import nw
 from lacing import (
     Annotation,
@@ -205,8 +207,9 @@ def test_a_parent_edited_after_the_derive_is_not_blessed(tmp_path):
             was_generated_by="transform:legacy@1",
             was_attributed_to="agent:legacy",
             was_derived_from=[a_id],
-            # Derived at EPOCH — i.e. before its parent's edit stamp.
-            generated_at_time=RationalTime.zero(),
+            # Derived one hour before its parent's edit stamp. (Not tick 0:
+            # that is lacing's UNKNOWN sentinel and takes a different exit.)
+            generated_at_time=RationalTime(RationalTime.now().value - 3600 * 24000),
             activity="derive",
         ),
     )
@@ -256,9 +259,7 @@ def test_an_unusable_trace_is_reported_not_counted_healthy(tmp_path):
         ),
     )
     with proj.graph._open() as store:
-        store.add_tier(
-            Tier(name=VERIFYING_TRACE_TIER, stereotype=TierStereotype.NONE)
-        )
+        store.add_tier(Tier(name=VERIFYING_TRACE_TIER, stereotype=TierStereotype.NONE))
         store.add(foreign)
 
     report = nw.backfill_traces(proj.root, execute=True)
@@ -282,3 +283,49 @@ def test_stores_found_distinguishes_not_a_project_from_nothing_to_do(tmp_path):
     proj = nw.Project.init(tmp_path / "real")
     _authored(proj)
     assert nw.backfill_traces(proj.root)["stores_found"] >= 1
+
+
+def _restamp_unknown(proj, ann: Annotation) -> Annotation:
+    """Rewrite ``ann`` in place with ``generated_at_time`` at tick 0 — what a
+    row written through the REST path before lacing#35 looks like."""
+    updated = ann.model_copy(
+        update={
+            "provenance": ann.provenance.model_copy(
+                update={"generated_at_time": RationalTime.zero()}
+            )
+        }
+    )
+    with nw.open_project_stores(proj.root) as stores:
+        for store in stores:
+            if store.remove(ann.id) is not None:
+                break
+    with proj.graph._open() as store:
+        store.add(updated)
+    return updated
+
+
+def _by_id(proj) -> dict[UUID, Annotation]:
+    return {a.id: a for a in nw.iter_all_annotations(proj.root)}
+
+
+@pytest.mark.parametrize("which", ["child", "parent", "both"])
+def test_an_unknown_generation_time_is_never_blessed(tmp_path, which):
+    """Tick 0 is lacing's UNKNOWN sentinel, not the epoch (lacing#44). The
+    timestamp rule cannot order such a row against its parents — and before
+    this guard a tick-0 PARENT read older than every child, so the child was
+    blessed with a trace it had not earned. All three shapes stay stale and
+    land in skipped, where the operator can see what to backfill."""
+    proj = nw.Project.init(tmp_path / "p")
+    a_id = _authored(proj)
+    child = _legacy_derived(proj, (a_id,))
+    if which in ("child", "both"):
+        child = _restamp_unknown(proj, child)
+    if which in ("parent", "both"):
+        _restamp_unknown(proj, _by_id(proj)[a_id])
+
+    report = nw.backfill_traces(proj.root, execute=True)
+    assert report["backfilled"] == 0
+    assert [s["annotation_id"] for s in report["skipped"]] == [str(child.id)]
+    assert "unknown" in report["skipped"][0]["reason"]
+    assert _traced_targets(proj.root) == set()
+    assert child.id in _stale_ids(proj.root)
