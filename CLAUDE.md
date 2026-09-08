@@ -6,7 +6,7 @@ execution. reelee, muvid, and braidio build audiovisual production apps on
 it. Layering: `lacing → nw → falaw.Plan → backends` — nothing above
 `falaw.Plan` may know which backend runs.
 
-## The four surfaces (each module's docstring is the spec)
+## The five surfaces (each module's docstring is the spec)
 
 - **Transforms** (`nw/transforms/`) — the swappable, costed
   "A-annotation → B-annotation" step. Contract: `name` (registry key, denotes
@@ -39,6 +39,15 @@ it. Layering: `lacing → nw → falaw.Plan → backends` — nothing above
   it (raw `store.add`) and freshness classifies the result stale-forever.
   Deletion routes collect the annotation's traces; `collect_orphan_traces`
   is the GC backstop.
+- **Pricing** (`nw/pricing.py`) — the one place a *persisted* cost figure is
+  turned back into a current one. A stored `total_cost_usd` is an as-of fact;
+  falaw's tables move, so reporting one as current under-quotes the run.
+  `current_quote(plan)` / `quote_render_decision(payload)` return a
+  `PlanQuote` (`total_usd`, `status`, `as_of_total_usd`); `None` means
+  unknown, never free, and a call with no `falaw.CostBasis` is exactly that.
+  Repricing is descriptive: `cost_basis` never enters `plan_hash` or the
+  per-call cache key, so job idempotency is unmoved (nw#74). Money already
+  *spent* (`Project.total_spend_usd`) is deliberately not re-quoted.
 - **Genres & jobs** (`nw/genres.py`, `nw/jobs.py`) — the genre/template
   registry (`genre_catalog()`, resolved envelopes persisted on the project)
   and durable async jobs (idempotency by `falaw.plan_hash`; store writes are

@@ -4,8 +4,10 @@ URI: ``annot://schema/render-result/v1``
 
 A render-result records that a shot was rendered: which strategy ran, where
 the output landed, the video :class:`lacing.Artifact` it produced, and the
-estimated cost. Its ``provenance.was_derived_from`` includes the shot
-annotation's id, so a freshness traversal from the shot finds the render.
+cost as quoted at plan time (``total_estimated_cost_usd`` is an as-of figure,
+never a current one — see its field description and :mod:`nw.pricing`). Its
+``provenance.was_derived_from`` includes the shot annotation's id, so a
+freshness traversal from the shot finds the render.
 
 This is the ``output_kind`` of the render-strategy Transforms (see
 ``nw.transforms._adapters.render_strategy``). It is intentionally small —
@@ -53,7 +55,16 @@ class RenderResultBodyV1(BaseModel):
     )
     total_estimated_cost_usd: float = Field(
         0.0,
-        description="Plan-time cost estimate for the render (sum of CallPlan costs).",
+        description=(
+            "Cost of the render **as quoted at plan time** (sum of CallPlan "
+            "costs). A fact about the moment it was written, not a current "
+            "price: falaw's rate tables move — 0.0.46 re-quoted premium LLM "
+            "calls tenfold upward — so presenting this figure as today's cost "
+            "under-quotes the run. To report a current number, re-quote the "
+            "render's plan through ``nw.pricing.current_quote`` (or the stored "
+            "decision payload through ``nw.pricing.quote_render_decision``), "
+            "which answers ``None`` — unknown, never free — when it cannot."
+        ),
     )
 
 

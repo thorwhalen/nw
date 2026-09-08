@@ -160,6 +160,24 @@ output = nw.execute_render(prep, plan, project=proj)
 Plans built with `upload=False` are refused at execute time — they exist for
 inspection only.
 
+### A stored quote is not a current price
+
+`plan.total_cost_usd` is true at the moment it is read and an *as-of* figure ever after: falaw's rate tables move — 0.0.46 re-quoted every premium LLM call tenfold upward — so a figure nw persisted before a table moves under-quotes the run it is later used to describe or gate. Under-quoting is the one direction a spend decision must never err in.
+
+`nw.pricing` is the one place nw re-quotes. Give it a plan (or the calls stored in a render decision) and it answers with today's price, the stale one beside it, and which of the two you are allowed to show:
+
+```python
+quote = nw.current_quote(plan)          # or nw.quote_render_decision(payload)
+quote.total_usd        # today's price, or None
+quote.status           # "unchanged" | "changed" | "unknown"
+quote.as_of_total_usd  # what the plan said when it was written
+quote.delta_usd        # the movement, or None if either side is unknown
+```
+
+`None` means **unknown, never free**. A call carrying no `falaw.CostBasis` — one hand-built outside a `plan_*`, or planned before falaw 0.0.49 — cannot be re-quoted at all, so it comes back unknown rather than repeating its frozen number. `nw.jobs.estimate` and `nw.jobs.enqueue` follow the same rule: when `params["plan"]` is supplied they price *it*, and a caller-supplied `estimated_usd` is ignored. Repricing is descriptive only — `cost_basis` never enters `plan_hash`, so a job's idempotency key and falaw's per-call cache key are byte-identical to what they were before, and a resumed render still dedups onto work already paid for.
+
+Money already **spent** (`project.total_spend_usd()`) is deliberately *not* re-quoted: a receipt is not a quote.
+
 ## A typed project on disk
 
 `nw.Project` is a small facade over a project folder. The folder is the single
