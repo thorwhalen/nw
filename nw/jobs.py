@@ -90,6 +90,8 @@ from au import (
 )
 from au.base import ComputationBackend
 
+from nw.secrets import as_secrets, using_secrets
+
 _logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:  # pragma: no cover — annotations only
@@ -288,6 +290,7 @@ def enqueue(
     idempotency_key: str | None = None,
     label: str | None = None,
     capture_context: Callable[[], AbstractContextManager[Any]] | None = None,
+    secrets: Mapping[str, str] | None = None,
     config: JobsConfig = DEFAULT_CONFIG,
 ) -> Job:
     """Enqueue a billable render as a background job. Returns a :class:`Job`
@@ -332,6 +335,18 @@ def enqueue(
             importing them — e.g. reelee's BYO vision (aix) + ElevenLabs keys,
             which otherwise fall back to owner/env in a background job because
             ``ThreadBackend`` does not copy ``ContextVars`` into the worker.
+        secrets: the caller's per-call credentials (:class:`nw.Secrets`; any
+            mapping is coerced), for a render that spends a bring-your-own
+            key. Held **in memory only**: never written to the job index
+            (``params`` is — never put a key there), never logged, and it
+            reaches the render callable only when that callable declares a
+            ``secrets`` keyword — the same accepts-it-or-not rule as
+            ``job_id`` / ``on_event`` / ``should_cancel``. A ``"fal"`` secret
+            is also bound as the worker's fal credential
+            (:func:`nw.secrets.using_secrets`), innermost, so an explicit key
+            wins over an ambient one. The explicit counterpart of
+            ``capture_context``: what that hook re-binds ambiently, this
+            threads by hand.
         config: tunables (see :class:`JobsConfig`).
 
     Raises:
@@ -400,6 +415,7 @@ def enqueue(
             rt=rt,
             config=config,
             capture_context=capture_context,
+            secrets=as_secrets(secrets),
         )
         the_backend.launch(bound, (), {}, job_id, rt.au_store)
 
@@ -1007,6 +1023,7 @@ def _bind_worker(
     rt,
     config,
     capture_context=None,
+    secrets=None,
 ):
     """Bind the render callable into a zero-arg worker body that (a) re-establishes
     request context (fal credentials + project + any caller-supplied context), (b)
@@ -1055,6 +1072,7 @@ def _bind_worker(
                 job_id=job_id,
                 on_event=sink,
                 should_cancel=should_cancel,
+                secrets=secrets,
             )
 
         # Re-establish both credential contexts on the worker thread: fal
@@ -1078,7 +1096,12 @@ def _bind_worker(
         )
         beat.start()
         try:
-            with fal_ctx, extra_ctx if extra_ctx is not None else nullcontext():
+            # Innermost, so an explicit per-call key wins over an ambient one.
+            with (
+                fal_ctx,
+                extra_ctx if extra_ctx is not None else nullcontext(),
+                using_secrets(secrets),
+            ):
                 result = call()
         finally:
             # ``finally``, not a trailing statement: a render that raises must
@@ -1101,12 +1124,19 @@ def _capture_fal_credentials():
         return None
 
 
-def _call_dispatch(callable_, project, params, *, job_id, on_event, should_cancel):
+def _call_dispatch(
+    callable_, project, params, *, job_id, on_event, should_cancel, secrets=None
+):
     """Invoke the render callable, passing only the render-context kwargs it
-    accepts (progressive disclosure: a plain ``f(project, params)`` works too)."""
+    accepts (progressive disclosure: a plain ``f(project, params)`` works too).
+
+    ``secrets`` is offered only when there is one, so a callable that predates
+    the seam is called with exactly the kwargs it always was."""
     import inspect
 
     extras = {"job_id": job_id, "on_event": on_event, "should_cancel": should_cancel}
+    if secrets is not None:
+        extras["secrets"] = secrets
     try:
         sig = inspect.signature(callable_)
         if not any(p.kind is p.VAR_KEYWORD for p in sig.parameters.values()):

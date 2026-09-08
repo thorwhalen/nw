@@ -126,6 +126,11 @@ from .transforms import (
     UnitStatus,
     WorkItem,
     fan_out_execute,
+    # execution secrets — the per-caller credential seam
+    FAL_SECRET,
+    Secrets,
+    as_secrets,
+    using_secrets,
     fan_out_plan,
     work_item_instance_id,
 )
@@ -287,6 +292,11 @@ __all__ = [
     "FanOutItemResult",
     "FanOutResult",
     "fan_out_execute",
+    # execution secrets
+    "FAL_SECRET",
+    "Secrets",
+    "as_secrets",
+    "using_secrets",
     "save_storyboard",
     "shot_report",
     "all_stale",

@@ -29,6 +29,15 @@ it. Layering: `lacing → nw → falaw.Plan → backends` — nothing above
   the **run record** (`FanOutResult.to_record()`), never the graph document —
   except *why* a unit's output was never produced (nw#44,
   `annot://schema/unproduced-output/v1`, keyed by `unit.instance_id`).
+  **Secrets** (`nw/secrets.py`, braidio#58): a caller's bring-your-own key
+  reaches `execute(..., secrets=)` as an `nw.Secrets` (a read-only
+  `{provider: key}` mapping that redacts its `repr`, refuses pickling and is
+  not JSON-serializable), passed accepts-it-or-not by `fan_out_execute` and
+  `jobs.enqueue` — the same seam as `on_failure` / `unit_instance_id`. It is
+  never persisted anywhere; `tests/test_execution_secrets.py` greps every
+  store, record and log for a sentinel. `BaseTransform.execute` binds a
+  `"fal"` secret as the fal credential for the call; an app owns its own
+  provider names (`"elevenlabs"` is braidio's).
 - **Freshness** (`nw/freshness.py`) — verifying-trace rebuild analysis with
   early cutoff (Salsa-style backdating). `stale_verdicts`/`stale_after`
   answer "what did *this* change invalidate"; `stale_verdicts_all`/`all_stale`
@@ -66,6 +75,11 @@ it. Layering: `lacing → nw → falaw.Plan → backends` — nothing above
    freshness walks; write derived annotations through `ProjectGraph`.
 5. **Tests never spend.** The suite is hermetic (falaw.testing transport +
    no-outbound guard); nw has no live-API tests.
+6. **A secret is never persisted.** It travels only as the `secrets=` call
+   argument (in memory) — never in a node body, provenance, a `Plan`, a cache
+   key, `params`, the job index, a run record or a log line. Do not add a
+   field for one anywhere a record is built; `nw.Secrets` makes the accident
+   raise.
 
 ## Where to look
 

@@ -146,6 +146,26 @@ result = t.execute(proj, plan, skeleton, on_failure="isolate")
 [u.body.reason for u in proj.graph.unproduced_outputs()]  # survives reload
 ```
 
+### A caller's key reaches `execute` and nothing else
+
+A server rendering on a caller's bring-your-own credential hands it to
+`execute(..., secrets=)` — a read-only `{provider_name: key}` mapping
+(`nw.Secrets`) — and to nothing else. It never enters the Plan, the skeleton,
+provenance, a cache key, a run record, the job index or a log line; the type
+redacts its `repr`, refuses pickling and is not JSON-serializable, so the
+accident raises instead of leaking. `fan_out_execute` and `nw.jobs.enqueue`
+pass it accepts-it-or-not, exactly like `on_failure`: a Transform with no key
+to spend never sees it. `BaseTransform.execute` binds a `"fal"` secret as the
+fal credential for the duration of the call; an app declares the keyword on
+its own paid Transforms and reads the provider it calls (braidio reads
+`"elevenlabs"`).
+
+```python
+result = t.execute(proj, plan, skeleton, secrets={"fal": caller_fal_key})
+nw.fan_out_execute(t, proj, fan_out, secrets={"elevenlabs": caller_key})
+nw.jobs.enqueue(proj, "weave", params, dispatch=..., secrets=secrets)  # not in params
+```
+
 ## prepare → plan → execute, with a budget gate
 
 The **shot** render unit makes the same split concrete, and it is why cost is
@@ -327,6 +347,9 @@ nw.jobs.to_dict(job)  # the JSON a task tray renders
 Unknown cost always requires approval. Resubmitting while a job with the same
 idempotency key is live returns the existing job rather than launching a
 duplicate. Every tunable is keyword-configurable via `nw.jobs.JobsConfig`.
+A caller's credential goes in `secrets=` (held in memory, offered to the
+dispatch callable only when it declares the keyword), never in `params`,
+which is what the job index persists.
 
 ## Render strategies
 

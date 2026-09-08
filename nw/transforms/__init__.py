@@ -34,6 +34,12 @@ mandatory semantic ``mapping_key``, instance ids as a pure function of
 declaration, and per-unit failure isolation. Its module docstring is the
 spec.
 
+A caller's **credentials** — a bring-your-own API key — reach
+:meth:`Transform.execute` through ``secrets=`` (:mod:`nw.secrets`), passed
+accepts-it-or-not like ``on_failure``, and reach nothing that persists: not
+the Plan, the skeleton, provenance, a cache key, a run record or a log line.
+That module's docstring is the spec for the invariant.
+
 Naming convention for ``Transform.name``::
 
     <from_kind>_to_<to_kind>[.<flavor>[.<variant>]]
@@ -51,6 +57,7 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass, field, replace
 from pathlib import Path
+from collections.abc import Mapping
 from typing import Callable, Literal, Optional, Protocol, runtime_checkable
 
 from pydantic import BaseModel
@@ -59,6 +66,7 @@ from xdol import Registry
 from falaw import Plan, execute_plan_isolated
 from lacing import Annotation, Artifact
 
+from nw.secrets import FAL_SECRET, Secrets, as_secrets, using_secrets
 from nw.transforms._cache_mode import CacheModeConflict, resolve_cache_mode
 from nw.transforms.fanout import (
     DFLT_GENERATE_WHEN,
@@ -293,6 +301,7 @@ class Transform(Protocol):
         force: bool = False,
         on_failure: OnFailure = "halt",
         unit_instance_id: Optional[str] = None,
+        secrets: Optional[Mapping[str, str]] = None,
     ) -> TransformResult:
         """Run ``plan``, complete ``skeleton``, write to the graph, return result.
 
@@ -329,6 +338,22 @@ class Transform(Protocol):
         :meth:`nw.graph.ProjectGraph.add_unproduced_output` /
         :meth:`~nw.graph.ProjectGraph.add_annotation` — :class:`BaseTransform`
         already does.
+
+        ``secrets`` is the third keyword of that shape, and the one that
+        carries a **credential**: the caller's per-call, bring-your-own API
+        key(s), as a read-only ``{provider_name: key}`` mapping
+        (:class:`nw.Secrets`; every entry point coerces a plain mapping to
+        it). It is the one input that is deliberately *not an input* — it
+        never enters the Plan, the skeleton, provenance, the cache identity,
+        a run record, the job index or a log line — and a Transform that
+        spends a caller's credential reads it here and nowhere else.
+        ``None`` (the default, and what every call did before the seam
+        existed) means "resolve from the process environment".
+        :func:`~nw.transforms.fanout.fan_out_execute` and
+        :func:`nw.jobs.enqueue` pass it accepts-it-or-not, so an override
+        that has no key to spend never sees it; :class:`BaseTransform` binds
+        a :data:`~nw.secrets.FAL_SECRET` as the fal credential for the
+        duration of the call. See :mod:`nw.secrets`.
         """
         ...
 
@@ -401,6 +426,7 @@ class BaseTransform:
         force: bool = False,
         on_failure: OnFailure = "halt",
         unit_instance_id: Optional[str] = None,
+        secrets: Optional[Mapping[str, str]] = None,
     ) -> TransformResult:
         if len(skeleton) != len(plan.calls):
             raise ValueError(
@@ -426,14 +452,20 @@ class BaseTransform:
         # latter as exactly this call plus `artifacts_or_raise()` — so it keeps
         # re-raising the *original* typed exception, unwrapped, which is what
         # every existing caller classifies on.
-        report = execute_plan_isolated(
-            plan,
-            use_cache=cache_on,
-            refresh=refresh,
-            halt_on_failure=on_failure == "halt",
-        )
-        if on_failure == "halt":
-            report.artifacts_or_raise()
+        #
+        # The caller's credentials are bound for exactly this call, then
+        # released: a `"fal"` secret is the fal credential every call in the
+        # plan authenticates with (``nw.secrets``). They reach nothing below —
+        # not the report, not the artifacts, not the annotations.
+        with using_secrets(as_secrets(secrets)):
+            report = execute_plan_isolated(
+                plan,
+                use_cache=cache_on,
+                refresh=refresh,
+                halt_on_failure=on_failure == "halt",
+            )
+            if on_failure == "halt":
+                report.artifacts_or_raise()
 
         # Zip against `report.outcomes`, never against the artifacts: outcomes
         # is full-length in plan order **by construction**, while the artifact
@@ -842,6 +874,11 @@ __all__ = [
     "resolve_cache_mode",
     "cache_key",
     "cached_output",
+    # execution secrets — the per-caller credential seam
+    "Secrets",
+    "FAL_SECRET",
+    "as_secrets",
+    "using_secrets",
     # fan-out (nw#26)
     "GenerateWhen",
     "DFLT_GENERATE_WHEN",

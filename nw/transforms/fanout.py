@@ -44,6 +44,9 @@ The pieces, and the rule each one carries:
   (passed to an ``execute()`` that accepts ``unit_instance_id``, the same
   accepts-it-or-not seam ``on_failure`` uses), never by the item's
   ``attributes`` or ``scope_interval``.
+- A caller's **credentials** (``secrets=``, :mod:`nw.secrets`) ride the same
+  accepts-it-or-not seam into each unit's ``execute`` and nowhere else —
+  never a unit, never the run record.
 
 Deliberately NOT here (recorded in nw#26 so nobody re-litigates): a general
 re-entrant scheduler (a fan-out of independent plans needs bounded
@@ -64,6 +67,7 @@ from __future__ import annotations
 import inspect
 import uuid
 from dataclasses import dataclass
+from collections.abc import Mapping
 from typing import Any, Callable, Literal, Optional
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
@@ -71,6 +75,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 from falaw import Plan
 from lacing import Annotation, TimeInterval
 
+from nw.secrets import as_secrets
 from nw.transforms._cache_mode import resolve_cache_mode
 
 
@@ -534,7 +539,8 @@ def _accepts_keyword(execute: Callable, name: str) -> bool:
     ``on_failure`` — passing it would raise ``TypeError`` at call time. The
     documented guidance for "a caller iterating over arbitrary registered
     Transforms" is to pass a keyword only where accepted; this is that check,
-    reused for ``on_failure`` (nw#25) and ``unit_instance_id`` (nw#44).
+    reused for ``on_failure`` (nw#25), ``unit_instance_id`` (nw#44) and
+    ``secrets`` (the per-caller credential seam, :mod:`nw.secrets`).
     """
     try:
         sig = inspect.signature(execute)
@@ -554,6 +560,7 @@ def fan_out_execute(
     use_cache: bool = True,
     force: bool = False,
     on_failure: "OnFailure" = "isolate",  # noqa: F821
+    secrets: Optional[Mapping[str, str]] = None,
 ) -> FanOutResult:
     """Execute a planned fan-out, one ordinary ``transform.execute`` per unit.
 
@@ -592,6 +599,13 @@ def fan_out_execute(
     failed rows is only the lesser evil for the shapes that cannot be checked
     up front.
 
+    ``secrets`` — the caller's per-call credentials (:class:`nw.Secrets`;
+    any mapping is coerced) — is forwarded to each unit's ``execute`` **only
+    when the implementation declares the keyword**, the same accepts-it-or-not
+    seam as ``on_failure`` and ``unit_instance_id``. It reaches nothing else:
+    not the units, not the run record (:meth:`FanOutResult.to_record`), not
+    a log line. A Transform with no key to spend never sees it.
+
     Units run **sequentially**. Concurrency *within* a unit is falaw's
     (``execute_plan_isolated`` bounds it); concurrency *across* units is the
     deferred-scheduler work nw#26 explicitly scopes out, and nothing here
@@ -615,6 +629,10 @@ def fan_out_execute(
         )
     pass_on_failure = _accepts_keyword(transform.execute, "on_failure")
     pass_instance_id = _accepts_keyword(transform.execute, "unit_instance_id")
+    secrets = as_secrets(secrets)
+    pass_secrets = secrets is not None and _accepts_keyword(
+        transform.execute, "secrets"
+    )
 
     results: list[FanOutItemResult] = []
     halted_by: Optional[str] = None
@@ -636,6 +654,9 @@ def fan_out_execute(
             # The precise identity nw#44's unproduced-output record retires
             # by — without it, two units sharing an upstream set can alias.
             kwargs["unit_instance_id"] = str(unit.instance_id)
+        if pass_secrets:
+            # In memory, for this call: never in `unit`, never in the record.
+            kwargs["secrets"] = secrets
         try:
             result = transform.execute(project, unit.plan, unit.skeleton, **kwargs)
             # Result interpretation stays INSIDE the try: an execute that

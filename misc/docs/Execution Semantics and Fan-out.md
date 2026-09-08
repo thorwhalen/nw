@@ -194,6 +194,8 @@ anti-lesson: recorded, and read by nobody — *a receipt, not a lock*.
 static/dynamic are declared on the Transform, never inferred. Undeclared ⇒
 stochastic, billable, dynamic.
 
+**A credential is a call argument, not an input.** A server rendering on a caller's bring-your-own key (braidio#58) hands it to `execute(..., secrets=)` and to nothing else: never the Plan, the skeleton, provenance, a cache key, a run record, the job index or a log line. It is the third keyword on the accepts-it-or-not seam (`on_failure`, `unit_instance_id`, `secrets`), so a Transform with no key to spend never sees it, and it is an `nw.Secrets` — a read-only `{provider_name: key}` mapping that redacts its `repr`, refuses pickling and is not JSON-serializable — so putting one where a record is built raises instead of leaking. The alternatives were weighed on the issue: an execution-context object bundles the secret with the run context that *is* serialized; a ContextVar is ambient, unassertable at the boundary in a test, and does not cross the `nw.jobs` worker thread (the gap `enqueue(capture_context=)` exists for).
+
 ## 5. The capability catalogue
 
 `nw.transform_catalog()` — the `/object_info` equivalent over our own registry.
