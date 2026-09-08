@@ -268,6 +268,37 @@ def test_a_null_stored_total_leaves_the_calls_to_speak():
     assert quote_render_decision(payload).status == "unchanged"
 
 
+def test_a_call_unpriced_back_then_keeps_its_honest_none_as_of():
+    """The stored total counted an unknown as ``0.0``; the quote must not.
+
+    ``Plan.total_cost_usd`` reads an unknown cost as zero, so a payload whose
+    one call was unpriceable at plan time stores a ``0.0`` headline. Adopting
+    that as ``as_of_total_usd`` would claim the render *was* quoted at zero.
+    And it must not trip the disagreement rule either: the call carries a
+    basis, so today's rates price it fine — reporting it as ``unknown`` would
+    throw away a perfectly good re-quote.
+    """
+    unpriced_then = CallPlan(
+        tool="text_to_video",
+        application=PRICED_MODEL,
+        arguments={"prompt": "a tiger"},
+        output_kind="video",
+        estimated_cost_usd=None,
+        cost_basis=catalogue_cost_basis(PRICED_MODEL, seconds=SECONDS),
+    )
+    plan = Plan(calls=(unpriced_then,))
+    payload = {
+        "calls": cost_records(plan),
+        "total_estimated_cost_usd": plan.total_cost_usd,  # 0.0, not None
+    }
+    quote = quote_render_decision(payload)
+    assert quote.status == "changed"
+    assert quote.total_usd == CATALOGUE_COST
+    assert quote.as_of_total_usd is None
+    assert quote.delta_usd is None
+    assert quote.reason == ""
+
+
 def test_basis_changed_is_surfaced_on_the_quote_and_its_dict():
     plan = Plan(calls=(_priced_call(),))
     moved = current_quote(plan, pricers=_doubling_pricers())

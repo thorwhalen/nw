@@ -303,7 +303,14 @@ def enqueue(
         project: the ``nw.Project`` the render operates on.
         kind: dispatch key selecting the render callable (e.g.
             ``"journey.full_auto"``, ``"panel.animate"``).
-        params: render parameters (also the ETA-key + default-idempotency basis).
+        params: render parameters (also the ETA-key + default-idempotency
+            basis). A ``"plan"`` entry must be a **``falaw.plan_to_dict``
+            dict, not a live** :class:`falaw.Plan`: the whole ``params``
+            mapping is JSON-serialized into the job index, so a ``Plan``
+            object raises there. The dict hashes to the identical
+            ``plan_hash`` (:func:`_plan_for_identity`) and re-quotes the same
+            way, so nothing is lost by serializing it — :func:`estimate`,
+            which never writes a record, accepts either.
         on_event: sink for the render's lifecycle events (reelee wires this to
             its ``agent_log`` / SSE tail). Events are stamped with
             ``job_id``/``run_id`` and mirrored into progress/cost/eta.
