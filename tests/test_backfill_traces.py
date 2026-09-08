@@ -285,27 +285,7 @@ def test_stores_found_distinguishes_not_a_project_from_nothing_to_do(tmp_path):
     assert nw.backfill_traces(proj.root)["stores_found"] >= 1
 
 
-def _restamp_unknown(proj, ann: Annotation) -> Annotation:
-    """Rewrite ``ann`` in place with ``generated_at_time`` at tick 0 — what a
-    row written through the REST path before lacing#35 looks like."""
-    updated = ann.model_copy(
-        update={
-            "provenance": ann.provenance.model_copy(
-                update={"generated_at_time": RationalTime.zero()}
-            )
-        }
-    )
-    with nw.open_project_stores(proj.root) as stores:
-        for store in stores:
-            if store.remove(ann.id) is not None:
-                break
-    with proj.graph._open() as store:
-        store.add(updated)
-    return updated
-
-
-def _by_id(proj) -> dict[UUID, Annotation]:
-    return {a.id: a for a in nw.iter_all_annotations(proj.root)}
+from tests.unknown_time import by_id, restamp_unknown  # noqa: E402
 
 
 @pytest.mark.parametrize("which", ["child", "parent", "both"])
@@ -319,9 +299,9 @@ def test_an_unknown_generation_time_is_never_blessed(tmp_path, which):
     a_id = _authored(proj)
     child = _legacy_derived(proj, (a_id,))
     if which in ("child", "both"):
-        child = _restamp_unknown(proj, child)
+        child = restamp_unknown(proj, child)
     if which in ("parent", "both"):
-        _restamp_unknown(proj, _by_id(proj)[a_id])
+        restamp_unknown(proj, by_id(proj)[a_id])
 
     report = nw.backfill_traces(proj.root, execute=True)
     assert report["backfilled"] == 0

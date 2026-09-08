@@ -720,80 +720,91 @@ def test_snapshot_and_traversal_orders_are_deterministic(tmp_path):
 
 # --- unknown generation time (lacing#44) --------------------------------------
 # Tick 0 in ``generated_at_time`` is lacing's UNKNOWN sentinel, not the epoch.
-# Rows written through the REST path before lacing#35 carry it. The rule:
-# unplaceable in time means unverifiable, hence stale — never "oldest".
+# Rows written through the REST path before lacing#35 carry it. The rule is
+# on the row's OWN stamp only: unplaceable in time means unverifiable, hence
+# stale — never "oldest" — and regenerating the row clears it. A tick-0
+# PARENT is not a verdict (module docstring); only the lacing#46 backfill
+# clears a tick-0 root, and nothing downstream waits on that.
 
 
-def _restamp_unknown(proj, ann: Annotation) -> Annotation:
-    """Rewrite ``ann`` in place with ``generated_at_time`` at tick 0, raw.
-
-    Raw ``store.add``, not ``add_annotation``: the value is unchanged, so any
-    trace that names it (or that it recorded) still matches every digest.
-    That is the point — without the rule, these rows read verified-fresh.
-    """
-    updated = ann.model_copy(
-        update={
-            "provenance": ann.provenance.model_copy(
-                update={"generated_at_time": RationalTime.zero()}
-            )
-        }
-    )
-    assert updated.provenance.generated_at_is_known is False
-    _remove(proj, ann.id)
-    with proj.graph._open() as store:
-        store.add(updated)
-    return updated
+from tests.unknown_time import by_id, restamp_unknown  # noqa: E402
 
 
-def _by_id(proj) -> dict[UUID, Annotation]:
-    return {a.id: a for a in nw.iter_all_annotations(proj.root)}
-
-
-@pytest.mark.parametrize("which", ["child", "parent", "both"])
-def test_an_unknown_generation_time_is_stale_never_oldest(tmp_path, which):
-    """parent=0, child=0, both=0: every combination reads stale, and the
-    verdict names the rule, not a digest mismatch it did not find."""
+@pytest.mark.parametrize(
+    "which, reason",
+    [
+        ("child", REASON_GENERATED_AT_UNKNOWN),
+        ("parent", REASON_FRESH),
+        ("both", REASON_GENERATED_AT_UNKNOWN),
+    ],
+)
+def test_an_unknown_own_stamp_is_stale_and_a_tick_zero_parent_is_not_a_verdict(
+    tmp_path, which, reason
+):
+    """child=0 / parent=0 / both=0: the child's own stamp decides, the
+    parent's never does. The verdict names the rule, not a digest mismatch it
+    did not find, and never carries an ``upstream_id`` — no parent decided it."""
     proj = nw.Project.init(tmp_path / "p")
     a_id = _authored(proj)
     b = _derived(proj, (a_id,), body={"shot_id": "s01", "url": "b"})
-    # Sanity: a freshly built chain is verified-fresh before the restamp.
-    assert _reason_for(proj, a_id, b.id) == REASON_FRESH
+    assert _reason_for(proj, a_id, b.id) == REASON_FRESH  # sanity, pre-restamp
 
     if which in ("child", "both"):
-        _restamp_unknown(proj, b)
+        restamp_unknown(proj, b)
     if which in ("parent", "both"):
-        _restamp_unknown(proj, _by_id(proj)[a_id])
+        restamp_unknown(proj, by_id(proj)[a_id])
 
     verdict = {v.annotation.id: v for v in nw.stale_verdicts(proj.root, a_id)}[b.id]
-    assert verdict.is_stale
-    assert verdict.reason == REASON_GENERATED_AT_UNKNOWN
+    assert verdict.reason == reason
+    assert verdict.is_stale is (reason != REASON_FRESH)
+    assert verdict.upstream_id is None
     assert REASON_GENERATED_AT_UNKNOWN in STALE_REASONS
-    # The parent decided it only when the child itself could be placed.
-    assert verdict.upstream_id == (a_id if which == "parent" else None)
     # The snapshot walk agrees — this is what a freshness indicator reads.
-    assert b.id in _ids(nw.all_stale(proj.root))
-    assert b.id in _ids(nw.stale_after(proj.root, a_id))
+    assert (b.id in _ids(nw.all_stale(proj.root))) is verdict.is_stale
+    assert (b.id in _ids(nw.stale_after(proj.root, a_id))) is verdict.is_stale
 
 
-def test_an_unknown_parent_is_unverifiable_not_ancient(tmp_path):
-    """The bug in one line: a tick-0 parent used to sort as older than every
-    child, so nothing downstream of it ever looked out of date."""
+def test_a_tick_zero_root_does_not_stale_its_subtree_by_timestamp_alone(tmp_path):
+    """Freshness is digest-verified since nw#39: A's unknown stamp says
+    nothing about whether B's inputs changed. Both B and C stay
+    verified-fresh, and the timestamp-ordered reading (A "older than
+    everything") never enters the walk."""
     proj, a_id, b, c = _chain(tmp_path)
-    _restamp_unknown(proj, _by_id(proj)[a_id])
+    restamp_unknown(proj, by_id(proj)[a_id])
     verdicts = {v.annotation.id: v for v in nw.stale_verdicts_all(proj.root)}
-    assert verdicts[b.id].reason == REASON_GENERATED_AT_UNKNOWN
-    assert verdicts[b.id].upstream_id == a_id
-    # C's own parent B is placeable; B is stale, so C is upstream-stale.
-    assert verdicts[c.id].reason == REASON_UPSTREAM_STALE
-    assert verdicts[c.id].upstream_id == b.id
+    assert verdicts[b.id].reason == REASON_FRESH
+    assert verdicts[c.id].reason == REASON_FRESH
+    assert nw.all_stale(proj.root) == []
+    # ... and an actual edit of that root is still caught, by digest.
+    _authored(proj, label="edited")
+    assert _reason_for(proj, a_id, b.id) == REASON_UPSTREAM_CHANGED
+
+
+def test_regenerating_a_tick_zero_row_converges(tmp_path):
+    """The convergence guarantee a ``regen_all_stale`` loop relies on: a
+    legacy tick-0 authored root with a tick-0 derived child. Regenerating the
+    child through ``add_annotation`` writes a fresh stamp and a matching
+    trace, so it reads verified-fresh and the project reports nothing stale —
+    with the root still at tick 0, which only the lacing#46 backfill clears."""
+    proj = nw.Project.init(tmp_path / "p")
+    a_id = _authored(proj)
+    b = _derived(proj, (a_id,), body={"shot_id": "s01", "url": "b"})
+    restamp_unknown(proj, by_id(proj)[a_id])
+    b = restamp_unknown(proj, b)
+    assert _ids(nw.all_stale(proj.root)) == {b.id}
+
+    regenerated = _rewrite_in_place(proj, b, body=b.body)  # same value, new stamp
+    assert regenerated.provenance.generated_at_is_known is True
+    assert by_id(proj)[a_id].provenance.generated_at_is_known is False
+    assert _reason_for(proj, a_id, b.id) == REASON_FRESH
+    assert nw.all_stale(proj.root) == []
 
 
 def test_a_parentless_unknown_row_is_never_stale_itself(tmp_path):
     """Parentless annotations stay out of the walk (an imported screenplay
-    must not read stale forever) — an unknown timestamp does not change that.
-    It only taints what derives from it."""
+    must not read stale forever) — an unknown timestamp does not change that."""
     proj = nw.Project.init(tmp_path / "p")
     a_id = _authored(proj)
-    _restamp_unknown(proj, _by_id(proj)[a_id])
+    restamp_unknown(proj, by_id(proj)[a_id])
     assert a_id not in _ids(nw.all_stale(proj.root))
     assert nw.stale_verdicts_all(proj.root) == []

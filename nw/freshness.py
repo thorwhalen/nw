@@ -25,17 +25,29 @@ imported screenplay would read stale forever). An annotation ``X`` on the
 frontier is **stale** when any of these holds, and **fresh** only when none
 does:
 
-- ``X``, or a recorded upstream, carries an **unknown** ``generated_at_time``
-  — lacing's tick-0 ``UNKNOWN_GENERATED_AT`` sentinel (rows written through
-  the REST path before lacing#35 still carry it; lacing#44). A row that
-  cannot be placed in time cannot be verified against anything, and it is
-  never read as "the oldest thing in the project",
+- ``X`` itself carries an **unknown** ``generated_at_time`` — lacing's tick-0
+  ``UNKNOWN_GENERATED_AT`` sentinel (rows written through the REST path
+  before lacing#35 still carry it; lacing#44). A row that cannot be placed
+  in time is unverifiable, and it is never read as "the oldest thing in the
+  project". Regenerating ``X`` writes a fresh stamp, so this clears itself,
 - no verifying trace was recorded for ``X`` (:mod:`nw.bodies.verifying_trace`),
 - the trace was written under a different digest scheme,
 - the trace's upstream set is not exactly ``X.provenance.was_derived_from``,
 - a recorded upstream annotation no longer exists,
 - a recorded upstream is **itself stale** — its value is about to change,
 - a recorded upstream's *current* value digest differs from the recorded one.
+
+**A tick-0 *parent* is not a verdict.** Only ``X``'s own stamp is checked.
+Freshness has been digest-verified since nw#39: whether ``X``'s inputs
+changed is answered by comparing the parents' *current* value digests to
+the ones ``X`` recorded, and a parent's unknown timestamp says nothing about
+that. Staling ``X`` for a tick-0 parent would also never converge — a
+legacy authored root is never regenerated, so no recompute could clear it,
+only the timestamp backfill (lacing#46) — and a ``regen_all_stale`` loop
+built on this walk would spend forever on every project with a legacy REST
+root. The one place a timestamp *does* decide something is the trace
+backfill's bless walk (:func:`nw.graph.backfill_traces`), which now refuses
+any row it cannot place against its parents.
 
 Two consequences worth stating, because both are easy to get backwards:
 
@@ -274,6 +286,7 @@ def _verdicts_for(
         if not ann.provenance.generated_at_is_known:
             # Checked before the trace: a trace can match its parents'
             # digests and the row still cannot be placed in time (lacing#44).
+            # Own stamp only — regenerating the row clears it.
             return FreshnessVerdict(ann, True, REASON_GENERATED_AT_UNKNOWN)
         trace = traces.get(node_id)
         if trace is None:
@@ -295,10 +308,8 @@ def _verdicts_for(
             parent = by_id.get(pid)
             if parent is None:
                 return FreshnessVerdict(ann, True, REASON_UPSTREAM_MISSING, pid)
-            if not parent.provenance.generated_at_is_known:
-                # A parentless parent takes no verdict of its own, so this is
-                # the only place a tick-0 *authored* row is ever seen.
-                return FreshnessVerdict(ann, True, REASON_GENERATED_AT_UNKNOWN, pid)
+            # Deliberately no timestamp check on the parent: see the module
+            # docstring, "A tick-0 parent is not a verdict".
             if pid in recursion_scope:
                 if pid in resolving:
                     # `pid` is an ancestor still being classified, so this edge
