@@ -142,7 +142,7 @@ produces the real output.
 
 ```python
 result = t.execute(proj, plan, skeleton, on_failure="isolate")
-[f.reason for f in result.failed]          # in this response
+[f.reason for f in result.failed]  # in this response
 [u.body.reason for u in proj.graph.unproduced_outputs()]  # survives reload
 ```
 
