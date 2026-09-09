@@ -6,12 +6,14 @@ decisions is a per-project lacing :class:`SqliteStore` at
 so the rest of nw doesn't need to know about tier names, MediaRef
 construction, or annotation envelopes.
 
-Usage from inside the package:
+Usage from inside the package (illustrative — ``project_root``, ``shot_body``
+and ``TimeInterval`` are the caller's fixtures, not defined here, so the
+executable lines are skipped rather than exercised):
 
     >>> from nw.graph import ProjectGraph
-    >>> g = ProjectGraph(project_root)
-    >>> g.upsert_shot_body(shot_body, interval=TimeInterval.from_seconds(0, 8))
-    >>> for shot in g.shots():
+    >>> g = ProjectGraph(project_root)  # doctest: +SKIP
+    >>> g.upsert_shot_body(shot_body, interval=TimeInterval.from_seconds(0, 8))  # doctest: +SKIP
+    >>> for shot in g.shots():  # doctest: +SKIP
     ...     ...
 
 For reelee's freshness analysis (planned in §7 of the system overview),
