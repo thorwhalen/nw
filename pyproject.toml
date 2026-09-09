@@ -125,10 +125,14 @@ convention = "google"
 minversion = "6.0"
 testpaths = [
     "tests",
+    "nw",
 ]
+addopts = "--doctest-modules"
+# Must match the flags the wads `run-tests-uv` action passes via `-o` (which
+# override this ini value), so a bare local `pytest` collects what CI collects.
 doctest_optionflags = [
-    "NORMALIZE_WHITESPACE",
     "ELLIPSIS",
+    "IGNORE_EXCEPTION_DETAIL",
 ]
 markers = [
     "live_api: calls a real (paid) API — run it deliberately, never in CI, and exclude it with `-m \"not live_api\"`. Such a test opts out of the fake asset transport and the no-outbound-network guard in tests/conftest.py; nw has none today.",
