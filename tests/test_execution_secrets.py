@@ -526,6 +526,36 @@ def test_a_failing_job_redacts_the_rendered_text_whatever_built_it(
     assert _grep_tree(tmp_path) == [], label
 
 
+def test_the_rebuilt_exception_does_not_chain_to_the_dirty_original(project):
+    """Raised outside the handler: a log integration walking suppressed
+    context must not reach an unscrubbed rendering."""
+    import traceback
+
+    def boom(proj, params, *, secrets=None):
+        raise RuntimeError({"detail": secrets["elevenlabs"]})
+
+    # Drive the bound worker directly so the raised object itself is observable.
+    rt = jobs._runtime(project)
+    run = jobs._bind_worker(
+        project,
+        "op",
+        {"a": 1},
+        boom,
+        job_id="direct",
+        on_event=None,
+        rt=rt,
+        config=jobs.DEFAULT_CONFIG,
+        secrets=Secrets(elevenlabs=SENTINEL),
+    )
+    with pytest.raises(RuntimeError) as info:
+        run()
+    assert SENTINEL not in "".join(traceback.format_exception(info.value, chain=True))
+    link = info.value
+    while link is not None:
+        assert SENTINEL not in str(link) and SENTINEL not in repr(link.args)
+        link = link.__context__ or link.__cause__
+
+
 def test_redact_exception_rebuilds_or_falls_back_but_never_renders_the_key():
     from nw.secrets import RedactedError, redact_exception
 

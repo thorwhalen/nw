@@ -1097,6 +1097,7 @@ def _bind_worker(
         beat.start()
         try:
             # Innermost, so an explicit per-call key wins over an ambient one.
+            scrubbed: BaseException | None = None
             with (
                 fal_ctx,
                 extra_ctx if extra_ctx is not None else nullcontext(),
@@ -1109,12 +1110,15 @@ def _bind_worker(
                     # error; a provider echoing the key back would put it in
                     # the store. `redact_exception` returns a rebuilt
                     # exception when the original's str() is not built from
-                    # its string args; the original stays as the suppressed
-                    # context so no unscrubbed rendering is displayed.
+                    # its string args. The rebuilt one is raised OUTSIDE this
+                    # handler so the dirty original never becomes its
+                    # `__context__` (a log integration walking suppressed
+                    # context would otherwise still reach it).
                     scrubbed = redact_exception(e, secrets)
                     if scrubbed is e:
                         raise
-                    raise scrubbed from scrubbed.__cause__
+            if scrubbed is not None:
+                raise scrubbed
         finally:
             # ``finally``, not a trailing statement: a render that raises must
             # still stop beating, or a dead job keeps claiming to be alive and
