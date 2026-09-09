@@ -508,7 +508,7 @@ class BaseTransform:
                     # an *unproduced output*, exactly like an execution failure.
                     if on_failure == "halt":
                         raise
-                    redact_exception(e, secrets)
+                    e = redact_exception(e, secrets)
                     failed.append(
                         FailedOutput(
                             skeleton=skel,

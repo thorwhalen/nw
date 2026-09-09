@@ -206,26 +206,84 @@ def redact(text: str, secrets: Optional[Mapping[str, Optional[str]]]) -> str:
     return text
 
 
+class RedactedError(RuntimeError):
+    """An exception re-raised in place of one whose rendered text quoted a secret
+    and whose type could not be rebuilt with the scrubbed text.
+
+    ``original_type`` names what it stood in for, so a caller classifying on
+    the falaw hierarchy still learns what happened; ``str()`` is the scrubbed
+    rendering. The typed fallback of :func:`redact_exception`.
+    """
+
+    def __init__(self, message: str, *, original_type: str) -> None:
+        super().__init__(message)
+        self.original_type = original_type
+
+
 def redact_exception(
     error: BaseException, secrets: Optional[Mapping[str, Optional[str]]]
 ) -> BaseException:
-    """Scrub secret values out of ``error``'s message and notes, in place.
+    """The exception to re-raise so that nothing it *renders* carries a secret.
 
-    Keeps the exception's *type* — the thing callers classify on — and returns
-    the same object so it can be re-raised. Applied where nw lets an
-    exception escape toward a store it does not own (the job worker) or files
-    it into a record it does (a fan-out unit's ``reason``).
+    Scrubs ``args`` and ``__notes__`` in place and, when ``str(error)`` is
+    still not clean — an exception whose message is built from a non-string
+    arg (``RuntimeError({"detail": key})``, ``OSError(2, msg, path)``) or a
+    custom ``__str__`` — rebuilds it as ``type(error)(scrubbed_text)``, falling
+    back to :class:`RedactedError` when the type will not construct that way
+    or still renders the secret. The cause/context chain is scrubbed the same
+    way. Returns the object to raise: the original when it was already clean.
+
+    Applied where nw lets an exception escape toward a store it does not own
+    (the job worker: au persists the rendered text) or files it into a record
+    it does (a fan-out unit's ``reason``).
     """
     coerced = as_secrets(secrets)
     if not coerced:
         return error
+    return _scrubbed(error, coerced, seen=set())
+
+
+def _scrubbed(error: BaseException, secrets: Secrets, *, seen: set) -> BaseException:
+    if id(error) in seen:  # a cycle in the chain; nothing more to do
+        return error
+    seen.add(id(error))
     error.args = tuple(
-        redact(a, coerced) if isinstance(a, str) else a for a in error.args
+        redact(a, secrets) if isinstance(a, str) else a for a in error.args
     )
     notes = getattr(error, "__notes__", None)
     if notes:
-        error.__notes__ = [redact(n, coerced) for n in notes]
-    return error
+        error.__notes__ = [redact(n, secrets) for n in notes]
+    for attr in ("__cause__", "__context__"):
+        linked = getattr(error, attr, None)
+        if linked is not None:
+            setattr(error, attr, _scrubbed(linked, secrets, seen=seen))
+
+    rendered = _render(error)
+    clean = redact(rendered, secrets)
+    if clean == rendered:
+        return error
+    # str(error) is not built from its string args: rebuild with the clean text.
+    rebuilt: BaseException
+    try:
+        rebuilt = type(error)(clean)
+        if redact(_render(rebuilt), secrets) != _render(rebuilt):
+            raise TypeError("still renders the secret")
+    except Exception:  # noqa: BLE001 — any construction failure takes the fallback
+        rebuilt = RedactedError(clean, original_type=type(error).__name__)
+    rebuilt.__cause__ = error.__cause__
+    rebuilt.__context__ = error.__context__
+    rebuilt.__suppress_context__ = error.__suppress_context__
+    rebuilt.__traceback__ = error.__traceback__
+    if notes:
+        rebuilt.__notes__ = list(error.__notes__)
+    return rebuilt
+
+
+def _render(error: BaseException) -> str:
+    try:
+        return str(error)
+    except Exception:  # noqa: BLE001 — a __str__ that raises renders as its repr
+        return repr(error)
 
 
 __all__ = [
@@ -235,4 +293,5 @@ __all__ = [
     "using_secrets",
     "redact",
     "redact_exception",
+    "RedactedError",
 ]

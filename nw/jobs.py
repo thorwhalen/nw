@@ -1105,9 +1105,16 @@ def _bind_worker(
                 try:
                     result = call()
                 except BaseException as e:
-                    # au persists the exception text as the job's error; a
-                    # provider echoing the key back would put it in the store.
-                    raise redact_exception(e, secrets)
+                    # au persists the RENDERED exception text as the job's
+                    # error; a provider echoing the key back would put it in
+                    # the store. `redact_exception` returns a rebuilt
+                    # exception when the original's str() is not built from
+                    # its string args; the original stays as the suppressed
+                    # context so no unscrubbed rendering is displayed.
+                    scrubbed = redact_exception(e, secrets)
+                    if scrubbed is e:
+                        raise
+                    raise scrubbed from scrubbed.__cause__
         finally:
             # ``finally``, not a trailing statement: a render that raises must
             # still stop beating, or a dead job keeps claiming to be alive and

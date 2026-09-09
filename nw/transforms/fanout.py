@@ -682,7 +682,7 @@ def fan_out_execute(
         except Exception as e:  # noqa: BLE001 — per-unit isolation is the feature
             # The message may quote the key (an auth error echoing it); the
             # reason lands in the run record, so scrub before filing.
-            redact_exception(e, secrets)
+            e = redact_exception(e, secrets)
             results.append(
                 FanOutItemResult(
                     item=unit.item,

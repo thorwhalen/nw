@@ -471,3 +471,127 @@ def test_secrets_equality_is_identity_not_value():
     assert a != Secrets(fal=SENTINEL)
     assert a != {"fal": SENTINEL}  # a value comparison would be an oracle
     assert len({a, Secrets(fal=SENTINEL)}) == 2
+
+
+# ---------------------------------------------------------------------------
+# Second look (nw#78): redaction is of the RENDERED text, and the shot
+# renderers bind the key at the falaw boundary
+# ---------------------------------------------------------------------------
+
+
+class _CustomStr(Exception):
+    """Renders from a field, and cannot be rebuilt from one positional arg."""
+
+    def __init__(self, detail, code):
+        super().__init__("custom", code)
+        self.detail = detail
+
+    def __str__(self):
+        return f"custom failure: {self.detail}"
+
+
+def _raising(exc_factory):
+    def boom(proj, params, *, secrets=None):
+        raise exc_factory(secrets["elevenlabs"])
+
+    return boom
+
+
+@pytest.mark.parametrize(
+    "label, exc_factory",
+    [
+        ("dict arg", lambda key: RuntimeError({"detail": key})),
+        ("custom __str__", lambda key: _CustomStr(key, 500)),
+        (
+            "OSError triple",
+            lambda key: OSError(2, f"no such key {key}", f"/path/{key}"),
+        ),
+    ],
+)
+def test_a_failing_job_redacts_the_rendered_text_whatever_built_it(
+    project, tmp_path, label, exc_factory
+):
+    job = jobs.enqueue(
+        project,
+        "op",
+        {"a": 1},
+        dispatch={"op": _raising(exc_factory)},
+        secrets={"elevenlabs": SENTINEL},
+    )
+    job = _wait_terminal(project, job.job_id)
+    assert job.status == "failed", label
+    assert SENTINEL not in (job.error or ""), label
+    assert "<redacted:elevenlabs>" in (job.error or ""), label
+    assert SENTINEL not in json.dumps(jobs.to_dict(job), default=str), label
+    assert _grep_tree(tmp_path) == [], label
+
+
+def test_redact_exception_rebuilds_or_falls_back_but_never_renders_the_key():
+    from nw.secrets import RedactedError, redact_exception
+
+    secrets = Secrets(elevenlabs=SENTINEL)
+
+    plain = RuntimeError(f"bad {SENTINEL}")
+    same = redact_exception(plain, secrets)
+    assert same is plain and SENTINEL not in str(same)  # args scrub sufficed
+
+    oserr = redact_exception(OSError(2, f"no {SENTINEL}", f"/p/{SENTINEL}"), secrets)
+    assert isinstance(oserr, OSError) and SENTINEL not in str(oserr)
+
+    custom = redact_exception(_CustomStr(SENTINEL, 500), secrets)
+    assert isinstance(custom, RedactedError)
+    assert custom.original_type == "_CustomStr" and SENTINEL not in str(custom)
+
+    # the chain is scrubbed too
+    try:
+        try:
+            raise ValueError(f"inner {SENTINEL}")
+        except ValueError as inner:
+            raise RuntimeError({"detail": SENTINEL}) from inner
+    except RuntimeError as outer:
+        scrubbed = redact_exception(outer, secrets)
+    assert SENTINEL not in str(scrubbed) and SENTINEL not in str(scrubbed.__cause__)
+
+
+def test_shot_renderers_bind_the_fal_secret_at_the_falaw_boundary(monkeypatch, project):
+    """The registry test pins the signature; this pins the binding: with
+    `execute_plan_isolated` stubbed, every registered shot renderer sees the
+    caller's key as the fal credential at the moment it would call fal."""
+    import nw.workflow as workflow
+    from nw.transforms._adapters import render_strategy as rs_module
+
+    observed: list = []
+
+    class _Observed(Exception):
+        pass
+
+    def fake_execute_plan_isolated(plan, **kwargs):
+        observed.append(current_fal_key())
+        raise _Observed()
+
+    monkeypatch.setattr(rs_module, "execute_plan_isolated", fake_execute_plan_isolated)
+    monkeypatch.setattr(workflow, "prepare_shot", lambda *a, **k: None)
+
+    names = [n for n in nw.list_transforms() if n.startswith("shot_to_render_result.")]
+    assert names, "nw's shot renderers should be registered"
+    from lacing import MediaRef, TimeInterval
+
+    ref = MediaRef(
+        asset_id=project.graph.asset_id, interval=TimeInterval.from_seconds(0, 0)
+    )
+    for name in names:
+        t = nw.get_transform(name)
+        skel = Annotation(
+            id=uuid4(),
+            tier="render-result",
+            reference=ref,
+            body={"shot_id": "s01"},
+            body_schema_uri=RENDER_URI,
+            provenance=derive_provenance(
+                t, TransformInputs(primary=()), attributed_to="agent:test"
+            ),
+        )
+        with pytest.raises(_Observed):
+            t.execute(project, Plan(calls=()), (skel,), secrets={FAL_SECRET: SENTINEL})
+    assert observed == [SENTINEL] * len(names)
+    assert current_fal_key() is None
