@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.graph &mdash; nw 0.0.50 documentation</title>
+  <title>nw.graph &mdash; nw 0.0.51 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=e072a57b"></script>
+      <script src="../../_static/documentation_options.js?v=440a2162"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -121,12 +121,14 @@
 <span class="sd">so the rest of nw doesn't need to know about tier names, MediaRef</span>
 <span class="sd">construction, or annotation envelopes.</span>
 
-<span class="sd">Usage from inside the package:</span>
+<span class="sd">Usage from inside the package (illustrative — ``project_root``, ``shot_body``</span>
+<span class="sd">and ``TimeInterval`` are the caller's fixtures, not defined here, so the</span>
+<span class="sd">executable lines are skipped rather than exercised):</span>
 
 <span class="sd">    &gt;&gt;&gt; from nw.graph import ProjectGraph</span>
-<span class="sd">    &gt;&gt;&gt; g = ProjectGraph(project_root)</span>
-<span class="sd">    &gt;&gt;&gt; g.upsert_shot_body(shot_body, interval=TimeInterval.from_seconds(0, 8))</span>
-<span class="sd">    &gt;&gt;&gt; for shot in g.shots():</span>
+<span class="sd">    &gt;&gt;&gt; g = ProjectGraph(project_root)  # doctest: +SKIP</span>
+<span class="sd">    &gt;&gt;&gt; g.upsert_shot_body(shot_body, interval=TimeInterval.from_seconds(0, 8))  # doctest: +SKIP</span>
+<span class="sd">    &gt;&gt;&gt; for shot in g.shots():  # doctest: +SKIP</span>
 <span class="sd">    ...     ...</span>
 
 <span class="sd">For reelee's freshness analysis (planned in §7 of the system overview),</span>

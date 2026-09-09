@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.graph &mdash; nw 0.0.50 documentation</title>
+  <title>nw.graph &mdash; nw 0.0.51 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -15,7 +15,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=e072a57b"></script>
+      <script src="../../_static/documentation_options.js?v=440a2162"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -154,7 +154,9 @@ decisions is a per-project lacing <code class="xref py py-class docutils literal
 <code class="docutils literal notranslate"><span class="pre">project.annot.sqlite</span></code>. This module wraps that store with typed helpers
 so the rest of nw doesn’t need to know about tier names, MediaRef
 construction, or annotation envelopes.</p>
-<p>Usage from inside the package:</p>
+<p>Usage from inside the package (illustrative — <code class="docutils literal notranslate"><span class="pre">project_root</span></code>, <code class="docutils literal notranslate"><span class="pre">shot_body</span></code>
+and <code class="docutils literal notranslate"><span class="pre">TimeInterval</span></code> are the caller’s fixtures, not defined here, so the
+executable lines are skipped rather than exercised):</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">nw.graph</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProjectGraph</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">g</span> <span class="o">=</span> <span class="n">ProjectGraph</span><span class="p">(</span><span class="n">project_root</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">upsert_shot_body</span><span class="p">(</span><span class="n">shot_body</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="n">TimeInterval</span><span class="o">.</span><span class="n">from_seconds</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
