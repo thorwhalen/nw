@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; nw 0.0.49 documentation</title>
+  <title>Index &mdash; nw 0.0.50 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=0356c229"></script>
+      <script src="_static/documentation_options.js?v=e072a57b"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -77,6 +77,7 @@
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/renderers/text_to_video.html">nw.renderers.text_to_video</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/schema.html">nw.schema</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/script_segmentation.html">nw.script_segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/secrets.html">nw.secrets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/storyboard.html">nw.storyboard</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/transforms.html">nw.transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="module_docs/nw/transforms/_adapters.html">nw.transforms._adapters</a></li>
@@ -210,6 +211,14 @@
 
       <ul>
         <li><a href="module_docs/nw/pricing.html#nw.pricing.PlanQuote.as_of_total_usd">(nw.pricing.PlanQuote attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="module_docs/nw.html#nw.as_secrets">as_secrets() (in module nw)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/secrets.html#nw.secrets.as_secrets">(in module nw.secrets)</a>
+</li>
+        <li><a href="module_docs/nw/transforms.html#nw.transforms.as_secrets">(in module nw.transforms)</a>
 </li>
       </ul></li>
       <li><a href="module_docs/nw.html#nw.ShotPreparation.audio_slice_path">audio_slice_path (nw.ShotPreparation attribute)</a>
@@ -537,6 +546,8 @@
 </li>
       </ul></li>
       <li><a href="module_docs/nw.html#nw.FailedOutput">FailedOutput (class in nw)</a>
+</li>
+      <li><a href="module_docs/nw/secrets.html#nw.secrets.FAL_SECRET">FAL_SECRET (in module nw.secrets)</a>
 </li>
       <li><a href="module_docs/nw.html#nw.fan_out_execute">fan_out_execute() (in module nw)</a>
 
@@ -1148,6 +1159,8 @@
 </li>
         <li><a href="module_docs/nw/script_segmentation.html#module-nw.script_segmentation">nw.script_segmentation</a>
 </li>
+        <li><a href="module_docs/nw/secrets.html#module-nw.secrets">nw.secrets</a>
+</li>
         <li><a href="module_docs/nw/storyboard.html#module-nw.storyboard">nw.storyboard</a>
 </li>
         <li><a href="module_docs/nw/transforms.html#module-nw.transforms">nw.transforms</a>
@@ -1396,6 +1409,13 @@
 
       <ul>
         <li><a href="module_docs/nw/script_segmentation.html#module-nw.script_segmentation">module</a>
+</li>
+      </ul></li>
+      <li>
+    nw.secrets
+
+      <ul>
+        <li><a href="module_docs/nw/secrets.html#module-nw.secrets">module</a>
 </li>
       </ul></li>
       <li>
@@ -1656,6 +1676,24 @@
         <li><a href="module_docs/nw/genres.html#nw.genres.recommend_genre">(in module nw.genres)</a>
 </li>
       </ul></li>
+      <li><a href="module_docs/nw.html#nw.redact">redact() (in module nw)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/secrets.html#nw.secrets.redact">(in module nw.secrets)</a>
+</li>
+        <li><a href="module_docs/nw/transforms.html#nw.transforms.redact">(in module nw.transforms)</a>
+</li>
+      </ul></li>
+      <li><a href="module_docs/nw.html#nw.redact_exception">redact_exception() (in module nw)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/secrets.html#nw.secrets.redact_exception">(in module nw.secrets)</a>
+</li>
+        <li><a href="module_docs/nw/transforms.html#nw.transforms.redact_exception">(in module nw.transforms)</a>
+</li>
+      </ul></li>
+      <li><a href="module_docs/nw/secrets.html#nw.secrets.RedactedError">RedactedError</a>
+</li>
       <li><a href="module_docs/nw/delivery.html#nw.delivery.REF_WORD">REF_WORD (in module nw.delivery)</a>
 </li>
       <li><a href="module_docs/nw.html#nw.register_genre">register_genre() (in module nw)</a>
@@ -1688,14 +1726,14 @@
         <li><a href="module_docs/nw/renderers.html#nw.renderers.register_strategy">(in module nw.renderers)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module_docs/nw.html#nw.register_transform">register_transform() (in module nw)</a>
 
       <ul>
         <li><a href="module_docs/nw/transforms.html#nw.transforms.register_transform">(in module nw.transforms)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module_docs/nw/graph.html#nw.graph.ProjectGraph.remove_annotation">remove_annotation() (nw.graph.ProjectGraph method)</a>
 
       <ul>
@@ -1780,6 +1818,14 @@
       </ul></li>
       <li><a href="module_docs/nw/graph_backend.html#nw.graph_backend.scope_name_for_db">scope_name_for_db() (in module nw.graph_backend)</a>
 </li>
+      <li><a href="module_docs/nw.html#nw.Secrets">Secrets (class in nw)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/secrets.html#nw.secrets.Secrets">(class in nw.secrets)</a>
+</li>
+        <li><a href="module_docs/nw/transforms.html#nw.transforms.Secrets">(class in nw.transforms)</a>
+</li>
+      </ul></li>
       <li><a href="module_docs/nw/bodies.html#nw.bodies.SectionBodyV1">SectionBodyV1 (class in nw.bodies)</a>
 
       <ul>
@@ -2092,14 +2138,14 @@
       </ul></li>
       <li><a href="module_docs/nw/jobs.html#nw.jobs.UNREADABLE_PLAN_REASON">UNREADABLE_PLAN_REASON (in module nw.jobs)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module_docs/nw.html#nw.Project.update_spec">update_spec() (nw.Project method)</a>
 
       <ul>
         <li><a href="module_docs/nw/project.html#nw.project.Project.update_spec">(nw.project.Project method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="module_docs/nw/renderers/_common.html#nw.renderers._common.upload_local_file">upload_local_file() (in module nw.renderers._common)</a>
 </li>
       <li><a href="module_docs/nw/graph.html#nw.graph.ProjectGraph.upsert_character_ref">upsert_character_ref() (nw.graph.ProjectGraph method)</a>
@@ -2132,6 +2178,14 @@
         <li><a href="module_docs/nw/bodies/verifying_trace.html#nw.bodies.verifying_trace.UpstreamDigestV1">(class in nw.bodies.verifying_trace)</a>
 </li>
       </ul></li>
+      <li><a href="module_docs/nw.html#nw.using_secrets">using_secrets() (in module nw)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/secrets.html#nw.secrets.using_secrets">(in module nw.secrets)</a>
+</li>
+        <li><a href="module_docs/nw/transforms.html#nw.transforms.using_secrets">(in module nw.transforms)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -2150,6 +2204,14 @@
 <h2 id="W">W</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="module_docs/nw.html#nw.Secrets.with_">with_() (nw.Secrets method)</a>
+
+      <ul>
+        <li><a href="module_docs/nw/secrets.html#nw.secrets.Secrets.with_">(nw.secrets.Secrets method)</a>
+</li>
+        <li><a href="module_docs/nw/transforms.html#nw.transforms.Secrets.with_">(nw.transforms.Secrets method)</a>
+</li>
+      </ul></li>
       <li><a href="module_docs/nw.html#nw.work_item_instance_id">work_item_instance_id() (in module nw)</a>
 
       <ul>
@@ -2160,10 +2222,10 @@
       </ul></li>
       <li><a href="module_docs/nw/transforms/fanout.html#nw.transforms.fanout.WORK_ITEM_NAMESPACE">WORK_ITEM_NAMESPACE (in module nw.transforms.fanout)</a>
 </li>
-      <li><a href="module_docs/nw/jobs.html#nw.jobs.Job.worker_responsive">worker_responsive (nw.jobs.Job attribute)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="module_docs/nw/jobs.html#nw.jobs.Job.worker_responsive">worker_responsive (nw.jobs.Job attribute)</a>
+</li>
       <li><a href="module_docs/nw/jobs.html#nw.jobs.Job.worker_silent_s">worker_silent_s (nw.jobs.Job attribute)</a>
 </li>
       <li><a href="module_docs/nw.html#nw.WorkItem">WorkItem (class in nw)</a>

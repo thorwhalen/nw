@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.jobs &mdash; nw 0.0.49 documentation</title>
+  <title>nw.jobs &mdash; nw 0.0.50 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=0356c229"></script>
+      <script src="../../_static/documentation_options.js?v=e072a57b"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -77,6 +77,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/text_to_video.html">nw.renderers.text_to_video</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/schema.html">nw.schema</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/script_segmentation.html">nw.script_segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/secrets.html">nw.secrets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/storyboard.html">nw.storyboard</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/transforms.html">nw.transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/transforms/_adapters.html">nw.transforms._adapters</a></li>
@@ -203,6 +204,8 @@
     <span class="n">ThreadBackend</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">au.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">ComputationBackend</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">nw.secrets</span><span class="w"> </span><span class="kn">import</span> <span class="n">as_secrets</span><span class="p">,</span> <span class="n">redact_exception</span><span class="p">,</span> <span class="n">using_secrets</span>
 
 <span class="n">_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -416,6 +419,7 @@
     <span class="n">idempotency_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">capture_context</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="n">AbstractContextManager</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">secrets</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">config</span><span class="p">:</span> <span class="n">JobsConfig</span> <span class="o">=</span> <span class="n">DEFAULT_CONFIG</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Job</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Enqueue a billable render as a background job. Returns a :class:`Job`</span>
@@ -460,6 +464,18 @@
 <span class="sd">            importing them — e.g. reelee's BYO vision (aix) + ElevenLabs keys,</span>
 <span class="sd">            which otherwise fall back to owner/env in a background job because</span>
 <span class="sd">            ``ThreadBackend`` does not copy ``ContextVars`` into the worker.</span>
+<span class="sd">        secrets: the caller's per-call credentials (:class:`nw.Secrets`; any</span>
+<span class="sd">            mapping is coerced), for a render that spends a bring-your-own</span>
+<span class="sd">            key. Held **in memory only**: never written to the job index</span>
+<span class="sd">            (``params`` is — never put a key there), never logged, and it</span>
+<span class="sd">            reaches the render callable only when that callable declares a</span>
+<span class="sd">            ``secrets`` keyword — the same accepts-it-or-not rule as</span>
+<span class="sd">            ``job_id`` / ``on_event`` / ``should_cancel``. A ``"fal"`` secret</span>
+<span class="sd">            is also bound as the worker's fal credential</span>
+<span class="sd">            (:func:`nw.secrets.using_secrets`), innermost, so an explicit key</span>
+<span class="sd">            wins over an ambient one. The explicit counterpart of</span>
+<span class="sd">            ``capture_context``: what that hook re-binds ambiently, this</span>
+<span class="sd">            threads by hand.</span>
 <span class="sd">        config: tunables (see :class:`JobsConfig`).</span>
 
 <span class="sd">    Raises:</span>
@@ -528,6 +544,7 @@
             <span class="n">rt</span><span class="o">=</span><span class="n">rt</span><span class="p">,</span>
             <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span>
             <span class="n">capture_context</span><span class="o">=</span><span class="n">capture_context</span><span class="p">,</span>
+            <span class="n">secrets</span><span class="o">=</span><span class="n">as_secrets</span><span class="p">(</span><span class="n">secrets</span><span class="p">),</span>
         <span class="p">)</span>
         <span class="n">the_backend</span><span class="o">.</span><span class="n">launch</span><span class="p">(</span><span class="n">bound</span><span class="p">,</span> <span class="p">(),</span> <span class="p">{},</span> <span class="n">job_id</span><span class="p">,</span> <span class="n">rt</span><span class="o">.</span><span class="n">au_store</span><span class="p">)</span>
 
@@ -1169,6 +1186,7 @@
     <span class="n">rt</span><span class="p">,</span>
     <span class="n">config</span><span class="p">,</span>
     <span class="n">capture_context</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">secrets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Bind the render callable into a zero-arg worker body that (a) re-establishes</span>
 <span class="sd">    request context (fal credentials + project + any caller-supplied context), (b)</span>
@@ -1217,6 +1235,7 @@
                 <span class="n">job_id</span><span class="o">=</span><span class="n">job_id</span><span class="p">,</span>
                 <span class="n">on_event</span><span class="o">=</span><span class="n">sink</span><span class="p">,</span>
                 <span class="n">should_cancel</span><span class="o">=</span><span class="n">should_cancel</span><span class="p">,</span>
+                <span class="n">secrets</span><span class="o">=</span><span class="n">secrets</span><span class="p">,</span>
             <span class="p">)</span>
 
         <span class="c1"># Re-establish both credential contexts on the worker thread: fal</span>
@@ -1240,8 +1259,29 @@
         <span class="p">)</span>
         <span class="n">beat</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">with</span> <span class="n">fal_ctx</span><span class="p">,</span> <span class="n">extra_ctx</span> <span class="k">if</span> <span class="n">extra_ctx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">nullcontext</span><span class="p">():</span>
-                <span class="n">result</span> <span class="o">=</span> <span class="n">call</span><span class="p">()</span>
+            <span class="c1"># Innermost, so an explicit per-call key wins over an ambient one.</span>
+            <span class="n">scrubbed</span><span class="p">:</span> <span class="ne">BaseException</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">with</span> <span class="p">(</span>
+                <span class="n">fal_ctx</span><span class="p">,</span>
+                <span class="n">extra_ctx</span> <span class="k">if</span> <span class="n">extra_ctx</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">nullcontext</span><span class="p">(),</span>
+                <span class="n">using_secrets</span><span class="p">(</span><span class="n">secrets</span><span class="p">),</span>
+            <span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">call</span><span class="p">()</span>
+                <span class="k">except</span> <span class="ne">BaseException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="c1"># au persists the RENDERED exception text as the job's</span>
+                    <span class="c1"># error; a provider echoing the key back would put it in</span>
+                    <span class="c1"># the store. `redact_exception` returns a rebuilt</span>
+                    <span class="c1"># exception when the original's str() is not built from</span>
+                    <span class="c1"># its string args. The rebuilt one is raised OUTSIDE this</span>
+                    <span class="c1"># handler so the dirty original never becomes its</span>
+                    <span class="c1"># `__context__` (a log integration walking suppressed</span>
+                    <span class="c1"># context would otherwise still reach it).</span>
+                    <span class="n">scrubbed</span> <span class="o">=</span> <span class="n">redact_exception</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">secrets</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">scrubbed</span> <span class="ow">is</span> <span class="n">e</span><span class="p">:</span>
+                        <span class="k">raise</span>
+            <span class="k">if</span> <span class="n">scrubbed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">scrubbed</span>
         <span class="k">finally</span><span class="p">:</span>
             <span class="c1"># ``finally``, not a trailing statement: a render that raises must</span>
             <span class="c1"># still stop beating, or a dead job keeps claiming to be alive and</span>
@@ -1263,12 +1303,19 @@
         <span class="k">return</span> <span class="kc">None</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_call_dispatch</span><span class="p">(</span><span class="n">callable_</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">job_id</span><span class="p">,</span> <span class="n">on_event</span><span class="p">,</span> <span class="n">should_cancel</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_call_dispatch</span><span class="p">(</span>
+    <span class="n">callable_</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">job_id</span><span class="p">,</span> <span class="n">on_event</span><span class="p">,</span> <span class="n">should_cancel</span><span class="p">,</span> <span class="n">secrets</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Invoke the render callable, passing only the render-context kwargs it</span>
-<span class="sd">    accepts (progressive disclosure: a plain ``f(project, params)`` works too)."""</span>
+<span class="sd">    accepts (progressive disclosure: a plain ``f(project, params)`` works too).</span>
+
+<span class="sd">    ``secrets`` is offered only when there is one, so a callable that predates</span>
+<span class="sd">    the seam is called with exactly the kwargs it always was."""</span>
     <span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
 
     <span class="n">extras</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"job_id"</span><span class="p">:</span> <span class="n">job_id</span><span class="p">,</span> <span class="s2">"on_event"</span><span class="p">:</span> <span class="n">on_event</span><span class="p">,</span> <span class="s2">"should_cancel"</span><span class="p">:</span> <span class="n">should_cancel</span><span class="p">}</span>
+    <span class="k">if</span> <span class="n">secrets</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">extras</span><span class="p">[</span><span class="s2">"secrets"</span><span class="p">]</span> <span class="o">=</span> <span class="n">secrets</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">sig</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="n">callable_</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">kind</span> <span class="ow">is</span> <span class="n">p</span><span class="o">.</span><span class="n">VAR_KEYWORD</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">sig</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>

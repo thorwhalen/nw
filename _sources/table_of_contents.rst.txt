@@ -33,6 +33,7 @@
    module_docs/nw/renderers/text_to_video
    module_docs/nw/schema
    module_docs/nw/script_segmentation
+   module_docs/nw/secrets
    module_docs/nw/storyboard
    module_docs/nw/transforms
    module_docs/nw/transforms/_adapters

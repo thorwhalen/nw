@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.transforms.fanout &mdash; nw 0.0.49 documentation</title>
+  <title>nw.transforms.fanout &mdash; nw 0.0.50 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=0356c229"></script>
+      <script src="../../../_static/documentation_options.js?v=e072a57b"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -77,6 +77,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/renderers/text_to_video.html">nw.renderers.text_to_video</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/schema.html">nw.schema</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/script_segmentation.html">nw.script_segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/secrets.html">nw.secrets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/storyboard.html">nw.storyboard</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/transforms.html">nw.transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../module_docs/nw/transforms/_adapters.html">nw.transforms._adapters</a></li>
@@ -159,6 +160,9 @@
 <span class="sd">  (passed to an ``execute()`` that accepts ``unit_instance_id``, the same</span>
 <span class="sd">  accepts-it-or-not seam ``on_failure`` uses), never by the item's</span>
 <span class="sd">  ``attributes`` or ``scope_interval``.</span>
+<span class="sd">- A caller's **credentials** (``secrets=``, :mod:`nw.secrets`) ride the same</span>
+<span class="sd">  accepts-it-or-not seam into each unit's ``execute`` and nowhere else —</span>
+<span class="sd">  never a unit, never the run record.</span>
 
 <span class="sd">Deliberately NOT here (recorded in nw#26 so nobody re-litigates): a general</span>
 <span class="sd">re-entrant scheduler (a fan-out of independent plans needs bounded</span>
@@ -179,6 +183,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">uuid</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mapping</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">ConfigDict</span><span class="p">,</span> <span class="n">Field</span><span class="p">,</span> <span class="n">field_validator</span>
@@ -186,6 +191,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">falaw</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plan</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">lacing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotation</span><span class="p">,</span> <span class="n">TimeInterval</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">nw.secrets</span><span class="w"> </span><span class="kn">import</span> <span class="n">as_secrets</span><span class="p">,</span> <span class="n">redact</span><span class="p">,</span> <span class="n">redact_exception</span><span class="p">,</span> <span class="n">using_secrets</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">nw.transforms._cache_mode</span><span class="w"> </span><span class="kn">import</span> <span class="n">resolve_cache_mode</span>
 
 
@@ -673,7 +679,8 @@
 <span class="sd">    ``on_failure`` — passing it would raise ``TypeError`` at call time. The</span>
 <span class="sd">    documented guidance for "a caller iterating over arbitrary registered</span>
 <span class="sd">    Transforms" is to pass a keyword only where accepted; this is that check,</span>
-<span class="sd">    reused for ``on_failure`` (nw#25) and ``unit_instance_id`` (nw#44).</span>
+<span class="sd">    reused for ``on_failure`` (nw#25), ``unit_instance_id`` (nw#44) and</span>
+<span class="sd">    ``secrets`` (the per-caller credential seam, :mod:`nw.secrets`).</span>
 <span class="sd">    """</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">sig</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="n">execute</span><span class="p">)</span>
@@ -695,6 +702,7 @@
     <span class="n">use_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">on_failure</span><span class="p">:</span> <span class="s2">"OnFailure"</span> <span class="o">=</span> <span class="s2">"isolate"</span><span class="p">,</span>  <span class="c1"># noqa: F821</span>
+    <span class="n">secrets</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FanOutResult</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Execute a planned fan-out, one ordinary ``transform.execute`` per unit.</span>
 
@@ -733,6 +741,17 @@
 <span class="sd">    failed rows is only the lesser evil for the shapes that cannot be checked</span>
 <span class="sd">    up front.</span>
 
+<span class="sd">    ``secrets`` — the caller's per-call credentials (:class:`nw.Secrets`;</span>
+<span class="sd">    any mapping is coerced) — reaches each unit two ways, so no registered</span>
+<span class="sd">    Transform can silently bill the server's key. It is **passed** to</span>
+<span class="sd">    ``execute`` when the implementation declares the keyword (the same</span>
+<span class="sd">    accepts-it-or-not seam as ``on_failure`` and ``unit_instance_id``), and it</span>
+<span class="sd">    is **bound** around every unit regardless — a ``"fal"`` secret is the fal</span>
+<span class="sd">    credential for the call (:func:`nw.secrets.using_secrets`) even for an</span>
+<span class="sd">    override that predates the seam. It reaches nothing else: not the units,</span>
+<span class="sd">    not the run record (:meth:`FanOutResult.to_record`; a failing unit's</span>
+<span class="sd">    ``reason`` is redacted), not a log line.</span>
+
 <span class="sd">    Units run **sequentially**. Concurrency *within* a unit is falaw's</span>
 <span class="sd">    (``execute_plan_isolated`` bounds it); concurrency *across* units is the</span>
 <span class="sd">    deferred-scheduler work nw#26 explicitly scopes out, and nothing here</span>
@@ -756,6 +775,10 @@
         <span class="p">)</span>
     <span class="n">pass_on_failure</span> <span class="o">=</span> <span class="n">_accepts_keyword</span><span class="p">(</span><span class="n">transform</span><span class="o">.</span><span class="n">execute</span><span class="p">,</span> <span class="s2">"on_failure"</span><span class="p">)</span>
     <span class="n">pass_instance_id</span> <span class="o">=</span> <span class="n">_accepts_keyword</span><span class="p">(</span><span class="n">transform</span><span class="o">.</span><span class="n">execute</span><span class="p">,</span> <span class="s2">"unit_instance_id"</span><span class="p">)</span>
+    <span class="n">secrets</span> <span class="o">=</span> <span class="n">as_secrets</span><span class="p">(</span><span class="n">secrets</span><span class="p">)</span>
+    <span class="n">pass_secrets</span> <span class="o">=</span> <span class="n">secrets</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">_accepts_keyword</span><span class="p">(</span>
+        <span class="n">transform</span><span class="o">.</span><span class="n">execute</span><span class="p">,</span> <span class="s2">"secrets"</span>
+    <span class="p">)</span>
 
     <span class="n">results</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">FanOutItemResult</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">halted_by</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
@@ -777,8 +800,12 @@
             <span class="c1"># The precise identity nw#44's unproduced-output record retires</span>
             <span class="c1"># by — without it, two units sharing an upstream set can alias.</span>
             <span class="n">kwargs</span><span class="p">[</span><span class="s2">"unit_instance_id"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">unit</span><span class="o">.</span><span class="n">instance_id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">pass_secrets</span><span class="p">:</span>
+            <span class="c1"># In memory, for this call: never in `unit`, never in the record.</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s2">"secrets"</span><span class="p">]</span> <span class="o">=</span> <span class="n">secrets</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="n">transform</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">unit</span><span class="o">.</span><span class="n">plan</span><span class="p">,</span> <span class="n">unit</span><span class="o">.</span><span class="n">skeleton</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="k">with</span> <span class="n">using_secrets</span><span class="p">(</span><span class="n">secrets</span><span class="p">):</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">transform</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">unit</span><span class="o">.</span><span class="n">plan</span><span class="p">,</span> <span class="n">unit</span><span class="o">.</span><span class="n">skeleton</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
             <span class="c1"># Result interpretation stays INSIDE the try: an execute that</span>
             <span class="c1"># returns None (or a result whose properties raise) is a</span>
             <span class="c1"># protocol violation, but letting it escape mid-loop would</span>
@@ -795,13 +822,16 @@
                 <span class="p">)</span>
             <span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># noqa: BLE001 — per-unit isolation is the feature</span>
+            <span class="c1"># The message may quote the key (an auth error echoing it); the</span>
+            <span class="c1"># reason lands in the run record, so scrub before filing.</span>
+            <span class="n">e</span> <span class="o">=</span> <span class="n">redact_exception</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">secrets</span><span class="p">)</span>
             <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="n">FanOutItemResult</span><span class="p">(</span>
                     <span class="n">item</span><span class="o">=</span><span class="n">unit</span><span class="o">.</span><span class="n">item</span><span class="p">,</span>
                     <span class="n">instance_id</span><span class="o">=</span><span class="n">unit</span><span class="o">.</span><span class="n">instance_id</span><span class="p">,</span>
                     <span class="n">status</span><span class="o">=</span><span class="s2">"failed"</span><span class="p">,</span>
                     <span class="n">error</span><span class="o">=</span><span class="n">e</span><span class="p">,</span>
-                    <span class="n">reason</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                    <span class="n">reason</span><span class="o">=</span><span class="n">redact</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">secrets</span><span class="p">),</span>
                 <span class="p">)</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="n">on_failure</span> <span class="o">==</span> <span class="s2">"halt"</span><span class="p">:</span>

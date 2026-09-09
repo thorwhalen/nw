@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.transforms &mdash; nw 0.0.49 documentation</title>
+  <title>nw.transforms &mdash; nw 0.0.50 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -14,7 +14,7 @@
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=0356c229"></script>
+      <script src="../../_static/documentation_options.js?v=e072a57b"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
@@ -77,6 +77,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/text_to_video.html">nw.renderers.text_to_video</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/schema.html">nw.schema</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/script_segmentation.html">nw.script_segmentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/secrets.html">nw.secrets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/storyboard.html">nw.storyboard</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/transforms.html">nw.transforms</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/transforms/_adapters.html">nw.transforms._adapters</a></li>
@@ -148,6 +149,12 @@
 <span class="sd">declaration, and per-unit failure isolation. Its module docstring is the</span>
 <span class="sd">spec.</span>
 
+<span class="sd">A caller's **credentials** — a bring-your-own API key — reach</span>
+<span class="sd">:meth:`Transform.execute` through ``secrets=`` (:mod:`nw.secrets`), passed</span>
+<span class="sd">accepts-it-or-not like ``on_failure``, and reach nothing that persists: not</span>
+<span class="sd">the Plan, the skeleton, provenance, a cache key, a run record or a log line.</span>
+<span class="sd">That module's docstring is the spec for the invariant.</span>
+
 <span class="sd">Naming convention for ``Transform.name``::</span>
 
 <span class="sd">    &lt;from_kind&gt;_to_&lt;to_kind&gt;[.&lt;flavor&gt;[.&lt;variant&gt;]]</span>
@@ -165,6 +172,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">replace</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Mapping</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Protocol</span><span class="p">,</span> <span class="n">runtime_checkable</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span>
@@ -173,6 +181,14 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">falaw</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plan</span><span class="p">,</span> <span class="n">execute_plan_isolated</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">lacing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotation</span><span class="p">,</span> <span class="n">Artifact</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">nw.secrets</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">FAL_SECRET</span><span class="p">,</span>
+    <span class="n">Secrets</span><span class="p">,</span>
+    <span class="n">as_secrets</span><span class="p">,</span>
+    <span class="n">redact</span><span class="p">,</span>
+    <span class="n">redact_exception</span><span class="p">,</span>
+    <span class="n">using_secrets</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">nw.transforms._cache_mode</span><span class="w"> </span><span class="kn">import</span> <span class="n">CacheModeConflict</span><span class="p">,</span> <span class="n">resolve_cache_mode</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">nw.transforms.fanout</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">DFLT_GENERATE_WHEN</span><span class="p">,</span>
@@ -423,6 +439,7 @@
         <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">on_failure</span><span class="p">:</span> <span class="n">OnFailure</span> <span class="o">=</span> <span class="s2">"halt"</span><span class="p">,</span>
         <span class="n">unit_instance_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">secrets</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TransformResult</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Run ``plan``, complete ``skeleton``, write to the graph, return result.</span>
 
@@ -459,6 +476,26 @@
 <span class="sd">        :meth:`nw.graph.ProjectGraph.add_unproduced_output` /</span>
 <span class="sd">        :meth:`~nw.graph.ProjectGraph.add_annotation` — :class:`BaseTransform`</span>
 <span class="sd">        already does.</span>
+
+<span class="sd">        ``secrets`` is the third keyword of that shape, and the one that</span>
+<span class="sd">        carries a **credential**: the caller's per-call, bring-your-own API</span>
+<span class="sd">        key(s), as a read-only ``{provider_name: key}`` mapping</span>
+<span class="sd">        (:class:`nw.Secrets`; every entry point coerces a plain mapping to</span>
+<span class="sd">        it). It is the one input that is deliberately *not an input* — it</span>
+<span class="sd">        never enters the Plan, the skeleton, provenance, the cache identity,</span>
+<span class="sd">        a run record, the job index or a log line — and a Transform that</span>
+<span class="sd">        spends a caller's credential reads it here and nowhere else.</span>
+<span class="sd">        ``None`` (the default, and what every call did before the seam</span>
+<span class="sd">        existed) means "resolve from the process environment".</span>
+<span class="sd">        :func:`~nw.transforms.fanout.fan_out_execute` and</span>
+<span class="sd">        :func:`nw.jobs.enqueue` pass it accepts-it-or-not, so an override</span>
+<span class="sd">        that has no key to spend never sees it; :class:`BaseTransform` binds</span>
+<span class="sd">        a :data:`~nw.secrets.FAL_SECRET` as the fal credential for the</span>
+<span class="sd">        duration of the call, and ``fan_out_execute`` binds it around every</span>
+<span class="sd">        unit whether or not the keyword is accepted. An override that</span>
+<span class="sd">        declares the keyword and is called *directly* receives whatever the</span>
+<span class="sd">        caller passed — run it through :func:`nw.secrets.as_secrets` before</span>
+<span class="sd">        logging or formatting it. See :mod:`nw.secrets`.</span>
 <span class="sd">        """</span>
         <span class="o">...</span></div>
 </div>
@@ -535,6 +572,7 @@
         <span class="n">force</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">on_failure</span><span class="p">:</span> <span class="n">OnFailure</span> <span class="o">=</span> <span class="s2">"halt"</span><span class="p">,</span>
         <span class="n">unit_instance_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">secrets</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TransformResult</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">skeleton</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">plan</span><span class="o">.</span><span class="n">calls</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
@@ -556,18 +594,25 @@
         <span class="c1"># for and the next consumer re-billed it (nw#72, falaw#49).</span>
         <span class="n">cache_on</span><span class="p">,</span> <span class="n">refresh</span> <span class="o">=</span> <span class="n">resolve_cache_mode</span><span class="p">(</span><span class="n">use_cache</span><span class="o">=</span><span class="n">use_cache</span><span class="p">,</span> <span class="n">force</span><span class="o">=</span><span class="n">force</span><span class="p">)</span>
         <span class="n">plan</span> <span class="o">=</span> <span class="n">stamp_transform_identity</span><span class="p">(</span><span class="n">plan</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">secrets</span> <span class="o">=</span> <span class="n">as_secrets</span><span class="p">(</span><span class="n">secrets</span><span class="p">)</span>
         <span class="c1"># One engine, two policies. `halt` is `execute_plan` — falaw defines the</span>
         <span class="c1"># latter as exactly this call plus `artifacts_or_raise()` — so it keeps</span>
         <span class="c1"># re-raising the *original* typed exception, unwrapped, which is what</span>
         <span class="c1"># every existing caller classifies on.</span>
-        <span class="n">report</span> <span class="o">=</span> <span class="n">execute_plan_isolated</span><span class="p">(</span>
-            <span class="n">plan</span><span class="p">,</span>
-            <span class="n">use_cache</span><span class="o">=</span><span class="n">cache_on</span><span class="p">,</span>
-            <span class="n">refresh</span><span class="o">=</span><span class="n">refresh</span><span class="p">,</span>
-            <span class="n">halt_on_failure</span><span class="o">=</span><span class="n">on_failure</span> <span class="o">==</span> <span class="s2">"halt"</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="k">if</span> <span class="n">on_failure</span> <span class="o">==</span> <span class="s2">"halt"</span><span class="p">:</span>
-            <span class="n">report</span><span class="o">.</span><span class="n">artifacts_or_raise</span><span class="p">()</span>
+        <span class="c1">#</span>
+        <span class="c1"># The caller's credentials are bound for exactly this call, then</span>
+        <span class="c1"># released: a `"fal"` secret is the fal credential every call in the</span>
+        <span class="c1"># plan authenticates with (``nw.secrets``). They reach nothing below —</span>
+        <span class="c1"># not the report, not the artifacts, not the annotations.</span>
+        <span class="k">with</span> <span class="n">using_secrets</span><span class="p">(</span><span class="n">secrets</span><span class="p">):</span>
+            <span class="n">report</span> <span class="o">=</span> <span class="n">execute_plan_isolated</span><span class="p">(</span>
+                <span class="n">plan</span><span class="p">,</span>
+                <span class="n">use_cache</span><span class="o">=</span><span class="n">cache_on</span><span class="p">,</span>
+                <span class="n">refresh</span><span class="o">=</span><span class="n">refresh</span><span class="p">,</span>
+                <span class="n">halt_on_failure</span><span class="o">=</span><span class="n">on_failure</span> <span class="o">==</span> <span class="s2">"halt"</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">on_failure</span> <span class="o">==</span> <span class="s2">"halt"</span><span class="p">:</span>
+                <span class="n">report</span><span class="o">.</span><span class="n">artifacts_or_raise</span><span class="p">()</span>
 
         <span class="c1"># Zip against `report.outcomes`, never against the artifacts: outcomes</span>
         <span class="c1"># is full-length in plan order **by construction**, while the artifact</span>
@@ -598,14 +643,16 @@
                     <span class="c1"># an *unproduced output*, exactly like an execution failure.</span>
                     <span class="k">if</span> <span class="n">on_failure</span> <span class="o">==</span> <span class="s2">"halt"</span><span class="p">:</span>
                         <span class="k">raise</span>
+                    <span class="n">e</span> <span class="o">=</span> <span class="n">redact_exception</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">secrets</span><span class="p">)</span>
                     <span class="n">failed</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                         <span class="n">FailedOutput</span><span class="p">(</span>
                             <span class="n">skeleton</span><span class="o">=</span><span class="n">skel</span><span class="p">,</span>
                             <span class="n">status</span><span class="o">=</span><span class="s2">"failed"</span><span class="p">,</span>
-                            <span class="n">reason</span><span class="o">=</span><span class="p">(</span>
+                            <span class="n">reason</span><span class="o">=</span><span class="n">redact</span><span class="p">(</span>
                                 <span class="sa">f</span><span class="s2">"the call succeeded but its result could not be "</span>
                                 <span class="sa">f</span><span class="s2">"turned into a </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_kind</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="s1">'output'</span><span class="si">}</span><span class="s2"> "</span>
-                                <span class="sa">f</span><span class="s2">"annotation: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span>
+                                <span class="sa">f</span><span class="s2">"annotation: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+                                <span class="n">secrets</span><span class="p">,</span>
                             <span class="p">),</span>
                             <span class="n">error</span><span class="o">=</span><span class="n">e</span><span class="p">,</span>
                         <span class="p">)</span>
@@ -998,6 +1045,13 @@
     <span class="s2">"resolve_cache_mode"</span><span class="p">,</span>
     <span class="s2">"cache_key"</span><span class="p">,</span>
     <span class="s2">"cached_output"</span><span class="p">,</span>
+    <span class="c1"># execution secrets — the per-caller credential seam</span>
+    <span class="s2">"Secrets"</span><span class="p">,</span>
+    <span class="s2">"FAL_SECRET"</span><span class="p">,</span>
+    <span class="s2">"as_secrets"</span><span class="p">,</span>
+    <span class="s2">"redact"</span><span class="p">,</span>
+    <span class="s2">"redact_exception"</span><span class="p">,</span>
+    <span class="s2">"using_secrets"</span><span class="p">,</span>
     <span class="c1"># fan-out (nw#26)</span>
     <span class="s2">"GenerateWhen"</span><span class="p">,</span>
     <span class="s2">"DFLT_GENERATE_WHEN"</span><span class="p">,</span>
