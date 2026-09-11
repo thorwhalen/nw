@@ -8,7 +8,7 @@ Companion to `Rendering Provenance and Partial Re-render.md`, which owns the
 fan-out, failure isolation, and capability discovery.
 
 Every position below is grounded in the video_gen research programme (private
-repo, `data/groups/video_gen/docs/research/`): brief A (concepts and
+`av` group repo, `$PP/g/av/docs/research/`; formerly `priv` `data/groups/video_gen/`): brief A (concepts and
 terminology), brief B (evaluation, incrementality, caching), brief G (synthesis
 and gap analysis), brief K (ComfyUI execution semantics at source), brief O (the
 façade spec). Where a claim below carries a number, it comes from those briefs.
