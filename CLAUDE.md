@@ -1,6 +1,6 @@
 # nw — agent entry point
 
-`nw` (Narrative Workflow) is the **orchestration substrate** of the video_gen
+`nw` (Narrative Workflow) is the **orchestration substrate** of the `av` (formerly `video_gen`)
 stack: the layer where lacing's annotation graph meets falaw's costed
 execution. reelee, muvid, and braidio build audiovisual production apps on
 it. Layering: `lacing → nw → falaw.Plan → backends` — nothing above
