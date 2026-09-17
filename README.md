@@ -403,6 +403,51 @@ compose.freeze_alerts  # tuple of suspicious shots
 compose.gaps  # gaps between consecutive shots
 ```
 
+## Validation — a pluggable menu, placed where you want it
+
+`nw.inspect` above answers one question about one shot. `nw.validation` is the
+general form: a **registry of checks** that anyone can add to, with dependencies
+resolved, independent checks run concurrently, and one report at the end.
+
+```python
+report = nw.validate(film, checks=["media.encode_complete", "media.no_long_freeze"])
+report.ok          # False if anything failed *or if any check could not run*
+print(report.summary())
+report.raise_if_failed()   # a hard gate before a publish
+```
+
+Three checks ship with nw (`nw.menu()`), each of which has caught a real defect
+in a finished film: a missing video or audio stream, an encode that stopped
+early (which duration alone cannot show — the container takes its duration from
+the *audio* stream), and a long frozen segment.
+
+A check declares what it `requires`, what it `cost`s, whether it is
+`parallel_safe`, which binaries it needs — and `example_requests`, the phrases a
+person actually says when they want it, which is what lets `nw.suggest("the
+picture freezes")` turn a request into a selection instead of exposing a
+forty-item enum to a model.
+
+```python
+@nw.register_check(name="type.captions_complete", summary="no caption is cut",
+                   requires=("media.streams_present",), cost="dear",
+                   example_requests=("is the text cut off", "the caption is truncated"))
+def _captions_complete(film, ctx): ...
+```
+
+**Nothing calls `validate` for you**, and that is the decision rather than an
+omission: where validation belongs — before a human sees a result, before a
+publish, or both — is a judgement about cost and consequence that only the
+caller can make. `validate(x)` with no selection runs nothing.
+
+Two honesty rules worth knowing before you gate on it: a check that was
+*skipped* (missing binary) or that *raised* makes `report.ok` false — could-not-run
+is never a pass — and an unknown check name raises rather than being dropped.
+
+Checks live in whichever package owns the knowledge they apply (type checks next
+to `tituli`, motion next to `burns`), and register themselves at import.
+Ideas for new ones accumulate as `validation-idea` issues on this repo. The full
+record is `misc/docs/Validation — the seam, the menu, and where ideas go.md`.
+
 ## Sibling experiments
 
 Comparing four interpretations of the same song is a first-class operation, not
@@ -517,6 +562,17 @@ nw.storyboard_db_path, nw.project_asset_id
     nw.ComposeReport,
 )
 nw.FrozenSegment, nw.Gap
+
+# Validation — the pluggable menu
+(
+    nw.validate,
+    nw.menu,
+    nw.suggest,
+    nw.plan_checks,
+    nw.register_check,
+    nw.checks,
+)
+nw.Check, nw.Finding, nw.CheckResult, nw.ValidationReport, nw.ValidationError
 
 # Graph / provenance
 (
