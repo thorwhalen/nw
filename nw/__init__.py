@@ -39,7 +39,9 @@ from . import inspect  # noqa: F401  — `nw.inspect.shot_report(...)`
 from . import migrate  # noqa: F401  — `nw.migrate.migrate_to_graph(...)`
 from . import storyboard as _storyboard_module  # noqa: F401
 from . import pricing  # noqa: F401  — `nw.pricing.current_quote(...)`
-from . import jobs  # noqa: F401  — `nw.jobs.enqueue(...)` async render-job facade over au
+from . import (
+    jobs,
+)  # noqa: F401  — `nw.jobs.enqueue(...)` async render-job facade over au
 from .experiment import apply_to_projects, clone_project, summarize_all
 from .inspect import (
     ComposeReport,
@@ -49,6 +51,20 @@ from .inspect import (
     compose_report,
     shot_report,
 )
+from .validation import (
+    Check,
+    CheckResult,
+    Finding,
+    ValidationError,
+    ValidationReport,
+    checks,
+    menu,
+    plan_checks,
+    register_check,
+    suggest,
+    validate,
+)
+from .checks import register_builtin_checks as _register_builtin_checks
 from .pricing import (
     PlanQuote,
     QuoteStatus,
@@ -303,6 +319,18 @@ __all__ = [
     "using_secrets",
     "save_storyboard",
     "shot_report",
+    # --- validation: the seam, its menu, and nw's own checks ---------------
+    "Check",
+    "CheckResult",
+    "Finding",
+    "ValidationError",
+    "ValidationReport",
+    "checks",
+    "menu",
+    "plan_checks",
+    "register_check",
+    "suggest",
+    "validate",
     "all_stale",
     "stale_after",
     "stale_verdicts",
@@ -313,3 +341,8 @@ __all__ = [
     "summarize_all",
     "transforms",
 ]
+
+# nw's own checks go on the menu at import — a menu is only useful if it has
+# something on it. Nothing runs them; see `nw.validation` on why validation is
+# placed by a caller and never assumed.
+_register_builtin_checks()

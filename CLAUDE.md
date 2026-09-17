@@ -69,6 +69,31 @@ it. Layering: `lacing → nw → falaw.Plan → backends` — nothing above
   and durable async jobs (idempotency by `falaw.plan_hash`; store writes are
   atomic via temp-file + `os.replace`).
 
+## Validation (`nw/validation.py`, checks in `nw/checks.py`)
+
+A registry-based menu of checks over *finished* work, with `requires`
+dependencies resolved, independent checks run concurrently, and one
+`ValidationReport`. Three rules, each of which is the whole point:
+
+- **Placed, never assumed.** Nothing in nw calls `validate()`; `validate(x)`
+  with no selection runs nothing. Where a gate belongs — before a human sees a
+  result, before a publish, or both — is the caller's judgement about cost and
+  consequence, and a gate the substrate places fires at the wrong moment on
+  somebody else's budget.
+- **Could-not-run is not a pass.** A skipped (missing binary) or raised check
+  makes `report.ok` false, and an unknown check name raises rather than being
+  dropped.
+- **A check declares how it is chosen.** `summary` and `example_requests` are
+  required in spirit and the latter is test-enforced for built-ins: they are
+  what lets `suggest()` match a request, which is how this reaches MCP as one
+  tool instead of a forty-item enum. `cost="paid"` is never suggested.
+
+A check's *code* belongs in the package that owns its knowledge (type → next to
+`tituli`, motion → next to `burns`); it registers itself at import. **Ideas** for
+new checks accumulate in one place: `validation-idea` issues on this repo
+(`gh issue list -R thorwhalen/nw --label validation-idea`). Record:
+`misc/docs/Validation — the seam, the menu, and where ideas go.md`.
+
 ## Invariants that are easy to violate
 
 1. **Plans are pure data.** No network, no billing, in any `plan()`.
