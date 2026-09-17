@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "built_at": "2026-09-17T15:55:18Z",
+  "package": {
+    "name": "nw",
+    "version": "0.0.54",
+    "display_name": "nw",
+    "source": "pyproject.toml"
+  },
+  "git": {
+    "available": true,
+    "commit": "c3bd5fe0a2b957ab8ede7544b98f8e89aa790e67",
+    "short_commit": "c3bd5fe",
+    "branch": "main",
+    "tags": [
+      "0.0.54"
+    ],
+    "dirty": false,
+    "remote_url": "https://github.com/thorwhalen/nw",
+    "commit_url": "https://github.com/thorwhalen/nw/commit/c3bd5fe0a2b957ab8ede7544b98f8e89aa790e67",
+    "error": null
+  },
+  "ci": {
+    "provider": "github",
+    "repository": "thorwhalen/nw",
+    "sha": "180996ed2a3f9492a0affddfe945f617934b7490",
+    "sha_in_history": true,
+    "ref": "refs/heads/main",
+    "ref_name": "main",
+    "run_id": "35243055110",
+    "run_url": "https://github.com/thorwhalen/nw/actions/runs/35243055110",
+    "server_url": "https://github.com"
+  },
+  "tools": {
+    "epythet": "0.2.12",
+    "sphinx": "9.1.0",
+    "docutils": "0.22.4",
+    "python": "3.12.14"
+  },
+  "config": {
+    "theme": "auto",
+    "html_theme": "shibuya",
+    "accent": "#26691b",
+    "mode": "auto",
+    "api_generator": "autosummary",
+    "ignore": [
+      "tests/",
+      "scrap/",
+      "examples/"
+    ],
+    "agent_outputs": true,
+    "aggregates": [
+      "md"
+    ],
+    "ai_artifacts": true,
+    "provenance": true,
+    "docs_dir": "docsrc"
+  },
+  "site": {
+    "modules_documented": 36,
+    "objects_documented": 545
+  },
+  "pypi": {
+    "checked": true,
+    "latest": "0.0.54",
+    "relation": "same",
+    "error": null
+  },
+  "reproduce": "git clone https://github.com/thorwhalen/nw && cd nw\ngit checkout c3bd5fe0a2b957ab8ede7544b98f8e89aa790e67\npip install \"epythet==0.2.12\"\nepythet quickstart . --ignore tests/ scrap/ examples/",
+  "warnings": [],
+  "alignment": {
+    "aligned": true,
+    "notes": []
+  }
+}

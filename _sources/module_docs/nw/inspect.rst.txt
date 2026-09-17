@@ -1,4 +1,0 @@
-nw.inspect
-==========
-.. automodule:: nw.inspect
-   :members:

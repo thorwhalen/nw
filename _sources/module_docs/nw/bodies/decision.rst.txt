@@ -1,4 +1,0 @@
-nw.bodies.decision
-==================
-.. automodule:: nw.bodies.decision
-   :members:

@@ -1,0 +1,12 @@
+nw.renderers.still
+==================
+
+.. automodule:: nw.renderers.still
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      StillStrategy
+   

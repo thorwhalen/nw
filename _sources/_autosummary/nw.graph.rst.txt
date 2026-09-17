@@ -1,0 +1,32 @@
+nw.graph
+========
+
+.. automodule:: nw.graph
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      all_project_stores
+      annotations_at_tier
+      backfill_traces
+      collect_orphan_traces
+      derived_from
+      descendants_of
+      iter_all_annotations
+      open_project_stores
+      remove_annotations_with_traces
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      ProjectGraph
+      StoredCharacterRef
+      StoredDecision
+      StoredEnvironmentRef
+      StoredSection
+      StoredShot
+      StoredUnproducedOutput
+   

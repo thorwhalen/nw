@@ -1,0 +1,12 @@
+nw.renderers.composite\_lipsync
+===============================
+
+.. automodule:: nw.renderers.composite_lipsync
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      CompositeLipsyncStrategy
+   

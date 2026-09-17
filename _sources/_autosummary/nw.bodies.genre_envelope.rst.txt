@@ -1,0 +1,12 @@
+nw.bodies.genre\_envelope
+=========================
+
+.. automodule:: nw.bodies.genre_envelope
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      GenreEnvelopeBodyV1
+   

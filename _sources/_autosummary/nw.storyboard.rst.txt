@@ -1,0 +1,18 @@
+nw.storyboard
+=============
+
+.. automodule:: nw.storyboard
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      execute_render_panel_images
+      open_storyboard
+      plan_render_panel_images
+      project_asset_id
+      save_storyboard
+      storyboard_db_path
+      storyboard_from_shots
+   

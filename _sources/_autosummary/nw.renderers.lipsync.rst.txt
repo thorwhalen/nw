@@ -1,0 +1,12 @@
+nw.renderers.lipsync
+====================
+
+.. automodule:: nw.renderers.lipsync
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      LipsyncStrategy
+   

@@ -1,715 +1,1115 @@
-
-
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="../../">
+<html lang="en" data-accent-color="grass" data-content_root="../../">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nw.workflow &mdash; nw 0.0.52 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
-      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
-      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
-
-  
-      <script src="../../_static/jquery.js?v=5d32c60e"></script>
-      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=73f2ab08"></script>
-      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
-      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
-      <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
-      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
-      <script src="../../_static/copybutton.js?v=f281be69"></script>
-    <script src="../../_static/js/theme.js"></script>
-    <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" /> 
-</head>
-
-<body class="wy-body-for-nav"> 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
-
-          
-          
-          <a href="../../index.html" class="icon icon-home">
-            nw
-          </a>
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>nw.workflow - nw</title><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=d88b86f9" />
+    <link rel="stylesheet" type="text/css" href="../../_static/shibuya.css?v=2ceb65ce" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link media="print" rel="stylesheet" type="text/css" href="../../_static/print.css?v=20ff2c19" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    
+  <meta property="og:type" content="website"/><meta property="og:title" content="nw.workflow"/>
+    <meta name="twitter:card" content="summary"/>
+  </head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="../../index.html">
+      
+      
+      <strong>nw</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/thorwhalen/nw" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
 </div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw.html">nw</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies.html">nw.bodies</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/character_ref.html">nw.bodies.character_ref</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/decision.html">nw.bodies.decision</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/environment_ref.html">nw.bodies.environment_ref</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/genre_envelope.html">nw.bodies.genre_envelope</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/render_result.html">nw.bodies.render_result</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/section.html">nw.bodies.section</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/shot.html">nw.bodies.shot</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/unproduced_output.html">nw.bodies.unproduced_output</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/bodies/verifying_trace.html">nw.bodies.verifying_trace</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/delivery.html">nw.delivery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/experiment.html">nw.experiment</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/freshness.html">nw.freshness</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/genres.html">nw.genres</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/graph.html">nw.graph</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/graph_backend.html">nw.graph_backend</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/inspect.html">nw.inspect</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/jobs.html">nw.jobs</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/migrate.html">nw.migrate</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/pricing.html">nw.pricing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/project.html">nw.project</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers.html">nw.renderers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/_common.html">nw.renderers._common</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/composite_lipsync.html">nw.renderers.composite_lipsync</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/image_to_video.html">nw.renderers.image_to_video</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/lipsync.html">nw.renderers.lipsync</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/still.html">nw.renderers.still</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/renderers/text_to_video.html">nw.renderers.text_to_video</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/schema.html">nw.schema</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/script_segmentation.html">nw.script_segmentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/secrets.html">nw.secrets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/storyboard.html">nw.storyboard</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/transforms.html">nw.transforms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/transforms/_adapters.html">nw.transforms._adapters</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/transforms/_adapters/render_strategy.html">nw.transforms._adapters.render_strategy</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/transforms/_cache_mode.html">nw.transforms._cache_mode</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/transforms/_provenance.html">nw.transforms._provenance</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/transforms/fanout.html">nw.transforms.fanout</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../module_docs/nw/workflow.html">nw.workflow</a></li>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="0"><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../_autosummary/nw.html">nw</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/nw.freshness.html">nw.freshness</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/nw.inspect.html">nw.inspect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/nw.checks.html">nw.checks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/nw.bodies.html">nw.bodies</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/nw.bodies.character_ref.html">nw.bodies.character_ref</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/nw.bodies.decision.html">nw.bodies.decision</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/nw.bodies.environment_ref.html">nw.bodies.environment_ref</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/nw.bodies.genre_envelope.html">nw.bodies.genre_envelope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/nw.bodies.render_result.html">nw.bodies.render_result</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/nw.bodies.section.html">nw.bodies.section</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/nw.bodies.shot.html">nw.bodies.shot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/nw.bodies.unproduced_output.html">nw.bodies.unproduced_output</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/nw.bodies.verifying_trace.html">nw.bodies.verifying_trace</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/nw.delivery.html">nw.delivery</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/nw.experiment.html">nw.experiment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/nw.genres.html">nw.genres</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/nw.graph.html">nw.graph</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/nw.graph_backend.html">nw.graph_backend</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/nw.jobs.html">nw.jobs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/nw.migrate.html">nw.migrate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/nw.pricing.html">nw.pricing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/nw.project.html">nw.project</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/nw.renderers.html">nw.renderers</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/nw.renderers.composite_lipsync.html">nw.renderers.composite_lipsync</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/nw.renderers.image_to_video.html">nw.renderers.image_to_video</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/nw.renderers.lipsync.html">nw.renderers.lipsync</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/nw.renderers.still.html">nw.renderers.still</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../_autosummary/nw.renderers.text_to_video.html">nw.renderers.text_to_video</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/nw.schema.html">nw.schema</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/nw.script_segmentation.html">nw.script_segmentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/nw.secrets.html">nw.secrets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/nw.storyboard.html">nw.storyboard</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/nw.transforms.html">nw.transforms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/nw.validation.html">nw.validation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../_autosummary/nw.workflow.html">nw.workflow</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../ai-agents.html">For AI agents</a></li>
 </ul>
 
         </div>
       </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">nw</a>
-      </nav>
-
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
-  <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
-      <li class="breadcrumb-item active">nw.workflow</li>
-      <li class="wy-breadcrumbs-aside">
-      </li>
-  </ul>
-  <hr/>
-</div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-             
-  <h1>Source code for nw.workflow</h1><div class="highlight"><pre>
-<span></span><span class="sd">"""Workflow: prepare → plan → execute, for a **video shot**.</span>
-
-<span class="sd">**Scope — read this before extending anything here.** This module and</span>
-<span class="sd">:mod:`nw.renderers` are the *shot* render unit: they bake in</span>
-<span class="sd">:class:`nw.schema.ShotSpec`, an open-string ``render_strategy``, and an</span>
-<span class="sd">``output.mp4``. They are **not** the render-kind-agnostic engine, and they are</span>
-<span class="sd">**not** the place to add a new render *kind*. That engine is</span>
-<span class="sd">:mod:`nw.transforms`, whose ``plan``/``execute`` split is the same shape over</span>
-<span class="sd">arbitrary annotation kinds — it is what reelee's production video path and</span>
-<span class="sd">braidio's audio-weave path both ride.</span>
-
-<span class="sd">**This is a layer *under* that engine, not a path parallel to it — and it is</span>
-<span class="sd">not dead code.** The engine's shot arrow is built on top of this module:</span>
-<span class="sd">``nw/transforms/_adapters/render_strategy.py``, which publishes every</span>
-<span class="sd">``shot_to_render_result.fal.&lt;strategy&gt;`` Transform, calls :func:`prepare_shot`</span>
-<span class="sd">in both its ``plan`` (``upload=params.upload``) and its ``execute``</span>
-<span class="sd">(``upload=False``); and :func:`plan_render_shot` / :func:`execute_render` both</span>
-<span class="sd">call :func:`nw.renderers.get_strategy`. So a "cleanup" here — dropping</span>
-<span class="sd">:func:`prepare_shot`'s ``upload=`` keyword, deleting this module as unused —</span>
-<span class="sd">silently breaks the Transform path that the docs hold up as the correct one.</span>
-
-<span class="sd">What is true, and narrower than "legacy" sounds, is a statement about *entry</span>
-<span class="sd">points*: measured 2026-08-27, :func:`prepare_shot`, :func:`plan_render_shot`,</span>
-<span class="sd">:func:`execute_render` and :func:`nw.renderers.get_strategy` have **zero** call</span>
-<span class="sd">sites outside nw (muvid has its own ``muvid.schema.ShotSpec`` and its own</span>
-<span class="sd">ffmpeg strategies). Nothing downstream drives these functions *directly* today,</span>
-<span class="sd">and new callers should go through the Transform registry instead — but inside</span>
-<span class="sd">nw they are load-bearing. See ``misc/docs/Rendering Provenance and Partial</span>
-<span class="sd">Re-render.md`` and nw#9.</span>
-
-<span class="sd">The render pipeline has three phases, each cleanly separable:</span>
-
-<span class="sd">1. **Prepare** (:func:`prepare_shot`) — *local* work: extract the audio slice</span>
-<span class="sd">   for the shot, find character/environment anchor images, gather lyric lines,</span>
-<span class="sd">   build the storyboard prompt. No fal calls. Output: :class:`ShotPreparation`,</span>
-<span class="sd">   a typed bundle of local file paths and prose.</span>
-
-<span class="sd">2. **Plan** (:func:`plan_render_shot`) — *pure-data* work: given a</span>
-<span class="sd">   :class:`ShotPreparation`, build a :class:`falaw.Plan` of the fal calls</span>
-<span class="sd">   that will produce the shot. Returns the Plan + the list of artifacts</span>
-<span class="sd">   that haven't been generated yet (e.g. uploads needed first). Still no</span>
-<span class="sd">   fal calls.</span>
-
-<span class="sd">3. **Execute** (:func:`execute_render`) — the *only* phase with fal contact.</span>
-<span class="sd">   Uploads local files, drives the Plan, downloads outputs, trims/pads to</span>
-<span class="sd">   the shot's exact duration. Returns the final mp4 path.</span>
-
-<span class="sd">This split is what enables:</span>
-
-<span class="sd">- A budget gate that's honest (cost is computed at plan time).</span>
-<span class="sd">- Tests that exercise plan construction without a fal account.</span>
-<span class="sd">- A UI that says "you're about to spend $4.12, click confirm" before the</span>
-<span class="sd">  network goes near a credit card.</span>
-<span class="sd">- The "render then kill once audio.wav exists" hack from interface_design_plan</span>
-<span class="sd">  (item #6) becomes one call: ``prepare_shot(project, shot_id)``.</span>
-<span class="sd">"""</span>
-
-<span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
-
-<span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
-
-<span class="kn">from</span><span class="w"> </span><span class="nn">falaw</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plan</span><span class="p">,</span> <span class="n">execute_plan</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">lacing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Artifact</span>
-
-<span class="kn">from</span><span class="w"> </span><span class="nn">.pricing</span><span class="w"> </span><span class="kn">import</span> <span class="n">cost_records</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.project</span><span class="w"> </span><span class="kn">import</span> <span class="n">Project</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.renderers</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_strategy</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">ShotSpec</span>
-
-
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../../index.html"><span itemprop="name">nw</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../index.html"><span itemprop="name">Module code</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="2" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">nw.workflow</strong>
+        <meta itemprop="position" content="3" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+  <article class="yue dark-code" role="main">
+          <h1>Source code for nw.workflow</h1><div class="highlight"><pre>
+<span></span><span data-line="1"><span class="sd">"""Workflow: prepare → plan → execute, for a **video shot**.</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="sd">**Scope — read this before extending anything here.** This module and</span>
+</span><span data-line="4"><span class="sd">:mod:`nw.renderers` are the *shot* render unit: they bake in</span>
+</span><span data-line="5"><span class="sd">:class:`nw.schema.ShotSpec`, an open-string ``render_strategy``, and an</span>
+</span><span data-line="6"><span class="sd">``output.mp4``. They are **not** the render-kind-agnostic engine, and they are</span>
+</span><span data-line="7"><span class="sd">**not** the place to add a new render *kind*. That engine is</span>
+</span><span data-line="8"><span class="sd">:mod:`nw.transforms`, whose ``plan``/``execute`` split is the same shape over</span>
+</span><span data-line="9"><span class="sd">arbitrary annotation kinds — it is what reelee's production video path and</span>
+</span><span data-line="10"><span class="sd">braidio's audio-weave path both ride.</span>
+</span><span data-line="11">
+</span><span data-line="12"><span class="sd">**This is a layer *under* that engine, not a path parallel to it — and it is</span>
+</span><span data-line="13"><span class="sd">not dead code.** The engine's shot arrow is built on top of this module:</span>
+</span><span data-line="14"><span class="sd">``nw/transforms/_adapters/render_strategy.py``, which publishes every</span>
+</span><span data-line="15"><span class="sd">``shot_to_render_result.fal.&lt;strategy&gt;`` Transform, calls :func:`prepare_shot`</span>
+</span><span data-line="16"><span class="sd">in both its ``plan`` (``upload=params.upload``) and its ``execute``</span>
+</span><span data-line="17"><span class="sd">(``upload=False``); and :func:`plan_render_shot` / :func:`execute_render` both</span>
+</span><span data-line="18"><span class="sd">call :func:`nw.renderers.get_strategy`. So a "cleanup" here — dropping</span>
+</span><span data-line="19"><span class="sd">:func:`prepare_shot`'s ``upload=`` keyword, deleting this module as unused —</span>
+</span><span data-line="20"><span class="sd">silently breaks the Transform path that the docs hold up as the correct one.</span>
+</span><span data-line="21">
+</span><span data-line="22"><span class="sd">What is true, and narrower than "legacy" sounds, is a statement about *entry</span>
+</span><span data-line="23"><span class="sd">points*: measured 2026-08-27, :func:`prepare_shot`, :func:`plan_render_shot`,</span>
+</span><span data-line="24"><span class="sd">:func:`execute_render` and :func:`nw.renderers.get_strategy` have **zero** call</span>
+</span><span data-line="25"><span class="sd">sites outside nw (muvid has its own ``muvid.schema.ShotSpec`` and its own</span>
+</span><span data-line="26"><span class="sd">ffmpeg strategies). Nothing downstream drives these functions *directly* today,</span>
+</span><span data-line="27"><span class="sd">and new callers should go through the Transform registry instead — but inside</span>
+</span><span data-line="28"><span class="sd">nw they are load-bearing. See ``misc/docs/Rendering Provenance and Partial</span>
+</span><span data-line="29"><span class="sd">Re-render.md`` and nw#9.</span>
+</span><span data-line="30">
+</span><span data-line="31"><span class="sd">The render pipeline has three phases, each cleanly separable:</span>
+</span><span data-line="32">
+</span><span data-line="33"><span class="sd">1. **Prepare** (:func:`prepare_shot`) — *local* work: extract the audio slice</span>
+</span><span data-line="34"><span class="sd">   for the shot, find character/environment anchor images, gather lyric lines,</span>
+</span><span data-line="35"><span class="sd">   build the storyboard prompt. No fal calls. Output: :class:`ShotPreparation`,</span>
+</span><span data-line="36"><span class="sd">   a typed bundle of local file paths and prose.</span>
+</span><span data-line="37">
+</span><span data-line="38"><span class="sd">2. **Plan** (:func:`plan_render_shot`) — *pure-data* work: given a</span>
+</span><span data-line="39"><span class="sd">   :class:`ShotPreparation`, build a :class:`falaw.Plan` of the fal calls</span>
+</span><span data-line="40"><span class="sd">   that will produce the shot. Returns the Plan + the list of artifacts</span>
+</span><span data-line="41"><span class="sd">   that haven't been generated yet (e.g. uploads needed first). Still no</span>
+</span><span data-line="42"><span class="sd">   fal calls.</span>
+</span><span data-line="43">
+</span><span data-line="44"><span class="sd">3. **Execute** (:func:`execute_render`) — the *only* phase with fal contact.</span>
+</span><span data-line="45"><span class="sd">   Uploads local files, drives the Plan, downloads outputs, trims/pads to</span>
+</span><span data-line="46"><span class="sd">   the shot's exact duration. Returns the final mp4 path.</span>
+</span><span data-line="47">
+</span><span data-line="48"><span class="sd">This split is what enables:</span>
+</span><span data-line="49">
+</span><span data-line="50"><span class="sd">- A budget gate that's honest (cost is computed at plan time).</span>
+</span><span data-line="51"><span class="sd">- Tests that exercise plan construction without a fal account.</span>
+</span><span data-line="52"><span class="sd">- A UI that says "you're about to spend $4.12, click confirm" before the</span>
+</span><span data-line="53"><span class="sd">  network goes near a credit card.</span>
+</span><span data-line="54"><span class="sd">- The "render then kill once audio.wav exists" hack from interface_design_plan</span>
+</span><span data-line="55"><span class="sd">  (item #6) becomes one call: ``prepare_shot(project, shot_id)``.</span>
+</span><span data-line="56"><span class="sd">"""</span>
+</span><span data-line="57">
+</span><span data-line="58"><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+</span><span data-line="59">
+</span><span data-line="60"><span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+</span><span data-line="61"><span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+</span><span data-line="62"><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+</span><span data-line="63"><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
+</span><span data-line="64">
+</span><span data-line="65"><span class="kn">from</span><span class="w"> </span><span class="nn">falaw</span><span class="w"> </span><span class="kn">import</span> <span class="n">Plan</span><span class="p">,</span> <span class="n">execute_plan</span>
+</span><span data-line="66"><span class="kn">from</span><span class="w"> </span><span class="nn">lacing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Artifact</span>
+</span><span data-line="67">
+</span><span data-line="68"><span class="kn">from</span><span class="w"> </span><span class="nn">.pricing</span><span class="w"> </span><span class="kn">import</span> <span class="n">cost_records</span>
+</span><span data-line="69"><span class="kn">from</span><span class="w"> </span><span class="nn">.project</span><span class="w"> </span><span class="kn">import</span> <span class="n">Project</span>
+</span><span data-line="70"><span class="kn">from</span><span class="w"> </span><span class="nn">.renderers</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_strategy</span>
+</span><span data-line="71"><span class="kn">from</span><span class="w"> </span><span class="nn">.schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">ShotSpec</span>
+</span><span data-line="72">
+</span><span data-line="73">
 <div class="viewcode-block" id="ShotPreparation">
-<a class="viewcode-back" href="../../module_docs/nw/workflow.html#nw.ShotPreparation">[docs]</a>
-<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">ShotPreparation</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Local-only inputs for rendering a single shot.</span>
+<a class="viewcode-back" href="../../_autosummary/nw.workflow.html#nw.ShotPreparation">[docs]</a>
+</span><span data-line="74"><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="75"><span class="k">class</span><span class="w"> </span><span class="nc">ShotPreparation</span><span class="p">:</span>
+</span><span data-line="76"><span class="w">    </span><span class="sd">"""Local-only inputs for rendering a single shot.</span>
+</span><span data-line="77">
+</span><span data-line="78"><span class="sd">    Building a ShotPreparation is a pure-filesystem operation: no fal calls</span>
+</span><span data-line="79"><span class="sd">    that bill, no network beyond fal-storage uploads (which are free). The</span>
+</span><span data-line="80"><span class="sd">    upload step happens here so the resulting URLs are stable and the cache</span>
+</span><span data-line="81"><span class="sd">    key derived from them is honest.</span>
+</span><span data-line="82">
+</span><span data-line="83"><span class="sd">    Multiple downstream consumers (the planner, an inspection report, a UI</span>
+</span><span data-line="84"><span class="sd">    preview) can read this without re-doing the audio extraction.</span>
+</span><span data-line="85"><span class="sd">    """</span>
+</span><span data-line="86">
+</span><span data-line="87">    <span class="n">project_root</span><span class="p">:</span> <span class="n">Path</span>
+</span><span data-line="88">    <span class="n">shot</span><span class="p">:</span> <span class="n">ShotSpec</span>
+</span><span data-line="89">    <span class="n">shot_dir</span><span class="p">:</span> <span class="n">Path</span>
+</span><span data-line="90">
+</span><span data-line="91">    <span class="n">audio_slice_path</span><span class="p">:</span> <span class="n">Path</span>
+</span><span data-line="92"><span class="w">    </span><span class="sd">"""Local path to the song's audio over [shot.start_s, shot.end_s]."""</span>
+</span><span data-line="93">
+</span><span data-line="94">    <span class="n">audio_slice_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
+</span><span data-line="95"><span class="w">    </span><span class="sd">"""fal-storage URL of the audio slice (set by :func:`prepare_shot` when</span>
+</span><span data-line="96"><span class="sd">    a fal API key is available; empty otherwise — strategies that need URLs</span>
+</span><span data-line="97"><span class="sd">    will raise descriptively)."""</span>
+</span><span data-line="98">
+</span><span data-line="99">    <span class="n">character_anchor_paths</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
+</span><span data-line="100"><span class="w">    </span><span class="sd">"""Per-character path to the curated anchor image."""</span>
+</span><span data-line="101">
+</span><span data-line="102">    <span class="n">character_anchor_urls</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
+</span><span data-line="103"><span class="w">    </span><span class="sd">"""Per-character fal-storage URL of the anchor image."""</span>
+</span><span data-line="104">
+</span><span data-line="105">    <span class="n">environment_anchor_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span data-line="106"><span class="w">    </span><span class="sd">"""Path to the environment establishing image, or None."""</span>
+</span><span data-line="107">
+</span><span data-line="108">    <span class="n">environment_anchor_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
+</span><span data-line="109"><span class="w">    </span><span class="sd">"""fal-storage URL of the environment image; empty if no env image."""</span>
+</span><span data-line="110">
+</span><span data-line="111">    <span class="n">lyric_lines</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+</span><span data-line="112"><span class="w">    </span><span class="sd">"""List of ``{"text", "start_s", "end_s", "line_index", "section"}`` dicts."""</span>
+</span><span data-line="113">
+</span><span data-line="114">    <span class="n">storyboard_prompt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
+</span><span data-line="115"><span class="w">    </span><span class="sd">"""Full prose prompt: shot description + framing + camera + characters +</span>
+</span><span data-line="116"><span class="sd">    environment + style + lyric lines (when present)."""</span>
+</span><span data-line="117">
+</span><span data-line="118">    <span class="n">global_style</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
+</span><span data-line="119">
+</span><span data-line="120">    <span class="nd">@property</span>
+</span><span data-line="121">    <span class="k">def</span><span class="w"> </span><span class="nf">duration_s</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+</span><span data-line="122">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">shot</span><span class="o">.</span><span class="n">duration_s</span>
+</span><span data-line="123">
+</span><span data-line="124">    <span class="nd">@property</span>
+</span><span data-line="125">    <span class="k">def</span><span class="w"> </span><span class="nf">shot_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="126">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">shot</span><span class="o">.</span><span class="n">id</span></div>
 
-<span class="sd">    Building a ShotPreparation is a pure-filesystem operation: no fal calls</span>
-<span class="sd">    that bill, no network beyond fal-storage uploads (which are free). The</span>
-<span class="sd">    upload step happens here so the resulting URLs are stable and the cache</span>
-<span class="sd">    key derived from them is honest.</span>
-
-<span class="sd">    Multiple downstream consumers (the planner, an inspection report, a UI</span>
-<span class="sd">    preview) can read this without re-doing the audio extraction.</span>
-<span class="sd">    """</span>
-
-    <span class="n">project_root</span><span class="p">:</span> <span class="n">Path</span>
-    <span class="n">shot</span><span class="p">:</span> <span class="n">ShotSpec</span>
-    <span class="n">shot_dir</span><span class="p">:</span> <span class="n">Path</span>
-
-    <span class="n">audio_slice_path</span><span class="p">:</span> <span class="n">Path</span>
-<span class="w">    </span><span class="sd">"""Local path to the song's audio over [shot.start_s, shot.end_s]."""</span>
-
-    <span class="n">audio_slice_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
-<span class="w">    </span><span class="sd">"""fal-storage URL of the audio slice (set by :func:`prepare_shot` when</span>
-<span class="sd">    a fal API key is available; empty otherwise — strategies that need URLs</span>
-<span class="sd">    will raise descriptively)."""</span>
-
-    <span class="n">character_anchor_paths</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
-<span class="w">    </span><span class="sd">"""Per-character path to the curated anchor image."""</span>
-
-    <span class="n">character_anchor_urls</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
-<span class="w">    </span><span class="sd">"""Per-character fal-storage URL of the anchor image."""</span>
-
-    <span class="n">environment_anchor_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-<span class="w">    </span><span class="sd">"""Path to the environment establishing image, or None."""</span>
-
-    <span class="n">environment_anchor_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
-<span class="w">    </span><span class="sd">"""fal-storage URL of the environment image; empty if no env image."""</span>
-
-    <span class="n">lyric_lines</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
-<span class="w">    </span><span class="sd">"""List of ``{"text", "start_s", "end_s", "line_index", "section"}`` dicts."""</span>
-
-    <span class="n">storyboard_prompt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
-<span class="w">    </span><span class="sd">"""Full prose prompt: shot description + framing + camera + characters +</span>
-<span class="sd">    environment + style + lyric lines (when present)."""</span>
-
-    <span class="n">global_style</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">duration_s</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">shot</span><span class="o">.</span><span class="n">duration_s</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">shot_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">shot</span><span class="o">.</span><span class="n">id</span></div>
-
-
-
-<span class="c1"># ---------------------------------------------------------------------------</span>
-<span class="c1"># prepare_shot — local work only</span>
-<span class="c1"># ---------------------------------------------------------------------------</span>
-
-
+</span><span data-line="127">
+</span><span data-line="128">
+</span><span data-line="129"><span class="c1"># ---------------------------------------------------------------------------</span>
+</span><span data-line="130"><span class="c1"># prepare_shot — local work only</span>
+</span><span data-line="131"><span class="c1"># ---------------------------------------------------------------------------</span>
+</span><span data-line="132">
+</span><span data-line="133">
 <div class="viewcode-block" id="prepare_shot">
-<a class="viewcode-back" href="../../module_docs/nw/workflow.html#nw.prepare_shot">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">prepare_shot</span><span class="p">(</span>
-    <span class="n">project</span><span class="p">:</span> <span class="n">Project</span><span class="p">,</span> <span class="n">shot_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">upload</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ShotPreparation</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Resolve all local inputs for rendering a shot.</span>
+<a class="viewcode-back" href="../../_autosummary/nw.workflow.html#nw.prepare_shot">[docs]</a>
+</span><span data-line="134"><span class="k">def</span><span class="w"> </span><span class="nf">prepare_shot</span><span class="p">(</span>
+</span><span data-line="135">    <span class="n">project</span><span class="p">:</span> <span class="n">Project</span><span class="p">,</span> <span class="n">shot_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">upload</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span data-line="136"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ShotPreparation</span><span class="p">:</span>
+</span><span data-line="137"><span class="w">    </span><span class="sd">"""Resolve all local inputs for rendering a shot.</span>
+</span><span data-line="138">
+</span><span data-line="139"><span class="sd">    No billable fal calls. When ``upload=True`` (the default), local files</span>
+</span><span data-line="140"><span class="sd">    are uploaded to fal-storage so the planner can build a Plan with stable</span>
+</span><span data-line="141"><span class="sd">    URLs (uploads are free; the cache key derived from those URLs is honest).</span>
+</span><span data-line="142"><span class="sd">    When ``upload=False`` (e.g. for tests or dry-run reporting), the URL</span>
+</span><span data-line="143"><span class="sd">    fields are left empty.</span>
+</span><span data-line="144">
+</span><span data-line="145"><span class="sd">    Idempotent in spirit but not byte-stable: fal-storage URLs include</span>
+</span><span data-line="146"><span class="sd">    expiring signatures, so two ``prepare_shot`` calls on the same project</span>
+</span><span data-line="147"><span class="sd">    produce different URLs. The local file paths are byte-stable.</span>
+</span><span data-line="148">
+</span><span data-line="149"><span class="sd">    Args:</span>
+</span><span data-line="150"><span class="sd">        project: An :class:`nw.Project` instance.</span>
+</span><span data-line="151"><span class="sd">        shot_id: The shot's id, as in ``project.read_spec().shots[*].id``.</span>
+</span><span data-line="152"><span class="sd">        upload: When True (default), upload local files to fal-storage and</span>
+</span><span data-line="153"><span class="sd">            populate the ``*_url`` fields. When False, only the local paths</span>
+</span><span data-line="154"><span class="sd">            are populated.</span>
+</span><span data-line="155">
+</span><span data-line="156"><span class="sd">    Returns:</span>
+</span><span data-line="157"><span class="sd">        A :class:`ShotPreparation` with local paths (and URLs if ``upload``)</span>
+</span><span data-line="158"><span class="sd">        ready to plan.</span>
+</span><span data-line="159"><span class="sd">    """</span>
+</span><span data-line="160">    <span class="n">spec</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">read_spec</span><span class="p">()</span>
+</span><span data-line="161">    <span class="n">shot</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">shot</span><span class="p">(</span><span class="n">shot_id</span><span class="p">)</span>
+</span><span data-line="162">    <span class="k">if</span> <span class="n">shot</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="163">        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
+</span><span data-line="164">            <span class="sa">f</span><span class="s2">"No shot </span><span class="si">{</span><span class="n">shot_id</span><span class="si">!r}</span><span class="s2"> in project </span><span class="si">{</span><span class="n">project</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">name</span><span class="si">!r}</span><span class="s2">; "</span>
+</span><span data-line="165">            <span class="sa">f</span><span class="s2">"known: </span><span class="si">{</span><span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">id</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">spec</span><span class="o">.</span><span class="n">shots</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span>
+</span><span data-line="166">        <span class="p">)</span>
+</span><span data-line="167">
+</span><span data-line="168">    <span class="n">shot_dir</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">shot_dir</span><span class="p">(</span><span class="n">shot</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+</span><span data-line="169">    <span class="n">shot_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="170">
+</span><span data-line="171">    <span class="n">audio_slice</span> <span class="o">=</span> <span class="n">_ensure_audio_slice</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">shot</span><span class="p">)</span>
+</span><span data-line="172">    <span class="n">char_imgs</span> <span class="o">=</span> <span class="n">_resolve_character_anchors</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">shot</span><span class="p">)</span>
+</span><span data-line="173">    <span class="n">env_img</span> <span class="o">=</span> <span class="n">_resolve_environment_anchor</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">shot</span><span class="p">)</span>
+</span><span data-line="174">    <span class="n">lyric_lines</span> <span class="o">=</span> <span class="n">_lyric_lines_for_shot</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">shot</span><span class="p">)</span>
+</span><span data-line="175">    <span class="n">prompt</span> <span class="o">=</span> <span class="n">_build_storyboard_prompt</span><span class="p">(</span>
+</span><span data-line="176">        <span class="n">spec</span><span class="o">=</span><span class="n">spec</span><span class="p">,</span>
+</span><span data-line="177">        <span class="n">shot</span><span class="o">=</span><span class="n">shot</span><span class="p">,</span>
+</span><span data-line="178">        <span class="n">char_descriptions</span><span class="o">=</span><span class="p">{</span>
+</span><span data-line="179">            <span class="n">name</span><span class="p">:</span> <span class="n">spec</span><span class="o">.</span><span class="n">character</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">description</span> <span class="k">if</span> <span class="n">spec</span><span class="o">.</span><span class="n">character</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">else</span> <span class="s2">""</span>
+</span><span data-line="180">            <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">shot</span><span class="o">.</span><span class="n">characters</span>
+</span><span data-line="181">        <span class="p">},</span>
+</span><span data-line="182">        <span class="n">env_description</span><span class="o">=</span><span class="n">spec</span><span class="o">.</span><span class="n">environment</span><span class="p">(</span><span class="n">shot</span><span class="o">.</span><span class="n">environment</span><span class="p">)</span><span class="o">.</span><span class="n">description</span>
+</span><span data-line="183">        <span class="k">if</span> <span class="n">shot</span><span class="o">.</span><span class="n">environment</span> <span class="ow">and</span> <span class="n">spec</span><span class="o">.</span><span class="n">environment</span><span class="p">(</span><span class="n">shot</span><span class="o">.</span><span class="n">environment</span><span class="p">)</span>
+</span><span data-line="184">        <span class="k">else</span> <span class="s2">""</span><span class="p">,</span>
+</span><span data-line="185">        <span class="n">lyric_lines</span><span class="o">=</span><span class="n">lyric_lines</span><span class="p">,</span>
+</span><span data-line="186">    <span class="p">)</span>
+</span><span data-line="187">
+</span><span data-line="188">    <span class="n">audio_url</span> <span class="o">=</span> <span class="s2">""</span>
+</span><span data-line="189">    <span class="n">char_urls</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span data-line="190">    <span class="n">env_url</span> <span class="o">=</span> <span class="s2">""</span>
+</span><span data-line="191">    <span class="k">if</span> <span class="n">upload</span><span class="p">:</span>
+</span><span data-line="192">        <span class="kn">from</span><span class="w"> </span><span class="nn">.renderers._common</span><span class="w"> </span><span class="kn">import</span> <span class="n">upload_local_file</span>
+</span><span data-line="193">
+</span><span data-line="194">        <span class="n">audio_url</span> <span class="o">=</span> <span class="n">upload_local_file</span><span class="p">(</span><span class="n">audio_slice</span><span class="p">)</span>
+</span><span data-line="195">        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">char_imgs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+</span><span data-line="196">            <span class="n">char_urls</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">upload_local_file</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+</span><span data-line="197">        <span class="k">if</span> <span class="n">env_img</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="198">            <span class="n">env_url</span> <span class="o">=</span> <span class="n">upload_local_file</span><span class="p">(</span><span class="n">env_img</span><span class="p">)</span>
+</span><span data-line="199">
+</span><span data-line="200">    <span class="k">return</span> <span class="n">ShotPreparation</span><span class="p">(</span>
+</span><span data-line="201">        <span class="n">project_root</span><span class="o">=</span><span class="n">project</span><span class="o">.</span><span class="n">root</span><span class="p">,</span>
+</span><span data-line="202">        <span class="n">shot</span><span class="o">=</span><span class="n">shot</span><span class="p">,</span>
+</span><span data-line="203">        <span class="n">shot_dir</span><span class="o">=</span><span class="n">shot_dir</span><span class="p">,</span>
+</span><span data-line="204">        <span class="n">audio_slice_path</span><span class="o">=</span><span class="n">audio_slice</span><span class="p">,</span>
+</span><span data-line="205">        <span class="n">audio_slice_url</span><span class="o">=</span><span class="n">audio_url</span><span class="p">,</span>
+</span><span data-line="206">        <span class="n">character_anchor_paths</span><span class="o">=</span><span class="n">char_imgs</span><span class="p">,</span>
+</span><span data-line="207">        <span class="n">character_anchor_urls</span><span class="o">=</span><span class="n">char_urls</span><span class="p">,</span>
+</span><span data-line="208">        <span class="n">environment_anchor_path</span><span class="o">=</span><span class="n">env_img</span><span class="p">,</span>
+</span><span data-line="209">        <span class="n">environment_anchor_url</span><span class="o">=</span><span class="n">env_url</span><span class="p">,</span>
+</span><span data-line="210">        <span class="n">lyric_lines</span><span class="o">=</span><span class="n">lyric_lines</span><span class="p">,</span>
+</span><span data-line="211">        <span class="n">storyboard_prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span>
+</span><span data-line="212">        <span class="n">global_style</span><span class="o">=</span><span class="n">spec</span><span class="o">.</span><span class="n">global_style</span><span class="p">,</span>
+</span><span data-line="213">    <span class="p">)</span></div>
 
-<span class="sd">    No billable fal calls. When ``upload=True`` (the default), local files</span>
-<span class="sd">    are uploaded to fal-storage so the planner can build a Plan with stable</span>
-<span class="sd">    URLs (uploads are free; the cache key derived from those URLs is honest).</span>
-<span class="sd">    When ``upload=False`` (e.g. for tests or dry-run reporting), the URL</span>
-<span class="sd">    fields are left empty.</span>
-
-<span class="sd">    Idempotent in spirit but not byte-stable: fal-storage URLs include</span>
-<span class="sd">    expiring signatures, so two ``prepare_shot`` calls on the same project</span>
-<span class="sd">    produce different URLs. The local file paths are byte-stable.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        project: An :class:`nw.Project` instance.</span>
-<span class="sd">        shot_id: The shot's id, as in ``project.read_spec().shots[*].id``.</span>
-<span class="sd">        upload: When True (default), upload local files to fal-storage and</span>
-<span class="sd">            populate the ``*_url`` fields. When False, only the local paths</span>
-<span class="sd">            are populated.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        A :class:`ShotPreparation` with local paths (and URLs if ``upload``)</span>
-<span class="sd">        ready to plan.</span>
-<span class="sd">    """</span>
-    <span class="n">spec</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">read_spec</span><span class="p">()</span>
-    <span class="n">shot</span> <span class="o">=</span> <span class="n">spec</span><span class="o">.</span><span class="n">shot</span><span class="p">(</span><span class="n">shot_id</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">shot</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">"No shot </span><span class="si">{</span><span class="n">shot_id</span><span class="si">!r}</span><span class="s2"> in project </span><span class="si">{</span><span class="n">project</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">name</span><span class="si">!r}</span><span class="s2">; "</span>
-            <span class="sa">f</span><span class="s2">"known: </span><span class="si">{</span><span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">id</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">spec</span><span class="o">.</span><span class="n">shots</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span>
-        <span class="p">)</span>
-
-    <span class="n">shot_dir</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">shot_dir</span><span class="p">(</span><span class="n">shot</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
-    <span class="n">shot_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-    <span class="n">audio_slice</span> <span class="o">=</span> <span class="n">_ensure_audio_slice</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">shot</span><span class="p">)</span>
-    <span class="n">char_imgs</span> <span class="o">=</span> <span class="n">_resolve_character_anchors</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">shot</span><span class="p">)</span>
-    <span class="n">env_img</span> <span class="o">=</span> <span class="n">_resolve_environment_anchor</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">shot</span><span class="p">)</span>
-    <span class="n">lyric_lines</span> <span class="o">=</span> <span class="n">_lyric_lines_for_shot</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">shot</span><span class="p">)</span>
-    <span class="n">prompt</span> <span class="o">=</span> <span class="n">_build_storyboard_prompt</span><span class="p">(</span>
-        <span class="n">spec</span><span class="o">=</span><span class="n">spec</span><span class="p">,</span>
-        <span class="n">shot</span><span class="o">=</span><span class="n">shot</span><span class="p">,</span>
-        <span class="n">char_descriptions</span><span class="o">=</span><span class="p">{</span>
-            <span class="n">name</span><span class="p">:</span> <span class="n">spec</span><span class="o">.</span><span class="n">character</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">description</span> <span class="k">if</span> <span class="n">spec</span><span class="o">.</span><span class="n">character</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">else</span> <span class="s2">""</span>
-            <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">shot</span><span class="o">.</span><span class="n">characters</span>
-        <span class="p">},</span>
-        <span class="n">env_description</span><span class="o">=</span><span class="n">spec</span><span class="o">.</span><span class="n">environment</span><span class="p">(</span><span class="n">shot</span><span class="o">.</span><span class="n">environment</span><span class="p">)</span><span class="o">.</span><span class="n">description</span>
-        <span class="k">if</span> <span class="n">shot</span><span class="o">.</span><span class="n">environment</span> <span class="ow">and</span> <span class="n">spec</span><span class="o">.</span><span class="n">environment</span><span class="p">(</span><span class="n">shot</span><span class="o">.</span><span class="n">environment</span><span class="p">)</span>
-        <span class="k">else</span> <span class="s2">""</span><span class="p">,</span>
-        <span class="n">lyric_lines</span><span class="o">=</span><span class="n">lyric_lines</span><span class="p">,</span>
-    <span class="p">)</span>
-
-    <span class="n">audio_url</span> <span class="o">=</span> <span class="s2">""</span>
-    <span class="n">char_urls</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="n">env_url</span> <span class="o">=</span> <span class="s2">""</span>
-    <span class="k">if</span> <span class="n">upload</span><span class="p">:</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">.renderers._common</span><span class="w"> </span><span class="kn">import</span> <span class="n">upload_local_file</span>
-
-        <span class="n">audio_url</span> <span class="o">=</span> <span class="n">upload_local_file</span><span class="p">(</span><span class="n">audio_slice</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">char_imgs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">char_urls</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">upload_local_file</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">env_img</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">env_url</span> <span class="o">=</span> <span class="n">upload_local_file</span><span class="p">(</span><span class="n">env_img</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">ShotPreparation</span><span class="p">(</span>
-        <span class="n">project_root</span><span class="o">=</span><span class="n">project</span><span class="o">.</span><span class="n">root</span><span class="p">,</span>
-        <span class="n">shot</span><span class="o">=</span><span class="n">shot</span><span class="p">,</span>
-        <span class="n">shot_dir</span><span class="o">=</span><span class="n">shot_dir</span><span class="p">,</span>
-        <span class="n">audio_slice_path</span><span class="o">=</span><span class="n">audio_slice</span><span class="p">,</span>
-        <span class="n">audio_slice_url</span><span class="o">=</span><span class="n">audio_url</span><span class="p">,</span>
-        <span class="n">character_anchor_paths</span><span class="o">=</span><span class="n">char_imgs</span><span class="p">,</span>
-        <span class="n">character_anchor_urls</span><span class="o">=</span><span class="n">char_urls</span><span class="p">,</span>
-        <span class="n">environment_anchor_path</span><span class="o">=</span><span class="n">env_img</span><span class="p">,</span>
-        <span class="n">environment_anchor_url</span><span class="o">=</span><span class="n">env_url</span><span class="p">,</span>
-        <span class="n">lyric_lines</span><span class="o">=</span><span class="n">lyric_lines</span><span class="p">,</span>
-        <span class="n">storyboard_prompt</span><span class="o">=</span><span class="n">prompt</span><span class="p">,</span>
-        <span class="n">global_style</span><span class="o">=</span><span class="n">spec</span><span class="o">.</span><span class="n">global_style</span><span class="p">,</span>
-    <span class="p">)</span></div>
-
-
-
-<span class="c1"># ---------------------------------------------------------------------------</span>
-<span class="c1"># plan_render_shot — pure data, no fal calls</span>
-<span class="c1"># ---------------------------------------------------------------------------</span>
-
-
+</span><span data-line="214">
+</span><span data-line="215">
+</span><span data-line="216"><span class="c1"># ---------------------------------------------------------------------------</span>
+</span><span data-line="217"><span class="c1"># plan_render_shot — pure data, no fal calls</span>
+</span><span data-line="218"><span class="c1"># ---------------------------------------------------------------------------</span>
+</span><span data-line="219">
+</span><span data-line="220">
 <div class="viewcode-block" id="plan_render_shot">
-<a class="viewcode-back" href="../../module_docs/nw/workflow.html#nw.plan_render_shot">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">plan_render_shot</span><span class="p">(</span>
-    <span class="n">prep</span><span class="p">:</span> <span class="n">ShotPreparation</span><span class="p">,</span>
-    <span class="o">*</span><span class="p">,</span>
-    <span class="n">quality</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"balanced"</span><span class="p">,</span>
-    <span class="n">model_overrides</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Plan</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Build a :class:`falaw.Plan` for rendering a prepared shot.</span>
+<a class="viewcode-back" href="../../_autosummary/nw.workflow.html#nw.plan_render_shot">[docs]</a>
+</span><span data-line="221"><span class="k">def</span><span class="w"> </span><span class="nf">plan_render_shot</span><span class="p">(</span>
+</span><span data-line="222">    <span class="n">prep</span><span class="p">:</span> <span class="n">ShotPreparation</span><span class="p">,</span>
+</span><span data-line="223">    <span class="o">*</span><span class="p">,</span>
+</span><span data-line="224">    <span class="n">quality</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"balanced"</span><span class="p">,</span>
+</span><span data-line="225">    <span class="n">model_overrides</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="226"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Plan</span><span class="p">:</span>
+</span><span data-line="227"><span class="w">    </span><span class="sd">"""Build a :class:`falaw.Plan` for rendering a prepared shot.</span>
+</span><span data-line="228">
+</span><span data-line="229"><span class="sd">    Dispatches on ``prep.shot.render_strategy`` via :mod:`nw.renderers`.</span>
+</span><span data-line="230">
+</span><span data-line="231"><span class="sd">    Args:</span>
+</span><span data-line="232"><span class="sd">        prep: A :class:`ShotPreparation` from :func:`prepare_shot`.</span>
+</span><span data-line="233"><span class="sd">        quality: Default quality tier passed to the strategy.</span>
+</span><span data-line="234"><span class="sd">        model_overrides: Optional mapping of strategy-step → model_id, e.g.</span>
+</span><span data-line="235"><span class="sd">            ``{"avatar": "fal-ai/bytedance/omnihuman/v1.5"}`` to bypass the</span>
+</span><span data-line="236"><span class="sd">            default avatar model. The keys understood by each strategy are</span>
+</span><span data-line="237"><span class="sd">            documented on the strategy itself.</span>
+</span><span data-line="238">
+</span><span data-line="239"><span class="sd">    Returns:</span>
+</span><span data-line="240"><span class="sd">        A :class:`falaw.Plan`. Caller can inspect ``plan.total_cost_usd`` and</span>
+</span><span data-line="241"><span class="sd">        decide whether to ``execute_plan(plan)``.</span>
+</span><span data-line="242"><span class="sd">    """</span>
+</span><span data-line="243">    <span class="n">strategy</span> <span class="o">=</span> <span class="n">get_strategy</span><span class="p">(</span><span class="n">prep</span><span class="o">.</span><span class="n">shot</span><span class="o">.</span><span class="n">render_strategy</span><span class="p">)</span>
+</span><span data-line="244">    <span class="k">return</span> <span class="n">strategy</span><span class="o">.</span><span class="n">plan</span><span class="p">(</span><span class="n">prep</span><span class="p">,</span> <span class="n">quality</span><span class="o">=</span><span class="n">quality</span><span class="p">,</span> <span class="n">model_overrides</span><span class="o">=</span><span class="n">model_overrides</span> <span class="ow">or</span> <span class="p">{})</span></div>
 
-<span class="sd">    Dispatches on ``prep.shot.render_strategy`` via :mod:`nw.renderers`.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        prep: A :class:`ShotPreparation` from :func:`prepare_shot`.</span>
-<span class="sd">        quality: Default quality tier passed to the strategy.</span>
-<span class="sd">        model_overrides: Optional mapping of strategy-step → model_id, e.g.</span>
-<span class="sd">            ``{"avatar": "fal-ai/bytedance/omnihuman/v1.5"}`` to bypass the</span>
-<span class="sd">            default avatar model. The keys understood by each strategy are</span>
-<span class="sd">            documented on the strategy itself.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        A :class:`falaw.Plan`. Caller can inspect ``plan.total_cost_usd`` and</span>
-<span class="sd">        decide whether to ``execute_plan(plan)``.</span>
-<span class="sd">    """</span>
-    <span class="n">strategy</span> <span class="o">=</span> <span class="n">get_strategy</span><span class="p">(</span><span class="n">prep</span><span class="o">.</span><span class="n">shot</span><span class="o">.</span><span class="n">render_strategy</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">strategy</span><span class="o">.</span><span class="n">plan</span><span class="p">(</span><span class="n">prep</span><span class="p">,</span> <span class="n">quality</span><span class="o">=</span><span class="n">quality</span><span class="p">,</span> <span class="n">model_overrides</span><span class="o">=</span><span class="n">model_overrides</span> <span class="ow">or</span> <span class="p">{})</span></div>
-
-
-
-<span class="c1"># ---------------------------------------------------------------------------</span>
-<span class="c1"># execute_render — the only phase with fal calls</span>
-<span class="c1"># ---------------------------------------------------------------------------</span>
-
-
+</span><span data-line="245">
+</span><span data-line="246">
+</span><span data-line="247"><span class="c1"># ---------------------------------------------------------------------------</span>
+</span><span data-line="248"><span class="c1"># execute_render — the only phase with fal calls</span>
+</span><span data-line="249"><span class="c1"># ---------------------------------------------------------------------------</span>
+</span><span data-line="250">
+</span><span data-line="251">
 <div class="viewcode-block" id="execute_render">
-<a class="viewcode-back" href="../../module_docs/nw/workflow.html#nw.execute_render">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">execute_render</span><span class="p">(</span>
-    <span class="n">prep</span><span class="p">:</span> <span class="n">ShotPreparation</span><span class="p">,</span>
-    <span class="n">plan</span><span class="p">:</span> <span class="n">Plan</span><span class="p">,</span>
-    <span class="o">*</span><span class="p">,</span>
-    <span class="n">on_event</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">use_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="n">project</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Project</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Execute a Plan, materialize the result as ``shot_dir/output.mp4``.</span>
+<a class="viewcode-back" href="../../_autosummary/nw.workflow.html#nw.execute_render">[docs]</a>
+</span><span data-line="252"><span class="k">def</span><span class="w"> </span><span class="nf">execute_render</span><span class="p">(</span>
+</span><span data-line="253">    <span class="n">prep</span><span class="p">:</span> <span class="n">ShotPreparation</span><span class="p">,</span>
+</span><span data-line="254">    <span class="n">plan</span><span class="p">:</span> <span class="n">Plan</span><span class="p">,</span>
+</span><span data-line="255">    <span class="o">*</span><span class="p">,</span>
+</span><span data-line="256">    <span class="n">on_event</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+</span><span data-line="257">    <span class="n">use_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+</span><span data-line="258">    <span class="n">project</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Project</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="259"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+</span><span data-line="260"><span class="w">    </span><span class="sd">"""Execute a Plan, materialize the result as ``shot_dir/output.mp4``.</span>
+</span><span data-line="261">
+</span><span data-line="262"><span class="sd">    Refuses to execute a plan-only Plan (one whose arguments still contain</span>
+</span><span data-line="263"><span class="sd">    ``&lt;plan-only:...&gt;`` placeholders) — those exist so the planner can show</span>
+</span><span data-line="264"><span class="sd">    cost without any uploads, and need to be replaced with real URLs (call</span>
+</span><span data-line="265"><span class="sd">    :func:`prepare_shot` with ``upload=True``) before execute.</span>
+</span><span data-line="266">
+</span><span data-line="267"><span class="sd">    Args:</span>
+</span><span data-line="268"><span class="sd">        prep: The :class:`ShotPreparation` the Plan was built for.</span>
+</span><span data-line="269"><span class="sd">        plan: A :class:`falaw.Plan` (typically from :func:`plan_render_shot`).</span>
+</span><span data-line="270"><span class="sd">        on_event: Optional event subscriber forwarded to the falaw call layer.</span>
+</span><span data-line="271"><span class="sd">        use_cache: When True (default), routes via ``cached_call_fal`` so</span>
+</span><span data-line="272"><span class="sd">            cache hits skip the network.</span>
+</span><span data-line="273"><span class="sd">        project: Optional :class:`Project`. When given, a render-decision</span>
+</span><span data-line="274"><span class="sd">            annotation is appended to the project graph after execution</span>
+</span><span data-line="275"><span class="sd">            with ``was_derived_from = (shot_annotation_id,)``, so reelee's</span>
+</span><span data-line="276"><span class="sd">            freshness queries (``descendants_of`` / ``stale_after``) walk</span>
+</span><span data-line="277"><span class="sd">            from the shot to its render output.</span>
+</span><span data-line="278">
+</span><span data-line="279"><span class="sd">    Returns:</span>
+</span><span data-line="280"><span class="sd">        Path to ``shot_dir/output.mp4`` (trimmed/padded to ``prep.duration_s``).</span>
+</span><span data-line="281"><span class="sd">    """</span>
+</span><span data-line="282">    <span class="n">_refuse_plan_only_plan</span><span class="p">(</span><span class="n">plan</span><span class="p">)</span>
+</span><span data-line="283">    <span class="n">artifacts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Artifact</span><span class="p">]</span> <span class="o">=</span> <span class="n">execute_plan</span><span class="p">(</span>
+</span><span data-line="284">        <span class="n">plan</span><span class="p">,</span> <span class="n">on_event</span><span class="o">=</span><span class="n">on_event</span><span class="p">,</span> <span class="n">use_cache</span><span class="o">=</span><span class="n">use_cache</span>
+</span><span data-line="285">    <span class="p">)</span>
+</span><span data-line="286">    <span class="n">strategy</span> <span class="o">=</span> <span class="n">get_strategy</span><span class="p">(</span><span class="n">prep</span><span class="o">.</span><span class="n">shot</span><span class="o">.</span><span class="n">render_strategy</span><span class="p">)</span>
+</span><span data-line="287">    <span class="n">output</span> <span class="o">=</span> <span class="n">strategy</span><span class="o">.</span><span class="n">materialize</span><span class="p">(</span><span class="n">prep</span><span class="p">,</span> <span class="n">plan</span><span class="p">,</span> <span class="n">artifacts</span><span class="p">)</span>
+</span><span data-line="288">
+</span><span data-line="289">    <span class="k">if</span> <span class="n">project</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="290">        <span class="n">_record_render_decision</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">prep</span><span class="p">,</span> <span class="n">plan</span><span class="p">,</span> <span class="n">artifacts</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
+</span><span data-line="291">
+</span><span data-line="292">    <span class="k">return</span> <span class="n">output</span></div>
 
-<span class="sd">    Refuses to execute a plan-only Plan (one whose arguments still contain</span>
-<span class="sd">    ``&lt;plan-only:...&gt;`` placeholders) — those exist so the planner can show</span>
-<span class="sd">    cost without any uploads, and need to be replaced with real URLs (call</span>
-<span class="sd">    :func:`prepare_shot` with ``upload=True``) before execute.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        prep: The :class:`ShotPreparation` the Plan was built for.</span>
-<span class="sd">        plan: A :class:`falaw.Plan` (typically from :func:`plan_render_shot`).</span>
-<span class="sd">        on_event: Optional event subscriber forwarded to the falaw call layer.</span>
-<span class="sd">        use_cache: When True (default), routes via ``cached_call_fal`` so</span>
-<span class="sd">            cache hits skip the network.</span>
-<span class="sd">        project: Optional :class:`Project`. When given, a render-decision</span>
-<span class="sd">            annotation is appended to the project graph after execution</span>
-<span class="sd">            with ``was_derived_from = (shot_annotation_id,)``, so reelee's</span>
-<span class="sd">            freshness queries (``descendants_of`` / ``stale_after``) walk</span>
-<span class="sd">            from the shot to its render output.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        Path to ``shot_dir/output.mp4`` (trimmed/padded to ``prep.duration_s``).</span>
-<span class="sd">    """</span>
-    <span class="n">_refuse_plan_only_plan</span><span class="p">(</span><span class="n">plan</span><span class="p">)</span>
-    <span class="n">artifacts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Artifact</span><span class="p">]</span> <span class="o">=</span> <span class="n">execute_plan</span><span class="p">(</span>
-        <span class="n">plan</span><span class="p">,</span> <span class="n">on_event</span><span class="o">=</span><span class="n">on_event</span><span class="p">,</span> <span class="n">use_cache</span><span class="o">=</span><span class="n">use_cache</span>
-    <span class="p">)</span>
-    <span class="n">strategy</span> <span class="o">=</span> <span class="n">get_strategy</span><span class="p">(</span><span class="n">prep</span><span class="o">.</span><span class="n">shot</span><span class="o">.</span><span class="n">render_strategy</span><span class="p">)</span>
-    <span class="n">output</span> <span class="o">=</span> <span class="n">strategy</span><span class="o">.</span><span class="n">materialize</span><span class="p">(</span><span class="n">prep</span><span class="p">,</span> <span class="n">plan</span><span class="p">,</span> <span class="n">artifacts</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">project</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">_record_render_decision</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="n">prep</span><span class="p">,</span> <span class="n">plan</span><span class="p">,</span> <span class="n">artifacts</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">output</span></div>
-
-
-
-<span class="k">def</span><span class="w"> </span><span class="nf">_record_render_decision</span><span class="p">(</span>
-    <span class="n">project</span><span class="p">:</span> <span class="s2">"Project"</span><span class="p">,</span>
-    <span class="n">prep</span><span class="p">:</span> <span class="s2">"ShotPreparation"</span><span class="p">,</span>
-    <span class="n">plan</span><span class="p">:</span> <span class="s2">"Plan"</span><span class="p">,</span>
-    <span class="n">artifacts</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
-    <span class="n">output</span><span class="p">:</span> <span class="s2">"Path"</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Write a render-decision annotation derived from the shot annotation.</span>
-
-<span class="sd">    The decision's ``was_derived_from`` is the shot annotation's id, so a</span>
-<span class="sd">    reelee freshness traversal from the shot will find the render output.</span>
-<span class="sd">    Cost, model ids, and call ids are persisted in the decision payload so</span>
-<span class="sd">    a later inspector view can show "what fired and what it cost."</span>
-
-<span class="sd">    Every cost in the payload is **as quoted at plan time**, including</span>
-<span class="sd">    ``total_estimated_cost_usd``. Rate tables move (falaw 0.0.46 re-quoted</span>
-<span class="sd">    premium LLM calls tenfold upward), so a reader that presents one of these</span>
-<span class="sd">    figures as a *current* price under-quotes the run — the one direction a</span>
-<span class="sd">    spend decision must never err in. Each call row therefore carries its</span>
-<span class="sd">    :class:`falaw.CostBasis` (:func:`nw.pricing.cost_records`), which is what</span>
-<span class="sd">    lets :func:`nw.pricing.quote_render_decision` re-quote the whole payload</span>
-<span class="sd">    at today's rates and say ``unknown`` where it cannot (nw#74).</span>
-<span class="sd">    """</span>
-    <span class="c1"># Find the shot's annotation id in the graph.</span>
-    <span class="n">shot_anns</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">shots</span><span class="p">()</span>
-    <span class="n">matching</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">shot_anns</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">shot_id</span> <span class="o">==</span> <span class="n">prep</span><span class="o">.</span><span class="n">shot_id</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">matching</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">return</span>  <span class="c1"># shouldn't happen for a real Project; bail quietly</span>
-
-    <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">"shot_id"</span><span class="p">:</span> <span class="n">prep</span><span class="o">.</span><span class="n">shot_id</span><span class="p">,</span>
-        <span class="s2">"strategy"</span><span class="p">:</span> <span class="n">prep</span><span class="o">.</span><span class="n">shot</span><span class="o">.</span><span class="n">render_strategy</span><span class="p">,</span>
-        <span class="s2">"duration_s"</span><span class="p">:</span> <span class="n">prep</span><span class="o">.</span><span class="n">duration_s</span><span class="p">,</span>
-        <span class="s2">"output_path"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">root</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">output</span><span class="o">.</span><span class="n">is_relative_to</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
-        <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">output</span><span class="p">),</span>
-        <span class="s2">"calls"</span><span class="p">:</span> <span class="n">cost_records</span><span class="p">(</span><span class="n">plan</span><span class="p">),</span>
-        <span class="s2">"artifacts"</span><span class="p">:</span> <span class="p">[</span>
-            <span class="p">{</span>
-                <span class="s2">"asset_id"</span><span class="p">:</span> <span class="n">a</span><span class="o">.</span><span class="n">asset_id</span><span class="p">,</span>
-                <span class="s2">"kind"</span><span class="p">:</span> <span class="n">a</span><span class="o">.</span><span class="n">kind</span><span class="p">,</span>
-                <span class="s2">"url"</span><span class="p">:</span> <span class="n">a</span><span class="o">.</span><span class="n">url</span><span class="p">,</span>
-                <span class="s2">"duration_s"</span><span class="p">:</span> <span class="n">a</span><span class="o">.</span><span class="n">duration_s</span><span class="p">,</span>
-                <span class="s2">"cost_usd"</span><span class="p">:</span> <span class="n">a</span><span class="o">.</span><span class="n">cost_usd</span><span class="p">,</span>
-            <span class="p">}</span>
-            <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">artifacts</span>
-        <span class="p">],</span>
-        <span class="c1"># As-quoted-at-plan-time, like every figure above it. Re-quote the</span>
-        <span class="c1"># payload with `nw.pricing.quote_render_decision` before reporting</span>
-        <span class="c1"># this as a current price.</span>
-        <span class="s2">"total_estimated_cost_usd"</span><span class="p">:</span> <span class="n">plan</span><span class="o">.</span><span class="n">total_cost_usd</span><span class="p">,</span>
-    <span class="p">}</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">.bodies</span><span class="w"> </span><span class="kn">import</span> <span class="n">DecisionBodyV1</span>
-
-    <span class="n">project</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">append_decision</span><span class="p">(</span>
-        <span class="n">DecisionBodyV1</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s2">"render_shot"</span><span class="p">,</span> <span class="n">payload</span><span class="o">=</span><span class="n">payload</span><span class="p">),</span>
-        <span class="n">was_derived_from</span><span class="o">=</span><span class="p">(</span><span class="n">matching</span><span class="o">.</span><span class="n">annotation_id</span><span class="p">,),</span>
-    <span class="p">)</span>
-
-
-<span class="k">def</span><span class="w"> </span><span class="nf">_refuse_plan_only_plan</span><span class="p">(</span><span class="n">plan</span><span class="p">:</span> <span class="n">Plan</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Raise if any CallPlan has a ``&lt;plan-only:…&gt;`` arg. The strategies use</span>
-<span class="sd">    such placeholders when ``prepare_shot(upload=False)`` was called — they're</span>
-<span class="sd">    fine for inspection, fatal for execution."""</span>
-    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">call</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">plan</span><span class="o">.</span><span class="n">calls</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">_walk_strings</span><span class="p">(</span><span class="n">call</span><span class="o">.</span><span class="n">arguments</span><span class="p">):</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"&lt;plan-only:"</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">"execute_render: call </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">call</span><span class="o">.</span><span class="n">tool</span><span class="si">}</span><span class="s2">) has a plan-only "</span>
-                    <span class="sa">f</span><span class="s2">"placeholder at </span><span class="si">{</span><span class="n">k</span><span class="si">!r}</span><span class="s2">=</span><span class="si">{</span><span class="n">v</span><span class="si">!r}</span><span class="s2">. The Plan was built from a "</span>
-                    <span class="s2">"ShotPreparation without uploads. Re-run prepare_shot with "</span>
-                    <span class="s2">"upload=True (the default) before calling execute_render."</span>
-                <span class="p">)</span>
-
-
-<span class="k">def</span><span class="w"> </span><span class="nf">_walk_strings</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">""</span><span class="p">):</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">yield from</span> <span class="n">_walk_strings</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">"</span> <span class="k">if</span> <span class="n">prefix</span> <span class="k">else</span> <span class="n">k</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
-            <span class="k">yield from</span> <span class="n">_walk_strings</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">]"</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">yield</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">obj</span>
-
-
-<span class="c1"># ---------------------------------------------------------------------------</span>
-<span class="c1"># Local helpers (no falaw / network access)</span>
-<span class="c1"># ---------------------------------------------------------------------------</span>
-
-
-<span class="k">def</span><span class="w"> </span><span class="nf">_ensure_audio_slice</span><span class="p">(</span><span class="n">project</span><span class="p">:</span> <span class="n">Project</span><span class="p">,</span> <span class="n">shot</span><span class="p">:</span> <span class="n">ShotSpec</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Extract the song over [start_s, end_s] into ``shot_dir/audio.wav``.</span>
-
-<span class="sd">    Uses ``mixing.audio.Audio`` if available; falls back to ffmpeg directly if</span>
-<span class="sd">    mixing isn't installed.</span>
-<span class="sd">    """</span>
-    <span class="n">out</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">shot_dir</span><span class="p">(</span><span class="n">shot</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"audio.wav"</span>
-    <span class="k">if</span> <span class="n">out</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-        <span class="k">return</span> <span class="n">out</span>
-
-    <span class="n">song</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">song_path</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">song</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">"Cannot extract audio for shot </span><span class="si">{</span><span class="n">shot</span><span class="o">.</span><span class="n">id</span><span class="si">!r}</span><span class="s2">: project has no song registered."</span>
-        <span class="p">)</span>
-
-    <span class="k">try</span><span class="p">:</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">mixing.audio</span><span class="w"> </span><span class="kn">import</span> <span class="n">Audio</span>  <span class="c1"># type: ignore[import-not-found]</span>
-
-        <span class="n">seg</span> <span class="o">=</span> <span class="n">Audio</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">song</span><span class="p">))[</span><span class="n">shot</span><span class="o">.</span><span class="n">start_s</span> <span class="p">:</span> <span class="n">shot</span><span class="o">.</span><span class="n">end_s</span><span class="p">]</span>
-        <span class="n">seg</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">out</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">out</span>
-    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-        <span class="k">pass</span>
-
-    <span class="c1"># Fallback: ffmpeg.</span>
-    <span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
-
-    <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
-        <span class="p">[</span>
-            <span class="s2">"ffmpeg"</span><span class="p">,</span>
-            <span class="s2">"-y"</span><span class="p">,</span>
-            <span class="s2">"-i"</span><span class="p">,</span>
-            <span class="nb">str</span><span class="p">(</span><span class="n">song</span><span class="p">),</span>
-            <span class="s2">"-ss"</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">shot</span><span class="o">.</span><span class="n">start_s</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
-            <span class="s2">"-to"</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">shot</span><span class="o">.</span><span class="n">end_s</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
-            <span class="s2">"-c:a"</span><span class="p">,</span>
-            <span class="s2">"pcm_s16le"</span><span class="p">,</span>
-            <span class="nb">str</span><span class="p">(</span><span class="n">out</span><span class="p">),</span>
-        <span class="p">],</span>
-        <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="k">return</span> <span class="n">out</span>
-
-
-<span class="k">def</span><span class="w"> </span><span class="nf">_resolve_character_anchors</span><span class="p">(</span><span class="n">project</span><span class="p">:</span> <span class="n">Project</span><span class="p">,</span> <span class="n">shot</span><span class="p">:</span> <span class="n">ShotSpec</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">"""Pick the anchor image for each character referenced by the shot.</span>
-
-<span class="sd">    Honors :meth:`Project.set_character_anchor` (reads ``card.json``'s</span>
-<span class="sd">    ``reference_image_path``). Falls back to the first image in</span>
-<span class="sd">    ``selected/``, then ``refs/``, if no anchor is set. Missing characters</span>
-<span class="sd">    are skipped silently — strategies that need them will raise their own</span>
-<span class="sd">    descriptive error.</span>
-<span class="sd">    """</span>
-    <span class="n">out</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">shot</span><span class="o">.</span><span class="n">characters</span><span class="p">:</span>
-        <span class="n">char_dir</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">character_dir</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">char_dir</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-            <span class="k">continue</span>
-
-        <span class="c1"># 1. Explicit anchor from card.json</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">card</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">read_character_card</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-            <span class="n">ref</span> <span class="o">=</span> <span class="n">card</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"reference_image_path"</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">""</span>
-            <span class="k">if</span> <span class="n">ref</span><span class="p">:</span>
-                <span class="n">p</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="n">Path</span><span class="p">(</span><span class="n">ref</span><span class="p">)</span> <span class="k">if</span> <span class="n">Path</span><span class="p">(</span><span class="n">ref</span><span class="p">)</span><span class="o">.</span><span class="n">is_absolute</span><span class="p">()</span> <span class="k">else</span> <span class="n">project</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="n">ref</span>
-                <span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
-                <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-                    <span class="n">out</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span>
-                    <span class="k">continue</span>
-        <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
-            <span class="k">pass</span>
-
-        <span class="c1"># 2. First image in selected/, then refs/</span>
-        <span class="k">for</span> <span class="n">sub</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"selected"</span><span class="p">,</span> <span class="s2">"refs"</span><span class="p">):</span>
-            <span class="n">sub_dir</span> <span class="o">=</span> <span class="n">char_dir</span> <span class="o">/</span> <span class="n">sub</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">sub_dir</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-                <span class="k">continue</span>
-            <span class="k">for</span> <span class="n">image_path</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">sub_dir</span><span class="o">.</span><span class="n">iterdir</span><span class="p">()):</span>
-                <span class="k">if</span> <span class="n">image_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span> <span class="ow">and</span> <span class="n">image_path</span><span class="o">.</span><span class="n">suffix</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">{</span>
-                    <span class="s2">".png"</span><span class="p">,</span>
-                    <span class="s2">".jpg"</span><span class="p">,</span>
-                    <span class="s2">".jpeg"</span><span class="p">,</span>
-                    <span class="s2">".webp"</span><span class="p">,</span>
-                <span class="p">}:</span>
-                    <span class="n">out</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">image_path</span>
-                    <span class="k">break</span>
-            <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">out</span><span class="p">:</span>
-                <span class="k">break</span>
-    <span class="k">return</span> <span class="n">out</span>
-
-
-<span class="k">def</span><span class="w"> </span><span class="nf">_resolve_environment_anchor</span><span class="p">(</span><span class="n">project</span><span class="p">:</span> <span class="n">Project</span><span class="p">,</span> <span class="n">shot</span><span class="p">:</span> <span class="n">ShotSpec</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">"""Return ``environments/&lt;name&gt;/establishing.png`` if present, else None."""</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">shot</span><span class="o">.</span><span class="n">environment</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">None</span>
-    <span class="n">env_dir</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">environment_dir</span><span class="p">(</span><span class="n">shot</span><span class="o">.</span><span class="n">environment</span><span class="p">)</span>
-    <span class="n">candidate</span> <span class="o">=</span> <span class="n">env_dir</span> <span class="o">/</span> <span class="s2">"establishing.png"</span>
-    <span class="k">if</span> <span class="n">candidate</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-        <span class="k">return</span> <span class="n">candidate</span>
-    <span class="c1"># Look for any image in the environment dir.</span>
-    <span class="k">if</span> <span class="n">env_dir</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">env_dir</span><span class="o">.</span><span class="n">iterdir</span><span class="p">()):</span>
-            <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">suffix</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">".png"</span><span class="p">,</span> <span class="s2">".jpg"</span><span class="p">,</span> <span class="s2">".jpeg"</span><span class="p">,</span> <span class="s2">".webp"</span><span class="p">}:</span>
-                <span class="k">return</span> <span class="n">p</span>
-    <span class="k">return</span> <span class="kc">None</span>
-
-
-<span class="k">def</span><span class="w"> </span><span class="nf">_lyric_lines_for_shot</span><span class="p">(</span><span class="n">project</span><span class="p">:</span> <span class="n">Project</span><span class="p">,</span> <span class="n">shot</span><span class="p">:</span> <span class="n">ShotSpec</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">"""Read the lacing alignment store and return lyric lines that fall in the shot."""</span>
-    <span class="n">align_path</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="s2">"lyrics"</span> <span class="o">/</span> <span class="s2">"alignment.annot"</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">lacing.tracks.subtitle</span><span class="w"> </span><span class="kn">import</span> <span class="n">SubtitleTrack</span>
-
-        <span class="kn">from</span><span class="w"> </span><span class="nn">.graph_backend</span><span class="w"> </span><span class="kn">import</span> <span class="n">SCOPE_ALIGNMENT</span><span class="p">,</span> <span class="n">open_graph_store</span><span class="p">,</span> <span class="n">selected_backend</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">.migrate</span><span class="w"> </span><span class="kn">import</span> <span class="n">project_asset_id</span>
-    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-        <span class="k">return</span> <span class="p">[]</span>
-    <span class="c1"># In SQLite mode an absent file means "no alignment". In Postgres mode the</span>
-    <span class="c1"># file never exists; presence is a DB question, so always open and let the</span>
-    <span class="c1"># empty-store path return no lines.</span>
-    <span class="k">if</span> <span class="n">selected_backend</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"sqlite"</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">align_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-        <span class="k">return</span> <span class="p">[]</span>
-    <span class="n">store</span> <span class="o">=</span> <span class="n">open_graph_store</span><span class="p">(</span>
-        <span class="n">align_path</span><span class="p">,</span> <span class="n">asset_id</span><span class="o">=</span><span class="n">project_asset_id</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">root</span><span class="p">),</span> <span class="n">scope</span><span class="o">=</span><span class="n">SCOPE_ALIGNMENT</span>
-    <span class="p">)</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">track</span> <span class="o">=</span> <span class="n">SubtitleTrack</span><span class="p">(</span><span class="n">store</span><span class="p">,</span> <span class="n">asset_id</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-        <span class="k">return</span> <span class="p">[</span>
-            <span class="p">{</span>
-                <span class="s2">"text"</span><span class="p">:</span> <span class="n">ann</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"text"</span><span class="p">,</span> <span class="s2">""</span><span class="p">),</span>
-                <span class="s2">"start_s"</span><span class="p">:</span> <span class="n">ann</span><span class="o">.</span><span class="n">reference</span><span class="o">.</span><span class="n">interval</span><span class="o">.</span><span class="n">start</span><span class="o">.</span><span class="n">to_seconds</span><span class="p">(),</span>
-                <span class="s2">"end_s"</span><span class="p">:</span> <span class="n">ann</span><span class="o">.</span><span class="n">reference</span><span class="o">.</span><span class="n">interval</span><span class="o">.</span><span class="n">end</span><span class="o">.</span><span class="n">to_seconds</span><span class="p">(),</span>
-                <span class="s2">"line_index"</span><span class="p">:</span> <span class="n">ann</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"line_index"</span><span class="p">),</span>
-                <span class="s2">"section"</span><span class="p">:</span> <span class="n">ann</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"section"</span><span class="p">),</span>
-            <span class="p">}</span>
-            <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">track</span><span class="o">.</span><span class="n">lines_in</span><span class="p">(</span><span class="n">shot</span><span class="o">.</span><span class="n">start_s</span><span class="p">,</span> <span class="n">shot</span><span class="o">.</span><span class="n">end_s</span><span class="p">)</span>
-        <span class="p">]</span>
-    <span class="k">finally</span><span class="p">:</span>
-        <span class="n">store</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-
-
-<span class="k">def</span><span class="w"> </span><span class="nf">_build_storyboard_prompt</span><span class="p">(</span>
-    <span class="o">*</span><span class="p">,</span>
-    <span class="n">spec</span><span class="p">,</span>
-    <span class="n">shot</span><span class="p">:</span> <span class="n">ShotSpec</span><span class="p">,</span>
-    <span class="n">char_descriptions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
-    <span class="n">env_description</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-    <span class="n">lyric_lines</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">],</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="n">parts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">if</span> <span class="n">shot</span><span class="o">.</span><span class="n">description</span><span class="p">:</span>
-        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">shot</span><span class="o">.</span><span class="n">description</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">shot</span><span class="o">.</span><span class="n">framing</span><span class="p">:</span>
-        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"framing: </span><span class="si">{</span><span class="n">shot</span><span class="o">.</span><span class="n">framing</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">shot</span><span class="o">.</span><span class="n">camera</span><span class="p">:</span>
-        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"camera: </span><span class="si">{</span><span class="n">shot</span><span class="o">.</span><span class="n">camera</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">desc</span> <span class="ow">in</span> <span class="n">char_descriptions</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="k">if</span> <span class="n">desc</span><span class="p">:</span>
-            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">desc</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">env_description</span><span class="p">:</span>
-        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"location: </span><span class="si">{</span><span class="n">env_description</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">spec</span><span class="o">.</span><span class="n">global_style</span><span class="p">:</span>
-        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"style: </span><span class="si">{</span><span class="n">spec</span><span class="o">.</span><span class="n">global_style</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">lyric_lines</span><span class="p">:</span>
-        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-            <span class="s2">"lyrics: "</span> <span class="o">+</span> <span class="s2">" / "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">L</span><span class="p">[</span><span class="s2">"text"</span><span class="p">]</span> <span class="k">for</span> <span class="n">L</span> <span class="ow">in</span> <span class="n">lyric_lines</span> <span class="k">if</span> <span class="n">L</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"text"</span><span class="p">))</span>
-        <span class="p">)</span>
-    <span class="k">return</span> <span class="s2">" | "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span>
-</pre></div>
-
-           </div>
-          </div>
-          <footer>
-
-  <hr/>
-
-  <div role="contentinfo">
-    <p></p>
+</span><span data-line="293">
+</span><span data-line="294">
+</span><span data-line="295"><span class="k">def</span><span class="w"> </span><span class="nf">_record_render_decision</span><span class="p">(</span>
+</span><span data-line="296">    <span class="n">project</span><span class="p">:</span> <span class="s2">"Project"</span><span class="p">,</span>
+</span><span data-line="297">    <span class="n">prep</span><span class="p">:</span> <span class="s2">"ShotPreparation"</span><span class="p">,</span>
+</span><span data-line="298">    <span class="n">plan</span><span class="p">:</span> <span class="s2">"Plan"</span><span class="p">,</span>
+</span><span data-line="299">    <span class="n">artifacts</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+</span><span data-line="300">    <span class="n">output</span><span class="p">:</span> <span class="s2">"Path"</span><span class="p">,</span>
+</span><span data-line="301"><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="302"><span class="w">    </span><span class="sd">"""Write a render-decision annotation derived from the shot annotation.</span>
+</span><span data-line="303">
+</span><span data-line="304"><span class="sd">    The decision's ``was_derived_from`` is the shot annotation's id, so a</span>
+</span><span data-line="305"><span class="sd">    reelee freshness traversal from the shot will find the render output.</span>
+</span><span data-line="306"><span class="sd">    Cost, model ids, and call ids are persisted in the decision payload so</span>
+</span><span data-line="307"><span class="sd">    a later inspector view can show "what fired and what it cost."</span>
+</span><span data-line="308">
+</span><span data-line="309"><span class="sd">    Every cost in the payload is **as quoted at plan time**, including</span>
+</span><span data-line="310"><span class="sd">    ``total_estimated_cost_usd``. Rate tables move (falaw 0.0.46 re-quoted</span>
+</span><span data-line="311"><span class="sd">    premium LLM calls tenfold upward), so a reader that presents one of these</span>
+</span><span data-line="312"><span class="sd">    figures as a *current* price under-quotes the run — the one direction a</span>
+</span><span data-line="313"><span class="sd">    spend decision must never err in. Each call row therefore carries its</span>
+</span><span data-line="314"><span class="sd">    :class:`falaw.CostBasis` (:func:`nw.pricing.cost_records`), which is what</span>
+</span><span data-line="315"><span class="sd">    lets :func:`nw.pricing.quote_render_decision` re-quote the whole payload</span>
+</span><span data-line="316"><span class="sd">    at today's rates and say ``unknown`` where it cannot (nw#74).</span>
+</span><span data-line="317"><span class="sd">    """</span>
+</span><span data-line="318">    <span class="c1"># Find the shot's annotation id in the graph.</span>
+</span><span data-line="319">    <span class="n">shot_anns</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">shots</span><span class="p">()</span>
+</span><span data-line="320">    <span class="n">matching</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">shot_anns</span> <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">shot_id</span> <span class="o">==</span> <span class="n">prep</span><span class="o">.</span><span class="n">shot_id</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+</span><span data-line="321">    <span class="k">if</span> <span class="n">matching</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="322">        <span class="k">return</span>  <span class="c1"># shouldn't happen for a real Project; bail quietly</span>
+</span><span data-line="323">
+</span><span data-line="324">    <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>
+</span><span data-line="325">        <span class="s2">"shot_id"</span><span class="p">:</span> <span class="n">prep</span><span class="o">.</span><span class="n">shot_id</span><span class="p">,</span>
+</span><span data-line="326">        <span class="s2">"strategy"</span><span class="p">:</span> <span class="n">prep</span><span class="o">.</span><span class="n">shot</span><span class="o">.</span><span class="n">render_strategy</span><span class="p">,</span>
+</span><span data-line="327">        <span class="s2">"duration_s"</span><span class="p">:</span> <span class="n">prep</span><span class="o">.</span><span class="n">duration_s</span><span class="p">,</span>
+</span><span data-line="328">        <span class="s2">"output_path"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">root</span><span class="p">))</span>
+</span><span data-line="329">        <span class="k">if</span> <span class="n">output</span><span class="o">.</span><span class="n">is_relative_to</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
+</span><span data-line="330">        <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">output</span><span class="p">),</span>
+</span><span data-line="331">        <span class="s2">"calls"</span><span class="p">:</span> <span class="n">cost_records</span><span class="p">(</span><span class="n">plan</span><span class="p">),</span>
+</span><span data-line="332">        <span class="s2">"artifacts"</span><span class="p">:</span> <span class="p">[</span>
+</span><span data-line="333">            <span class="p">{</span>
+</span><span data-line="334">                <span class="s2">"asset_id"</span><span class="p">:</span> <span class="n">a</span><span class="o">.</span><span class="n">asset_id</span><span class="p">,</span>
+</span><span data-line="335">                <span class="s2">"kind"</span><span class="p">:</span> <span class="n">a</span><span class="o">.</span><span class="n">kind</span><span class="p">,</span>
+</span><span data-line="336">                <span class="s2">"url"</span><span class="p">:</span> <span class="n">a</span><span class="o">.</span><span class="n">url</span><span class="p">,</span>
+</span><span data-line="337">                <span class="s2">"duration_s"</span><span class="p">:</span> <span class="n">a</span><span class="o">.</span><span class="n">duration_s</span><span class="p">,</span>
+</span><span data-line="338">                <span class="s2">"cost_usd"</span><span class="p">:</span> <span class="n">a</span><span class="o">.</span><span class="n">cost_usd</span><span class="p">,</span>
+</span><span data-line="339">            <span class="p">}</span>
+</span><span data-line="340">            <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">artifacts</span>
+</span><span data-line="341">        <span class="p">],</span>
+</span><span data-line="342">        <span class="c1"># As-quoted-at-plan-time, like every figure above it. Re-quote the</span>
+</span><span data-line="343">        <span class="c1"># payload with `nw.pricing.quote_render_decision` before reporting</span>
+</span><span data-line="344">        <span class="c1"># this as a current price.</span>
+</span><span data-line="345">        <span class="s2">"total_estimated_cost_usd"</span><span class="p">:</span> <span class="n">plan</span><span class="o">.</span><span class="n">total_cost_usd</span><span class="p">,</span>
+</span><span data-line="346">    <span class="p">}</span>
+</span><span data-line="347">    <span class="kn">from</span><span class="w"> </span><span class="nn">.bodies</span><span class="w"> </span><span class="kn">import</span> <span class="n">DecisionBodyV1</span>
+</span><span data-line="348">
+</span><span data-line="349">    <span class="n">project</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">append_decision</span><span class="p">(</span>
+</span><span data-line="350">        <span class="n">DecisionBodyV1</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s2">"render_shot"</span><span class="p">,</span> <span class="n">payload</span><span class="o">=</span><span class="n">payload</span><span class="p">),</span>
+</span><span data-line="351">        <span class="n">was_derived_from</span><span class="o">=</span><span class="p">(</span><span class="n">matching</span><span class="o">.</span><span class="n">annotation_id</span><span class="p">,),</span>
+</span><span data-line="352">    <span class="p">)</span>
+</span><span data-line="353">
+</span><span data-line="354">
+</span><span data-line="355"><span class="k">def</span><span class="w"> </span><span class="nf">_refuse_plan_only_plan</span><span class="p">(</span><span class="n">plan</span><span class="p">:</span> <span class="n">Plan</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="356"><span class="w">    </span><span class="sd">"""Raise if any CallPlan has a ``&lt;plan-only:…&gt;`` arg. The strategies use</span>
+</span><span data-line="357"><span class="sd">    such placeholders when ``prepare_shot(upload=False)`` was called — they're</span>
+</span><span data-line="358"><span class="sd">    fine for inspection, fatal for execution."""</span>
+</span><span data-line="359">    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">call</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">plan</span><span class="o">.</span><span class="n">calls</span><span class="p">):</span>
+</span><span data-line="360">        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">_walk_strings</span><span class="p">(</span><span class="n">call</span><span class="o">.</span><span class="n">arguments</span><span class="p">):</span>
+</span><span data-line="361">            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">v</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"&lt;plan-only:"</span><span class="p">):</span>
+</span><span data-line="362">                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+</span><span data-line="363">                    <span class="sa">f</span><span class="s2">"execute_render: call </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">call</span><span class="o">.</span><span class="n">tool</span><span class="si">}</span><span class="s2">) has a plan-only "</span>
+</span><span data-line="364">                    <span class="sa">f</span><span class="s2">"placeholder at </span><span class="si">{</span><span class="n">k</span><span class="si">!r}</span><span class="s2">=</span><span class="si">{</span><span class="n">v</span><span class="si">!r}</span><span class="s2">. The Plan was built from a "</span>
+</span><span data-line="365">                    <span class="s2">"ShotPreparation without uploads. Re-run prepare_shot with "</span>
+</span><span data-line="366">                    <span class="s2">"upload=True (the default) before calling execute_render."</span>
+</span><span data-line="367">                <span class="p">)</span>
+</span><span data-line="368">
+</span><span data-line="369">
+</span><span data-line="370"><span class="k">def</span><span class="w"> </span><span class="nf">_walk_strings</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">""</span><span class="p">):</span>
+</span><span data-line="371">    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+</span><span data-line="372">        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+</span><span data-line="373">            <span class="k">yield from</span> <span class="n">_walk_strings</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">"</span> <span class="k">if</span> <span class="n">prefix</span> <span class="k">else</span> <span class="n">k</span><span class="p">)</span>
+</span><span data-line="374">    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+</span><span data-line="375">        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+</span><span data-line="376">            <span class="k">yield from</span> <span class="n">_walk_strings</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">]"</span><span class="p">)</span>
+</span><span data-line="377">    <span class="k">else</span><span class="p">:</span>
+</span><span data-line="378">        <span class="k">yield</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">obj</span>
+</span><span data-line="379">
+</span><span data-line="380">
+</span><span data-line="381"><span class="c1"># ---------------------------------------------------------------------------</span>
+</span><span data-line="382"><span class="c1"># Local helpers (no falaw / network access)</span>
+</span><span data-line="383"><span class="c1"># ---------------------------------------------------------------------------</span>
+</span><span data-line="384">
+</span><span data-line="385">
+</span><span data-line="386"><span class="k">def</span><span class="w"> </span><span class="nf">_ensure_audio_slice</span><span class="p">(</span><span class="n">project</span><span class="p">:</span> <span class="n">Project</span><span class="p">,</span> <span class="n">shot</span><span class="p">:</span> <span class="n">ShotSpec</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+</span><span data-line="387"><span class="w">    </span><span class="sd">"""Extract the song over [start_s, end_s] into ``shot_dir/audio.wav``.</span>
+</span><span data-line="388">
+</span><span data-line="389"><span class="sd">    Uses ``mixing.audio.Audio`` if available; falls back to ffmpeg directly if</span>
+</span><span data-line="390"><span class="sd">    mixing isn't installed.</span>
+</span><span data-line="391"><span class="sd">    """</span>
+</span><span data-line="392">    <span class="n">out</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">shot_dir</span><span class="p">(</span><span class="n">shot</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="o">/</span> <span class="s2">"audio.wav"</span>
+</span><span data-line="393">    <span class="k">if</span> <span class="n">out</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+</span><span data-line="394">        <span class="k">return</span> <span class="n">out</span>
+</span><span data-line="395">
+</span><span data-line="396">    <span class="n">song</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">song_path</span><span class="p">()</span>
+</span><span data-line="397">    <span class="k">if</span> <span class="n">song</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="398">        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+</span><span data-line="399">            <span class="sa">f</span><span class="s2">"Cannot extract audio for shot </span><span class="si">{</span><span class="n">shot</span><span class="o">.</span><span class="n">id</span><span class="si">!r}</span><span class="s2">: project has no song registered."</span>
+</span><span data-line="400">        <span class="p">)</span>
+</span><span data-line="401">
+</span><span data-line="402">    <span class="k">try</span><span class="p">:</span>
+</span><span data-line="403">        <span class="kn">from</span><span class="w"> </span><span class="nn">mixing.audio</span><span class="w"> </span><span class="kn">import</span> <span class="n">Audio</span>  <span class="c1"># type: ignore[import-not-found]</span>
+</span><span data-line="404">
+</span><span data-line="405">        <span class="n">seg</span> <span class="o">=</span> <span class="n">Audio</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">song</span><span class="p">))[</span><span class="n">shot</span><span class="o">.</span><span class="n">start_s</span> <span class="p">:</span> <span class="n">shot</span><span class="o">.</span><span class="n">end_s</span><span class="p">]</span>
+</span><span data-line="406">        <span class="n">seg</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">out</span><span class="p">))</span>
+</span><span data-line="407">        <span class="k">return</span> <span class="n">out</span>
+</span><span data-line="408">    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+</span><span data-line="409">        <span class="k">pass</span>
+</span><span data-line="410">
+</span><span data-line="411">    <span class="c1"># Fallback: ffmpeg.</span>
+</span><span data-line="412">    <span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
+</span><span data-line="413">
+</span><span data-line="414">    <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+</span><span data-line="415">        <span class="p">[</span>
+</span><span data-line="416">            <span class="s2">"ffmpeg"</span><span class="p">,</span>
+</span><span data-line="417">            <span class="s2">"-y"</span><span class="p">,</span>
+</span><span data-line="418">            <span class="s2">"-i"</span><span class="p">,</span>
+</span><span data-line="419">            <span class="nb">str</span><span class="p">(</span><span class="n">song</span><span class="p">),</span>
+</span><span data-line="420">            <span class="s2">"-ss"</span><span class="p">,</span>
+</span><span data-line="421">            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">shot</span><span class="o">.</span><span class="n">start_s</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+</span><span data-line="422">            <span class="s2">"-to"</span><span class="p">,</span>
+</span><span data-line="423">            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">shot</span><span class="o">.</span><span class="n">end_s</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+</span><span data-line="424">            <span class="s2">"-c:a"</span><span class="p">,</span>
+</span><span data-line="425">            <span class="s2">"pcm_s16le"</span><span class="p">,</span>
+</span><span data-line="426">            <span class="nb">str</span><span class="p">(</span><span class="n">out</span><span class="p">),</span>
+</span><span data-line="427">        <span class="p">],</span>
+</span><span data-line="428">        <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span data-line="429">        <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span data-line="430">    <span class="p">)</span>
+</span><span data-line="431">    <span class="k">return</span> <span class="n">out</span>
+</span><span data-line="432">
+</span><span data-line="433">
+</span><span data-line="434"><span class="k">def</span><span class="w"> </span><span class="nf">_resolve_character_anchors</span><span class="p">(</span><span class="n">project</span><span class="p">:</span> <span class="n">Project</span><span class="p">,</span> <span class="n">shot</span><span class="p">:</span> <span class="n">ShotSpec</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]:</span>
+</span><span data-line="435"><span class="w">    </span><span class="sd">"""Pick the anchor image for each character referenced by the shot.</span>
+</span><span data-line="436">
+</span><span data-line="437"><span class="sd">    Honors :meth:`Project.set_character_anchor` (reads ``card.json``'s</span>
+</span><span data-line="438"><span class="sd">    ``reference_image_path``). Falls back to the first image in</span>
+</span><span data-line="439"><span class="sd">    ``selected/``, then ``refs/``, if no anchor is set. Missing characters</span>
+</span><span data-line="440"><span class="sd">    are skipped silently — strategies that need them will raise their own</span>
+</span><span data-line="441"><span class="sd">    descriptive error.</span>
+</span><span data-line="442"><span class="sd">    """</span>
+</span><span data-line="443">    <span class="n">out</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span data-line="444">    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">shot</span><span class="o">.</span><span class="n">characters</span><span class="p">:</span>
+</span><span data-line="445">        <span class="n">char_dir</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">character_dir</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+</span><span data-line="446">        <span class="k">if</span> <span class="ow">not</span> <span class="n">char_dir</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+</span><span data-line="447">            <span class="k">continue</span>
+</span><span data-line="448">
+</span><span data-line="449">        <span class="c1"># 1. Explicit anchor from card.json</span>
+</span><span data-line="450">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="451">            <span class="n">card</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">read_character_card</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+</span><span data-line="452">            <span class="n">ref</span> <span class="o">=</span> <span class="n">card</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"reference_image_path"</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">""</span>
+</span><span data-line="453">            <span class="k">if</span> <span class="n">ref</span><span class="p">:</span>
+</span><span data-line="454">                <span class="n">p</span> <span class="o">=</span> <span class="p">(</span>
+</span><span data-line="455">                    <span class="n">Path</span><span class="p">(</span><span class="n">ref</span><span class="p">)</span> <span class="k">if</span> <span class="n">Path</span><span class="p">(</span><span class="n">ref</span><span class="p">)</span><span class="o">.</span><span class="n">is_absolute</span><span class="p">()</span> <span class="k">else</span> <span class="n">project</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="n">ref</span>
+</span><span data-line="456">                <span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+</span><span data-line="457">                <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+</span><span data-line="458">                    <span class="n">out</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span>
+</span><span data-line="459">                    <span class="k">continue</span>
+</span><span data-line="460">        <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+</span><span data-line="461">            <span class="k">pass</span>
+</span><span data-line="462">
+</span><span data-line="463">        <span class="c1"># 2. First image in selected/, then refs/</span>
+</span><span data-line="464">        <span class="k">for</span> <span class="n">sub</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"selected"</span><span class="p">,</span> <span class="s2">"refs"</span><span class="p">):</span>
+</span><span data-line="465">            <span class="n">sub_dir</span> <span class="o">=</span> <span class="n">char_dir</span> <span class="o">/</span> <span class="n">sub</span>
+</span><span data-line="466">            <span class="k">if</span> <span class="ow">not</span> <span class="n">sub_dir</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+</span><span data-line="467">                <span class="k">continue</span>
+</span><span data-line="468">            <span class="k">for</span> <span class="n">image_path</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">sub_dir</span><span class="o">.</span><span class="n">iterdir</span><span class="p">()):</span>
+</span><span data-line="469">                <span class="k">if</span> <span class="n">image_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span> <span class="ow">and</span> <span class="n">image_path</span><span class="o">.</span><span class="n">suffix</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">{</span>
+</span><span data-line="470">                    <span class="s2">".png"</span><span class="p">,</span>
+</span><span data-line="471">                    <span class="s2">".jpg"</span><span class="p">,</span>
+</span><span data-line="472">                    <span class="s2">".jpeg"</span><span class="p">,</span>
+</span><span data-line="473">                    <span class="s2">".webp"</span><span class="p">,</span>
+</span><span data-line="474">                <span class="p">}:</span>
+</span><span data-line="475">                    <span class="n">out</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">image_path</span>
+</span><span data-line="476">                    <span class="k">break</span>
+</span><span data-line="477">            <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">out</span><span class="p">:</span>
+</span><span data-line="478">                <span class="k">break</span>
+</span><span data-line="479">    <span class="k">return</span> <span class="n">out</span>
+</span><span data-line="480">
+</span><span data-line="481">
+</span><span data-line="482"><span class="k">def</span><span class="w"> </span><span class="nf">_resolve_environment_anchor</span><span class="p">(</span><span class="n">project</span><span class="p">:</span> <span class="n">Project</span><span class="p">,</span> <span class="n">shot</span><span class="p">:</span> <span class="n">ShotSpec</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]:</span>
+</span><span data-line="483"><span class="w">    </span><span class="sd">"""Return ``environments/&lt;name&gt;/establishing.png`` if present, else None."""</span>
+</span><span data-line="484">    <span class="k">if</span> <span class="ow">not</span> <span class="n">shot</span><span class="o">.</span><span class="n">environment</span><span class="p">:</span>
+</span><span data-line="485">        <span class="k">return</span> <span class="kc">None</span>
+</span><span data-line="486">    <span class="n">env_dir</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">environment_dir</span><span class="p">(</span><span class="n">shot</span><span class="o">.</span><span class="n">environment</span><span class="p">)</span>
+</span><span data-line="487">    <span class="n">candidate</span> <span class="o">=</span> <span class="n">env_dir</span> <span class="o">/</span> <span class="s2">"establishing.png"</span>
+</span><span data-line="488">    <span class="k">if</span> <span class="n">candidate</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+</span><span data-line="489">        <span class="k">return</span> <span class="n">candidate</span>
+</span><span data-line="490">    <span class="c1"># Look for any image in the environment dir.</span>
+</span><span data-line="491">    <span class="k">if</span> <span class="n">env_dir</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+</span><span data-line="492">        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">env_dir</span><span class="o">.</span><span class="n">iterdir</span><span class="p">()):</span>
+</span><span data-line="493">            <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span> <span class="ow">and</span> <span class="n">p</span><span class="o">.</span><span class="n">suffix</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">".png"</span><span class="p">,</span> <span class="s2">".jpg"</span><span class="p">,</span> <span class="s2">".jpeg"</span><span class="p">,</span> <span class="s2">".webp"</span><span class="p">}:</span>
+</span><span data-line="494">                <span class="k">return</span> <span class="n">p</span>
+</span><span data-line="495">    <span class="k">return</span> <span class="kc">None</span>
+</span><span data-line="496">
+</span><span data-line="497">
+</span><span data-line="498"><span class="k">def</span><span class="w"> </span><span class="nf">_lyric_lines_for_shot</span><span class="p">(</span><span class="n">project</span><span class="p">:</span> <span class="n">Project</span><span class="p">,</span> <span class="n">shot</span><span class="p">:</span> <span class="n">ShotSpec</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
+</span><span data-line="499"><span class="w">    </span><span class="sd">"""Read the lacing alignment store and return lyric lines that fall in the shot."""</span>
+</span><span data-line="500">    <span class="n">align_path</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">root</span> <span class="o">/</span> <span class="s2">"lyrics"</span> <span class="o">/</span> <span class="s2">"alignment.annot"</span>
+</span><span data-line="501">    <span class="k">try</span><span class="p">:</span>
+</span><span data-line="502">        <span class="kn">from</span><span class="w"> </span><span class="nn">lacing.tracks.subtitle</span><span class="w"> </span><span class="kn">import</span> <span class="n">SubtitleTrack</span>
+</span><span data-line="503">
+</span><span data-line="504">        <span class="kn">from</span><span class="w"> </span><span class="nn">.graph_backend</span><span class="w"> </span><span class="kn">import</span> <span class="n">SCOPE_ALIGNMENT</span><span class="p">,</span> <span class="n">open_graph_store</span><span class="p">,</span> <span class="n">selected_backend</span>
+</span><span data-line="505">        <span class="kn">from</span><span class="w"> </span><span class="nn">.migrate</span><span class="w"> </span><span class="kn">import</span> <span class="n">project_asset_id</span>
+</span><span data-line="506">    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+</span><span data-line="507">        <span class="k">return</span> <span class="p">[]</span>
+</span><span data-line="508">    <span class="c1"># In SQLite mode an absent file means "no alignment". In Postgres mode the</span>
+</span><span data-line="509">    <span class="c1"># file never exists; presence is a DB question, so always open and let the</span>
+</span><span data-line="510">    <span class="c1"># empty-store path return no lines.</span>
+</span><span data-line="511">    <span class="k">if</span> <span class="n">selected_backend</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"sqlite"</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">align_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+</span><span data-line="512">        <span class="k">return</span> <span class="p">[]</span>
+</span><span data-line="513">    <span class="n">store</span> <span class="o">=</span> <span class="n">open_graph_store</span><span class="p">(</span>
+</span><span data-line="514">        <span class="n">align_path</span><span class="p">,</span> <span class="n">asset_id</span><span class="o">=</span><span class="n">project_asset_id</span><span class="p">(</span><span class="n">project</span><span class="o">.</span><span class="n">root</span><span class="p">),</span> <span class="n">scope</span><span class="o">=</span><span class="n">SCOPE_ALIGNMENT</span>
+</span><span data-line="515">    <span class="p">)</span>
+</span><span data-line="516">    <span class="k">try</span><span class="p">:</span>
+</span><span data-line="517">        <span class="n">track</span> <span class="o">=</span> <span class="n">SubtitleTrack</span><span class="p">(</span><span class="n">store</span><span class="p">,</span> <span class="n">asset_id</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="518">        <span class="k">return</span> <span class="p">[</span>
+</span><span data-line="519">            <span class="p">{</span>
+</span><span data-line="520">                <span class="s2">"text"</span><span class="p">:</span> <span class="n">ann</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"text"</span><span class="p">,</span> <span class="s2">""</span><span class="p">),</span>
+</span><span data-line="521">                <span class="s2">"start_s"</span><span class="p">:</span> <span class="n">ann</span><span class="o">.</span><span class="n">reference</span><span class="o">.</span><span class="n">interval</span><span class="o">.</span><span class="n">start</span><span class="o">.</span><span class="n">to_seconds</span><span class="p">(),</span>
+</span><span data-line="522">                <span class="s2">"end_s"</span><span class="p">:</span> <span class="n">ann</span><span class="o">.</span><span class="n">reference</span><span class="o">.</span><span class="n">interval</span><span class="o">.</span><span class="n">end</span><span class="o">.</span><span class="n">to_seconds</span><span class="p">(),</span>
+</span><span data-line="523">                <span class="s2">"line_index"</span><span class="p">:</span> <span class="n">ann</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"line_index"</span><span class="p">),</span>
+</span><span data-line="524">                <span class="s2">"section"</span><span class="p">:</span> <span class="n">ann</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"section"</span><span class="p">),</span>
+</span><span data-line="525">            <span class="p">}</span>
+</span><span data-line="526">            <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">track</span><span class="o">.</span><span class="n">lines_in</span><span class="p">(</span><span class="n">shot</span><span class="o">.</span><span class="n">start_s</span><span class="p">,</span> <span class="n">shot</span><span class="o">.</span><span class="n">end_s</span><span class="p">)</span>
+</span><span data-line="527">        <span class="p">]</span>
+</span><span data-line="528">    <span class="k">finally</span><span class="p">:</span>
+</span><span data-line="529">        <span class="n">store</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span data-line="530">
+</span><span data-line="531">
+</span><span data-line="532"><span class="k">def</span><span class="w"> </span><span class="nf">_build_storyboard_prompt</span><span class="p">(</span>
+</span><span data-line="533">    <span class="o">*</span><span class="p">,</span>
+</span><span data-line="534">    <span class="n">spec</span><span class="p">,</span>
+</span><span data-line="535">    <span class="n">shot</span><span class="p">:</span> <span class="n">ShotSpec</span><span class="p">,</span>
+</span><span data-line="536">    <span class="n">char_descriptions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+</span><span data-line="537">    <span class="n">env_description</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="538">    <span class="n">lyric_lines</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">],</span>
+</span><span data-line="539"><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="540">    <span class="n">parts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span data-line="541">    <span class="k">if</span> <span class="n">shot</span><span class="o">.</span><span class="n">description</span><span class="p">:</span>
+</span><span data-line="542">        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">shot</span><span class="o">.</span><span class="n">description</span><span class="p">)</span>
+</span><span data-line="543">    <span class="k">if</span> <span class="n">shot</span><span class="o">.</span><span class="n">framing</span><span class="p">:</span>
+</span><span data-line="544">        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"framing: </span><span class="si">{</span><span class="n">shot</span><span class="o">.</span><span class="n">framing</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</span><span data-line="545">    <span class="k">if</span> <span class="n">shot</span><span class="o">.</span><span class="n">camera</span><span class="p">:</span>
+</span><span data-line="546">        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"camera: </span><span class="si">{</span><span class="n">shot</span><span class="o">.</span><span class="n">camera</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</span><span data-line="547">    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">desc</span> <span class="ow">in</span> <span class="n">char_descriptions</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+</span><span data-line="548">        <span class="k">if</span> <span class="n">desc</span><span class="p">:</span>
+</span><span data-line="549">            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">desc</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</span><span data-line="550">    <span class="k">if</span> <span class="n">env_description</span><span class="p">:</span>
+</span><span data-line="551">        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"location: </span><span class="si">{</span><span class="n">env_description</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</span><span data-line="552">    <span class="k">if</span> <span class="n">spec</span><span class="o">.</span><span class="n">global_style</span><span class="p">:</span>
+</span><span data-line="553">        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"style: </span><span class="si">{</span><span class="n">spec</span><span class="o">.</span><span class="n">global_style</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</span><span data-line="554">    <span class="k">if</span> <span class="n">lyric_lines</span><span class="p">:</span>
+</span><span data-line="555">        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+</span><span data-line="556">            <span class="s2">"lyrics: "</span> <span class="o">+</span> <span class="s2">" / "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">L</span><span class="p">[</span><span class="s2">"text"</span><span class="p">]</span> <span class="k">for</span> <span class="n">L</span> <span class="ow">in</span> <span class="n">lyric_lines</span> <span class="k">if</span> <span class="n">L</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"text"</span><span class="p">))</span>
+</span><span data-line="557">        <span class="p">)</span>
+</span><span data-line="558">    <span class="k">return</span> <span class="s2">" | "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span>
+</span></pre></div>
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright">
+  <p>
+    Made with
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+  <a href="https://github.com/thorwhalen/nw" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div>
+    </div>
   </div>
-
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
-
 </footer>
-        </div>
-      </div>
-    </section>
-  </div>
-  <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script> 
+      <script src="../../_static/documentation_options.js?v=1c03bfdc"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=fd10adb8"></script>
+      <script src="../../_static/shibuya.js?v=50760d75"></script>
+      <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.12.1/dist/mermaid.esm.min.mjs";
 
-</body>
+
+
+
+
+const initStyles = () => {
+    const defaultStyle = document.createElement('style');
+    defaultStyle.textContent = "pre.mermaid {\n    /* Same as .mermaid-container > pre */\n    display: block;\n    width: 100%;\n}\n\npre.mermaid > svg {\n    /* Same as .mermaid-container > pre > svg */\n    height: 500px;\n    width: 100%;\n    max-width: 100% !important;\n}";
+    document.head.appendChild(defaultStyle);
+
+    const fullscreenStyle = document.createElement('style');
+    fullscreenStyle.textContent = ".mermaid-container {\n    position: relative;\n    display: flex;\n    flex-direction: row;\n    width: 100%;\n}\n\n.mermaid-container > pre {\n    display: block;\n    width: 100%;\n}\n\n.mermaid-container > pre > svg {\n    height: 500px;\n    width: 100%;\n    max-width: 100% !important;\n}\n\n.mermaid-fullscreen-btn {\n    position: absolute;\n    width: 28px;\n    height: 28px;\n    background: rgba(255, 255, 255, 0.95);\n    border: 1px solid rgba(0, 0, 0, 0.3);\n    border-radius: 4px;\n    cursor: pointer;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    transition: all 0.2s;\n    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);\n    font-size: 14px;\n    line-height: 1;\n    padding: 0;\n    color: #333;\n}\n\n.mermaid-fullscreen-btn:hover {\n    opacity: 100% !important;\n    background: rgba(255, 255, 255, 1);\n    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);\n    transform: scale(1.1);\n}\n\n.mermaid-fullscreen-btn.dark-theme {\n    background: rgba(50, 50, 50, 0.95);\n    border: 1px solid rgba(255, 255, 255, 0.3);\n    color: #e0e0e0;\n}\n\n.mermaid-fullscreen-btn.dark-theme:hover {\n    background: rgba(60, 60, 60, 1);\n    box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);\n}\n\n.mermaid-fullscreen-modal {\n    display: none;\n    position: fixed !important;\n    top: 0 !important;\n    left: 0 !important;\n    width: 95vw;\n    height: 100vh;\n    background: rgba(255, 255, 255, 0.98);\n    z-index: 9999;\n    padding: 20px;\n    overflow: auto;\n}\n\n.mermaid-fullscreen-modal.dark-theme {\n    background: rgba(0, 0, 0, 0.98);\n}\n\n.mermaid-fullscreen-modal.active {\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n\n.mermaid-container-fullscreen {\n    position: relative;\n    width: 95vw;\n    height: 90vh;\n    max-width: 95vw;\n    max-height: 90vh;\n    background: white;\n    border-radius: 8px;\n    padding: 20px;\n    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);\n    overflow: auto;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n\n.mermaid-container-fullscreen.dark-theme {\n    background: #1a1a1a;\n    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);\n}\n\n.mermaid-container-fullscreen pre.mermaid {\n    width: 100%;\n    height: 100%;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n}\n\n.mermaid-container-fullscreen .mermaid svg {\n    height: 100% !important;\n    width: 100% !important;\n    cursor: grab;\n}\n\n.mermaid-fullscreen-close {\n    position: fixed !important;\n    top: 20px !important;\n    right: 20px !important;\n    width: 40px;\n    height: 40px;\n    background: rgba(255, 255, 255, 0.95);\n    border: 1px solid rgba(0, 0, 0, 0.2);\n    border-radius: 50%;\n    cursor: pointer;\n    z-index: 10000;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);\n    transition: all 0.2s;\n    font-size: 24px;\n    line-height: 1;\n    color: #333;\n}\n\n.mermaid-fullscreen-close:hover {\n    background: white;\n    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);\n    transform: scale(1.1);\n}\n\n.mermaid-fullscreen-close.dark-theme {\n    background: rgba(50, 50, 50, 0.95);\n    border: 1px solid rgba(255, 255, 255, 0.2);\n    color: #e0e0e0;\n}\n\n.mermaid-fullscreen-close.dark-theme:hover {\n    background: rgba(60, 60, 60, 1);\n    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);\n}\n\n.mermaid-fullscreen-modal .mermaid-fullscreen-btn {\n    display: none !important;\n}";
+    document.head.appendChild(fullscreenStyle);
+}
+
+// Detect if page has dark background
+const isDarkTheme = () => {
+    // We use a set of heuristics:
+    // 1. Check for common dark mode classes or attributes
+    // 2. Check computed background color brightness
+    if (document.documentElement.classList.contains('dark') ||
+        document.documentElement.getAttribute('data-theme') === 'dark' ||
+        document.body.classList.contains('dark') ||
+        document.body.getAttribute('data-theme') === 'dark') {
+        // console.log("Dark theme detected via class/attribute");
+        return true;
+    }
+    if (document.documentElement.classList.contains('light') ||
+        document.documentElement.getAttribute('data-theme') === 'light' ||
+        document.body.classList.contains('light') ||
+        document.body.getAttribute('data-theme') === 'light') {
+        // console.log("Light theme detected via class/attribute");
+        return false;
+    }
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        // console.log("Dark theme detected via prefers-color-scheme");
+        return true;
+    }
+    const bgColor = window.getComputedStyle(document.body).backgroundColor;
+    const match = bgColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)/);
+    if (match) {
+        const r = parseInt(match[1]);
+        const g = parseInt(match[2]);
+        const b = parseInt(match[3]);
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        // console.log("Background color brightness:", brightness);
+        return brightness < 128;
+    }
+    // console.log("No dark or light theme detected, defaulting to light theme");
+    return false;
+};
+
+let darkTheme = isDarkTheme();
+let modal = null;
+let modalContent = null;
+let previousScrollOffset = [window.scrollX, window.scrollY];
+let _lazyObserver = null;
+let _renderQueue = Promise.resolve();
+let closeModal = () => {};
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal?.classList.contains('active')) {
+        closeModal();
+    }
+});
+
+// Apply d3 zoom to each SVG. Idempotent: an SVG already wrapped is skipped,
+// so this is safe to call both for the initial batch and for diagrams that
+// render lazily once they become visible.
+const addZoomToSvgs = (svgs) => {
+    svgs.each(function() {
+        if (this.getAttribute('data-zoom-applied') === 'true') return;
+        var svg = d3.select(this);
+        svg.html("<g class='wrapper'>" + svg.html() + "</g>");
+        var inner = svg.select("g");
+        var zoom = d3.zoom().on("zoom", function(event) {
+            inner.attr("transform", event.transform);
+        });
+        svg.call(zoom);
+        this.setAttribute('data-zoom-applied', 'true');
+    });
+};
+
+const runMermaid = async (rerun) => {
+    console.log("Running mermaid diagrams, rerun =", rerun);
+    // clear all existing mermaid charts
+    let all_mermaids = document.querySelectorAll(".mermaid");
+
+    if (rerun) {
+        // Disconnect any previous lazy rendering observer
+        if (_lazyObserver) {
+            _lazyObserver.disconnect();
+            _lazyObserver = null;
+        }
+
+        all_mermaids.forEach((el) => {
+            el.removeAttribute('data-mermaid-deferred');
+            el.removeAttribute('data-mermaid-render-failed');
+            if(!el.hasAttribute("data-original-code")) {
+                // store original code
+                // console.log(`Storing original code for first run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+            if(el.getAttribute("data-processed") === "true") {
+                // remove and restore original
+                el.removeAttribute("data-processed");
+                // console.log(`Restoring original code for re-run: `, el.getAttribute('data-original-code'));
+                el.innerHTML = el.getAttribute('data-original-code');
+            } else {
+                // store original code
+                // console.log(`Storing original code for re-run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+        });
+
+        // Separate visible and hidden elements. Mermaid's layout engine measures
+        // text dimensions via the DOM, which fails for elements hidden by a parent
+        // (e.g., Reveal.js non-active slides, sphinx-design unopened tabs),
+        // producing broken SVGs. Render visible elements now, defer hidden ones.
+        const visible = [];
+        const hidden = [];
+        all_mermaids.forEach((el) => {
+            // offsetParent is null for display:none ancestors.
+            // getClientRects().length > 0 catches position:fixed elements
+            // (which also have null offsetParent but are still visible).
+            if (el.offsetParent !== null || el.getClientRects().length > 0) {
+                visible.push(el);
+            } else {
+                hidden.push(el);
+                el.setAttribute('data-mermaid-deferred', 'true');
+            }
+        });
+
+        if (visible.length > 0) {
+            try {
+                await mermaid.run({ nodes: visible });
+            } catch (e) {
+                console.error("Mermaid rendering failed:", e);
+            }
+        }
+
+        // Lazily render hidden elements when they become visible.
+        // Uses a promise chain (_renderQueue) to serialize rendering,
+        // since IntersectionObserver may report multiple entries at once
+        // and mermaid.run() is not safe to call concurrently.
+        if (hidden.length > 0) {
+            if (typeof IntersectionObserver === 'undefined') {
+                console.warn("IntersectionObserver not available; hidden mermaid diagrams will not render.");
+            } else {
+                _renderQueue = Promise.resolve();
+                _lazyObserver = new IntersectionObserver((entries) => {
+                    for (const entry of entries) {
+                        if (entry.isIntersecting && entry.target.getAttribute("data-processed") !== "true") {
+                            _lazyObserver.unobserve(entry.target);
+                            const el = entry.target;
+                            _renderQueue = _renderQueue.then(async () => {
+                                try {
+                                    await mermaid.run({ nodes: [el] });
+                                    el.removeAttribute('data-mermaid-deferred');
+                                    // Apply zoom to the now-rendered diagram, matching
+                                    // the decoration visible diagrams receive.
+                                    if (false) {
+                                        addZoomToSvgs(d3.selectAll("").select(function() {
+                                            return this.querySelector("svg");
+                                        }));
+                                    }
+                                } catch (e) {
+                                    console.error("Mermaid deferred rendering failed:", e);
+                                    el.removeAttribute('data-mermaid-deferred');
+                                    el.setAttribute('data-mermaid-render-failed', 'true');
+                                }
+                            });
+                        }
+                    }
+                });
+                hidden.forEach((el) => _lazyObserver.observe(el));
+            }
+        }
+    }
+
+    all_mermaids = document.querySelectorAll(".mermaid");
+    // Exclude deferred (hidden) and render-failed elements from completion checks
+    const mermaids_active = document.querySelectorAll(".mermaid:not([data-mermaid-deferred]):not([data-mermaid-render-failed])");
+    const mermaids_processed = document.querySelectorAll(".mermaid:not([data-mermaid-deferred]):not([data-mermaid-render-failed])[data-processed='true']");
+
+    if (false) {
+        const mermaids_to_add_zoom = 0 === -1 ? mermaids_active.length : 0;
+        if(mermaids_to_add_zoom > 0) {
+            var svgs = d3.selectAll("").select(function() {
+                return this.querySelector("svg");
+            });
+            // Wait until every active (visible) diagram has rendered. Deferred
+            // diagrams are excluded, so a fixed d3_node_count that counts a
+            // hidden diagram no longer loops forever waiting for its SVG.
+            if(mermaids_active.length !== mermaids_processed.length) {
+                setTimeout(() => runMermaid(false), 200);
+                return;
+            }
+            addZoomToSvgs(svgs);
+        }
+    } else if(mermaids_active.length !== mermaids_processed.length) {
+        // Wait for mermaid to process all diagrams
+        setTimeout(() => runMermaid(false), 200);
+        return;
+    }
+
+    // Stop here if not adding fullscreen capability
+    if (!true) return;
+
+    if (modal !== null ) {
+        // Destroy existing modal
+        modal.remove();
+        modal = null;
+        modalContent = null;
+    }
+
+    modal = document.createElement('div');
+    modal.className = 'mermaid-fullscreen-modal' + (darkTheme ? ' dark-theme' : '');
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-label', 'Fullscreen diagram viewer');
+    modal.innerHTML = `
+        <button class="mermaid-fullscreen-close${darkTheme ? ' dark-theme' : ''}" aria-label="Close fullscreen">✕</button>
+        <div class="mermaid-container-fullscreen${darkTheme ? ' dark-theme' : ''}"></div>
+    `;
+    document.body.appendChild(modal);
+
+    modalContent = modal.querySelector('.mermaid-container-fullscreen');
+    const closeBtn = modal.querySelector('.mermaid-fullscreen-close');
+
+    closeModal = () => {
+        modal.classList.remove('active');
+        modalContent.innerHTML = '';
+        document.body.style.overflow = ''
+        window.scrollTo({left: previousScrollOffset[0], top: previousScrollOffset[1], behavior: 'instant'});
+    };
+
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+    document.querySelectorAll('.mermaid').forEach((mermaidDiv) => {
+        if (mermaidDiv.parentNode.classList.contains('mermaid-container') ||
+            mermaidDiv.closest('.mermaid-fullscreen-modal')) {
+            // Already processed, adjust button class if needed
+            const existingBtn = mermaidDiv.parentNode.querySelector('.mermaid-fullscreen-btn');
+            if (existingBtn) {
+                existingBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+            }
+            return;
+        }
+
+        const container = document.createElement('div');
+        container.className = 'mermaid-container';
+        mermaidDiv.parentNode.insertBefore(container, mermaidDiv);
+        container.appendChild(mermaidDiv);
+
+        const fullscreenBtn = document.createElement('button');
+        fullscreenBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+        fullscreenBtn.setAttribute('aria-label', 'View diagram in fullscreen');
+        fullscreenBtn.textContent = "\u26f6";
+        fullscreenBtn.style.opacity = "50%";
+
+        // Calculate dynamic position based on diagram's margin and padding
+        const diagramStyle = window.getComputedStyle(mermaidDiv);
+        const marginTop = parseFloat(diagramStyle.marginTop) || 0;
+        const marginRight = parseFloat(diagramStyle.marginRight) || 0;
+        const paddingTop = parseFloat(diagramStyle.paddingTop) || 0;
+        const paddingRight = parseFloat(diagramStyle.paddingRight) || 0;
+        fullscreenBtn.style.top = `${marginTop + paddingTop + 4}px`;
+        fullscreenBtn.style.right = `${marginRight + paddingRight + 4}px`;
+
+        fullscreenBtn.addEventListener('click', () => {
+            previousScrollOffset = [window.scrollX, window.scrollY];
+            const clone = mermaidDiv.cloneNode(true);
+            modalContent.innerHTML = '';
+            modalContent.appendChild(clone);
+
+            const svg = clone.querySelector('svg');
+            if (svg) {
+                svg.removeAttribute('width');
+                svg.removeAttribute('height');
+                svg.style.width = '100%';
+                svg.style.height = 'auto';
+                svg.style.maxWidth = '100%';
+                svg.style.display = 'block';
+
+                if (false) {
+                    setTimeout(() => {
+                        const g = svg.querySelector('g');
+                        if (g) {
+                            var svgD3 = d3.select(svg);
+                            svgD3.html("<g class='wrapper'>" + svgD3.html() + "</g>");
+                            var inner = svgD3.select("g");
+                            var zoom = d3.zoom().on("zoom", function(event) {
+                                inner.attr("transform", event.transform);
+                            });
+                            svgD3.call(zoom);
+                        }
+                    }, 100);
+                }
+            }
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+        container.appendChild(fullscreenBtn);
+    });
+};
+
+
+
+const load = async () => {
+    initStyles();
+
+
+    await runMermaid(true);
+
+    const reRunIfThemeChanges = async () => {
+        const newDarkTheme = isDarkTheme();
+        if (newDarkTheme !== darkTheme) {
+            darkTheme = newDarkTheme;
+            console.log("Theme change detected, re-running mermaid with", darkTheme ? "dark" : "default", "theme");
+            await mermaid.initialize(
+                {...{"startOnLoad": false},
+                ...{ darkMode: darkTheme, theme: darkTheme ? "dark" : "default" },
+                }
+            );
+            await runMermaid(true);
+        }
+    };
+
+    // Update theme classes when theme changes
+    const themeObserver = new MutationObserver(reRunIfThemeChanges);
+    themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+    themeObserver.observe(document.body, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+};
+
+
+
+
+
+console.log("Initializing mermaid with", darkTheme ? "dark" : "default", "theme");
+mermaid.initialize(
+    {...{"startOnLoad": false},
+    ...{ darkMode: darkTheme, theme: darkTheme ? "dark" : "default" },
+    }
+);
+
+window.addEventListener("load", load);
+window.runMermaid = runMermaid;</script></body>
 </html>

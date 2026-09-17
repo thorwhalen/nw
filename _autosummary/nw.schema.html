@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="grass" data-content_root="../">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>nw.schema - nw</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="nw.script_segmentation" href="nw.script_segmentation.html" /><link rel="prev" title="nw.renderers.text_to_video" href="nw.renderers.text_to_video.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d88b86f9" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=2ceb65ce" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    
+  <meta property="og:type" content="website"/><meta property="og:title" content="nw.schema"/>
+    <meta name="twitter:card" content="summary"/>
+  
+<link rel="alternate" type="text/markdown" href="nw.schema.html.md">
+<link rel="describedby" href="../llms.txt" type="text/markdown">
+</head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="../index.html">
+      
+      
+      <strong>nw</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/thorwhalen/nw" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="0"><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="nw.html">nw</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="nw.freshness.html">nw.freshness</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.inspect.html">nw.inspect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.checks.html">nw.checks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.bodies.html">nw.bodies</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.character_ref.html">nw.bodies.character_ref</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.decision.html">nw.bodies.decision</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.environment_ref.html">nw.bodies.environment_ref</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.genre_envelope.html">nw.bodies.genre_envelope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.render_result.html">nw.bodies.render_result</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.section.html">nw.bodies.section</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.shot.html">nw.bodies.shot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.unproduced_output.html">nw.bodies.unproduced_output</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.verifying_trace.html">nw.bodies.verifying_trace</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="nw.delivery.html">nw.delivery</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.experiment.html">nw.experiment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.genres.html">nw.genres</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.graph.html">nw.graph</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.graph_backend.html">nw.graph_backend</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.jobs.html">nw.jobs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.migrate.html">nw.migrate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.pricing.html">nw.pricing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.project.html">nw.project</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.renderers.html">nw.renderers</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="nw.renderers.composite_lipsync.html">nw.renderers.composite_lipsync</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.renderers.image_to_video.html">nw.renderers.image_to_video</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.renderers.lipsync.html">nw.renderers.lipsync</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.renderers.still.html">nw.renderers.still</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.renderers.text_to_video.html">nw.renderers.text_to_video</a></li>
+</ul>
+</li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">nw.schema</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.script_segmentation.html">nw.script_segmentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.secrets.html">nw.secrets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.storyboard.html">nw.storyboard</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.transforms.html">nw.transforms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.validation.html">nw.validation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.workflow.html">nw.workflow</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../ai-agents.html">For AI agents</a></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#nw.schema.CharacterRef"><code class="docutils literal notranslate"><span class="pre">CharacterRef</span></code></a><ul>
+<li><a class="reference internal" href="#nw.schema.CharacterRef.model_config"><code class="docutils literal notranslate"><span class="pre">CharacterRef.model_config</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#nw.schema.DecisionEntry"><code class="docutils literal notranslate"><span class="pre">DecisionEntry</span></code></a><ul>
+<li><a class="reference internal" href="#nw.schema.DecisionEntry.model_config"><code class="docutils literal notranslate"><span class="pre">DecisionEntry.model_config</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#nw.schema.EnvironmentRef"><code class="docutils literal notranslate"><span class="pre">EnvironmentRef</span></code></a><ul>
+<li><a class="reference internal" href="#nw.schema.EnvironmentRef.model_config"><code class="docutils literal notranslate"><span class="pre">EnvironmentRef.model_config</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#nw.schema.ProjectSpec"><code class="docutils literal notranslate"><span class="pre">ProjectSpec</span></code></a><ul>
+<li><a class="reference internal" href="#nw.schema.ProjectSpec.model_config"><code class="docutils literal notranslate"><span class="pre">ProjectSpec.model_config</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#nw.schema.ProjectSummary"><code class="docutils literal notranslate"><span class="pre">ProjectSummary</span></code></a><ul>
+<li><a class="reference internal" href="#nw.schema.ProjectSummary.model_config"><code class="docutils literal notranslate"><span class="pre">ProjectSummary.model_config</span></code></a></li>
+<li><a class="reference internal" href="#nw.schema.ProjectSummary.stages_done"><code class="docutils literal notranslate"><span class="pre">ProjectSummary.stages_done</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#nw.schema.ResumptionBrief"><code class="docutils literal notranslate"><span class="pre">ResumptionBrief</span></code></a><ul>
+<li><a class="reference internal" href="#nw.schema.ResumptionBrief.model_config"><code class="docutils literal notranslate"><span class="pre">ResumptionBrief.model_config</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#nw.schema.SectionSpec"><code class="docutils literal notranslate"><span class="pre">SectionSpec</span></code></a><ul>
+<li><a class="reference internal" href="#nw.schema.SectionSpec.model_config"><code class="docutils literal notranslate"><span class="pre">SectionSpec.model_config</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#nw.schema.ShotSpec"><code class="docutils literal notranslate"><span class="pre">ShotSpec</span></code></a><ul>
+<li><a class="reference internal" href="#nw.schema.ShotSpec.model_config"><code class="docutils literal notranslate"><span class="pre">ShotSpec.model_config</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#nw.schema.SongInfo"><code class="docutils literal notranslate"><span class="pre">SongInfo</span></code></a><ul>
+<li><a class="reference internal" href="#nw.schema.SongInfo.model_config"><code class="docutils literal notranslate"><span class="pre">SongInfo.model_config</span></code></a></li>
+</ul>
+</li>
+</ul>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../index.html"><span itemprop="name">nw</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../api.html"><span itemprop="name">API reference</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="2" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="nw.html"><span itemprop="name">nw</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="3" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">nw.schema</strong>
+        <meta itemprop="position" content="4" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+  <article class="yue dark-code" role="main">
+          <section id="module-nw.schema">
+<span id="nw-schema"></span><h1>nw.schema<a class="headerlink" href="#module-nw.schema" title="Link to this heading">#</a></h1>
+<p>Schema for an nw project — narrative-workflow SSOT data shapes.</p>
+<p>A project is a folder with a <code class="docutils literal notranslate"><span class="pre">project.json</span></code> at its root. The shape is
+deliberately compatible with the layout muvid established for music-video
+projects, so the_bells_v* fixtures load directly into nw without
+migration. nw generalizes muvid’s IR by:</p>
+<ul class="simple">
+<li><p>making <code class="xref py py-class docutils literal notranslate"><span class="pre">RenderStrategy</span></code> open (a string), so apps can register
+their own strategies (composite_lipsync, slideshow, panel, …) without
+touching nw,</p></li>
+<li><p>adding <a class="reference internal" href="#nw.schema.ProjectSummary" title="nw.schema.ProjectSummary"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProjectSummary</span></code></a> as a typed read view returned by
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">Project.read_summary()</span></code>,</p></li>
+<li><p>promoting setters that muvid expressed via <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-c</span></code> glue
+(<code class="docutils literal notranslate"><span class="pre">set_title</span></code>, <code class="docutils literal notranslate"><span class="pre">set_global_style</span></code>, <code class="docutils literal notranslate"><span class="pre">set_character_anchor</span></code>).</p></li>
+</ul>
+<p>Pydantic is used (instead of frozen dataclasses) for two reasons:</p>
+<ol class="arabic simple">
+<li><p>lacing already uses Pydantic — sharing the conventions keeps the
+ecosystem coherent.</p></li>
+<li><p>nw will eventually round-trip schemas through HTTP/MCP; Pydantic gives
+JSON-Schema export and validation for free.</p></li>
+</ol>
+<p class="rubric">Classes</p>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.schema.CharacterRef" title="nw.schema.CharacterRef"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CharacterRef</span></code></a>(**data)</p></td>
+<td><p>Pointer to a character folder under <code class="docutils literal notranslate"><span class="pre">characters/&lt;name&gt;/</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.schema.DecisionEntry" title="nw.schema.DecisionEntry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DecisionEntry</span></code></a>(**data)</p></td>
+<td><p>One entry of a project's decision log, flattened for display.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.schema.EnvironmentRef" title="nw.schema.EnvironmentRef"><code class="xref py py-obj docutils literal notranslate"><span class="pre">EnvironmentRef</span></code></a>(**data)</p></td>
+<td><p>Pointer to an environment folder under <code class="docutils literal notranslate"><span class="pre">environments/&lt;name&gt;/</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.schema.ProjectSpec" title="nw.schema.ProjectSpec"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ProjectSpec</span></code></a>(**data)</p></td>
+<td><p>The top-level project SSOT, persisted as <code class="docutils literal notranslate"><span class="pre">project.json</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.schema.ProjectSummary" title="nw.schema.ProjectSummary"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ProjectSummary</span></code></a>(**data)</p></td>
+<td><p>Typed read view of a project — what <code class="docutils literal notranslate"><span class="pre">muvid</span> <span class="pre">status</span></code> printed, but typed.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.schema.ResumptionBrief" title="nw.schema.ResumptionBrief"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ResumptionBrief</span></code></a>(**data)</p></td>
+<td><p>A &quot;where we left off&quot; snapshot, returned by <a class="reference internal" href="nw.html#nw.Project.resumption_brief" title="nw.Project.resumption_brief"><code class="xref py py-meth docutils literal notranslate"><span class="pre">nw.Project.resumption_brief()</span></code></a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.schema.SectionSpec" title="nw.schema.SectionSpec"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SectionSpec</span></code></a>(**data)</p></td>
+<td><p>A non-overlapping span of the project's master timeline.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.schema.ShotSpec" title="nw.schema.ShotSpec"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ShotSpec</span></code></a>(**data)</p></td>
+<td><p>A timeline-locked visual unit.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.schema.SongInfo" title="nw.schema.SongInfo"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SongInfo</span></code></a>(**data)</p></td>
+<td><p>Metadata for the master audio file.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.schema.CharacterRef">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.schema.</span></span><span class="sig-name descname"><span class="pre">CharacterRef</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/schema.html#CharacterRef"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.schema.CharacterRef" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>Pointer to a character folder under <code class="docutils literal notranslate"><span class="pre">characters/&lt;name&gt;/</span></code>.</p>
+<p>The stable-attribute fields mirror
+<a class="reference internal" href="nw.bodies.html#nw.bodies.CharacterRefBodyV1" title="nw.bodies.CharacterRefBodyV1"><code class="xref py py-class docutils literal notranslate"><span class="pre">nw.bodies.CharacterRefBodyV1</span></code></a> field-for-field, and that is
+load-bearing rather than cosmetic: <a class="reference internal" href="nw.html#nw.Project.read_spec" title="nw.Project.read_spec"><code class="xref py py-meth docutils literal notranslate"><span class="pre">nw.Project.read_spec()</span></code></a> builds
+a <code class="docutils literal notranslate"><span class="pre">CharacterRef</span></code> from the graph body and
+<a class="reference internal" href="nw.html#nw.Project.write_spec" title="nw.Project.write_spec"><code class="xref py py-meth docutils literal notranslate"><span class="pre">nw.Project.write_spec()</span></code></a> writes the body back from the
+<code class="docutils literal notranslate"><span class="pre">CharacterRef</span></code>. Any field present on the body but missing here is
+<strong>silently erased</strong> by the next <code class="docutils literal notranslate"><span class="pre">update_spec</span></code> — which is what used to
+happen to <code class="docutils literal notranslate"><span class="pre">reference_image_urls</span></code>. Add a field to one, add it to both.</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.schema.CharacterRef.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.ClassVar" title="(in Python v3.14)"><span class="pre">ClassVar</span></a><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'extra':</span> <span class="pre">'ignore'}</span></span><a class="headerlink" href="#nw.schema.CharacterRef.model_config" title="Link to this definition">#</a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<code class="code docutils literal notranslate"><span class="pre">ConfigDict</span></code>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.schema.DecisionEntry">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.schema.</span></span><span class="sig-name descname"><span class="pre">DecisionEntry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/schema.html#DecisionEntry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.schema.DecisionEntry" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>One entry of a project’s decision log, flattened for display.</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.schema.DecisionEntry.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.ClassVar" title="(in Python v3.14)"><span class="pre">ClassVar</span></a><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'extra':</span> <span class="pre">'ignore'}</span></span><a class="headerlink" href="#nw.schema.DecisionEntry.model_config" title="Link to this definition">#</a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<code class="code docutils literal notranslate"><span class="pre">ConfigDict</span></code>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.schema.EnvironmentRef">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.schema.</span></span><span class="sig-name descname"><span class="pre">EnvironmentRef</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/schema.html#EnvironmentRef"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.schema.EnvironmentRef" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>Pointer to an environment folder under <code class="docutils literal notranslate"><span class="pre">environments/&lt;name&gt;/</span></code>.</p>
+<p>Mirrors <a class="reference internal" href="nw.bodies.html#nw.bodies.EnvironmentRefBodyV1" title="nw.bodies.EnvironmentRefBodyV1"><code class="xref py py-class docutils literal notranslate"><span class="pre">nw.bodies.EnvironmentRefBodyV1</span></code></a> field-for-field, for the
+same load-bearing reason as <a class="reference internal" href="#nw.schema.CharacterRef" title="nw.schema.CharacterRef"><code class="xref py py-class docutils literal notranslate"><span class="pre">CharacterRef</span></code></a> — see that docstring.
+<code class="docutils literal notranslate"><span class="pre">reference_image_urls</span></code> (the lookbook the FE curates for a <em>location</em>)
+was erased by every <code class="docutils literal notranslate"><span class="pre">update_spec</span></code> until this mirror was completed.</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.schema.EnvironmentRef.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.ClassVar" title="(in Python v3.14)"><span class="pre">ClassVar</span></a><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'extra':</span> <span class="pre">'ignore'}</span></span><a class="headerlink" href="#nw.schema.EnvironmentRef.model_config" title="Link to this definition">#</a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<code class="code docutils literal notranslate"><span class="pre">ConfigDict</span></code>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.schema.ProjectSpec">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.schema.</span></span><span class="sig-name descname"><span class="pre">ProjectSpec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/schema.html#ProjectSpec"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.schema.ProjectSpec" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>The top-level project SSOT, persisted as <code class="docutils literal notranslate"><span class="pre">project.json</span></code>.</p>
+<p>Field names and order are chosen to round-trip identically with muvid’s
+ProjectSpec for <code class="docutils literal notranslate"><span class="pre">schema_version=1</span></code>, so the_bells_v* fixtures (and any
+other muvid-shaped project) load and re-save without churn.</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.schema.ProjectSpec.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.ClassVar" title="(in Python v3.14)"><span class="pre">ClassVar</span></a><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'extra':</span> <span class="pre">'ignore'}</span></span><a class="headerlink" href="#nw.schema.ProjectSpec.model_config" title="Link to this definition">#</a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<code class="code docutils literal notranslate"><span class="pre">ConfigDict</span></code>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.schema.ProjectSummary">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.schema.</span></span><span class="sig-name descname"><span class="pre">ProjectSummary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/schema.html#ProjectSummary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.schema.ProjectSummary" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>Typed read view of a project — what <code class="docutils literal notranslate"><span class="pre">muvid</span> <span class="pre">status</span></code> printed, but typed.</p>
+<p>Returned by <code class="xref py py-meth docutils literal notranslate"><span class="pre">Project.read_summary()</span></code>. Holds the small facts the user
+most often wants: title, root, song path, counts of characters / shots /
+sections / output, plus a coarse “stages_done” list naming the lifecycle
+stages that have been reached.</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.schema.ProjectSummary.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.ClassVar" title="(in Python v3.14)"><span class="pre">ClassVar</span></a><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'extra':</span> <span class="pre">'ignore'}</span></span><a class="headerlink" href="#nw.schema.ProjectSummary.model_config" title="Link to this definition">#</a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<code class="code docutils literal notranslate"><span class="pre">ConfigDict</span></code>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nw.schema.ProjectSummary.stages_done">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">stages_done</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#nw.schema.ProjectSummary.stages_done" title="Link to this definition">#</a></dt>
+<dd><p>Coarse stage list — what’s been reached, in lifecycle order.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.schema.ResumptionBrief">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.schema.</span></span><span class="sig-name descname"><span class="pre">ResumptionBrief</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/schema.html#ResumptionBrief"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.schema.ResumptionBrief" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>A “where we left off” snapshot, returned by <a class="reference internal" href="nw.html#nw.Project.resumption_brief" title="nw.Project.resumption_brief"><code class="xref py py-meth docutils literal notranslate"><span class="pre">nw.Project.resumption_brief()</span></code></a>.</p>
+<p>Pure data: no fal calls, no LLM, no network. reelee renders it as prose
+and injects it as the first tool-result of a session.</p>
+<p>**The field names are chosen to be honest about what nw can currently
+measure**, because a confidently wrong number is worse than no number:</p>
+<ul>
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">downstream_of_last_authored_change</span></code> is <em>not</em> “stale”. It is
+<code class="docutils literal notranslate"><span class="pre">nw.descendants_of</span></code> — pure provenance reachability, comparing no
+content and no timestamp — so this set includes everything already
+regenerated since the change. It is an <strong>upper bound</strong> on what needs
+attention, and it is named for what it measures.</p>
+<p><code class="docutils literal notranslate"><span class="pre">nw.stale_after</span></code> is the narrower answer and it now cuts off early
+(nw#24), so switching this field to it would return a smaller and
+correct set. That is deliberately <strong>not</strong> done here: the field would
+then be named for the wrong measurement, and which of the two a
+resumption brief should show is nw#7’s call, not nw#24’s. Callers who
+want the exact set can call <code class="docutils literal notranslate"><span class="pre">nw.stale_after</span></code> with
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">last_authored_change_id</span></code>.</p>
+</li>
+<li><p>The walk starts at the last <strong>authored</strong> change — the most recent
+annotation the user wrote (a shot, a section, a character or
+environment ref), never one a Transform derived. Walking from “the
+newest annotation” instead would be inverted: the newest node in a
+provenance graph is by construction a <em>leaf</em>, so its descendant set is
+empty in exactly the case the field exists for.</p></li>
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">total_spend_usd</span></code> sums <em>every</em> recorded render decision across
+every store scope. Nothing records per-branch outcomes yet, so a render
+that failed after being billed is counted here exactly like one that
+succeeded. Also an upper bound.</p></li>
+</ul>
+<p><code class="xref py py-attr docutils literal notranslate"><span class="pre">caveats</span></code> carries those qualifications as data — so a consumer
+renders them next to the numbers instead of rediscovering them.</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.schema.ResumptionBrief.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.ClassVar" title="(in Python v3.14)"><span class="pre">ClassVar</span></a><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'extra':</span> <span class="pre">'ignore'}</span></span><a class="headerlink" href="#nw.schema.ResumptionBrief.model_config" title="Link to this definition">#</a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<code class="code docutils literal notranslate"><span class="pre">ConfigDict</span></code>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.schema.SectionSpec">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.schema.</span></span><span class="sig-name descname"><span class="pre">SectionSpec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/schema.html#SectionSpec"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.schema.SectionSpec" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>A non-overlapping span of the project’s master timeline.</p>
+<p><code class="docutils literal notranslate"><span class="pre">label</span></code> is free-form (“intro”, “verse”, “chorus”, “scene-1”, “act-2”,
+…) so different apps (music-video, explainer, podcast-clip) can use
+their own taxonomy.</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.schema.SectionSpec.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.ClassVar" title="(in Python v3.14)"><span class="pre">ClassVar</span></a><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'extra':</span> <span class="pre">'ignore'}</span></span><a class="headerlink" href="#nw.schema.SectionSpec.model_config" title="Link to this definition">#</a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<code class="code docutils literal notranslate"><span class="pre">ConfigDict</span></code>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.schema.ShotSpec">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.schema.</span></span><span class="sig-name descname"><span class="pre">ShotSpec</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/schema.html#ShotSpec"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.schema.ShotSpec" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>A timeline-locked visual unit.</p>
+<p><code class="docutils literal notranslate"><span class="pre">[start_s,</span> <span class="pre">end_s)</span></code> is half-open. <code class="docutils literal notranslate"><span class="pre">render_strategy</span></code> is an open string
+rather than a closed Literal, so apps can register their own strategies
+via <a class="reference internal" href="nw.renderers.html#nw.renderers.register_strategy" title="nw.renderers.register_strategy"><code class="xref py py-func docutils literal notranslate"><span class="pre">nw.renderers.register_strategy()</span></code></a> (Phase 1b.3) without modifying
+the schema.</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.schema.ShotSpec.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.ClassVar" title="(in Python v3.14)"><span class="pre">ClassVar</span></a><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'extra':</span> <span class="pre">'ignore'}</span></span><a class="headerlink" href="#nw.schema.ShotSpec.model_config" title="Link to this definition">#</a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<code class="code docutils literal notranslate"><span class="pre">ConfigDict</span></code>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.schema.SongInfo">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.schema.</span></span><span class="sig-name descname"><span class="pre">SongInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/schema.html#SongInfo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.schema.SongInfo" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>Metadata for the master audio file.</p>
+<p>Compatible with muvid’s SongInfo by field name and type.</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.schema.SongInfo.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.ClassVar" title="(in Python v3.14)"><span class="pre">ClassVar</span></a><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'extra':</span> <span class="pre">'ignore'}</span></span><a class="headerlink" href="#nw.schema.SongInfo.model_config" title="Link to this definition">#</a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<code class="code docutils literal notranslate"><span class="pre">ConfigDict</span></code>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="nw.renderers.text_to_video.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">nw.renderers.text_to_video</div></div>
+    </a>
+  </div><div class="navigation-next">
+    <a href="nw.script_segmentation.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">nw.script_segmentation</div>
+      </div>
+      <i class="i-lucide chevron-right"></i>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright">
+  <p>
+    Made with
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+  <a href="https://github.com/thorwhalen/nw" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div>
+    </div>
+  </div>
+</footer>
+      <script src="../_static/documentation_options.js?v=1c03bfdc"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=fd10adb8"></script>
+      <script src="../_static/shibuya.js?v=50760d75"></script></body>
+</html>

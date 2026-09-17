@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="grass" data-content_root="../">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>nw.validation - nw</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="nw.workflow" href="nw.workflow.html" /><link rel="prev" title="nw.transforms" href="nw.transforms.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d88b86f9" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=2ceb65ce" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    
+  <meta property="og:type" content="website"/><meta property="og:title" content="nw.validation"/>
+    <meta name="twitter:card" content="summary"/>
+  
+<link rel="alternate" type="text/markdown" href="nw.validation.html.md">
+<link rel="describedby" href="../llms.txt" type="text/markdown">
+</head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="../index.html">
+      
+      
+      <strong>nw</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/thorwhalen/nw" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="0"><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="nw.html">nw</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="nw.freshness.html">nw.freshness</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.inspect.html">nw.inspect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.checks.html">nw.checks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.bodies.html">nw.bodies</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.character_ref.html">nw.bodies.character_ref</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.decision.html">nw.bodies.decision</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.environment_ref.html">nw.bodies.environment_ref</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.genre_envelope.html">nw.bodies.genre_envelope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.render_result.html">nw.bodies.render_result</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.section.html">nw.bodies.section</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.shot.html">nw.bodies.shot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.unproduced_output.html">nw.bodies.unproduced_output</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.verifying_trace.html">nw.bodies.verifying_trace</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="nw.delivery.html">nw.delivery</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.experiment.html">nw.experiment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.genres.html">nw.genres</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.graph.html">nw.graph</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.graph_backend.html">nw.graph_backend</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.jobs.html">nw.jobs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.migrate.html">nw.migrate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.pricing.html">nw.pricing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.project.html">nw.project</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.renderers.html">nw.renderers</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="nw.renderers.composite_lipsync.html">nw.renderers.composite_lipsync</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.renderers.image_to_video.html">nw.renderers.image_to_video</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.renderers.lipsync.html">nw.renderers.lipsync</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.renderers.still.html">nw.renderers.still</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.renderers.text_to_video.html">nw.renderers.text_to_video</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="nw.schema.html">nw.schema</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.script_segmentation.html">nw.script_segmentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.secrets.html">nw.secrets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.storyboard.html">nw.storyboard</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.transforms.html">nw.transforms</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">nw.validation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.workflow.html">nw.workflow</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../ai-agents.html">For AI agents</a></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#nw.validation.Check"><code class="docutils literal notranslate"><span class="pre">Check</span></code></a><ul>
+<li><a class="reference internal" href="#nw.validation.Check.name"><code class="docutils literal notranslate"><span class="pre">Check.name</span></code></a></li>
+<li><a class="reference internal" href="#nw.validation.Check.summary"><code class="docutils literal notranslate"><span class="pre">Check.summary</span></code></a></li>
+<li><a class="reference internal" href="#nw.validation.Check.run"><code class="docutils literal notranslate"><span class="pre">Check.run</span></code></a></li>
+<li><a class="reference internal" href="#nw.validation.Check.requires"><code class="docutils literal notranslate"><span class="pre">Check.requires</span></code></a></li>
+<li><a class="reference internal" href="#nw.validation.Check.parallel_safe"><code class="docutils literal notranslate"><span class="pre">Check.parallel_safe</span></code></a></li>
+<li><a class="reference internal" href="#nw.validation.Check.cost"><code class="docutils literal notranslate"><span class="pre">Check.cost</span></code></a></li>
+<li><a class="reference internal" href="#nw.validation.Check.example_requests"><code class="docutils literal notranslate"><span class="pre">Check.example_requests</span></code></a></li>
+<li><a class="reference internal" href="#nw.validation.Check.requires_binaries"><code class="docutils literal notranslate"><span class="pre">Check.requires_binaries</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#nw.validation.CheckResult"><code class="docutils literal notranslate"><span class="pre">CheckResult</span></code></a><ul>
+<li><a class="reference internal" href="#nw.validation.CheckResult.ok"><code class="docutils literal notranslate"><span class="pre">CheckResult.ok</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#nw.validation.Finding"><code class="docutils literal notranslate"><span class="pre">Finding</span></code></a><ul>
+<li><a class="reference internal" href="#nw.validation.Finding.check"><code class="docutils literal notranslate"><span class="pre">Finding.check</span></code></a></li>
+<li><a class="reference internal" href="#nw.validation.Finding.severity"><code class="docutils literal notranslate"><span class="pre">Finding.severity</span></code></a></li>
+<li><a class="reference internal" href="#nw.validation.Finding.message"><code class="docutils literal notranslate"><span class="pre">Finding.message</span></code></a></li>
+<li><a class="reference internal" href="#nw.validation.Finding.where"><code class="docutils literal notranslate"><span class="pre">Finding.where</span></code></a></li>
+<li><a class="reference internal" href="#nw.validation.Finding.remedy"><code class="docutils literal notranslate"><span class="pre">Finding.remedy</span></code></a></li>
+<li><a class="reference internal" href="#nw.validation.Finding.evidence"><code class="docutils literal notranslate"><span class="pre">Finding.evidence</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#nw.validation.ValidationError"><code class="docutils literal notranslate"><span class="pre">ValidationError</span></code></a></li>
+<li><a class="reference internal" href="#nw.validation.ValidationReport"><code class="docutils literal notranslate"><span class="pre">ValidationReport</span></code></a><ul>
+<li><a class="reference internal" href="#nw.validation.ValidationReport.target"><code class="docutils literal notranslate"><span class="pre">ValidationReport.target</span></code></a></li>
+<li><a class="reference internal" href="#nw.validation.ValidationReport.results"><code class="docutils literal notranslate"><span class="pre">ValidationReport.results</span></code></a></li>
+<li><a class="reference internal" href="#nw.validation.ValidationReport.elapsed_s"><code class="docutils literal notranslate"><span class="pre">ValidationReport.elapsed_s</span></code></a></li>
+<li><a class="reference internal" href="#nw.validation.ValidationReport.ok"><code class="docutils literal notranslate"><span class="pre">ValidationReport.ok</span></code></a></li>
+<li><a class="reference internal" href="#nw.validation.ValidationReport.raise_if_failed"><code class="docutils literal notranslate"><span class="pre">ValidationReport.raise_if_failed()</span></code></a></li>
+<li><a class="reference internal" href="#nw.validation.ValidationReport.summary"><code class="docutils literal notranslate"><span class="pre">ValidationReport.summary()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#nw.validation.checks"><code class="docutils literal notranslate"><span class="pre">checks</span></code></a></li>
+<li><a class="reference internal" href="#nw.validation.menu"><code class="docutils literal notranslate"><span class="pre">menu()</span></code></a></li>
+<li><a class="reference internal" href="#nw.validation.plan_checks"><code class="docutils literal notranslate"><span class="pre">plan_checks()</span></code></a></li>
+<li><a class="reference internal" href="#nw.validation.register_check"><code class="docutils literal notranslate"><span class="pre">register_check()</span></code></a></li>
+<li><a class="reference internal" href="#nw.validation.resolve_checks"><code class="docutils literal notranslate"><span class="pre">resolve_checks()</span></code></a></li>
+<li><a class="reference internal" href="#nw.validation.suggest"><code class="docutils literal notranslate"><span class="pre">suggest()</span></code></a></li>
+<li><a class="reference internal" href="#nw.validation.validate"><code class="docutils literal notranslate"><span class="pre">validate()</span></code></a></li>
+</ul>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../index.html"><span itemprop="name">nw</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../api.html"><span itemprop="name">API reference</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="2" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="nw.html"><span itemprop="name">nw</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="3" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">nw.validation</strong>
+        <meta itemprop="position" content="4" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+  <article class="yue dark-code" role="main">
+          <section id="module-nw.validation">
+<span id="nw-validation"></span><h1>nw.validation<a class="headerlink" href="#module-nw.validation" title="Link to this heading">#</a></h1>
+<p>Pluggable validation of finished work — the seam, not the checks.</p>
+<p><strong>What this is for.</strong> A render that finishes without raising is not a render
+that is <em>right</em>. A one-minute short shipped with a burnt-in lower third reading
+<code class="docutils literal notranslate"><span class="pre">1981</span> <span class="pre">·</span> <span class="pre">Centr…</span></code>; a ten-minute cut shipped two-thirds encoded with a container
+duration taken from its audio stream, so every duration check passed; a Ken
+Burns move jumped a whole pixel mid-panel for months. Each was found by a human
+watching the finished file, which is the most expensive detector we have and the
+only one that gets tired.</p>
+<p><strong>What this module owns, and what it deliberately does not.</strong> It owns the
+<em>seam</em>: how a check is declared, how the menu of available checks is assembled,
+how dependencies between them are resolved, in what order and with how much
+concurrency they run, and what a run of them reports. It owns no domain
+knowledge whatsoever — every actual check is a plugin, registered from wherever
+the knowledge lives (nw ships the two that <a class="reference internal" href="nw.inspect.html#module-nw.inspect" title="nw.inspect"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nw.inspect</span></code></a> already knew how to
+do; a check about on-screen type belongs next to <code class="docutils literal notranslate"><span class="pre">tituli</span></code>, one about camera
+motion next to <code class="docutils literal notranslate"><span class="pre">burns</span></code>).</p>
+<p><strong>Where it goes in a pipeline.</strong> Nowhere, by default. Validation is a thing you
+<em>place</em>, and where to place it is a judgement about cost and consequence:</p>
+<ul class="simple">
+<li><p>before showing a result to a human, if the checks are cheap;</p></li>
+<li><p>before an irreversible or outward-facing step — a publish, an upload, a send —
+where the checks earn their cost whatever they cost;</p></li>
+<li><p>both, with a cheaper selection at the first point than the second.</p></li>
+</ul>
+<p>So the surface is one function, <a class="reference internal" href="#nw.validation.validate" title="nw.validation.validate"><code class="xref py py-func docutils literal notranslate"><span class="pre">validate()</span></code></a>, and callers place it. Nothing
+in nw calls it for you; a gate you did not ask for is a gate that fires at the
+wrong moment.</p>
+<p><strong>Declaring a check</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span><span class="w"> </span><span class="nn">nw.validation</span><span class="w"> </span><span class="kn">import</span> <span class="n">Check</span><span class="p">,</span> <span class="n">checks</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="nd">@checks</span><span class="o">.</span><span class="n">register_decorator</span><span class="p">(</span><span class="s2">"video.has_both_streams"</span><span class="p">)</span>
+</span><span data-line="4"><span class="k">def</span><span class="w"> </span><span class="nf">_has_both_streams</span><span class="p">():</span>
+</span><span data-line="5">    <span class="k">return</span> <span class="n">Check</span><span class="p">(</span>
+</span><span data-line="6">        <span class="n">name</span><span class="o">=</span><span class="s2">"video.has_both_streams"</span><span class="p">,</span>
+</span><span data-line="7">        <span class="n">summary</span><span class="o">=</span><span class="s2">"the file actually contains a video and an audio stream"</span><span class="p">,</span>
+</span><span data-line="8">        <span class="n">run</span><span class="o">=</span><span class="k">lambda</span> <span class="n">target</span><span class="p">,</span> <span class="n">ctx</span><span class="p">:</span> <span class="p">(</span><span class="o">...</span><span class="p">),</span>
+</span><span data-line="9">        <span class="n">example_requests</span><span class="o">=</span><span class="p">(</span><span class="s2">"is the video ok"</span><span class="p">,</span> <span class="s2">"did the render work"</span><span class="p">),</span>
+</span><span data-line="10">    <span class="p">)</span>
+</span></pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">example_requests</span></code> is not decoration. A menu of forty checks is unusable by a
+human and unselectable by a model; the phrases a person actually says are what
+lets <a class="reference internal" href="#nw.validation.suggest" title="nw.validation.suggest"><code class="xref py py-func docutils literal notranslate"><span class="pre">suggest()</span></code></a> turn “make sure the captions look right” into a selection,
+which is how this reaches an MCP tool surface without a forty-item enum.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="n">report</span> <span class="o">=</span> <span class="n">validate</span><span class="p">(</span><span class="s2">"some.mp4"</span><span class="p">,</span> <span class="n">checks</span><span class="o">=</span><span class="p">())</span>   <span class="c1"># nothing selected, nothing run</span>
+</span><span data-line="2"><span class="gp">&gt;&gt;&gt; </span><span class="n">report</span><span class="o">.</span><span class="n">ok</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">report</span><span class="o">.</span><span class="n">findings</span><span class="p">)</span>
+</span><span data-line="3"><span class="go">(True, [])</span>
+</span></pre></div>
+</div>
+<p class="rubric">Module Attributes</p>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.validation.checks" title="nw.validation.checks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">checks</span></code></a></p></td>
+<td><p>The menu.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="rubric">Functions</p>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.validation.register_check" title="nw.validation.register_check"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_check</span></code></a>([check])</p></td>
+<td><p>Add a check to the menu, as a call or as a decorator.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.validation.resolve_checks" title="nw.validation.resolve_checks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resolve_checks</span></code></a>(selection)</p></td>
+<td><p>Selection plus everything it requires, with names resolved to Checks.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.validation.plan_checks" title="nw.validation.plan_checks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plan_checks</span></code></a>(selection)</p></td>
+<td><p>Order the selection into waves that may each run concurrently.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.validation.validate" title="nw.validation.validate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate</span></code></a>(target, *[, checks, max_workers, ...])</p></td>
+<td><p>Run <code class="docutils literal notranslate"><span class="pre">checks</span></code> against <code class="docutils literal notranslate"><span class="pre">target</span></code> and report.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.validation.suggest" title="nw.validation.suggest"><code class="xref py py-obj docutils literal notranslate"><span class="pre">suggest</span></code></a>(request, *[, include_paid])</p></td>
+<td><p>Checks whose <code class="docutils literal notranslate"><span class="pre">example_requests</span></code> look like what the user just asked for.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.validation.menu" title="nw.validation.menu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">menu</span></code></a>(*[, cost])</p></td>
+<td><p>Every registered check, name-ordered — what a user chooses from.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="rubric">Classes</p>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.validation.Finding" title="nw.validation.Finding"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Finding</span></code></a>(check, severity, message[, where, ...])</p></td>
+<td><p>One thing a check noticed.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.validation.CheckResult" title="nw.validation.CheckResult"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CheckResult</span></code></a>(name[, findings, skipped, ...])</p></td>
+<td><p>What one check produced, including the case where it could not run.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.validation.ValidationReport" title="nw.validation.ValidationReport"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ValidationReport</span></code></a>(target[, results, elapsed_s])</p></td>
+<td><p>Everything a <a class="reference internal" href="#nw.validation.validate" title="nw.validation.validate"><code class="xref py py-func docutils literal notranslate"><span class="pre">validate()</span></code></a> run produced.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.validation.Check" title="nw.validation.Check"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Check</span></code></a>(name, summary, run[, requires, ...])</p></td>
+<td><p>One validation, and everything a scheduler and a menu need to know.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="rubric">Exceptions</p>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.validation.ValidationError" title="nw.validation.ValidationError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ValidationError</span></code></a>(report)</p></td>
+<td><p>Raised by <a class="reference internal" href="#nw.validation.ValidationReport.raise_if_failed" title="nw.validation.ValidationReport.raise_if_failed"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ValidationReport.raise_if_failed()</span></code></a>.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.validation.Check">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.validation.</span></span><span class="sig-name descname"><span class="pre">Check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">summary</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">requires</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parallel_safe</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cost</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cheap'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">example_requests</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">requires_binaries</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/validation.html#Check"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.validation.Check" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>One validation, and everything a scheduler and a menu need to know.</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.validation.Check.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#nw.validation.Check.name" title="Link to this definition">#</a></dt>
+<dd><p>dotted and stable — it is what a user selects and what a
+<code class="docutils literal notranslate"><span class="pre">requires</span></code> refers to.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.validation.Check.summary">
+<span class="sig-name descname"><span class="pre">summary</span></span><a class="headerlink" href="#nw.validation.Check.summary" title="Link to this definition">#</a></dt>
+<dd><p>one line, for the menu.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.validation.Check.run">
+<span class="sig-name descname"><span class="pre">run</span></span><a class="headerlink" href="#nw.validation.Check.run" title="Link to this definition">#</a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">(target,</span> <span class="pre">context)</span> <span class="pre">-&gt;</span> <span class="pre">findings</span></code>. May also return a
+<code class="docutils literal notranslate"><span class="pre">(findings,</span> <span class="pre">produced)</span></code> pair when other checks depend on it.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.validation.Check.requires">
+<span class="sig-name descname"><span class="pre">requires</span></span><a class="headerlink" href="#nw.validation.Check.requires" title="Link to this definition">#</a></dt>
+<dd><p>names of checks that must run first, whose <code class="docutils literal notranslate"><span class="pre">produced</span></code>
+values arrive in <code class="docutils literal notranslate"><span class="pre">context</span></code>. Cycles raise at plan time.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.validation.Check.parallel_safe">
+<span class="sig-name descname"><span class="pre">parallel_safe</span></span><a class="headerlink" href="#nw.validation.Check.parallel_safe" title="Link to this definition">#</a></dt>
+<dd><p>whether it may run alongside its independent peers.
+<code class="docutils literal notranslate"><span class="pre">False</span></code> for anything that is not thread-safe or that saturates
+the machine on its own (a full decode).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.validation.Check.cost">
+<span class="sig-name descname"><span class="pre">cost</span></span><a class="headerlink" href="#nw.validation.Check.cost" title="Link to this definition">#</a></dt>
+<dd><p>rough wall-clock class — <code class="docutils literal notranslate"><span class="pre">&quot;free&quot;</span></code> (no subprocess),
+<code class="docutils literal notranslate"><span class="pre">&quot;cheap&quot;</span></code> (seconds), <code class="docutils literal notranslate"><span class="pre">&quot;dear&quot;</span></code> (a full pass over the media), or
+<code class="docutils literal notranslate"><span class="pre">&quot;paid&quot;</span></code> (spends money, e.g. a hosted OCR or transcription).
+<code class="docutils literal notranslate"><span class="pre">&quot;paid&quot;</span></code> is never selected by <a class="reference internal" href="#nw.validation.suggest" title="nw.validation.suggest"><code class="xref py py-func docutils literal notranslate"><span class="pre">suggest()</span></code></a>; it must be asked
+for by name.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.validation.Check.example_requests">
+<span class="sig-name descname"><span class="pre">example_requests</span></span><a class="headerlink" href="#nw.validation.Check.example_requests" title="Link to this definition">#</a></dt>
+<dd><p>things a person actually says that mean they want
+this check. What lets a menu of forty be navigated, and what an
+MCP surface matches against instead of exposing an enum.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.validation.Check.requires_binaries">
+<span class="sig-name descname"><span class="pre">requires_binaries</span></span><a class="headerlink" href="#nw.validation.Check.requires_binaries" title="Link to this definition">#</a></dt>
+<dd><p>external programs it shells out to. A missing one
+makes the check <em>skip with a reason</em>, never silently pass.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.validation.CheckResult">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.validation.</span></span><span class="sig-name descname"><span class="pre">CheckResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">findings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skipped</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elapsed_s</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">produced</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/validation.html#CheckResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.validation.CheckResult" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>What one check produced, including the case where it could not run.</p>
+<p><code class="docutils literal notranslate"><span class="pre">skipped</span></code> and <code class="docutils literal notranslate"><span class="pre">error</span></code> are kept distinct from “found nothing”, because
+conflating them is how a validation suite comes to report all-clear on a
+machine where half of it never ran. A missing binary is not a pass.</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="nw.validation.CheckResult.ok">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">ok</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><a class="headerlink" href="#nw.validation.CheckResult.ok" title="Link to this definition">#</a></dt>
+<dd><p>Ran, and found nothing at or above <code class="xref py py-data docutils literal notranslate"><span class="pre">FAILING_SEVERITY</span></code>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.validation.Finding">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.validation.</span></span><span class="sig-name descname"><span class="pre">Finding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">check</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">severity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">where</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remedy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">evidence</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/validation.html#Finding"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.validation.Finding" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>One thing a check noticed.</p>
+<p>A finding is never a bare boolean. Whoever reads it — a human deciding
+whether to publish, or a model deciding what to fix — needs to know <em>where</em>
+in the work it is and <em>what</em> would make it go away, and a check that cannot
+say those two things has not finished its job.</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.validation.Finding.check">
+<span class="sig-name descname"><span class="pre">check</span></span><a class="headerlink" href="#nw.validation.Finding.check" title="Link to this definition">#</a></dt>
+<dd><p>the name of the check that produced it.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.validation.Finding.severity">
+<span class="sig-name descname"><span class="pre">severity</span></span><a class="headerlink" href="#nw.validation.Finding.severity" title="Link to this definition">#</a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">&quot;info&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;warn&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;error&quot;</span></code>; only <code class="docutils literal notranslate"><span class="pre">&quot;error&quot;</span></code>
+makes a report not <code class="docutils literal notranslate"><span class="pre">ok</span></code>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.validation.Finding.message">
+<span class="sig-name descname"><span class="pre">message</span></span><a class="headerlink" href="#nw.validation.Finding.message" title="Link to this definition">#</a></dt>
+<dd><p>what is wrong, in one sentence a human can act on.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.validation.Finding.where">
+<span class="sig-name descname"><span class="pre">where</span></span><a class="headerlink" href="#nw.validation.Finding.where" title="Link to this definition">#</a></dt>
+<dd><p>where in the work — a timestamp, a frame index, a shot id, a
+path. Free-form because the checks are, but never empty for
+anything above <code class="docutils literal notranslate"><span class="pre">&quot;info&quot;</span></code>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.validation.Finding.remedy">
+<span class="sig-name descname"><span class="pre">remedy</span></span><a class="headerlink" href="#nw.validation.Finding.remedy" title="Link to this definition">#</a></dt>
+<dd><p>what would fix it, when the check knows. <code class="docutils literal notranslate"><span class="pre">None</span></code> when it
+honestly does not.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.validation.Finding.evidence">
+<span class="sig-name descname"><span class="pre">evidence</span></span><a class="headerlink" href="#nw.validation.Finding.evidence" title="Link to this definition">#</a></dt>
+<dd><p>anything a reader would want to look at — an extracted
+frame’s path, the numbers behind the verdict.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="nw.validation.ValidationError">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.validation.</span></span><span class="sig-name descname"><span class="pre">ValidationError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">report</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/validation.html#ValidationError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.validation.ValidationError" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#AssertionError" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">AssertionError</span></code></a></p>
+<p>Raised by <a class="reference internal" href="#nw.validation.ValidationReport.raise_if_failed" title="nw.validation.ValidationReport.raise_if_failed"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ValidationReport.raise_if_failed()</span></code></a>.</p>
+<dl class="field-list simple">
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.validation.ValidationReport">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.validation.</span></span><span class="sig-name descname"><span class="pre">ValidationReport</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elapsed_s</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/validation.html#ValidationReport"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.validation.ValidationReport" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Everything a <a class="reference internal" href="#nw.validation.validate" title="nw.validation.validate"><code class="xref py py-func docutils literal notranslate"><span class="pre">validate()</span></code></a> run produced.</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.validation.ValidationReport.target">
+<span class="sig-name descname"><span class="pre">target</span></span><a class="headerlink" href="#nw.validation.ValidationReport.target" title="Link to this definition">#</a></dt>
+<dd><p>what was validated.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.validation.ValidationReport.results">
+<span class="sig-name descname"><span class="pre">results</span></span><a class="headerlink" href="#nw.validation.ValidationReport.results" title="Link to this definition">#</a></dt>
+<dd><p>one per check that was selected, in the order they were run.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.validation.ValidationReport.elapsed_s">
+<span class="sig-name descname"><span class="pre">elapsed_s</span></span><a class="headerlink" href="#nw.validation.ValidationReport.elapsed_s" title="Link to this definition">#</a></dt>
+<dd><p>wall-clock for the whole run.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nw.validation.ValidationReport.ok">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">ok</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><a class="headerlink" href="#nw.validation.ValidationReport.ok" title="Link to this definition">#</a></dt>
+<dd><p>No failing findings <strong>and</strong> nothing that failed to run.</p>
+<p>A check that errored is not a pass. Callers gating a publish on this
+get the conservative answer without having to remember to ask for it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.validation.ValidationReport.raise_if_failed">
+<span class="sig-name descname"><span class="pre">raise_if_failed</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/validation.html#ValidationReport.raise_if_failed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.validation.ValidationReport.raise_if_failed" title="Link to this definition">#</a></dt>
+<dd><p>Return self, or raise <a class="reference internal" href="#nw.validation.ValidationError" title="nw.validation.ValidationError"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValidationError</span></code></a> — for a hard gate.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#nw.validation.ValidationReport" title="nw.validation.ValidationReport"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValidationReport</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.validation.ValidationReport.summary">
+<span class="sig-name descname"><span class="pre">summary</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/validation.html#ValidationReport.summary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.validation.ValidationReport.summary" title="Link to this definition">#</a></dt>
+<dd><p>A few lines a human can read without unpacking the object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="nw.validation.checks">
+<span class="sig-prename descclassname"><span class="pre">nw.validation.</span></span><span class="sig-name descname"><span class="pre">checks</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Registry</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Registry</span> <span class="pre">nw.validation.checks&gt;</span></span><a class="headerlink" href="#nw.validation.checks" title="Link to this definition">#</a></dt>
+<dd><p>The menu. <code class="docutils literal notranslate"><span class="pre">on_conflict=&quot;error&quot;</span></code> so a plugin that shadows a built-in fails
+loudly rather than quietly changing what “validated” means.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.validation.menu">
+<span class="sig-prename descclassname"><span class="pre">nw.validation.</span></span><span class="sig-name descname"><span class="pre">menu</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">cost</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/validation.html#menu"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.validation.menu" title="Link to this definition">#</a></dt>
+<dd><p>Every registered check, name-ordered — what a user chooses from.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a>[<a class="reference internal" href="#nw.validation.Check" title="nw.validation.Check"><code class="xref py py-class docutils literal notranslate"><span class="pre">Check</span></code></a>, <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#Ellipsis" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.validation.plan_checks">
+<span class="sig-prename descclassname"><span class="pre">nw.validation.</span></span><span class="sig-name descname"><span class="pre">plan_checks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selection</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/validation.html#plan_checks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.validation.plan_checks" title="Link to this definition">#</a></dt>
+<dd><p>Order the selection into waves that may each run concurrently.</p>
+<p>Every check in a wave has all its requirements satisfied by earlier waves,
+so the waves are the schedule: run each in turn, in parallel within it.
+A check that is not <code class="docutils literal notranslate"><span class="pre">parallel_safe</span></code> gets a wave to itself.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – on a dependency cycle, or a requirement that is not
+    registered — both at plan time, before anything has been spent.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a>[<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a>[<a class="reference internal" href="#nw.validation.Check" title="nw.validation.Check"><em>Check</em></a>, …], …]</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="n">plan_checks</span><span class="p">(())</span>
+</span><span data-line="2"><span class="go">()</span>
+</span></pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a>[<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a>[<a class="reference internal" href="#nw.validation.Check" title="nw.validation.Check"><code class="xref py py-class docutils literal notranslate"><span class="pre">Check</span></code></a>, <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#Ellipsis" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code></a>], <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#Ellipsis" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.validation.register_check">
+<span class="sig-prename descclassname"><span class="pre">nw.validation.</span></span><span class="sig-name descname"><span class="pre">register_check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">check</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/validation.html#register_check"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.validation.register_check" title="Link to this definition">#</a></dt>
+<dd><p>Add a check to the menu, as a call or as a decorator.</p>
+<p>As a call:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">register_check</span><span class="p">(</span><span class="n">Check</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"video.duration"</span><span class="p">,</span> <span class="n">summary</span><span class="o">=</span><span class="s2">"..."</span><span class="p">,</span> <span class="n">run</span><span class="o">=...</span><span class="p">))</span>
+</span></pre></div>
+</div>
+<p>As a decorator on the run function, with the rest as keywords:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nd">@register_check</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">"video.duration"</span><span class="p">,</span> <span class="n">summary</span><span class="o">=</span><span class="s2">"..."</span><span class="p">,</span> <span class="n">cost</span><span class="o">=</span><span class="s2">"cheap"</span><span class="p">)</span>
+</span><span data-line="2"><span class="k">def</span><span class="w"> </span><span class="nf">_duration</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span> <span class="o">...</span>
+</span></pre></div>
+</div>
+<dl class="field-list simple">
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.validation.resolve_checks">
+<span class="sig-prename descclassname"><span class="pre">nw.validation.</span></span><span class="sig-name descname"><span class="pre">resolve_checks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selection</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/validation.html#resolve_checks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.validation.resolve_checks" title="Link to this definition">#</a></dt>
+<dd><p>Selection plus everything it requires, with names resolved to Checks.</p>
+<p>A user picks what they care about; what those checks <em>need</em> is not their
+problem. Raises <code class="docutils literal notranslate"><span class="pre">KeyError</span></code> for an unknown name — a silently dropped check
+is the failure this whole module exists to prevent.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a>[<a class="reference internal" href="#nw.validation.Check" title="nw.validation.Check"><code class="xref py py-class docutils literal notranslate"><span class="pre">Check</span></code></a>, <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#Ellipsis" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.validation.suggest">
+<span class="sig-prename descclassname"><span class="pre">nw.validation.</span></span><span class="sig-name descname"><span class="pre">suggest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_paid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/validation.html#suggest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.validation.suggest" title="Link to this definition">#</a></dt>
+<dd><p>Checks whose <code class="docutils literal notranslate"><span class="pre">example_requests</span></code> look like what the user just asked for.</p>
+<p>Deliberately crude — a word-overlap score, not a model call — because this
+runs on every request and its job is to narrow forty items to a handful
+that a human or a model then confirms. <code class="docutils literal notranslate"><span class="pre">&quot;paid&quot;</span></code> checks are never
+suggested: money is asked for by name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a>[<a class="reference internal" href="#nw.validation.Check" title="nw.validation.Check"><code class="xref py py-class docutils literal notranslate"><span class="pre">Check</span></code></a>, <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#Ellipsis" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code></a>]</span></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="n">suggest</span><span class="p">(</span><span class="s2">""</span><span class="p">)</span>
+</span><span data-line="2"><span class="go">()</span>
+</span></pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.validation.validate">
+<span class="sig-prename descclassname"><span class="pre">nw.validation.</span></span><span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">checks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_workers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">on_error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'report'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/validation.html#validate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.validation.validate" title="Link to this definition">#</a></dt>
+<dd><p>Run <code class="docutils literal notranslate"><span class="pre">checks</span></code> against <code class="docutils literal notranslate"><span class="pre">target</span></code> and report.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>) – whatever the checks understand — a path to a rendered file, a
+<code class="docutils literal notranslate"><span class="pre">Project</span></code>, a <code class="docutils literal notranslate"><span class="pre">(video,</span> <span class="pre">annotations)</span></code> pair. This module does not
+care; it is the checks that agree with their caller.</p></li>
+<li><p><strong>checks</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code></a>[<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference internal" href="#nw.validation.Check" title="nw.validation.Check"><code class="xref py py-class docutils literal notranslate"><span class="pre">Check</span></code></a>]</span>) – names or <a class="reference internal" href="#nw.validation.Check" title="nw.validation.Check"><code class="xref py py-class docutils literal notranslate"><span class="pre">Check</span></code></a> objects. Requirements are pulled in
+automatically. Empty means empty: validation is placed, never
+assumed.</p></li>
+<li><p><strong>max_workers</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – concurrency within a wave.</p></li>
+<li><p><strong>on_error</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code></a>[<code class="docutils literal notranslate"><span class="pre">'report'</span></code>, <code class="docutils literal notranslate"><span class="pre">'raise'</span></code>]</span>) – <code class="docutils literal notranslate"><span class="pre">&quot;report&quot;</span></code> records a raising check as an errored
+<a class="reference internal" href="#nw.validation.CheckResult" title="nw.validation.CheckResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">CheckResult</span></code></a> and carries on, so one broken plugin cannot
+hide the findings of the other nine. <code class="docutils literal notranslate"><span class="pre">&quot;raise&quot;</span></code> is for developing
+a check.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#nw.validation.ValidationReport" title="nw.validation.ValidationReport"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValidationReport</span></code></a></span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A <a class="reference internal" href="#nw.validation.ValidationReport" title="nw.validation.ValidationReport"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValidationReport</span></code></a>. Note that <code class="docutils literal notranslate"><span class="pre">report.ok</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code> when
+a check <em>errored</em>, not only when one failed: a suite that could not run
+has not said the work is good.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="n">validate</span><span class="p">(</span><span class="s2">"x.mp4"</span><span class="p">)</span><span class="o">.</span><span class="n">ok</span>
+</span><span data-line="2"><span class="go">True</span>
+</span></pre></div>
+</div>
+</dd></dl>
+
+</section>
+
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="nw.transforms.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">nw.transforms</div></div>
+    </a>
+  </div><div class="navigation-next">
+    <a href="nw.workflow.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">nw.workflow</div>
+      </div>
+      <i class="i-lucide chevron-right"></i>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright">
+  <p>
+    Made with
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+  <a href="https://github.com/thorwhalen/nw" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div>
+    </div>
+  </div>
+</footer>
+      <script src="../_static/documentation_options.js?v=1c03bfdc"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=fd10adb8"></script>
+      <script src="../_static/shibuya.js?v=50760d75"></script></body>
+</html>

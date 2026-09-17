@@ -1,0 +1,12 @@
+nw.bodies.shot
+==============
+
+.. automodule:: nw.bodies.shot
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      ShotBodyV1
+   

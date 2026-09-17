@@ -1,4 +1,0 @@
-nw.bodies.shot
-==============
-.. automodule:: nw.bodies.shot
-   :members:

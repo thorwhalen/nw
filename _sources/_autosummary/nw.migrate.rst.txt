@@ -1,0 +1,17 @@
+nw.migrate
+==========
+
+.. automodule:: nw.migrate
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      is_migrated
+      migrate_to_graph
+      open_project_graph
+      open_project_graph_readonly
+      project_asset_id
+      project_graph_db_path
+   

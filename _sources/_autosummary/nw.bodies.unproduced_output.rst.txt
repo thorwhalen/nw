@@ -1,0 +1,12 @@
+nw.bodies.unproduced\_output
+============================
+
+.. automodule:: nw.bodies.unproduced_output
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      UnproducedOutputBodyV1
+   

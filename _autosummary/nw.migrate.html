@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="grass" data-content_root="../">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>nw.migrate - nw</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="nw.pricing" href="nw.pricing.html" /><link rel="prev" title="nw.jobs" href="nw.jobs.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d88b86f9" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=2ceb65ce" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    
+  <meta property="og:type" content="website"/><meta property="og:title" content="nw.migrate"/>
+    <meta name="twitter:card" content="summary"/>
+  
+<link rel="alternate" type="text/markdown" href="nw.migrate.html.md">
+<link rel="describedby" href="../llms.txt" type="text/markdown">
+</head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="../index.html">
+      
+      
+      <strong>nw</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/thorwhalen/nw" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="0"><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="nw.html">nw</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="nw.freshness.html">nw.freshness</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.inspect.html">nw.inspect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.checks.html">nw.checks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.bodies.html">nw.bodies</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.character_ref.html">nw.bodies.character_ref</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.decision.html">nw.bodies.decision</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.environment_ref.html">nw.bodies.environment_ref</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.genre_envelope.html">nw.bodies.genre_envelope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.render_result.html">nw.bodies.render_result</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.section.html">nw.bodies.section</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.shot.html">nw.bodies.shot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.unproduced_output.html">nw.bodies.unproduced_output</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.verifying_trace.html">nw.bodies.verifying_trace</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="nw.delivery.html">nw.delivery</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.experiment.html">nw.experiment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.genres.html">nw.genres</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.graph.html">nw.graph</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.graph_backend.html">nw.graph_backend</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.jobs.html">nw.jobs</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">nw.migrate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.pricing.html">nw.pricing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.project.html">nw.project</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.renderers.html">nw.renderers</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="nw.renderers.composite_lipsync.html">nw.renderers.composite_lipsync</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.renderers.image_to_video.html">nw.renderers.image_to_video</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.renderers.lipsync.html">nw.renderers.lipsync</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.renderers.still.html">nw.renderers.still</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.renderers.text_to_video.html">nw.renderers.text_to_video</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="nw.schema.html">nw.schema</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.script_segmentation.html">nw.script_segmentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.secrets.html">nw.secrets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.storyboard.html">nw.storyboard</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.transforms.html">nw.transforms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.validation.html">nw.validation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.workflow.html">nw.workflow</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../ai-agents.html">For AI agents</a></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#nw.migrate.is_migrated"><code class="docutils literal notranslate"><span class="pre">is_migrated()</span></code></a></li>
+<li><a class="reference internal" href="#nw.migrate.migrate_to_graph"><code class="docutils literal notranslate"><span class="pre">migrate_to_graph()</span></code></a></li>
+<li><a class="reference internal" href="#nw.migrate.open_project_graph"><code class="docutils literal notranslate"><span class="pre">open_project_graph()</span></code></a></li>
+<li><a class="reference internal" href="#nw.migrate.open_project_graph_readonly"><code class="docutils literal notranslate"><span class="pre">open_project_graph_readonly()</span></code></a></li>
+<li><a class="reference internal" href="#nw.migrate.project_asset_id"><code class="docutils literal notranslate"><span class="pre">project_asset_id()</span></code></a></li>
+</ul>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../index.html"><span itemprop="name">nw</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../api.html"><span itemprop="name">API reference</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="2" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="nw.html"><span itemprop="name">nw</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="3" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">nw.migrate</strong>
+        <meta itemprop="position" content="4" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+  <article class="yue dark-code" role="main">
+          <section id="module-nw.migrate">
+<span id="nw-migrate"></span><h1>nw.migrate<a class="headerlink" href="#module-nw.migrate" title="Link to this heading">#</a></h1>
+<p>Idempotent migration: project.json (sections/shots/refs) → lacing graph.</p>
+<p>Pre-graph nw projects (and all the_bells_v* fixtures from the muvid era)
+keep sections, shots, characters, and environments in <code class="docutils literal notranslate"><span class="pre">project.json</span></code> as
+arrays. From Phase 3 forward, those live in a per-project lacing annotation
+store so reelee can walk the graph for freshness analysis, provenance
+queries, and view rendering. The backend is chosen by <a class="reference internal" href="nw.graph_backend.html#module-nw.graph_backend" title="nw.graph_backend"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nw.graph_backend</span></code></a>
+— a per-project <code class="docutils literal notranslate"><span class="pre">SqliteStore</span></code> file by default, or a shared Postgres DB when
+<code class="docutils literal notranslate"><span class="pre">NW_GRAPH_BACKEND=postgres</span></code> (Phase 4, reelee#177).</p>
+<p>This module’s job is to bridge the two formats *without losing data and
+without requiring the user to do anything*. <a class="reference internal" href="#nw.migrate.migrate_to_graph" title="nw.migrate.migrate_to_graph"><code class="xref py py-func docutils literal notranslate"><span class="pre">migrate_to_graph()</span></code></a>:</p>
+<ul class="simple">
+<li><p>Is idempotent — running it twice is a no-op.</p></li>
+<li><p>Only writes the graph; the original <code class="docutils literal notranslate"><span class="pre">project.json</span></code> is left in place
+(and trimmed of fields the graph now owns, with the original kept under
+<code class="docutils literal notranslate"><span class="pre">.nw/project.json.pre-graph.bak</span></code> so a downgrade is possible).</p></li>
+<li><p>Marks completion via a <code class="docutils literal notranslate"><span class="pre">.nw/migrated_to_graph</span></code> sentinel file.</p></li>
+</ul>
+<p>Project-level metadata (title, song, global_style, notes, schema_version)
+stays in <code class="docutils literal notranslate"><span class="pre">project.json</span></code>. Sections, shots, characters, environments,
+decisions move into the graph.</p>
+<p class="rubric">Functions</p>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.migrate.is_migrated" title="nw.migrate.is_migrated"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_migrated</span></code></a>(project_root)</p></td>
+<td><p>True iff this project has been migrated to the lacing graph.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.migrate.migrate_to_graph" title="nw.migrate.migrate_to_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">migrate_to_graph</span></code></a>(project_root, *[, backup, ...])</p></td>
+<td><p>Migrate <code class="docutils literal notranslate"><span class="pre">project_root</span></code>'s project.json into the lacing graph.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.migrate.open_project_graph" title="nw.migrate.open_project_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">open_project_graph</span></code></a>(project_root)</p></td>
+<td><p>Open (and create on first call) the project's graph store, with tiers.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.migrate.open_project_graph_readonly" title="nw.migrate.open_project_graph_readonly"><code class="xref py py-obj docutils literal notranslate"><span class="pre">open_project_graph_readonly</span></code></a>(project_root)</p></td>
+<td><p>Open the project's graph store to <strong>read</strong>, without taking a write lock.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.migrate.project_asset_id" title="nw.migrate.project_asset_id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">project_asset_id</span></code></a>(project_root)</p></td>
+<td><p>The asset_id used as the project's graph anchor.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">project_graph_db_path</span></code>(project_root)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.migrate.is_migrated">
+<span class="sig-prename descclassname"><span class="pre">nw.migrate.</span></span><span class="sig-name descname"><span class="pre">is_migrated</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_root</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/migrate.html#is_migrated"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.migrate.is_migrated" title="Link to this definition">#</a></dt>
+<dd><p>True iff this project has been migrated to the lacing graph.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.migrate.migrate_to_graph">
+<span class="sig-prename descclassname"><span class="pre">nw.migrate.</span></span><span class="sig-name descname"><span class="pre">migrate_to_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_root</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">backup</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">was_attributed_to</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'agent:nw.migrate'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/migrate.html#migrate_to_graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.migrate.migrate_to_graph" title="Link to this definition">#</a></dt>
+<dd><p>Migrate <code class="docutils literal notranslate"><span class="pre">project_root</span></code>’s project.json into the lacing graph.</p>
+<p>Idempotent: returns <code class="docutils literal notranslate"><span class="pre">{&quot;already_migrated&quot;:</span> <span class="pre">1,</span> <span class="pre">...}</span></code> with zero writes if
+the sentinel exists. Otherwise reads <code class="docutils literal notranslate"><span class="pre">project.json</span></code>, writes equivalent
+annotations into <code class="docutils literal notranslate"><span class="pre">project.annot.sqlite</span></code>, drops the migrated arrays from
+<code class="docutils literal notranslate"><span class="pre">project.json</span></code>, and writes the sentinel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>project_root</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></a></span>) – Path to a project root.</p></li>
+<li><p><strong>backup</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – When True (default), copy the original <code class="docutils literal notranslate"><span class="pre">project.json</span></code> to
+<code class="docutils literal notranslate"><span class="pre">.nw/project.json.pre-graph.bak</span></code> before trimming.</p></li>
+<li><p><strong>was_attributed_to</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Provenance for the migrator. Defaults to
+<code class="docutils literal notranslate"><span class="pre">&quot;agent:nw.migrate&quot;</span></code>; pass <code class="docutils literal notranslate"><span class="pre">&quot;user:&lt;handle&gt;&quot;</span></code> from a CLI.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt><a href="#id1"><span class="problematic" id="id2">``</span></a>{“sections”: N, “shots”: N, “characters”: N, “environments”: N,</dt><dd><p>”decisions”: N}``.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.migrate.open_project_graph">
+<span class="sig-prename descclassname"><span class="pre">nw.migrate.</span></span><span class="sig-name descname"><span class="pre">open_project_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_root</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/migrate.html#open_project_graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.migrate.open_project_graph" title="Link to this definition">#</a></dt>
+<dd><p>Open (and create on first call) the project’s graph store, with tiers.</p>
+<p>The backend (SQLite file by default, or a shared Postgres DB when
+<code class="docutils literal notranslate"><span class="pre">NW_GRAPH_BACKEND=postgres</span></code>) is resolved by <a class="reference internal" href="nw.graph_backend.html#module-nw.graph_backend" title="nw.graph_backend"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nw.graph_backend</span></code></a> — the
+single config-driven seam. Callers get an <code class="docutils literal notranslate"><span class="pre">IntervalAnnotationStore</span></code> and
+never learn which backend answered.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">IntervalAnnotationStore</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.migrate.open_project_graph_readonly">
+<span class="sig-prename descclassname"><span class="pre">nw.migrate.</span></span><span class="sig-name descname"><span class="pre">open_project_graph_readonly</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_root</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/migrate.html#open_project_graph_readonly"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.migrate.open_project_graph_readonly" title="Link to this definition">#</a></dt>
+<dd><p>Open the project’s graph store to <strong>read</strong>, without taking a write lock.</p>
+<p><a class="reference internal" href="#nw.migrate.open_project_graph" title="nw.migrate.open_project_graph"><code class="xref py py-func docutils literal notranslate"><span class="pre">open_project_graph()</span></code></a> calls <code class="xref py py-func docutils literal notranslate"><span class="pre">_ensure_tiers()</span></code>, which issues an
+<code class="docutils literal notranslate"><span class="pre">add_tier</span></code> per project tier on <em>every</em> open. That is a write, so a reader
+contended with any live writer — and on SQLite it does not merely wait.
+Measured with a writer holding <code class="docutils literal notranslate"><span class="pre">BEGIN</span> <span class="pre">IMMEDIATE</span></code>:</p>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SqliteStore(path)</span></code></p></td>
+<td><p>OK in <strong>0.19 ms</strong></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">open_project_graph(root)</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">OperationalError</span></code> after <strong>5.4 s</strong></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>This read does not merely block — it raises</strong>, and it raises slowly
+enough to be mistaken for a hang and chased in the wrong layer. Phrasing
+it as efficiency would invite a revert; phrasing it as blocking would
+invite a busy-timeout tweak. The failure is categorical.</p>
+<p>That matters the moment anything fans out across projects while a render
+is running. Measured through the consumer that motivated it — listing
+sibling projects, each of which reads a genre envelope — one contended
+project cost <strong>5429 ms</strong> and <em>then</em> lost its metadata, because the caller
+catches per project. Through this path the same call is <strong>1.33 ms</strong> and
+keeps it.</p>
+<p>Two deliberate differences from the read-write open, both following from
+“a read does not write”:</p>
+<ul class="simple">
+<li><p><strong>No tier creation.</strong> The store is opened as it is on disk. A tier that
+is missing simply has no annotations to return, which is the honest
+answer to a reader.</p></li>
+<li><p><strong>No migration.</strong> <a class="reference internal" href="#nw.migrate.open_project_graph" title="nw.migrate.open_project_graph"><code class="xref py py-func docutils literal notranslate"><span class="pre">open_project_graph()</span></code></a> passes <code class="docutils literal notranslate"><span class="pre">migrate=True</span></code> so a
+file written under an older lacing schema upgrades on open. Upgrading is
+a write, and a surface that silently migrated every project it <em>listed</em>
+would be the same class of defect as one that created metadata for them.
+<code class="docutils literal notranslate"><span class="pre">ProjectGraph</span></code> falls back to the read-write open for such a file, so
+the rare case pays the lock and the common case does not.</p></li>
+</ul>
+<p>In Postgres mode this delegates to the ordinary open: MVCC readers do not
+block writers, so the problem being solved is SQLite-specific and inventing
+a second path there would add a seam with nothing behind it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#FileNotFoundError" title="(in Python v3.14)"><strong>FileNotFoundError</strong></a> – in SQLite mode, when the project has no graph
+    database yet. Creating one is a write; a reader is told plainly
+    that there is nothing to read rather than quietly making it.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">IntervalAnnotationStore</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.migrate.project_asset_id">
+<span class="sig-prename descclassname"><span class="pre">nw.migrate.</span></span><span class="sig-name descname"><span class="pre">project_asset_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_root</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/migrate.html#project_asset_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.migrate.project_asset_id" title="Link to this definition">#</a></dt>
+<dd><p>The asset_id used as the project’s graph anchor.</p>
+<p>For projects with a song registered in project.json, this is the SHA-256
+of the song bytes. Otherwise a stable fallback derived from the title.</p>
+<p>Mirrors <a class="reference internal" href="nw.storyboard.html#nw.storyboard.project_asset_id" title="nw.storyboard.project_asset_id"><code class="xref py py-func docutils literal notranslate"><span class="pre">nw.storyboard.project_asset_id()</span></code></a> so the project graph and
+the storyboard share an asset_id.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="nw.jobs.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">nw.jobs</div></div>
+    </a>
+  </div><div class="navigation-next">
+    <a href="nw.pricing.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">nw.pricing</div>
+      </div>
+      <i class="i-lucide chevron-right"></i>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright">
+  <p>
+    Made with
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+  <a href="https://github.com/thorwhalen/nw" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div>
+    </div>
+  </div>
+</footer>
+      <script src="../_static/documentation_options.js?v=1c03bfdc"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=fd10adb8"></script>
+      <script src="../_static/shibuya.js?v=50760d75"></script></body>
+</html>

@@ -1,4 +1,0 @@
-nw.transforms.fanout
-====================
-.. automodule:: nw.transforms.fanout
-   :members:

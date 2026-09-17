@@ -1,0 +1,12 @@
+nw.bodies.render\_result
+========================
+
+.. automodule:: nw.bodies.render_result
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      RenderResultBodyV1
+   

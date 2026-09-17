@@ -1,0 +1,27 @@
+nw.freshness
+============
+
+.. automodule:: nw.freshness
+
+   
+   .. rubric:: Module Attributes
+
+   .. autosummary::
+   
+      STALE_REASONS
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      all_stale
+      stale_after
+      stale_verdicts
+      stale_verdicts_all
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      FreshnessVerdict
+   

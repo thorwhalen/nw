@@ -1,0 +1,42 @@
+nw.bodies
+=========
+
+.. automodule:: nw.bodies
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      build_verifying_trace
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      CharacterRefBodyV1
+      DecisionBodyV1
+      EnvironmentRefBodyV1
+      GenreEnvelopeBodyV1
+      RenderResultBodyV1
+      SectionBodyV1
+      ShotBodyV1
+      UnproducedOutputBodyV1
+      UpstreamDigestV1
+      VerifyingTraceBodyV1
+   
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :recursive:
+
+   character_ref
+   decision
+   environment_ref
+   genre_envelope
+   render_result
+   section
+   shot
+   unproduced_output
+   verifying_trace

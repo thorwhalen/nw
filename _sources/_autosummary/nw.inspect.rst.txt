@@ -1,0 +1,22 @@
+nw.inspect
+==========
+
+.. automodule:: nw.inspect
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      compose_report
+      shot_report
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      ComposeReport
+      FrozenSegment
+      Gap
+      ShotReport
+   

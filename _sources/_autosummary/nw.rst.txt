@@ -1,0 +1,161 @@
+﻿nw
+==
+
+.. automodule:: nw
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      parse_ref
+      format_ref
+      genre_catalog
+      describe_genre
+      recommend_genre
+      resolve_defaults
+      register_genre_resolver
+      resolve_genre
+      register_genre_initializer
+      initialize_genre
+      register_genre_project_factory
+      has_genre_project_factory
+      create_genre_project
+      annotations_at_tier
+      apply_to_projects
+      clone_project
+      backfill_traces
+      collect_orphan_traces
+      compose_report
+      derived_from
+      descendants_of
+      execute_render
+      execute_render_panel_images
+      get_genre
+      get_strategy
+      get_transform
+      is_migrated
+      iter_all_annotations
+      list_genres
+      list_strategies
+      list_transforms
+      migrate_to_graph
+      open_project_stores
+      open_storyboard
+      plan_render_panel_images
+      plan_render_shot
+      cost_records
+      current_quote
+      plan_from_cost_records
+      quote_from_cost_records
+      quote_render_decision
+      unquotable
+      prepare_shot
+      project_asset_id
+      register_genre
+      register_strategy
+      register_transform
+      transform_catalog
+      stamp_transform_identity
+      work_item_instance_id
+      fan_out_plan
+      fan_out_execute
+      as_secrets
+      redact
+      redact_exception
+      using_secrets
+      save_storyboard
+      shot_report
+      menu
+      plan_checks
+      register_check
+      suggest
+      validate
+      all_stale
+      stale_after
+      stale_verdicts
+      stale_verdicts_all
+      storyboard_db_path
+      storyboard_from_shots
+      summarize_all
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Deliverable
+      Resolver
+      BaseTransform
+      CharacterImage
+      CharacterRef
+      ComposeReport
+      FreshnessVerdict
+      DecisionEntry
+      EnvironmentRef
+      FrozenSegment
+      Gap
+      Genre
+      Template
+      Project
+      ProjectGraph
+      StoredUnproducedOutput
+      UnproducedOutputBodyV1
+      ProjectSpec
+      ProjectSummary
+      ResumptionBrief
+      SectionSpec
+      ShotPreparation
+      ShotReport
+      ShotSpec
+      SongInfo
+      Strategy
+      Transform
+      TransformInputs
+      TransformResult
+      FailedOutput
+      PlanQuote
+      WorkItem
+      FanOutUnit
+      FanOutPlan
+      FanOutItemResult
+      FanOutResult
+      Secrets
+      Check
+      CheckResult
+      Finding
+      ValidationReport
+   
+   .. rubric:: Exceptions
+
+   .. autosummary::
+   
+      CacheModeConflict
+      ValidationError
+   
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :recursive:
+
+   freshness
+   inspect
+   checks
+   bodies
+   delivery
+   experiment
+   genres
+   graph
+   graph_backend
+   jobs
+   migrate
+   pricing
+   project
+   renderers
+   schema
+   script_segmentation
+   secrets
+   storyboard
+   transforms
+   validation
+   workflow

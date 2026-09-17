@@ -1,4 +1,0 @@
-nw.genres
-=========
-.. automodule:: nw.genres
-   :members:

@@ -1,4 +1,0 @@
-nw.bodies.character_ref
-=======================
-.. automodule:: nw.bodies.character_ref
-   :members:

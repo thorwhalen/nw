@@ -1,4 +1,0 @@
-nw.renderers._common
-====================
-.. automodule:: nw.renderers._common
-   :members:

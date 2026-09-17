@@ -1,0 +1,13 @@
+nw.checks
+=========
+
+.. automodule:: nw.checks
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      as_path
+      register_builtin_checks
+   

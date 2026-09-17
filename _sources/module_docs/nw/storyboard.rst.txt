@@ -1,4 +1,0 @@
-nw.storyboard
-=============
-.. automodule:: nw.storyboard
-   :members:

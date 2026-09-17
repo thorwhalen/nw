@@ -1,0 +1,12 @@
+nw.bodies.character\_ref
+========================
+
+.. automodule:: nw.bodies.character_ref
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      CharacterRefBodyV1
+   

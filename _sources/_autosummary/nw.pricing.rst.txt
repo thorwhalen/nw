@@ -1,0 +1,31 @@
+nw.pricing
+==========
+
+.. automodule:: nw.pricing
+
+   
+   .. rubric:: Module Attributes
+
+   .. autosummary::
+   
+      QuoteStatus
+      TOTAL_AGREEMENT_ABS_TOL_USD
+      DISAGREEING_TOTAL_REASON
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      cost_records
+      current_quote
+      plan_from_cost_records
+      quote_from_cost_records
+      quote_render_decision
+      unquotable
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      PlanQuote
+   

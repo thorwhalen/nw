@@ -1,620 +1,884 @@
-
-
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="./">
+<html lang="en" data-accent-color="grass" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Welcome to nw’s documentation! &mdash; nw 0.0.52 documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
-      <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-      <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>nw</title><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="API reference" href="api.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d88b86f9" />
+    <link rel="stylesheet" type="text/css" href="_static/shibuya.css?v=2ceb65ce" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link media="print" rel="stylesheet" type="text/css" href="_static/print.css?v=20ff2c19" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    
+  <meta property="og:type" content="website"/><meta property="og:title" content="nw"/>
+    <meta name="twitter:card" content="summary"/>
   
-      <script src="_static/jquery.js?v=5d32c60e"></script>
-      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=73f2ab08"></script>
+<link rel="alternate" type="text/markdown" href="index.html.md">
+<link rel="describedby" href="llms.txt" type="text/markdown">
+</head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="#">
+      
+      
+      <strong>nw</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/thorwhalen/nw" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="0"><ul>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="_autosummary/nw.html">nw</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/nw.freshness.html">nw.freshness</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/nw.inspect.html">nw.inspect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/nw.checks.html">nw.checks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/nw.bodies.html">nw.bodies</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/nw.bodies.character_ref.html">nw.bodies.character_ref</a></li>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/nw.bodies.decision.html">nw.bodies.decision</a></li>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/nw.bodies.environment_ref.html">nw.bodies.environment_ref</a></li>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/nw.bodies.genre_envelope.html">nw.bodies.genre_envelope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/nw.bodies.render_result.html">nw.bodies.render_result</a></li>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/nw.bodies.section.html">nw.bodies.section</a></li>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/nw.bodies.shot.html">nw.bodies.shot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/nw.bodies.unproduced_output.html">nw.bodies.unproduced_output</a></li>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/nw.bodies.verifying_trace.html">nw.bodies.verifying_trace</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/nw.delivery.html">nw.delivery</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/nw.experiment.html">nw.experiment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/nw.genres.html">nw.genres</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/nw.graph.html">nw.graph</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/nw.graph_backend.html">nw.graph_backend</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/nw.jobs.html">nw.jobs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/nw.migrate.html">nw.migrate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/nw.pricing.html">nw.pricing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/nw.project.html">nw.project</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/nw.renderers.html">nw.renderers</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/nw.renderers.composite_lipsync.html">nw.renderers.composite_lipsync</a></li>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/nw.renderers.image_to_video.html">nw.renderers.image_to_video</a></li>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/nw.renderers.lipsync.html">nw.renderers.lipsync</a></li>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/nw.renderers.still.html">nw.renderers.still</a></li>
+<li class="toctree-l4"><a class="reference internal" href="_autosummary/nw.renderers.text_to_video.html">nw.renderers.text_to_video</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/nw.schema.html">nw.schema</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/nw.script_segmentation.html">nw.script_segmentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/nw.secrets.html">nw.secrets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/nw.storyboard.html">nw.storyboard</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/nw.transforms.html">nw.transforms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/nw.validation.html">nw.validation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="_autosummary/nw.workflow.html">nw.workflow</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ai-agents.html">For AI agents</a></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#install">Install</a></li>
+<li><a class="reference internal" href="#genre-and-template-the-central-abstraction">Genre and Template &#8212; the central abstraction</a><ul>
+<li><a class="reference internal" href="#genre-project-resolve-initialize-create">Genre &#8594; project: resolve, initialize, create</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#transforms-the-a-b-arrow">Transforms &#8212; the A &#8594; B arrow</a><ul>
+<li><a class="reference internal" href="#a-blocked-or-failed-output-still-tells-you-why-after-reload">A blocked or failed output still tells you why, after reload</a></li>
+<li><a class="reference internal" href="#a-caller-s-key-reaches-execute-and-nothing-else">A caller&#8217;s key reaches <code class="docutils literal notranslate"><span class="pre">execute</span></code> and nothing else</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#prepare-plan-execute-with-a-budget-gate">prepare &#8594; plan &#8594; execute, with a budget gate</a><ul>
+<li><a class="reference internal" href="#a-stored-quote-is-not-a-current-price">A stored quote is not a current price</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#a-typed-project-on-disk">A typed project on disk</a></li>
+<li><a class="reference internal" href="#provenance-and-freshness">Provenance and freshness</a></li>
+<li><a class="reference internal" href="#async-jobs">Async jobs</a></li>
+<li><a class="reference internal" href="#render-strategies">Render strategies</a></li>
+<li><a class="reference internal" href="#storyboard-layer">Storyboard layer</a></li>
+<li><a class="reference internal" href="#qa-reports">QA reports</a></li>
+<li><a class="reference internal" href="#validation-a-pluggable-menu-placed-where-you-want-it">Validation &#8212; a pluggable menu, placed where you want it</a></li>
+<li><a class="reference internal" href="#sibling-experiments">Sibling experiments</a></li>
+<li><a class="reference internal" href="#api-at-a-glance">API at a glance</a></li>
+<li><a class="reference internal" href="#design-notes">Design notes</a></li>
+<li><a class="reference internal" href="#known-limits">Known limits</a></li>
+<li><a class="reference internal" href="#dependencies">Dependencies</a></li>
+<li><a class="reference internal" href="#license">License</a></li>
+</ul>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="#"><span itemprop="name">nw</span></a>
+        <meta itemprop="position" content="1" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+  <article class="yue dark-code" role="main">
+          <!-- generated by epythet -->
+<section id="nw">
+<h1>nw<a class="headerlink" href="#nw" title="Link to this heading">#</a></h1>
+<p><strong>Narrative Workflow</strong> — the substrate audiovisual production apps are built on.</p>
+<p>A project is a folder. A <strong>genre</strong> — music video, explainer, commentary weave,
+slideshow — is the reusable specialization on top: pure data, declared over the
+substrate, carrying no engine of its own. <code class="docutils literal notranslate"><span class="pre">nw</span></code> owns the engine: the typed
+project facade, the <code class="docutils literal notranslate"><span class="pre">prepare</span> <span class="pre">→</span> <span class="pre">plan</span> <span class="pre">→</span> <span class="pre">execute</span></code> split with a cost gate, the
+Transform contract, an async job layer, a provenance graph with freshness
+queries, and QA reports. Apps (<code class="docutils literal notranslate"><span class="pre">reelee</span></code>, <code class="docutils literal notranslate"><span class="pre">muvid</span></code>, <code class="docutils literal notranslate"><span class="pre">braidio</span></code>) supply their own
+body schemas, Transforms, and genres — without modifying <code class="docutils literal notranslate"><span class="pre">nw</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span><span class="w"> </span><span class="nn">nw</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="c1"># Declare a kind of production (apps do this once, in their own package).</span>
+</span><span data-line="4"><span class="n">nw</span><span class="o">.</span><span class="n">register_genre</span><span class="p">(</span>
+</span><span data-line="5">    <span class="n">nw</span><span class="o">.</span><span class="n">Genre</span><span class="p">(</span>
+</span><span data-line="6">        <span class="n">slug</span><span class="o">=</span><span class="s2">"slideshow"</span><span class="p">,</span>
+</span><span data-line="7">        <span class="n">title</span><span class="o">=</span><span class="s2">"Slideshow"</span><span class="p">,</span>
+</span><span data-line="8">        <span class="n">description</span><span class="o">=</span><span class="s2">"Stills over narration, assembled to a video."</span><span class="p">,</span>
+</span><span data-line="9">        <span class="n">transform_names</span><span class="o">=</span><span class="p">(</span><span class="s2">"clips_to_animatic.ffmpeg"</span><span class="p">,),</span>
+</span><span data-line="10">        <span class="n">projection_entrypoint</span><span class="o">=</span><span class="s2">"clips_to_animatic.ffmpeg"</span><span class="p">,</span>
+</span><span data-line="11">        <span class="n">templates</span><span class="o">=</span><span class="p">(</span><span class="n">nw</span><span class="o">.</span><span class="n">Template</span><span class="p">(</span><span class="n">slug</span><span class="o">=</span><span class="s2">"lecture"</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">"Lecture deck"</span><span class="p">),),</span>
+</span><span data-line="12">    <span class="p">)</span>
+</span><span data-line="13"><span class="p">)</span>
+</span><span data-line="14">
+</span><span data-line="15"><span class="n">nw</span><span class="o">.</span><span class="n">list_genres</span><span class="p">()</span>  <span class="c1"># ['slideshow']</span>
+</span><span data-line="16"><span class="n">nw</span><span class="o">.</span><span class="n">genre_catalog</span><span class="p">()</span>  <span class="c1"># JSON-able: what a CLI / HTTP route / MCP tool serves</span>
+</span><span data-line="17"><span class="n">nw</span><span class="o">.</span><span class="n">resolve_genre</span><span class="p">(</span>
+</span><span data-line="18">    <span class="s2">"slideshow"</span><span class="p">,</span> <span class="s2">"lecture"</span>
+</span><span data-line="19"><span class="p">)</span>  <span class="c1"># {'genre': ..., 'template': ..., 'params': {...}}</span>
+</span></pre></div>
+</div>
+<section id="install">
+<h2>Install<a class="headerlink" href="#install" title="Link to this heading">#</a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span data-line="1">pip<span class="w"> </span>install<span class="w"> </span>nw
+</span></pre></div>
+</div>
+</section>
+<section id="genre-and-template-the-central-abstraction">
+<h2>Genre and Template — the central abstraction<a class="headerlink" href="#genre-and-template-the-central-abstraction" title="Link to this heading">#</a></h2>
+<p>A <code class="docutils literal notranslate"><span class="pre">Genre</span></code> is a <strong>reusable definition of a production kind</strong>. It is a frozen
+dataclass that <em>references</em> substrate pieces by name rather than owning them:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>field</p></th>
+<th class="head"><p>what it declares</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">body_schema_uris</span></code></p></td>
+<td><p>the lacing body schemas (<code class="docutils literal notranslate"><span class="pre">annot://schema/&lt;kind&gt;/vN</span></code>) its artifacts validate against</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">transform_names</span></code></p></td>
+<td><p>the <code class="docutils literal notranslate"><span class="pre">nw.transforms</span></code> entries forming its pipeline DAG</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">strategy_names</span></code></p></td>
+<td><p>the optional <code class="docutils literal notranslate"><span class="pre">nw.renderers</span></code> strategies it dispatches to</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">projection_entrypoint</span></code></p></td>
+<td><p>the final assemble/render step producing the delivered artifact</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">templates</span></code></p></td>
+<td><p>named presets <em>within</em> the genre (see below)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">intake_kinds</span></code></p></td>
+<td><p>the “what are you making?” answers that select this genre</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">cost_profile</span></code></p></td>
+<td><p>a short tag routing the cost gate to the right estimator</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">defaults</span></code></p></td>
+<td><p>the “start from scratch” params</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">status</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">available</span></code> · <code class="docutils literal notranslate"><span class="pre">experimental</span></code> · <code class="docutils literal notranslate"><span class="pre">planned</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>A <strong><code class="docutils literal notranslate"><span class="pre">Template</span></code></strong> is a named preset <em>within</em> a genre — a filled-in default
+configuration (“Deep Dive”, “Children’s book”, “Math explainer”). The substrate
+owns a Template’s <em>identity</em> (slug / title / description) and carries a
+genre-defined <code class="docutils literal notranslate"><span class="pre">params</span></code> payload it deliberately does <strong>not</strong> interpret; the app
+that owns the genre validates and resolves those params. That keeps a genre
+self-describing for any consumer (a CLI, an HTTP catalog, an MCP connector)
+while app-specific meaning stays in the app.</p>
+<p><code class="docutils literal notranslate"><span class="pre">nw</span></code> ships <strong>no</strong> built-in genres. Concrete genres register themselves from
+their own packages, so adding one is a one-file registration — the same
+open-closed shape as <code class="docutils literal notranslate"><span class="pre">nw.transforms</span></code> and <code class="docutils literal notranslate"><span class="pre">nw.renderers</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">nw</span><span class="o">.</span><span class="n">register_genre</span><span class="p">(</span><span class="n">nw</span><span class="o">.</span><span class="n">Genre</span><span class="p">(</span><span class="n">slug</span><span class="o">=</span><span class="s2">"music-video"</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">"Music video"</span><span class="p">,</span> <span class="o">...</span><span class="p">))</span>
+</span><span data-line="2"><span class="n">nw</span><span class="o">.</span><span class="n">get_genre</span><span class="p">(</span><span class="s2">"music-video"</span><span class="p">)</span><span class="o">.</span><span class="n">is_ready</span><span class="p">()</span>  <span class="c1"># every declared transform/strategy present?</span>
+</span><span data-line="3"><span class="n">nw</span><span class="o">.</span><span class="n">recommend_genre</span><span class="p">(</span><span class="s2">"essay"</span><span class="p">)</span>  <span class="c1"># an intake answer -&gt; a genre slug (or None)</span>
+</span></pre></div>
+</div>
+<section id="genre-project-resolve-initialize-create">
+<h3>Genre → project: resolve, initialize, create<a class="headerlink" href="#genre-project-resolve-initialize-create" title="Link to this heading">#</a></h3>
+<p>Three registries connect a chosen genre to an actual project. Each is optional,
+and each is registered by the genre’s <strong>owning app</strong> — so a host that aggregates
+many genres can serve any of them without knowing which app owns which.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># 1. resolve — pure: (genre, template) -&gt; the creation envelope</span>
+</span><span data-line="2"><span class="n">nw</span><span class="o">.</span><span class="n">resolve_genre</span><span class="p">(</span><span class="s2">"music-video"</span><span class="p">,</span> <span class="s2">"cinematic_clip"</span><span class="p">)</span>
+</span><span data-line="3"><span class="c1"># {'genre': 'music-video', 'template': 'cinematic_clip', 'params': {...}}</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="c1"># 2. initialize — the side-effecting twin: seed a freshly-created project</span>
+</span><span data-line="6"><span class="n">proj</span> <span class="o">=</span> <span class="n">nw</span><span class="o">.</span><span class="n">Project</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="s2">"my_video"</span><span class="p">)</span>
+</span><span data-line="7"><span class="n">nw</span><span class="o">.</span><span class="n">initialize_genre</span><span class="p">(</span><span class="s2">"music-video"</span><span class="p">,</span> <span class="n">proj</span><span class="p">,</span> <span class="n">template</span><span class="o">=</span><span class="s2">"cinematic_clip"</span><span class="p">)</span>
+</span><span data-line="8">
+</span><span data-line="9"><span class="c1"># 3. create — for a *plugged-in* genre a host aggregates but doesn't own:</span>
+</span><span data-line="10"><span class="c1">#    the owning app supplies "make a project for this in the caller's own space"</span>
+</span><span data-line="11"><span class="n">nw</span><span class="o">.</span><span class="n">create_genre_project</span><span class="p">(</span><span class="s2">"commentary-weave"</span><span class="p">,</span> <span class="n">caller_id</span><span class="p">,</span> <span class="s2">"ep_01"</span><span class="p">)</span>
+</span></pre></div>
+</div>
+<p>An initializer must confine its side effects to the project it is given, so a
+failed create can be reverted by removing the project folder —
+<code class="docutils literal notranslate"><span class="pre">create_genre_project</span></code> rolls back automatically and is all-or-nothing.</p>
+<p>The naming rationale (Genre / Template over <code class="docutils literal notranslate"><span class="pre">kind</span></code> / <code class="docutils literal notranslate"><span class="pre">format</span></code> / <code class="docutils literal notranslate"><span class="pre">recipe</span></code> / …) is
+in <a class="reference external" href="https://github.com/thorwhalen/nw/issues/10">thorwhalen/nw#10</a> and the
+architecture discussion that settled it.</p>
+</section>
+</section>
+<section id="transforms-the-a-b-arrow">
+<h2>Transforms — the A → B arrow<a class="headerlink" href="#transforms-the-a-b-arrow" title="Link to this heading">#</a></h2>
+<p>Every step in an audiovisual workflow is a <code class="docutils literal notranslate"><span class="pre">Transform</span></code>: screenplay → treatment,
+beat → storyboard panel, panel → image, clips → animatic, shot → rendered clip.
+A Transform is a <strong>swappable, costed function from A-annotations to
+B-annotations</strong>, in two phases:</p>
+<ol class="arabic simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">plan()</span></code></strong> — <em>pure data</em>. Returns a <code class="docutils literal notranslate"><span class="pre">falaw.Plan</span></code> plus <em>skeleton</em> output
+annotations that already carry provenance, so even a dry-run inspection shows
+what will be produced, from what, and at what cost. No billable calls.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">execute()</span></code></strong> — runs the Plan, completes the skeletons with real artifact
+references, writes them to the project graph, and returns a <code class="docutils literal notranslate"><span class="pre">TransformResult</span></code>
+with <em>actual</em> cost and cache savings.</p></li>
+</ol>
+<p>Transforms are keyed by name in an <code class="docutils literal notranslate"><span class="pre">xdol.Registry</span></code>, following
+<code class="docutils literal notranslate"><span class="pre">&lt;from_kind&gt;_to_&lt;to_kind&gt;[.&lt;flavor&gt;[.&lt;variant&gt;]]</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">nw</span><span class="o">.</span><span class="n">register_transform</span><span class="p">(</span><span class="n">MyTransform</span><span class="p">())</span>
+</span><span data-line="2"><span class="n">t</span> <span class="o">=</span> <span class="n">nw</span><span class="o">.</span><span class="n">get_transform</span><span class="p">(</span><span class="s2">"beat_to_panel.llm.default"</span><span class="p">)</span>
+</span><span data-line="3"><span class="n">plan</span><span class="p">,</span> <span class="n">skeleton</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">plan</span><span class="p">(</span><span class="n">proj</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+</span><span data-line="4"><span class="n">result</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">proj</span><span class="p">,</span> <span class="n">plan</span><span class="p">,</span> <span class="n">skeleton</span><span class="p">)</span>
+</span><span data-line="5"><span class="n">result</span><span class="o">.</span><span class="n">cost_usd_actual</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">cache_hit_savings_usd</span>
+</span></pre></div>
+</div>
+<p>Most Transforms subclass <code class="docutils literal notranslate"><span class="pre">nw.BaseTransform</span></code> and override only <code class="docutils literal notranslate"><span class="pre">plan()</span></code> plus the
+class-level <code class="docutils literal notranslate"><span class="pre">name</span></code> / <code class="docutils literal notranslate"><span class="pre">input_kinds</span></code> / <code class="docutils literal notranslate"><span class="pre">output_kind</span></code> / <code class="docutils literal notranslate"><span class="pre">params_model</span></code> /
+<code class="docutils literal notranslate"><span class="pre">is_batch</span></code>. <code class="docutils literal notranslate"><span class="pre">params_model</span></code> is a Pydantic model, which is what gives an MCP
+server or a CLI a JSON Schema for the Transform for free.</p>
+<section id="a-blocked-or-failed-output-still-tells-you-why-after-reload">
+<h3>A blocked or failed output still tells you why, after reload<a class="headerlink" href="#a-blocked-or-failed-output-still-tells-you-why-after-reload" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">execute(...,</span> <span class="pre">on_failure=&quot;isolate&quot;)</span></code> runs what can be run and reports the
+rest instead of raising: <code class="docutils literal notranslate"><span class="pre">result.failed</span></code> / <code class="docutils literal notranslate"><span class="pre">result.blocked</span></code> are
+<code class="docutils literal notranslate"><span class="pre">FailedOutput</span></code>s carrying a <code class="docutils literal notranslate"><span class="pre">reason</span></code> (and, for a blocked one, <code class="docutils literal notranslate"><span class="pre">blocked_by</span></code>).
+That reason is also persisted — <code class="docutils literal notranslate"><span class="pre">proj.graph.unproduced_outputs()</span></code> reads it
+back after a reload, and it disappears on its own the moment a retry
+produces the real output.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">result</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">proj</span><span class="p">,</span> <span class="n">plan</span><span class="p">,</span> <span class="n">skeleton</span><span class="p">,</span> <span class="n">on_failure</span><span class="o">=</span><span class="s2">"isolate"</span><span class="p">)</span>
+</span><span data-line="2"><span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">reason</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">failed</span><span class="p">]</span>  <span class="c1"># in this response</span>
+</span><span data-line="3"><span class="p">[</span><span class="n">u</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">reason</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">proj</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">unproduced_outputs</span><span class="p">()]</span>  <span class="c1"># survives reload</span>
+</span></pre></div>
+</div>
+</section>
+<section id="a-caller-s-key-reaches-execute-and-nothing-else">
+<h3>A caller’s key reaches <code class="docutils literal notranslate"><span class="pre">execute</span></code> and nothing else<a class="headerlink" href="#a-caller-s-key-reaches-execute-and-nothing-else" title="Link to this heading">#</a></h3>
+<p>A server rendering on a caller’s bring-your-own credential hands it to
+<code class="docutils literal notranslate"><span class="pre">execute(...,</span> <span class="pre">secrets=)</span></code> — a read-only <code class="docutils literal notranslate"><span class="pre">{provider_name:</span> <span class="pre">key}</span></code> mapping
+(<code class="docutils literal notranslate"><span class="pre">nw.Secrets</span></code>) — and to nothing else. It never enters the Plan, the skeleton,
+provenance, a cache key, a run record, the job index or a log line; the type
+redacts its <code class="docutils literal notranslate"><span class="pre">repr</span></code>, refuses pickling and is not JSON-serializable, so the
+accident raises instead of leaking. <code class="docutils literal notranslate"><span class="pre">fan_out_execute</span></code> and <code class="docutils literal notranslate"><span class="pre">nw.jobs.enqueue</span></code>
+pass it accepts-it-or-not, exactly like <code class="docutils literal notranslate"><span class="pre">on_failure</span></code>, and bind it around the
+call regardless — so a <code class="docutils literal notranslate"><span class="pre">&quot;fal&quot;</span></code> secret is the fal credential even for an
+<code class="docutils literal notranslate"><span class="pre">execute</span></code> override that predates the seam. <code class="docutils literal notranslate"><span class="pre">BaseTransform.execute</span></code> (and nw’s
+own shot renderers) bind it the same way; an app declares the keyword on its
+own paid Transforms and reads the provider it calls (braidio reads
+<code class="docutils literal notranslate"><span class="pre">&quot;elevenlabs&quot;</span></code>). A failure message that quotes the key is redacted before it
+reaches a run record or the job index.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">result</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">proj</span><span class="p">,</span> <span class="n">plan</span><span class="p">,</span> <span class="n">skeleton</span><span class="p">,</span> <span class="n">secrets</span><span class="o">=</span><span class="p">{</span><span class="s2">"fal"</span><span class="p">:</span> <span class="n">caller_fal_key</span><span class="p">})</span>
+</span><span data-line="2"><span class="n">nw</span><span class="o">.</span><span class="n">fan_out_execute</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">proj</span><span class="p">,</span> <span class="n">fan_out</span><span class="p">,</span> <span class="n">secrets</span><span class="o">=</span><span class="p">{</span><span class="s2">"elevenlabs"</span><span class="p">:</span> <span class="n">caller_key</span><span class="p">})</span>
+</span><span data-line="3"><span class="n">nw</span><span class="o">.</span><span class="n">jobs</span><span class="o">.</span><span class="n">enqueue</span><span class="p">(</span><span class="n">proj</span><span class="p">,</span> <span class="s2">"weave"</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">dispatch</span><span class="o">=...</span><span class="p">,</span> <span class="n">secrets</span><span class="o">=</span><span class="n">secrets</span><span class="p">)</span>  <span class="c1"># not in params</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+<section id="prepare-plan-execute-with-a-budget-gate">
+<h2>prepare → plan → execute, with a budget gate<a class="headerlink" href="#prepare-plan-execute-with-a-budget-gate" title="Link to this heading">#</a></h2>
+<p>The <strong>shot</strong> render unit makes the same split concrete, and it is why cost is
+knowable before the network goes near a credit card. It is shot-typed by
+construction (<code class="docutils literal notranslate"><span class="pre">ShotSpec</span></code> in, <code class="docutils literal notranslate"><span class="pre">output.mp4</span></code> out), so it is <strong>not</strong> the extension
+point for a new render <em>kind</em> — register a <code class="docutils literal notranslate"><span class="pre">Transform</span></code> for that. A new way to
+render a <em>shot</em> still belongs here, and is adapted into a Transform for free
+(see “Render strategies” below). Details:
+<code class="docutils literal notranslate"><span class="pre">misc/docs/Rendering</span> <span class="pre">Provenance</span> <span class="pre">and</span> <span class="pre">Partial</span> <span class="pre">Re-render.md</span></code>.</p>
+<ol class="arabic simple">
+<li><p><strong>prepare</strong> (<code class="docutils literal notranslate"><span class="pre">nw.prepare_shot</span></code>) — local work: audio slice, anchor resolution,
+storyboard prompt assembly. No billable calls.</p></li>
+<li><p><strong>plan</strong> (<code class="docutils literal notranslate"><span class="pre">nw.plan_render_shot</span></code>) — pure data: a <code class="docutils literal notranslate"><span class="pre">falaw.Plan</span></code>. Inspect
+<code class="docutils literal notranslate"><span class="pre">plan.total_cost_usd</span></code> before executing.</p></li>
+<li><p><strong>execute</strong> (<code class="docutils literal notranslate"><span class="pre">nw.execute_render</span></code>) — the only phase that talks to fal.
+Materializes <code class="docutils literal notranslate"><span class="pre">shots/&lt;id&gt;/output.mp4</span></code> and records a render-decision in the graph.</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">prep</span> <span class="o">=</span> <span class="n">nw</span><span class="o">.</span><span class="n">prepare_shot</span><span class="p">(</span><span class="n">proj</span><span class="p">,</span> <span class="s2">"shot_01"</span><span class="p">,</span> <span class="n">upload</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># dry-run / cost preview</span>
+</span><span data-line="2"><span class="n">plan</span> <span class="o">=</span> <span class="n">nw</span><span class="o">.</span><span class="n">plan_render_shot</span><span class="p">(</span><span class="n">prep</span><span class="p">,</span> <span class="n">quality</span><span class="o">=</span><span class="s2">"balanced"</span><span class="p">)</span>
+</span><span data-line="3"><span class="nb">print</span><span class="p">(</span><span class="n">plan</span><span class="o">.</span><span class="n">total_cost_usd</span><span class="p">,</span> <span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">tool</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">plan</span><span class="o">.</span><span class="n">calls</span><span class="p">])</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="n">prep</span> <span class="o">=</span> <span class="n">nw</span><span class="o">.</span><span class="n">prepare_shot</span><span class="p">(</span><span class="n">proj</span><span class="p">,</span> <span class="s2">"shot_01"</span><span class="p">)</span>  <span class="c1"># upload=True for the real run</span>
+</span><span data-line="6"><span class="n">output</span> <span class="o">=</span> <span class="n">nw</span><span class="o">.</span><span class="n">execute_render</span><span class="p">(</span><span class="n">prep</span><span class="p">,</span> <span class="n">plan</span><span class="p">,</span> <span class="n">project</span><span class="o">=</span><span class="n">proj</span><span class="p">)</span>
+</span></pre></div>
+</div>
+<p>Plans built with <code class="docutils literal notranslate"><span class="pre">upload=False</span></code> are refused at execute time — they exist for
+inspection only.</p>
+<section id="a-stored-quote-is-not-a-current-price">
+<h3>A stored quote is not a current price<a class="headerlink" href="#a-stored-quote-is-not-a-current-price" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">plan.total_cost_usd</span></code> is true at the moment it is read and an <em>as-of</em> figure ever after: falaw’s rate tables move — 0.0.46 re-quoted every premium LLM call tenfold upward — so a figure nw persisted before a table moves under-quotes the run it is later used to describe or gate. Under-quoting is the one direction a spend decision must never err in.</p>
+<p><code class="docutils literal notranslate"><span class="pre">nw.pricing</span></code> is the one place nw re-quotes. Give it a plan (or the calls stored in a render decision) and it answers with today’s price, the stale one beside it, and which of the two you are allowed to show:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">quote</span> <span class="o">=</span> <span class="n">nw</span><span class="o">.</span><span class="n">current_quote</span><span class="p">(</span><span class="n">plan</span><span class="p">)</span>  <span class="c1"># or nw.quote_render_decision(payload)</span>
+</span><span data-line="2"><span class="n">quote</span><span class="o">.</span><span class="n">total_usd</span>  <span class="c1"># today's price, or None</span>
+</span><span data-line="3"><span class="n">quote</span><span class="o">.</span><span class="n">status</span>  <span class="c1"># "unchanged" | "changed" | "unknown"</span>
+</span><span data-line="4"><span class="n">quote</span><span class="o">.</span><span class="n">as_of_total_usd</span>  <span class="c1"># what the plan said when it was written</span>
+</span><span data-line="5"><span class="n">quote</span><span class="o">.</span><span class="n">delta_usd</span>  <span class="c1"># the movement, or None if either side is unknown</span>
+</span></pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">None</span></code> means <strong>unknown, never free</strong>. A call carrying no <code class="docutils literal notranslate"><span class="pre">falaw.CostBasis</span></code> — one hand-built outside a <code class="docutils literal notranslate"><span class="pre">plan_*</span></code>, or planned before falaw 0.0.49 — cannot be re-quoted at all, so it comes back unknown rather than repeating its frozen number. <code class="docutils literal notranslate"><span class="pre">nw.jobs.estimate</span></code> and <code class="docutils literal notranslate"><span class="pre">nw.jobs.enqueue</span></code> follow the same rule: when <code class="docutils literal notranslate"><span class="pre">params[&quot;plan&quot;]</span></code> is supplied they price <em>it</em>, and a caller-supplied <code class="docutils literal notranslate"><span class="pre">estimated_usd</span></code> is ignored. Repricing is descriptive only — <code class="docutils literal notranslate"><span class="pre">cost_basis</span></code> never enters <code class="docutils literal notranslate"><span class="pre">plan_hash</span></code>, so a job’s idempotency key and falaw’s per-call cache key are byte-identical to what they were before, and a resumed render still dedups onto work already paid for.</p>
+<p>Money already <strong>spent</strong> (<code class="docutils literal notranslate"><span class="pre">project.total_spend_usd()</span></code>) is deliberately <em>not</em> re-quoted: a receipt is not a quote.</p>
+</section>
+</section>
+<section id="a-typed-project-on-disk">
+<h2>A typed project on disk<a class="headerlink" href="#a-typed-project-on-disk" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">nw.Project</span></code> is a small facade over a project folder. The folder is the single
+source of truth: <code class="docutils literal notranslate"><span class="pre">project.json</span></code> holds project-level metadata; a per-project
+lacing graph (<code class="docutils literal notranslate"><span class="pre">project.annot.sqlite</span></code>) holds sections, shots, character /
+environment refs, and decisions.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">proj</span> <span class="o">=</span> <span class="n">nw</span><span class="o">.</span><span class="n">Project</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="s2">"my_video"</span><span class="p">,</span> <span class="n">song</span><span class="o">=</span><span class="s2">"track.mp3"</span><span class="p">)</span>
+</span><span data-line="2"><span class="n">proj</span><span class="o">.</span><span class="n">add_character</span><span class="p">(</span><span class="s2">"alex"</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"warm, deadpan"</span><span class="p">)</span>
+</span><span data-line="3"><span class="n">proj</span><span class="o">.</span><span class="n">set_character_anchor</span><span class="p">(</span><span class="s2">"alex"</span><span class="p">,</span> <span class="s2">"characters/alex/refs/headshot.png"</span><span class="p">)</span>
+</span><span data-line="4"><span class="n">proj</span><span class="o">.</span><span class="n">upsert_shot</span><span class="p">(</span>
+</span><span data-line="5">    <span class="n">nw</span><span class="o">.</span><span class="n">ShotSpec</span><span class="p">(</span>
+</span><span data-line="6">        <span class="nb">id</span><span class="o">=</span><span class="s2">"shot_01"</span><span class="p">,</span>
+</span><span data-line="7">        <span class="n">start_s</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+</span><span data-line="8">        <span class="n">end_s</span><span class="o">=</span><span class="mf">8.0</span><span class="p">,</span>
+</span><span data-line="9">        <span class="n">characters</span><span class="o">=</span><span class="p">(</span><span class="s2">"alex"</span><span class="p">,),</span>
+</span><span data-line="10">        <span class="n">render_strategy</span><span class="o">=</span><span class="s2">"lipsync"</span><span class="p">,</span>
+</span><span data-line="11">    <span class="p">)</span>
+</span><span data-line="12"><span class="p">)</span>
+</span><span data-line="13">
+</span><span data-line="14"><span class="n">proj</span><span class="o">.</span><span class="n">read_summary</span><span class="p">()</span>  <span class="c1"># typed ProjectSummary: title, counts, lifecycle stages</span>
+</span><span data-line="15"><span class="n">proj</span><span class="o">.</span><span class="n">read_spec</span><span class="p">()</span>  <span class="c1"># typed ProjectSpec</span>
+</span><span data-line="16"><span class="n">proj</span><span class="o">.</span><span class="n">log_decision</span><span class="p">(</span><span class="s2">"retry_shot"</span><span class="p">,</span> <span class="n">shot_id</span><span class="o">=</span><span class="s2">"shot_03"</span><span class="p">,</span> <span class="n">reason</span><span class="o">=</span><span class="s2">"lipsync drift"</span><span class="p">)</span>
+</span><span data-line="17">
+</span><span data-line="18"><span class="c1"># "Where did we leave off?" — decision tail, what the last *authored*</span>
+</span><span data-line="19"><span class="c1"># change reaches downstream, recorded spend, unrendered shots, deterministic</span>
+</span><span data-line="20"><span class="c1"># next actions. Offline.</span>
+</span><span data-line="21"><span class="n">brief</span> <span class="o">=</span> <span class="n">proj</span><span class="o">.</span><span class="n">resumption_brief</span><span class="p">()</span>
+</span><span data-line="22"><span class="n">brief</span><span class="o">.</span><span class="n">suggested_next</span>
+</span><span data-line="23"><span class="n">brief</span><span class="o">.</span><span class="n">caveats</span>  <span class="c1"># what the numbers above do NOT know — rendered next to them</span>
+</span><span data-line="24"><span class="n">proj</span><span class="o">.</span><span class="n">total_spend_usd</span><span class="p">()</span>
+</span></pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">my_video</span><span class="o">/</span>
+</span><span data-line="2">  <span class="n">project</span><span class="o">.</span><span class="n">json</span>                  <span class="c1"># project-level metadata (title, song, style)</span>
+</span><span data-line="3">  <span class="n">project</span><span class="o">.</span><span class="n">annot</span><span class="o">.</span><span class="n">sqlite</span>          <span class="c1"># lacing graph: sections, shots, refs, decisions</span>
+</span><span data-line="4">  <span class="n">storyboard</span><span class="o">.</span><span class="n">annot</span><span class="o">.</span><span class="n">sqlite</span>       <span class="c1"># storyboard panels (created on save_storyboard)</span>
+</span><span data-line="5">  <span class="n">song</span><span class="o">/</span>                         <span class="c1"># master audio</span>
+</span><span data-line="6">  <span class="n">lyrics</span><span class="o">/</span>                       <span class="c1"># lyrics + alignment (alignment.annot)</span>
+</span><span data-line="7">  <span class="n">characters</span><span class="o">/&lt;</span><span class="n">name</span><span class="o">&gt;/</span>
+</span><span data-line="8">    <span class="n">card</span><span class="o">.</span><span class="n">json</span>                   <span class="c1"># card with reference_image_path (the "anchor")</span>
+</span><span data-line="9">    <span class="n">refs</span><span class="o">/</span>                       <span class="c1"># candidate images</span>
+</span><span data-line="10">    <span class="n">selected</span><span class="o">/</span>                   <span class="c1"># curator-picked images</span>
+</span><span data-line="11">  <span class="n">environments</span><span class="o">/&lt;</span><span class="n">name</span><span class="o">&gt;/</span>
+</span><span data-line="12">    <span class="n">establishing</span><span class="o">.</span><span class="n">png</span>            <span class="c1"># the environment anchor</span>
+</span><span data-line="13">  <span class="n">shots</span><span class="o">/&lt;</span><span class="n">shot_id</span><span class="o">&gt;/</span>
+</span><span data-line="14">    <span class="n">audio</span><span class="o">.</span><span class="n">wav</span>                   <span class="c1"># the song over [start_s, end_s]</span>
+</span><span data-line="15">    <span class="n">shot</span><span class="o">.</span><span class="n">json</span>                   <span class="c1"># mirror of the shot spec</span>
+</span><span data-line="16">    <span class="n">output</span><span class="o">.</span><span class="n">mp4</span>                  <span class="c1"># the rendered shot</span>
+</span><span data-line="17">  <span class="n">output</span><span class="o">/</span>
+</span><span data-line="18">    <span class="n">final</span><span class="o">.</span><span class="n">mp4</span>                   <span class="c1"># composed timeline</span>
+</span><span data-line="19">  <span class="o">.</span><span class="n">nw</span><span class="o">/</span>
+</span><span data-line="20">    <span class="n">decisions</span><span class="o">.</span><span class="n">jsonl</span>             <span class="c1"># tail-grep-able decision audit</span>
+</span><span data-line="21">    <span class="n">migrated_to_graph</span>           <span class="c1"># migration sentinel</span>
+</span></pre></div>
+</div>
+<p>Pre-graph projects (and muvid fixtures) auto-migrate on first open; the
+migration is idempotent and writes a sentinel under <code class="docutils literal notranslate"><span class="pre">.nw/</span></code>.</p>
+</section>
+<section id="provenance-and-freshness">
+<h2>Provenance and freshness<a class="headerlink" href="#provenance-and-freshness" title="Link to this heading">#</a></h2>
+<p>All sections, shots, refs, and decisions live in a lacing annotation graph with
+<code class="docutils literal notranslate"><span class="pre">was_derived_from</span></code> edges, so “what’s downstream of this change?” is a query, not
+a heuristic:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">downstream</span> <span class="o">=</span> <span class="n">nw</span><span class="o">.</span><span class="n">descendants_of</span><span class="p">(</span><span class="n">proj</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">character_annotation_id</span><span class="p">)</span>
+</span><span data-line="2"><span class="n">stale</span> <span class="o">=</span> <span class="n">nw</span><span class="o">.</span><span class="n">stale_after</span><span class="p">(</span><span class="n">proj</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">character_annotation_id</span><span class="p">)</span>
+</span><span data-line="3"><span class="n">upstream</span> <span class="o">=</span> <span class="n">nw</span><span class="o">.</span><span class="n">derived_from</span><span class="p">(</span><span class="n">proj</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">render_annotation_id</span><span class="p">)</span>
+</span><span data-line="4"><span class="n">shots</span> <span class="o">=</span> <span class="n">nw</span><span class="o">.</span><span class="n">annotations_at_tier</span><span class="p">(</span><span class="n">proj</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="s2">"shot"</span><span class="p">)</span>
+</span></pre></div>
+</div>
+<p><strong><code class="docutils literal notranslate"><span class="pre">descendants_of</span></code> and <code class="docutils literal notranslate"><span class="pre">stale_after</span></code> are different questions.</strong> The first is
+reachability — <em>what is downstream of this?</em> The second is freshness — <em>what
+did this change actually invalidate?</em> — and it <strong>cuts off early</strong>: every
+derived annotation records the content digests of its inputs at write time (a
+<em>verifying trace</em>), so a change that leaves a value untouched stops
+propagating there instead of invalidating the whole subtree. Edit a character
+and revert it, or regenerate a panel to identical content, and the stale set
+goes back to empty without anything downstream being recomputed.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">nw</span><span class="o">.</span><span class="n">stale_verdicts</span><span class="p">(</span><span class="n">proj</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">character_annotation_id</span><span class="p">):</span>
+</span><span data-line="2">    <span class="nb">print</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">annotation</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">is_stale</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">reason</span><span class="p">)</span>  <span class="c1"># e.g. "upstream-changed"</span>
+</span></pre></div>
+</div>
+<p>There is also the snapshot form — <em>what is stale in this project right now?</em>,
+no <code class="docutils literal notranslate"><span class="pre">changed_id</span></code> needed — which is what a freshness indicator wants:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">stale_now</span> <span class="o">=</span> <span class="n">nw</span><span class="o">.</span><span class="n">all_stale</span><span class="p">(</span><span class="n">proj</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>  <span class="c1"># every currently-stale annotation</span>
+</span><span data-line="2"><span class="n">verdicts</span> <span class="o">=</span> <span class="n">nw</span><span class="o">.</span><span class="n">stale_verdicts_all</span><span class="p">(</span><span class="n">proj</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>  <span class="c1"># ... with reasons</span>
+</span></pre></div>
+</div>
+<p>The rule is asymmetric on purpose: anything unverifiable — no trace, a deleted
+input, a trace that no longer covers the current parents, an annotation whose
+own <code class="docutils literal notranslate"><span class="pre">generated_at_time</span></code> is lacing’s tick-0 UNKNOWN sentinel (<code class="docutils literal notranslate"><span class="pre">generated-at-unknown</span></code>,
+lacing#44) — counts as <strong>stale</strong>. Over-reporting costs a recompute; under-reporting
+serves a stale artifact. The unknown-stamp case is on the row’s <em>own</em> stamp only:
+regenerating the row clears it. A tick-0 <em>parent</em> is not a verdict — freshness is
+digest-verified, and a legacy root’s stamp is cleared only by the timestamp
+backfill, which nothing downstream waits on. For
+the scoped walk that also means <strong>no migration</strong>: annotations written before
+traces existed behave exactly as they did under pure reachability. The snapshot
+form is stricter: on a pre-trace project it reports every derived annotation
+stale until each is rewritten through the trace-writing path.</p>
+<p>Scope: the <strong>annotation</strong> tier. Artifact-to-artifact lineage is still
+unrepresentable upstream (<a class="reference external" href="https://github.com/thorwhalen/lacing/issues/14">lacing#14</a>).
+<code class="docutils literal notranslate"><span class="pre">nw.stale_after</span></code> compares upstream <em>values</em>, not the producing Transform, so
+bumping a Transform’s implementation does not move a digest.</p>
+</section>
+<section id="async-jobs">
+<h2>Async jobs<a class="headerlink" href="#async-jobs" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">nw.jobs</span></code> is a project-scoped facade over <a class="reference external" href="https://pypi.org/project/au"><code class="docutils literal notranslate"><span class="pre">au</span></code></a>
+for render work too long to sit inside an HTTP request. A <em>job</em> is one long,
+cancellable unit of work with a durable id, a persistent terminal state, live
+progress and a learned ETA, a cost, and a cancel entry keyed by that id:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">gate</span> <span class="o">=</span> <span class="n">nw</span><span class="o">.</span><span class="n">jobs</span><span class="o">.</span><span class="n">estimate</span><span class="p">(</span><span class="n">proj</span><span class="p">,</span> <span class="s2">"panel.animate"</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>  <span class="c1"># cost gate, no enqueue</span>
+</span><span data-line="2"><span class="k">if</span> <span class="ow">not</span> <span class="n">gate</span><span class="p">[</span><span class="s2">"requires_approval"</span><span class="p">]:</span>
+</span><span data-line="3">    <span class="n">job</span> <span class="o">=</span> <span class="n">nw</span><span class="o">.</span><span class="n">jobs</span><span class="o">.</span><span class="n">enqueue</span><span class="p">(</span><span class="n">proj</span><span class="p">,</span> <span class="s2">"panel.animate"</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+</span><span data-line="4">    <span class="n">nw</span><span class="o">.</span><span class="n">jobs</span><span class="o">.</span><span class="n">get_job</span><span class="p">(</span><span class="n">proj</span><span class="p">,</span> <span class="n">job</span><span class="o">.</span><span class="n">job_id</span><span class="p">)</span>
+</span><span data-line="5">    <span class="n">nw</span><span class="o">.</span><span class="n">jobs</span><span class="o">.</span><span class="n">cancel_job</span><span class="p">(</span><span class="n">proj</span><span class="p">,</span> <span class="n">job</span><span class="o">.</span><span class="n">job_id</span><span class="p">)</span>
+</span><span data-line="6"><span class="n">nw</span><span class="o">.</span><span class="n">jobs</span><span class="o">.</span><span class="n">list_jobs</span><span class="p">(</span><span class="n">proj</span><span class="p">)</span>
+</span><span data-line="7"><span class="n">nw</span><span class="o">.</span><span class="n">jobs</span><span class="o">.</span><span class="n">to_dict</span><span class="p">(</span><span class="n">job</span><span class="p">)</span>  <span class="c1"># the JSON a task tray renders</span>
+</span></pre></div>
+</div>
+<p>Unknown cost always requires approval. Resubmitting while a job with the same
+idempotency key is live returns the existing job rather than launching a
+duplicate. Every tunable is keyword-configurable via <code class="docutils literal notranslate"><span class="pre">nw.jobs.JobsConfig</span></code>.
+A caller’s credential goes in <code class="docutils literal notranslate"><span class="pre">secrets=</span></code> (held in memory, offered to the
+dispatch callable only when it declares the keyword), never in <code class="docutils literal notranslate"><span class="pre">params</span></code>,
+which is what the job index persists.</p>
+</section>
+<section id="render-strategies">
+<h2>Render strategies<a class="headerlink" href="#render-strategies" title="Link to this heading">#</a></h2>
+<p>Each shot carries an open-string <code class="docutils literal notranslate"><span class="pre">render_strategy</span></code>. <code class="docutils literal notranslate"><span class="pre">nw.renderers</span></code> ships five
+built-in strategies and lets apps register their own:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>name</p></th>
+<th class="head"><p>what it does</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">lipsync</span></code></p></td>
+<td><p>character anchor + audio → talking video (omnihuman)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">image_to_video</span></code></p></td>
+<td><p>env / fresh storyboard still → animated clip</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">text_to_video</span></code></p></td>
+<td><p>prompt-only short clip</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">still</span></code></p></td>
+<td><p>image looped over audio (no video gen)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">composite_lipsync</span></code></p></td>
+<td><p>character + environment + audio → composite, then talking video</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">nw</span><span class="o">.</span><span class="n">list_strategies</span><span class="p">()</span>  <span class="c1"># ['composite_lipsync', 'image_to_video', ...]</span>
+</span><span data-line="2"><span class="n">nw</span><span class="o">.</span><span class="n">register_strategy</span><span class="p">(</span><span class="s2">"my_strategy"</span><span class="p">,</span> <span class="n">MyStrategy</span><span class="p">())</span>
+</span></pre></div>
+</div>
+<p>Each built-in strategy is also adapted into the Transform world as
+<code class="docutils literal notranslate"><span class="pre">shot_to_render_result.fal.&lt;strategy&gt;</span></code>, so the two registries stay one pipeline
+rather than two.</p>
+</section>
+<section id="storyboard-layer">
+<h2>Storyboard layer<a class="headerlink" href="#storyboard-layer" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">nw.storyboard</span></code> bridges <a class="reference external" href="https://pypi.org/project/artful"><code class="docutils literal notranslate"><span class="pre">artful</span></code></a> storyboards
+into an <code class="docutils literal notranslate"><span class="pre">nw.Project</span></code> — one panel per shot, seed-image generation planned as a
+<code class="docutils literal notranslate"><span class="pre">falaw.Plan</span></code>, then executed:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">sb</span><span class="p">,</span> <span class="n">intervals</span> <span class="o">=</span> <span class="n">nw</span><span class="o">.</span><span class="n">storyboard_from_shots</span><span class="p">(</span><span class="n">proj</span><span class="p">)</span>
+</span><span data-line="2"><span class="n">plan</span><span class="p">,</span> <span class="n">panel_ids</span> <span class="o">=</span> <span class="n">nw</span><span class="o">.</span><span class="n">plan_render_panel_images</span><span class="p">(</span><span class="n">sb</span><span class="p">,</span> <span class="n">quality</span><span class="o">=</span><span class="s2">"balanced"</span><span class="p">)</span>
+</span><span data-line="3"><span class="n">sb</span> <span class="o">=</span> <span class="n">nw</span><span class="o">.</span><span class="n">execute_render_panel_images</span><span class="p">(</span><span class="n">proj</span><span class="p">,</span> <span class="n">sb</span><span class="p">,</span> <span class="n">plan</span><span class="p">,</span> <span class="n">panel_ids</span><span class="p">)</span>
+</span><span data-line="4"><span class="n">nw</span><span class="o">.</span><span class="n">save_storyboard</span><span class="p">(</span><span class="n">proj</span><span class="p">,</span> <span class="n">sb</span><span class="p">,</span> <span class="n">panel_intervals</span><span class="o">=</span><span class="n">intervals</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="qa-reports">
+<h2>QA reports<a class="headerlink" href="#qa-reports" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">nw.inspect</span></code> answers what a successful render can’t: “did it come out the right
+length?”, “is there a frozen-frame segment?”, “are there gaps between shots?”</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">report</span> <span class="o">=</span> <span class="n">nw</span><span class="o">.</span><span class="n">shot_report</span><span class="p">(</span><span class="n">proj</span><span class="p">,</span> <span class="s2">"shot_01"</span><span class="p">)</span>
+</span><span data-line="2"><span class="n">report</span><span class="o">.</span><span class="n">duration_within_tolerance</span>  <span class="c1"># False if the model returned a short clip</span>
+</span><span data-line="3"><span class="n">report</span><span class="o">.</span><span class="n">has_long_freeze</span>  <span class="c1"># True if a ≥1s frozen segment is detected</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="n">compose</span> <span class="o">=</span> <span class="n">nw</span><span class="o">.</span><span class="n">compose_report</span><span class="p">(</span><span class="n">proj</span><span class="p">)</span>
+</span><span data-line="6"><span class="n">compose</span><span class="o">.</span><span class="n">freeze_alerts</span>  <span class="c1"># tuple of suspicious shots</span>
+</span><span data-line="7"><span class="n">compose</span><span class="o">.</span><span class="n">gaps</span>  <span class="c1"># gaps between consecutive shots</span>
+</span></pre></div>
+</div>
+</section>
+<section id="validation-a-pluggable-menu-placed-where-you-want-it">
+<h2>Validation — a pluggable menu, placed where you want it<a class="headerlink" href="#validation-a-pluggable-menu-placed-where-you-want-it" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">nw.inspect</span></code> above answers one question about one shot. <code class="docutils literal notranslate"><span class="pre">nw.validation</span></code> is the
+general form: a <strong>registry of checks</strong> that anyone can add to, with dependencies
+resolved, independent checks run concurrently, and one report at the end.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">report</span> <span class="o">=</span> <span class="n">nw</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">film</span><span class="p">,</span> <span class="n">checks</span><span class="o">=</span><span class="p">[</span><span class="s2">"media.encode_complete"</span><span class="p">,</span> <span class="s2">"media.no_long_freeze"</span><span class="p">])</span>
+</span><span data-line="2"><span class="n">report</span><span class="o">.</span><span class="n">ok</span>  <span class="c1"># False if anything failed *or if any check could not run*</span>
+</span><span data-line="3"><span class="nb">print</span><span class="p">(</span><span class="n">report</span><span class="o">.</span><span class="n">summary</span><span class="p">())</span>
+</span><span data-line="4"><span class="n">report</span><span class="o">.</span><span class="n">raise_if_failed</span><span class="p">()</span>  <span class="c1"># a hard gate before a publish</span>
+</span></pre></div>
+</div>
+<p>Three checks ship with nw (<code class="docutils literal notranslate"><span class="pre">nw.menu()</span></code>), each of which has caught a real defect
+in a finished film: a missing video or audio stream, an encode that stopped
+early (which duration alone cannot show — the container takes its duration from
+the <em>audio</em> stream), and a long frozen segment.</p>
+<p>A check declares what it <code class="docutils literal notranslate"><span class="pre">requires</span></code>, what it <code class="docutils literal notranslate"><span class="pre">cost</span></code>s, whether it is
+<code class="docutils literal notranslate"><span class="pre">parallel_safe</span></code>, which binaries it needs — and <code class="docutils literal notranslate"><span class="pre">example_requests</span></code>, the phrases a
+person actually says when they want it, which is what lets <code class="docutils literal notranslate"><span class="pre">nw.suggest(&quot;the</span> <span class="pre">picture</span> <span class="pre">freezes&quot;)</span></code> turn a request into a selection instead of exposing a
+forty-item enum to a model.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nd">@nw</span><span class="o">.</span><span class="n">register_check</span><span class="p">(</span>
+</span><span data-line="2">    <span class="n">name</span><span class="o">=</span><span class="s2">"type.captions_complete"</span><span class="p">,</span>
+</span><span data-line="3">    <span class="n">summary</span><span class="o">=</span><span class="s2">"no caption is cut"</span><span class="p">,</span>
+</span><span data-line="4">    <span class="n">requires</span><span class="o">=</span><span class="p">(</span><span class="s2">"media.streams_present"</span><span class="p">,),</span>
+</span><span data-line="5">    <span class="n">cost</span><span class="o">=</span><span class="s2">"dear"</span><span class="p">,</span>
+</span><span data-line="6">    <span class="n">example_requests</span><span class="o">=</span><span class="p">(</span><span class="s2">"is the text cut off"</span><span class="p">,</span> <span class="s2">"the caption is truncated"</span><span class="p">),</span>
+</span><span data-line="7"><span class="p">)</span>
+</span><span data-line="8"><span class="k">def</span><span class="w"> </span><span class="nf">_captions_complete</span><span class="p">(</span><span class="n">film</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span> <span class="o">...</span>
+</span></pre></div>
+</div>
+<p><strong>Nothing calls <code class="docutils literal notranslate"><span class="pre">validate</span></code> for you</strong>, and that is the decision rather than an
+omission: where validation belongs — before a human sees a result, before a
+publish, or both — is a judgement about cost and consequence that only the
+caller can make. <code class="docutils literal notranslate"><span class="pre">validate(x)</span></code> with no selection runs nothing.</p>
+<p>Two honesty rules worth knowing before you gate on it: a check that was
+<em>skipped</em> (missing binary) or that <em>raised</em> makes <code class="docutils literal notranslate"><span class="pre">report.ok</span></code> false — could-not-run
+is never a pass — and an unknown check name raises rather than being dropped.</p>
+<p>Checks live in whichever package owns the knowledge they apply (type checks next
+to <code class="docutils literal notranslate"><span class="pre">tituli</span></code>, motion next to <code class="docutils literal notranslate"><span class="pre">burns</span></code>), and register themselves at import.
+Ideas for new ones accumulate as <code class="docutils literal notranslate"><span class="pre">validation-idea</span></code> issues on this repo. The full
+record is <code class="docutils literal notranslate"><span class="pre">misc/docs/Validation</span> <span class="pre">—</span> <span class="pre">the</span> <span class="pre">seam,</span> <span class="pre">the</span> <span class="pre">menu,</span> <span class="pre">and</span> <span class="pre">where</span> <span class="pre">ideas</span> <span class="pre">go.md</span></code>.</p>
+</section>
+<section id="sibling-experiments">
+<h2>Sibling experiments<a class="headerlink" href="#sibling-experiments" title="Link to this heading">#</a></h2>
+<p>Comparing four interpretations of the same song is a first-class operation, not
+a shell loop:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">nw</span><span class="o">.</span><span class="n">clone_project</span><span class="p">(</span>
+</span><span data-line="2">    <span class="s2">"the_bells"</span><span class="p">,</span>
+</span><span data-line="3">    <span class="s2">"the_bells_v1_lipsync"</span><span class="p">,</span>
+</span><span data-line="4">    <span class="n">preserve</span><span class="o">=</span><span class="p">(</span><span class="s2">"song"</span><span class="p">,</span> <span class="s2">"lyrics"</span><span class="p">,</span> <span class="s2">"characters"</span><span class="p">),</span>
+</span><span data-line="5">    <span class="n">reset</span><span class="o">=</span><span class="p">(</span><span class="s2">"script"</span><span class="p">,</span> <span class="s2">"shots"</span><span class="p">,</span> <span class="s2">"output"</span><span class="p">,</span> <span class="s2">".nw"</span><span class="p">),</span>
+</span><span data-line="6"><span class="p">)</span>
+</span><span data-line="7">
+</span><span data-line="8"><span class="n">summaries</span> <span class="o">=</span> <span class="n">nw</span><span class="o">.</span><span class="n">summarize_all</span><span class="p">([</span><span class="s2">"the_bells_v1"</span><span class="p">,</span> <span class="s2">"the_bells_v2"</span><span class="p">,</span> <span class="s2">"the_bells_v3"</span><span class="p">])</span>
+</span><span data-line="9"><span class="n">nw</span><span class="o">.</span><span class="n">apply_to_projects</span><span class="p">(</span><span class="n">roots</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">nw</span><span class="o">.</span><span class="n">compose_report</span><span class="p">(</span><span class="n">p</span><span class="p">),</span> <span class="n">parallel</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="api-at-a-glance">
+<h2>API at a glance<a class="headerlink" href="#api-at-a-glance" title="Link to this heading">#</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="c1"># Genres — the reusable production specialization</span>
+</span><span data-line="2"><span class="p">(</span>
+</span><span data-line="3">    <span class="n">nw</span><span class="o">.</span><span class="n">Genre</span><span class="p">,</span>
+</span><span data-line="4">    <span class="n">nw</span><span class="o">.</span><span class="n">Template</span><span class="p">,</span>
+</span><span data-line="5">    <span class="n">nw</span><span class="o">.</span><span class="n">genres</span><span class="p">,</span>
+</span><span data-line="6">    <span class="n">nw</span><span class="o">.</span><span class="n">register_genre</span><span class="p">,</span>
+</span><span data-line="7">    <span class="n">nw</span><span class="o">.</span><span class="n">get_genre</span><span class="p">,</span>
+</span><span data-line="8">    <span class="n">nw</span><span class="o">.</span><span class="n">list_genres</span><span class="p">,</span>
+</span><span data-line="9"><span class="p">)</span>
+</span><span data-line="10"><span class="p">(</span>
+</span><span data-line="11">    <span class="n">nw</span><span class="o">.</span><span class="n">genre_catalog</span><span class="p">,</span>
+</span><span data-line="12">    <span class="n">nw</span><span class="o">.</span><span class="n">describe_genre</span><span class="p">,</span>
+</span><span data-line="13">    <span class="n">nw</span><span class="o">.</span><span class="n">recommend_genre</span><span class="p">,</span>
+</span><span data-line="14">    <span class="n">nw</span><span class="o">.</span><span class="n">resolve_defaults</span><span class="p">,</span>
+</span><span data-line="15">    <span class="n">nw</span><span class="o">.</span><span class="n">GENRE_STATUSES</span><span class="p">,</span>
+</span><span data-line="16"><span class="p">)</span>
+</span><span data-line="17"><span class="p">(</span>
+</span><span data-line="18">    <span class="n">nw</span><span class="o">.</span><span class="n">GenreResolver</span><span class="p">,</span>
+</span><span data-line="19">    <span class="n">nw</span><span class="o">.</span><span class="n">genre_resolvers</span><span class="p">,</span>
+</span><span data-line="20">    <span class="n">nw</span><span class="o">.</span><span class="n">register_genre_resolver</span><span class="p">,</span>
+</span><span data-line="21">    <span class="n">nw</span><span class="o">.</span><span class="n">resolve_genre</span><span class="p">,</span>
+</span><span data-line="22"><span class="p">)</span>
+</span><span data-line="23"><span class="p">(</span>
+</span><span data-line="24">    <span class="n">nw</span><span class="o">.</span><span class="n">GenreInitializer</span><span class="p">,</span>
+</span><span data-line="25">    <span class="n">nw</span><span class="o">.</span><span class="n">genre_initializers</span><span class="p">,</span>
+</span><span data-line="26">    <span class="n">nw</span><span class="o">.</span><span class="n">register_genre_initializer</span><span class="p">,</span>
+</span><span data-line="27">    <span class="n">nw</span><span class="o">.</span><span class="n">initialize_genre</span><span class="p">,</span>
+</span><span data-line="28"><span class="p">)</span>
+</span><span data-line="29"><span class="p">(</span>
+</span><span data-line="30">    <span class="n">nw</span><span class="o">.</span><span class="n">GenreProjectFactory</span><span class="p">,</span>
+</span><span data-line="31">    <span class="n">nw</span><span class="o">.</span><span class="n">genre_project_factories</span><span class="p">,</span>
+</span><span data-line="32">    <span class="n">nw</span><span class="o">.</span><span class="n">register_genre_project_factory</span><span class="p">,</span>
+</span><span data-line="33">    <span class="n">nw</span><span class="o">.</span><span class="n">has_genre_project_factory</span><span class="p">,</span>
+</span><span data-line="34">    <span class="n">nw</span><span class="o">.</span><span class="n">create_genre_project</span><span class="p">,</span>
+</span><span data-line="35"><span class="p">)</span>
+</span><span data-line="36">
+</span><span data-line="37"><span class="c1"># Transforms — the A -&gt; B arrow</span>
+</span><span data-line="38"><span class="p">(</span>
+</span><span data-line="39">    <span class="n">nw</span><span class="o">.</span><span class="n">Transform</span><span class="p">,</span>
+</span><span data-line="40">    <span class="n">nw</span><span class="o">.</span><span class="n">BaseTransform</span><span class="p">,</span>
+</span><span data-line="41">    <span class="n">nw</span><span class="o">.</span><span class="n">TransformInputs</span><span class="p">,</span>
+</span><span data-line="42">    <span class="n">nw</span><span class="o">.</span><span class="n">TransformResult</span><span class="p">,</span>
+</span><span data-line="43"><span class="p">)</span>
+</span><span data-line="44"><span class="n">nw</span><span class="o">.</span><span class="n">transforms</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">register_transform</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">get_transform</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">list_transforms</span>
+</span><span data-line="45">
+</span><span data-line="46"><span class="c1"># Folder facade</span>
+</span><span data-line="47"><span class="n">nw</span><span class="o">.</span><span class="n">Project</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">Project</span><span class="o">.</span><span class="n">init</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">CharacterImage</span>
+</span><span data-line="48">
+</span><span data-line="49"><span class="c1"># Schema</span>
+</span><span data-line="50"><span class="p">(</span>
+</span><span data-line="51">    <span class="n">nw</span><span class="o">.</span><span class="n">ProjectSpec</span><span class="p">,</span>
+</span><span data-line="52">    <span class="n">nw</span><span class="o">.</span><span class="n">ProjectSummary</span><span class="p">,</span>
+</span><span data-line="53">    <span class="n">nw</span><span class="o">.</span><span class="n">ResumptionBrief</span><span class="p">,</span>
+</span><span data-line="54">    <span class="n">nw</span><span class="o">.</span><span class="n">DecisionEntry</span><span class="p">,</span>
+</span><span data-line="55">    <span class="n">nw</span><span class="o">.</span><span class="n">SectionSpec</span><span class="p">,</span>
+</span><span data-line="56">    <span class="n">nw</span><span class="o">.</span><span class="n">ShotSpec</span><span class="p">,</span>
+</span><span data-line="57"><span class="p">)</span>
+</span><span data-line="58"><span class="n">nw</span><span class="o">.</span><span class="n">CharacterRef</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">EnvironmentRef</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">SongInfo</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">SCHEMA_VERSION</span>
+</span><span data-line="59">
+</span><span data-line="60"><span class="c1"># Render workflow</span>
+</span><span data-line="61"><span class="n">nw</span><span class="o">.</span><span class="n">prepare_shot</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">plan_render_shot</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">execute_render</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">ShotPreparation</span>
+</span><span data-line="62">
+</span><span data-line="63"><span class="c1"># Async jobs</span>
+</span><span data-line="64"><span class="n">nw</span><span class="o">.</span><span class="n">jobs</span><span class="o">.</span><span class="n">estimate</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">jobs</span><span class="o">.</span><span class="n">enqueue</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">jobs</span><span class="o">.</span><span class="n">list_jobs</span>
+</span><span data-line="65"><span class="n">nw</span><span class="o">.</span><span class="n">jobs</span><span class="o">.</span><span class="n">get_job</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">jobs</span><span class="o">.</span><span class="n">cancel_job</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">jobs</span><span class="o">.</span><span class="n">to_dict</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">jobs</span><span class="o">.</span><span class="n">JobsConfig</span>
+</span><span data-line="66">
+</span><span data-line="67"><span class="c1"># Strategies</span>
+</span><span data-line="68"><span class="p">(</span>
+</span><span data-line="69">    <span class="n">nw</span><span class="o">.</span><span class="n">Strategy</span><span class="p">,</span>
+</span><span data-line="70">    <span class="n">nw</span><span class="o">.</span><span class="n">get_strategy</span><span class="p">,</span>
+</span><span data-line="71">    <span class="n">nw</span><span class="o">.</span><span class="n">list_strategies</span><span class="p">,</span>
+</span><span data-line="72"><span class="p">)</span>
+</span><span data-line="73"><span class="n">nw</span><span class="o">.</span><span class="n">register_strategy</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">strategies</span>
+</span><span data-line="74">
+</span><span data-line="75"><span class="c1"># Storyboard</span>
+</span><span data-line="76"><span class="p">(</span>
+</span><span data-line="77">    <span class="n">nw</span><span class="o">.</span><span class="n">open_storyboard</span><span class="p">,</span>
+</span><span data-line="78">    <span class="n">nw</span><span class="o">.</span><span class="n">save_storyboard</span><span class="p">,</span>
+</span><span data-line="79">    <span class="n">nw</span><span class="o">.</span><span class="n">storyboard_from_shots</span><span class="p">,</span>
+</span><span data-line="80"><span class="p">)</span>
+</span><span data-line="81"><span class="p">(</span>
+</span><span data-line="82">    <span class="n">nw</span><span class="o">.</span><span class="n">plan_render_panel_images</span><span class="p">,</span>
+</span><span data-line="83">    <span class="n">nw</span><span class="o">.</span><span class="n">execute_render_panel_images</span><span class="p">,</span>
+</span><span data-line="84"><span class="p">)</span>
+</span><span data-line="85"><span class="n">nw</span><span class="o">.</span><span class="n">storyboard_db_path</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">project_asset_id</span>
+</span><span data-line="86">
+</span><span data-line="87"><span class="c1"># Inspect / QA</span>
+</span><span data-line="88"><span class="p">(</span>
+</span><span data-line="89">    <span class="n">nw</span><span class="o">.</span><span class="n">shot_report</span><span class="p">,</span>
+</span><span data-line="90">    <span class="n">nw</span><span class="o">.</span><span class="n">compose_report</span><span class="p">,</span>
+</span><span data-line="91">    <span class="n">nw</span><span class="o">.</span><span class="n">ShotReport</span><span class="p">,</span>
+</span><span data-line="92">    <span class="n">nw</span><span class="o">.</span><span class="n">ComposeReport</span><span class="p">,</span>
+</span><span data-line="93"><span class="p">)</span>
+</span><span data-line="94"><span class="n">nw</span><span class="o">.</span><span class="n">FrozenSegment</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">Gap</span>
+</span><span data-line="95">
+</span><span data-line="96"><span class="c1"># Validation — the pluggable menu</span>
+</span><span data-line="97"><span class="p">(</span>
+</span><span data-line="98">    <span class="n">nw</span><span class="o">.</span><span class="n">validate</span><span class="p">,</span>
+</span><span data-line="99">    <span class="n">nw</span><span class="o">.</span><span class="n">menu</span><span class="p">,</span>
+</span><span data-line="100">    <span class="n">nw</span><span class="o">.</span><span class="n">suggest</span><span class="p">,</span>
+</span><span data-line="101">    <span class="n">nw</span><span class="o">.</span><span class="n">plan_checks</span><span class="p">,</span>
+</span><span data-line="102">    <span class="n">nw</span><span class="o">.</span><span class="n">register_check</span><span class="p">,</span>
+</span><span data-line="103">    <span class="n">nw</span><span class="o">.</span><span class="n">checks</span><span class="p">,</span>
+</span><span data-line="104"><span class="p">)</span>
+</span><span data-line="105"><span class="n">nw</span><span class="o">.</span><span class="n">Check</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">Finding</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">CheckResult</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">ValidationReport</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">ValidationError</span>
+</span><span data-line="106">
+</span><span data-line="107"><span class="c1"># Graph / provenance</span>
+</span><span data-line="108"><span class="p">(</span>
+</span><span data-line="109">    <span class="n">nw</span><span class="o">.</span><span class="n">ProjectGraph</span><span class="p">,</span>
+</span><span data-line="110">    <span class="n">nw</span><span class="o">.</span><span class="n">derived_from</span><span class="p">,</span>
+</span><span data-line="111">    <span class="n">nw</span><span class="o">.</span><span class="n">descendants_of</span><span class="p">,</span>
+</span><span data-line="112">    <span class="n">nw</span><span class="o">.</span><span class="n">stale_after</span><span class="p">,</span>
+</span><span data-line="113">    <span class="n">nw</span><span class="o">.</span><span class="n">stale_verdicts</span><span class="p">,</span>
+</span><span data-line="114">    <span class="n">nw</span><span class="o">.</span><span class="n">stale_verdicts_all</span><span class="p">,</span>
+</span><span data-line="115">    <span class="n">nw</span><span class="o">.</span><span class="n">all_stale</span><span class="p">,</span>
+</span><span data-line="116">    <span class="n">nw</span><span class="o">.</span><span class="n">FreshnessVerdict</span><span class="p">,</span>
+</span><span data-line="117"><span class="p">)</span>
+</span><span data-line="118"><span class="n">nw</span><span class="o">.</span><span class="n">annotations_at_tier</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">iter_all_annotations</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">open_project_stores</span>
+</span><span data-line="119"><span class="n">nw</span><span class="o">.</span><span class="n">ProjectGraph</span><span class="o">.</span><span class="n">unproduced_outputs</span>  <span class="c1"># why a blocked/failed output was never produced</span>
+</span><span data-line="120">
+</span><span data-line="121"><span class="c1"># Experiments</span>
+</span><span data-line="122"><span class="n">nw</span><span class="o">.</span><span class="n">clone_project</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">apply_to_projects</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">summarize_all</span>
+</span><span data-line="123">
+</span><span data-line="124"><span class="c1"># Migration</span>
+</span><span data-line="125"><span class="n">nw</span><span class="o">.</span><span class="n">migrate_to_graph</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">is_migrated</span>
+</span></pre></div>
+</div>
+</section>
+<section id="design-notes">
+<h2>Design notes<a class="headerlink" href="#design-notes" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>SSOT on the folder.</strong> Every typed value comes from <code class="docutils literal notranslate"><span class="pre">project.json</span></code> plus the
+project graph. Tools never have to invent their own storage.</p></li>
+<li><p><strong>Genres are declarations, not engines.</strong> <code class="docutils literal notranslate"><span class="pre">Project</span></code>, the prepare → plan →
+execute split, freshness, <code class="docutils literal notranslate"><span class="pre">nw.jobs</span></code>, and the cost gate are all genre-agnostic
+and serve every genre unchanged.</p></li>
+<li><p><strong>Open registries throughout.</strong> Genres, Transforms, and render strategies are
+all <code class="docutils literal notranslate"><span class="pre">xdol.Registry</span></code> entries keyed by string, so apps extend <code class="docutils literal notranslate"><span class="pre">nw</span></code> without
+modifying it. <code class="docutils literal notranslate"><span class="pre">on_conflict=&quot;error&quot;</span></code> keeps one plugin from silently shadowing
+another’s.</p></li>
+<li><p><strong>Plan-then-execute.</strong> Cost is computed and inspectable before anything bills.</p></li>
+<li><p><strong>Provenance by default.</strong> Every render and every curator decision is written
+to the graph with <code class="docutils literal notranslate"><span class="pre">was_derived_from</span></code>, so freshness analysis is a graph walk,
+not a heuristic.</p></li>
+</ul>
+<p>Longer rationale lives in <code class="docutils literal notranslate"><span class="pre">misc/docs/</span></code> — <em>Rendering Provenance and Partial
+Re-render</em> and <em>Execution Semantics and Fan-out</em>.</p>
+</section>
+<section id="known-limits">
+<h2>Known limits<a class="headerlink" href="#known-limits" title="Link to this heading">#</a></h2>
+<p>Places where the substrate currently promises less than it looks like it does:</p>
+<ul class="simple">
+<li><p><strong>Early cutoff stops at the annotation tier.</strong> <code class="docutils literal notranslate"><span class="pre">stale_after</span></code> compares
+annotation <em>value</em> digests; artifact→artifact lineage is unrepresentable
+upstream, because <code class="docutils literal notranslate"><span class="pre">lacing.Provenance.was_derived_from</span></code> is <code class="docutils literal notranslate"><span class="pre">list[UUID]</span></code> and an
+<code class="docutils literal notranslate"><span class="pre">asset_id</span></code> is 64 hex chars
+(<a class="reference external" href="https://github.com/thorwhalen/lacing/issues/14">lacing#14</a>). It also does
+not notice a changed <strong>Transform</strong> — a re-implemented or re-prompted
+Transform moves no upstream digest — and reads a hand-edited output as fresh,
+because relative to its inputs it is.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">resumption_brief</span></code> still reports reachability, deliberately.</strong>
+<code class="docutils literal notranslate"><span class="pre">downstream_of_last_authored_change</span></code> is <code class="docutils literal notranslate"><span class="pre">descendants_of</span></code>, an explicit upper
+bound named for what it measures; <code class="docutils literal notranslate"><span class="pre">nw.stale_after</span></code> is the narrower answer if
+you want it (<a class="reference external" href="https://github.com/thorwhalen/nw/issues/7">#7</a>).</p></li>
+<li><p><strong>A removed annotation leaves its verifying trace behind.</strong> Orphan traces are
+inert — they are indexed by a target id that no longer resolves — but nothing
+collects them yet (<a class="reference external" href="https://github.com/thorwhalen/nw/issues/36">#36</a>).</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">BaseTransform.execute</span></code> has no failure isolation</strong> — one failing call in a
+fan-out Plan raises, and no annotations reach the graph for the calls that did
+succeed (<a class="reference external" href="https://github.com/thorwhalen/nw/issues/25">#25</a>).</p></li>
+</ul>
+</section>
+<section id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">pydantic</span></code>, <a class="reference external" href="https://pypi.org/project/falaw"><code class="docutils literal notranslate"><span class="pre">falaw</span></code></a> (fal-AI planner),
+<a class="reference external" href="https://pypi.org/project/lacing"><code class="docutils literal notranslate"><span class="pre">lacing</span></code></a> (annotation graph),
+<a class="reference external" href="https://pypi.org/project/xdol"><code class="docutils literal notranslate"><span class="pre">xdol</span></code></a> (registry),
+<a class="reference external" href="https://pypi.org/project/artful"><code class="docutils literal notranslate"><span class="pre">artful</span></code></a> (storyboard),
+<a class="reference external" href="https://pypi.org/project/au"><code class="docutils literal notranslate"><span class="pre">au</span></code></a> (async job substrate),
+<a class="reference external" href="https://pypi.org/project/dol"><code class="docutils literal notranslate"><span class="pre">dol</span></code></a> (storage).</p>
+<p>Optional system tools: <code class="docutils literal notranslate"><span class="pre">ffmpeg</span></code> / <code class="docutils literal notranslate"><span class="pre">ffprobe</span></code> for audio slicing and QA reports.</p>
+</section>
+<section id="license">
+<h2>License<a class="headerlink" href="#license" title="Link to this heading">#</a></h2>
+<p>MIT — see <a class="reference internal" href="#LICENSE"><span class="xref myst">LICENSE</span></a>.</p>
+<p class="epythet-aggregates">This documentation as a single file: <a href="nw.md">nw.md</a> (Markdown, for agents).</p>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+</section>
+
+<p class="epythet-provenance" style="font-size:.8em;opacity:.65;margin-top:2.5em;text-align:right">built 2026-09-17 15:55 UTC from <a href="https://github.com/thorwhalen/nw/commit/c3bd5fe0a2b957ab8ede7544b98f8e89aa790e67">c3bd5fe</a> (main) · nw 0.0.54 · <a href="about-this-build.html">about this build</a></p>
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-next">
+    <a href="api.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">API reference</div>
+      </div>
+      <i class="i-lucide chevron-right"></i>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright">
+  <p>
+    Made with
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+  <a href="https://github.com/thorwhalen/nw" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div>
+    </div>
+  </div>
+</footer>
+      <script src="_static/documentation_options.js?v=1c03bfdc"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
-      <script src="_static/toggleprompt.js?v=d7ede5d2"></script>
       <script src="_static/clipboard.min.js?v=a7894cd8"></script>
-      <script src="_static/copybutton.js?v=f281be69"></script>
-    <script src="_static/js/theme.js"></script>
-    <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="nw" href="module_docs/nw.html" /> 
-</head>
-
-<body class="wy-body-for-nav"> 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
-
-          
-          
-          <a href="#" class="icon icon-home">
-            nw
-          </a>
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw.html">nw</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies.html">nw.bodies</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/character_ref.html">nw.bodies.character_ref</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/decision.html">nw.bodies.decision</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/environment_ref.html">nw.bodies.environment_ref</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/genre_envelope.html">nw.bodies.genre_envelope</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/render_result.html">nw.bodies.render_result</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/section.html">nw.bodies.section</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/shot.html">nw.bodies.shot</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/unproduced_output.html">nw.bodies.unproduced_output</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/verifying_trace.html">nw.bodies.verifying_trace</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/delivery.html">nw.delivery</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/experiment.html">nw.experiment</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/freshness.html">nw.freshness</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/genres.html">nw.genres</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/graph.html">nw.graph</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/graph_backend.html">nw.graph_backend</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/inspect.html">nw.inspect</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/jobs.html">nw.jobs</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/migrate.html">nw.migrate</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/pricing.html">nw.pricing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/project.html">nw.project</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/renderers.html">nw.renderers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/renderers/_common.html">nw.renderers._common</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/renderers/composite_lipsync.html">nw.renderers.composite_lipsync</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/renderers/image_to_video.html">nw.renderers.image_to_video</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/renderers/lipsync.html">nw.renderers.lipsync</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/renderers/still.html">nw.renderers.still</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/renderers/text_to_video.html">nw.renderers.text_to_video</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/schema.html">nw.schema</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/script_segmentation.html">nw.script_segmentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/secrets.html">nw.secrets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/storyboard.html">nw.storyboard</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/transforms.html">nw.transforms</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/transforms/_adapters.html">nw.transforms._adapters</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/transforms/_adapters/render_strategy.html">nw.transforms._adapters.render_strategy</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/transforms/_cache_mode.html">nw.transforms._cache_mode</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/transforms/_provenance.html">nw.transforms._provenance</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/transforms/fanout.html">nw.transforms.fanout</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/workflow.html">nw.workflow</a></li>
-</ul>
-
-        </div>
-      </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="#">nw</a>
-      </nav>
-
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
-  <ul class="wy-breadcrumbs">
-      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Welcome to nw’s documentation!</li>
-      <li class="wy-breadcrumbs-aside">
-            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
-      </li>
-  </ul>
-  <hr/>
-</div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-             
-  <section id="welcome-to-nw-s-documentation">
-<h1>Welcome to nw’s documentation!<a class="headerlink" href="#welcome-to-nw-s-documentation" title="Link to this heading"></a></h1>
-<div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw.html">nw</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.BaseTransform"><code class="docutils literal notranslate"><span class="pre">BaseTransform</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.CacheModeConflict"><code class="docutils literal notranslate"><span class="pre">CacheModeConflict</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.CharacterImage"><code class="docutils literal notranslate"><span class="pre">CharacterImage</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.CharacterRef"><code class="docutils literal notranslate"><span class="pre">CharacterRef</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.ComposeReport"><code class="docutils literal notranslate"><span class="pre">ComposeReport</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.DecisionEntry"><code class="docutils literal notranslate"><span class="pre">DecisionEntry</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.Deliverable"><code class="docutils literal notranslate"><span class="pre">Deliverable</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.EnvironmentRef"><code class="docutils literal notranslate"><span class="pre">EnvironmentRef</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.FailedOutput"><code class="docutils literal notranslate"><span class="pre">FailedOutput</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.FanOutItemResult"><code class="docutils literal notranslate"><span class="pre">FanOutItemResult</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.FanOutPlan"><code class="docutils literal notranslate"><span class="pre">FanOutPlan</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.FanOutResult"><code class="docutils literal notranslate"><span class="pre">FanOutResult</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.FanOutUnit"><code class="docutils literal notranslate"><span class="pre">FanOutUnit</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.FreshnessVerdict"><code class="docutils literal notranslate"><span class="pre">FreshnessVerdict</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.FrozenSegment"><code class="docutils literal notranslate"><span class="pre">FrozenSegment</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.Gap"><code class="docutils literal notranslate"><span class="pre">Gap</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.Genre"><code class="docutils literal notranslate"><span class="pre">Genre</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.PlanQuote"><code class="docutils literal notranslate"><span class="pre">PlanQuote</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.Project"><code class="docutils literal notranslate"><span class="pre">Project</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.ProjectGraph"><code class="docutils literal notranslate"><span class="pre">ProjectGraph</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.ProjectSpec"><code class="docutils literal notranslate"><span class="pre">ProjectSpec</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.ProjectSummary"><code class="docutils literal notranslate"><span class="pre">ProjectSummary</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.Resolver"><code class="docutils literal notranslate"><span class="pre">Resolver</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.ResumptionBrief"><code class="docutils literal notranslate"><span class="pre">ResumptionBrief</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.Secrets"><code class="docutils literal notranslate"><span class="pre">Secrets</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.SectionSpec"><code class="docutils literal notranslate"><span class="pre">SectionSpec</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.ShotPreparation"><code class="docutils literal notranslate"><span class="pre">ShotPreparation</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.ShotReport"><code class="docutils literal notranslate"><span class="pre">ShotReport</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.ShotSpec"><code class="docutils literal notranslate"><span class="pre">ShotSpec</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.SongInfo"><code class="docutils literal notranslate"><span class="pre">SongInfo</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.StoredUnproducedOutput"><code class="docutils literal notranslate"><span class="pre">StoredUnproducedOutput</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.Strategy"><code class="docutils literal notranslate"><span class="pre">Strategy</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.Template"><code class="docutils literal notranslate"><span class="pre">Template</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.Transform"><code class="docutils literal notranslate"><span class="pre">Transform</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.TransformInputs"><code class="docutils literal notranslate"><span class="pre">TransformInputs</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.TransformResult"><code class="docutils literal notranslate"><span class="pre">TransformResult</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.UnproducedOutputBodyV1"><code class="docutils literal notranslate"><span class="pre">UnproducedOutputBodyV1</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.WorkItem"><code class="docutils literal notranslate"><span class="pre">WorkItem</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.all_stale"><code class="docutils literal notranslate"><span class="pre">all_stale()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.annotations_at_tier"><code class="docutils literal notranslate"><span class="pre">annotations_at_tier()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.apply_to_projects"><code class="docutils literal notranslate"><span class="pre">apply_to_projects()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.as_secrets"><code class="docutils literal notranslate"><span class="pre">as_secrets()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.backfill_traces"><code class="docutils literal notranslate"><span class="pre">backfill_traces()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.clone_project"><code class="docutils literal notranslate"><span class="pre">clone_project()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.collect_orphan_traces"><code class="docutils literal notranslate"><span class="pre">collect_orphan_traces()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.compose_report"><code class="docutils literal notranslate"><span class="pre">compose_report()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.cost_records"><code class="docutils literal notranslate"><span class="pre">cost_records()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.create_genre_project"><code class="docutils literal notranslate"><span class="pre">create_genre_project()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.current_quote"><code class="docutils literal notranslate"><span class="pre">current_quote()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.derived_from"><code class="docutils literal notranslate"><span class="pre">derived_from()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.descendants_of"><code class="docutils literal notranslate"><span class="pre">descendants_of()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.describe_genre"><code class="docutils literal notranslate"><span class="pre">describe_genre()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.execute_render"><code class="docutils literal notranslate"><span class="pre">execute_render()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.execute_render_panel_images"><code class="docutils literal notranslate"><span class="pre">execute_render_panel_images()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.fan_out_execute"><code class="docutils literal notranslate"><span class="pre">fan_out_execute()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.fan_out_plan"><code class="docutils literal notranslate"><span class="pre">fan_out_plan()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.format_ref"><code class="docutils literal notranslate"><span class="pre">format_ref()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.genre_catalog"><code class="docutils literal notranslate"><span class="pre">genre_catalog()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.get_genre"><code class="docutils literal notranslate"><span class="pre">get_genre()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.get_strategy"><code class="docutils literal notranslate"><span class="pre">get_strategy()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.get_transform"><code class="docutils literal notranslate"><span class="pre">get_transform()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.has_genre_project_factory"><code class="docutils literal notranslate"><span class="pre">has_genre_project_factory()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.initialize_genre"><code class="docutils literal notranslate"><span class="pre">initialize_genre()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.is_migrated"><code class="docutils literal notranslate"><span class="pre">is_migrated()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.iter_all_annotations"><code class="docutils literal notranslate"><span class="pre">iter_all_annotations()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.list_genres"><code class="docutils literal notranslate"><span class="pre">list_genres()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.list_strategies"><code class="docutils literal notranslate"><span class="pre">list_strategies()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.list_transforms"><code class="docutils literal notranslate"><span class="pre">list_transforms()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.migrate_to_graph"><code class="docutils literal notranslate"><span class="pre">migrate_to_graph()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.open_project_stores"><code class="docutils literal notranslate"><span class="pre">open_project_stores()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.open_storyboard"><code class="docutils literal notranslate"><span class="pre">open_storyboard()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.parse_ref"><code class="docutils literal notranslate"><span class="pre">parse_ref()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.plan_from_cost_records"><code class="docutils literal notranslate"><span class="pre">plan_from_cost_records()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.plan_render_panel_images"><code class="docutils literal notranslate"><span class="pre">plan_render_panel_images()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.plan_render_shot"><code class="docutils literal notranslate"><span class="pre">plan_render_shot()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.prepare_shot"><code class="docutils literal notranslate"><span class="pre">prepare_shot()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.project_asset_id"><code class="docutils literal notranslate"><span class="pre">project_asset_id()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.quote_from_cost_records"><code class="docutils literal notranslate"><span class="pre">quote_from_cost_records()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.quote_render_decision"><code class="docutils literal notranslate"><span class="pre">quote_render_decision()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.recommend_genre"><code class="docutils literal notranslate"><span class="pre">recommend_genre()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.redact"><code class="docutils literal notranslate"><span class="pre">redact()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.redact_exception"><code class="docutils literal notranslate"><span class="pre">redact_exception()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.register_genre"><code class="docutils literal notranslate"><span class="pre">register_genre()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.register_genre_initializer"><code class="docutils literal notranslate"><span class="pre">register_genre_initializer()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.register_genre_project_factory"><code class="docutils literal notranslate"><span class="pre">register_genre_project_factory()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.register_genre_resolver"><code class="docutils literal notranslate"><span class="pre">register_genre_resolver()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.register_strategy"><code class="docutils literal notranslate"><span class="pre">register_strategy()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.register_transform"><code class="docutils literal notranslate"><span class="pre">register_transform()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.resolve_defaults"><code class="docutils literal notranslate"><span class="pre">resolve_defaults()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.resolve_genre"><code class="docutils literal notranslate"><span class="pre">resolve_genre()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.save_storyboard"><code class="docutils literal notranslate"><span class="pre">save_storyboard()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.shot_report"><code class="docutils literal notranslate"><span class="pre">shot_report()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.stale_after"><code class="docutils literal notranslate"><span class="pre">stale_after()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.stale_verdicts"><code class="docutils literal notranslate"><span class="pre">stale_verdicts()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.stale_verdicts_all"><code class="docutils literal notranslate"><span class="pre">stale_verdicts_all()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.stamp_transform_identity"><code class="docutils literal notranslate"><span class="pre">stamp_transform_identity()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.storyboard_db_path"><code class="docutils literal notranslate"><span class="pre">storyboard_db_path()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.storyboard_from_shots"><code class="docutils literal notranslate"><span class="pre">storyboard_from_shots()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.summarize_all"><code class="docutils literal notranslate"><span class="pre">summarize_all()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.transform_catalog"><code class="docutils literal notranslate"><span class="pre">transform_catalog()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.unquotable"><code class="docutils literal notranslate"><span class="pre">unquotable()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.using_secrets"><code class="docutils literal notranslate"><span class="pre">using_secrets()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw.html#nw.work_item_instance_id"><code class="docutils literal notranslate"><span class="pre">work_item_instance_id()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies.html">nw.bodies</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies.html#nw.bodies.CharacterRefBodyV1"><code class="docutils literal notranslate"><span class="pre">CharacterRefBodyV1</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies.html#nw.bodies.DecisionBodyV1"><code class="docutils literal notranslate"><span class="pre">DecisionBodyV1</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies.html#nw.bodies.EnvironmentRefBodyV1"><code class="docutils literal notranslate"><span class="pre">EnvironmentRefBodyV1</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies.html#nw.bodies.GenreEnvelopeBodyV1"><code class="docutils literal notranslate"><span class="pre">GenreEnvelopeBodyV1</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies.html#nw.bodies.RenderResultBodyV1"><code class="docutils literal notranslate"><span class="pre">RenderResultBodyV1</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies.html#nw.bodies.SectionBodyV1"><code class="docutils literal notranslate"><span class="pre">SectionBodyV1</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies.html#nw.bodies.ShotBodyV1"><code class="docutils literal notranslate"><span class="pre">ShotBodyV1</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies.html#nw.bodies.UnproducedOutputBodyV1"><code class="docutils literal notranslate"><span class="pre">UnproducedOutputBodyV1</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies.html#nw.bodies.UpstreamDigestV1"><code class="docutils literal notranslate"><span class="pre">UpstreamDigestV1</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies.html#nw.bodies.VerifyingTraceBodyV1"><code class="docutils literal notranslate"><span class="pre">VerifyingTraceBodyV1</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies.html#nw.bodies.build_verifying_trace"><code class="docutils literal notranslate"><span class="pre">build_verifying_trace()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/character_ref.html">nw.bodies.character_ref</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies/character_ref.html#nw.bodies.character_ref.CharacterRefBodyV1"><code class="docutils literal notranslate"><span class="pre">CharacterRefBodyV1</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/decision.html">nw.bodies.decision</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies/decision.html#nw.bodies.decision.DecisionBodyV1"><code class="docutils literal notranslate"><span class="pre">DecisionBodyV1</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/environment_ref.html">nw.bodies.environment_ref</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies/environment_ref.html#nw.bodies.environment_ref.EnvironmentRefBodyV1"><code class="docutils literal notranslate"><span class="pre">EnvironmentRefBodyV1</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/genre_envelope.html">nw.bodies.genre_envelope</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies/genre_envelope.html#why-an-annotation-rather-than-a-projectspec-field">Why an annotation rather than a <code class="docutils literal notranslate"><span class="pre">ProjectSpec</span></code> field</a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies/genre_envelope.html#nw.bodies.genre_envelope.GenreEnvelopeBodyV1"><code class="docutils literal notranslate"><span class="pre">GenreEnvelopeBodyV1</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/render_result.html">nw.bodies.render_result</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies/render_result.html#nw.bodies.render_result.RenderResultBodyV1"><code class="docutils literal notranslate"><span class="pre">RenderResultBodyV1</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/section.html">nw.bodies.section</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies/section.html#nw.bodies.section.SectionBodyV1"><code class="docutils literal notranslate"><span class="pre">SectionBodyV1</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/shot.html">nw.bodies.shot</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies/shot.html#nw.bodies.shot.ShotBodyV1"><code class="docutils literal notranslate"><span class="pre">ShotBodyV1</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/unproduced_output.html">nw.bodies.unproduced_output</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies/unproduced_output.html#why-a-sidecar-tier-rather-than-the-output-kind-s-own-schema">Why a sidecar tier rather than the output kind’s own schema</a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies/unproduced_output.html#identity-and-lifecycle">Identity and lifecycle</a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies/unproduced_output.html#two-properties-this-schema-deliberately-shares-with-the-verifying-trace">Two properties this schema deliberately shares with the verifying trace</a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies/unproduced_output.html#reason-never-carries-raw-exception-text"><code class="docutils literal notranslate"><span class="pre">reason</span></code> never carries raw exception text</a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies/unproduced_output.html#nw.bodies.unproduced_output.UnproducedOutputBodyV1"><code class="docutils literal notranslate"><span class="pre">UnproducedOutputBodyV1</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/bodies/verifying_trace.html">nw.bodies.verifying_trace</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies/verifying_trace.html#why-a-sidecar-annotation-rather-than-a-field-on-lacing-provenance">Why a sidecar annotation rather than a field on <code class="docutils literal notranslate"><span class="pre">lacing.Provenance</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies/verifying_trace.html#two-properties-this-schema-deliberately-has">Two properties this schema deliberately has</a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies/verifying_trace.html#nw.bodies.verifying_trace.UpstreamDigestV1"><code class="docutils literal notranslate"><span class="pre">UpstreamDigestV1</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies/verifying_trace.html#nw.bodies.verifying_trace.VerifyingTraceBodyV1"><code class="docutils literal notranslate"><span class="pre">VerifyingTraceBodyV1</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/bodies/verifying_trace.html#nw.bodies.verifying_trace.build_verifying_trace"><code class="docutils literal notranslate"><span class="pre">build_verifying_trace()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/delivery.html">nw.delivery</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/delivery.html#why-this-module-exists-at-all">Why this module exists at all</a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/delivery.html#the-speakable-reference">The speakable reference</a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/delivery.html#authorization-is-the-genre-s-job-and-it-is-not-optional">Authorization is the genre’s job, and it is not optional</a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/delivery.html#nw.delivery.DELIVERY_FUNCTIONS"><code class="docutils literal notranslate"><span class="pre">DELIVERY_FUNCTIONS</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/delivery.html#nw.delivery.Deliverable"><code class="docutils literal notranslate"><span class="pre">Deliverable</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/delivery.html#nw.delivery.Lister"><code class="docutils literal notranslate"><span class="pre">Lister</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/delivery.html#nw.delivery.MAX_TITLE_LEN"><code class="docutils literal notranslate"><span class="pre">MAX_TITLE_LEN</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/delivery.html#nw.delivery.Organiser"><code class="docutils literal notranslate"><span class="pre">Organiser</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/delivery.html#nw.delivery.ProjectLister"><code class="docutils literal notranslate"><span class="pre">ProjectLister</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/delivery.html#nw.delivery.ProjectSummary"><code class="docutils literal notranslate"><span class="pre">ProjectSummary</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/delivery.html#nw.delivery.REF_WORD"><code class="docutils literal notranslate"><span class="pre">REF_WORD</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/delivery.html#nw.delivery.Resolver"><code class="docutils literal notranslate"><span class="pre">Resolver</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/delivery.html#nw.delivery.caller_key"><code class="docutils literal notranslate"><span class="pre">caller_key()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/delivery.html#nw.delivery.check_delivery_source"><code class="docutils literal notranslate"><span class="pre">check_delivery_source()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/delivery.html#nw.delivery.check_title"><code class="docutils literal notranslate"><span class="pre">check_title()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/delivery.html#nw.delivery.format_ref"><code class="docutils literal notranslate"><span class="pre">format_ref()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/delivery.html#nw.delivery.parse_ref"><code class="docutils literal notranslate"><span class="pre">parse_ref()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/delivery.html#nw.delivery.safe_message"><code class="docutils literal notranslate"><span class="pre">safe_message()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/experiment.html">nw.experiment</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/experiment.html#nw.experiment.apply_to_projects"><code class="docutils literal notranslate"><span class="pre">apply_to_projects()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/experiment.html#nw.experiment.clone_project"><code class="docutils literal notranslate"><span class="pre">clone_project()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/experiment.html#nw.experiment.summarize_all"><code class="docutils literal notranslate"><span class="pre">summarize_all()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/freshness.html">nw.freshness</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/freshness.html#the-rule-stated-exactly">The rule, stated exactly</a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/freshness.html#what-this-does-not-catch">What this does <strong>not</strong> catch</a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/freshness.html#nw.freshness.FreshnessVerdict"><code class="docutils literal notranslate"><span class="pre">FreshnessVerdict</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/freshness.html#nw.freshness.STALE_REASONS"><code class="docutils literal notranslate"><span class="pre">STALE_REASONS</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/freshness.html#nw.freshness.all_stale"><code class="docutils literal notranslate"><span class="pre">all_stale()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/freshness.html#nw.freshness.stale_after"><code class="docutils literal notranslate"><span class="pre">stale_after()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/freshness.html#nw.freshness.stale_verdicts"><code class="docutils literal notranslate"><span class="pre">stale_verdicts()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/freshness.html#nw.freshness.stale_verdicts_all"><code class="docutils literal notranslate"><span class="pre">stale_verdicts_all()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/genres.html">nw.genres</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.GENRE_STATUSES"><code class="docutils literal notranslate"><span class="pre">GENRE_STATUSES</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.Genre"><code class="docutils literal notranslate"><span class="pre">Genre</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.GenreInitializer"><code class="docutils literal notranslate"><span class="pre">GenreInitializer</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.GenreProjectFactory"><code class="docutils literal notranslate"><span class="pre">GenreProjectFactory</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.GenreResolver"><code class="docutils literal notranslate"><span class="pre">GenreResolver</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.Template"><code class="docutils literal notranslate"><span class="pre">Template</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.create_genre_project"><code class="docutils literal notranslate"><span class="pre">create_genre_project()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.describe_genre"><code class="docutils literal notranslate"><span class="pre">describe_genre()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.genre_catalog"><code class="docutils literal notranslate"><span class="pre">genre_catalog()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.genre_initializers"><code class="docutils literal notranslate"><span class="pre">genre_initializers</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.genre_project_factories"><code class="docutils literal notranslate"><span class="pre">genre_project_factories</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.genre_resolvers"><code class="docutils literal notranslate"><span class="pre">genre_resolvers</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.genres"><code class="docutils literal notranslate"><span class="pre">genres</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.get_genre"><code class="docutils literal notranslate"><span class="pre">get_genre()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.has_genre_project_factory"><code class="docutils literal notranslate"><span class="pre">has_genre_project_factory()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.initialize_genre"><code class="docutils literal notranslate"><span class="pre">initialize_genre()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.list_genres"><code class="docutils literal notranslate"><span class="pre">list_genres()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.recommend_genre"><code class="docutils literal notranslate"><span class="pre">recommend_genre()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.register_genre"><code class="docutils literal notranslate"><span class="pre">register_genre()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.register_genre_initializer"><code class="docutils literal notranslate"><span class="pre">register_genre_initializer()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.register_genre_project_factory"><code class="docutils literal notranslate"><span class="pre">register_genre_project_factory()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.register_genre_resolver"><code class="docutils literal notranslate"><span class="pre">register_genre_resolver()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.resolve_defaults"><code class="docutils literal notranslate"><span class="pre">resolve_defaults()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/genres.html#nw.genres.resolve_genre"><code class="docutils literal notranslate"><span class="pre">resolve_genre()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/graph.html">nw.graph</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/graph.html#nw.graph.ProjectGraph"><code class="docutils literal notranslate"><span class="pre">ProjectGraph</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/graph.html#nw.graph.StoredCharacterRef"><code class="docutils literal notranslate"><span class="pre">StoredCharacterRef</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/graph.html#nw.graph.StoredDecision"><code class="docutils literal notranslate"><span class="pre">StoredDecision</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/graph.html#nw.graph.StoredEnvironmentRef"><code class="docutils literal notranslate"><span class="pre">StoredEnvironmentRef</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/graph.html#nw.graph.StoredSection"><code class="docutils literal notranslate"><span class="pre">StoredSection</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/graph.html#nw.graph.StoredShot"><code class="docutils literal notranslate"><span class="pre">StoredShot</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/graph.html#nw.graph.StoredUnproducedOutput"><code class="docutils literal notranslate"><span class="pre">StoredUnproducedOutput</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/graph.html#nw.graph.all_project_stores"><code class="docutils literal notranslate"><span class="pre">all_project_stores()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/graph.html#nw.graph.annotations_at_tier"><code class="docutils literal notranslate"><span class="pre">annotations_at_tier()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/graph.html#nw.graph.backfill_traces"><code class="docutils literal notranslate"><span class="pre">backfill_traces()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/graph.html#nw.graph.collect_orphan_traces"><code class="docutils literal notranslate"><span class="pre">collect_orphan_traces()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/graph.html#nw.graph.derived_from"><code class="docutils literal notranslate"><span class="pre">derived_from()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/graph.html#nw.graph.descendants_of"><code class="docutils literal notranslate"><span class="pre">descendants_of()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/graph.html#nw.graph.iter_all_annotations"><code class="docutils literal notranslate"><span class="pre">iter_all_annotations()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/graph.html#nw.graph.open_project_stores"><code class="docutils literal notranslate"><span class="pre">open_project_stores()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/graph.html#nw.graph.remove_annotations_with_traces"><code class="docutils literal notranslate"><span class="pre">remove_annotations_with_traces()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/graph_backend.html">nw.graph_backend</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/graph_backend.html#the-facade-principle-in-action">The facade principle in action</a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/graph_backend.html#the-environment-contract">The environment contract</a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/graph_backend.html#tenant-scoping-across-scopes">Tenant scoping across scopes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/graph_backend.html#nw.graph_backend.GraphBackend"><code class="docutils literal notranslate"><span class="pre">GraphBackend</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/graph_backend.html#nw.graph_backend.iter_scope_stores"><code class="docutils literal notranslate"><span class="pre">iter_scope_stores()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/graph_backend.html#nw.graph_backend.open_graph_store"><code class="docutils literal notranslate"><span class="pre">open_graph_store()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/graph_backend.html#nw.graph_backend.scope_name_for_db"><code class="docutils literal notranslate"><span class="pre">scope_name_for_db()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/graph_backend.html#nw.graph_backend.selected_backend"><code class="docutils literal notranslate"><span class="pre">selected_backend()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/inspect.html">nw.inspect</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/inspect.html#nw.inspect.ComposeReport"><code class="docutils literal notranslate"><span class="pre">ComposeReport</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/inspect.html#nw.inspect.FrozenSegment"><code class="docutils literal notranslate"><span class="pre">FrozenSegment</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/inspect.html#nw.inspect.Gap"><code class="docutils literal notranslate"><span class="pre">Gap</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/inspect.html#nw.inspect.ShotReport"><code class="docutils literal notranslate"><span class="pre">ShotReport</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/inspect.html#nw.inspect.compose_report"><code class="docutils literal notranslate"><span class="pre">compose_report()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/inspect.html#nw.inspect.shot_report"><code class="docutils literal notranslate"><span class="pre">shot_report()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/jobs.html">nw.jobs</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/jobs.html#nw.jobs.DurationLearningMiddleware"><code class="docutils literal notranslate"><span class="pre">DurationLearningMiddleware</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/jobs.html#nw.jobs.Job"><code class="docutils literal notranslate"><span class="pre">Job</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/jobs.html#nw.jobs.JobCost"><code class="docutils literal notranslate"><span class="pre">JobCost</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/jobs.html#nw.jobs.JobProgress"><code class="docutils literal notranslate"><span class="pre">JobProgress</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/jobs.html#nw.jobs.JobsConfig"><code class="docutils literal notranslate"><span class="pre">JobsConfig</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/jobs.html#nw.jobs.UNREADABLE_PLAN_REASON"><code class="docutils literal notranslate"><span class="pre">UNREADABLE_PLAN_REASON</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/jobs.html#nw.jobs.cancel_job"><code class="docutils literal notranslate"><span class="pre">cancel_job()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/jobs.html#nw.jobs.enqueue"><code class="docutils literal notranslate"><span class="pre">enqueue()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/jobs.html#nw.jobs.estimate"><code class="docutils literal notranslate"><span class="pre">estimate()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/jobs.html#nw.jobs.get_job"><code class="docutils literal notranslate"><span class="pre">get_job()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/jobs.html#nw.jobs.list_jobs"><code class="docutils literal notranslate"><span class="pre">list_jobs()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/jobs.html#nw.jobs.predict_total_s"><code class="docutils literal notranslate"><span class="pre">predict_total_s()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/jobs.html#nw.jobs.summarize"><code class="docutils literal notranslate"><span class="pre">summarize()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/jobs.html#nw.jobs.to_dict"><code class="docutils literal notranslate"><span class="pre">to_dict()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/migrate.html">nw.migrate</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/migrate.html#nw.migrate.is_migrated"><code class="docutils literal notranslate"><span class="pre">is_migrated()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/migrate.html#nw.migrate.migrate_to_graph"><code class="docutils literal notranslate"><span class="pre">migrate_to_graph()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/migrate.html#nw.migrate.open_project_graph"><code class="docutils literal notranslate"><span class="pre">open_project_graph()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/migrate.html#nw.migrate.open_project_graph_readonly"><code class="docutils literal notranslate"><span class="pre">open_project_graph_readonly()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/migrate.html#nw.migrate.project_asset_id"><code class="docutils literal notranslate"><span class="pre">project_asset_id()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/pricing.html">nw.pricing</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/pricing.html#nw.pricing.DISAGREEING_TOTAL_REASON"><code class="docutils literal notranslate"><span class="pre">DISAGREEING_TOTAL_REASON</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/pricing.html#nw.pricing.PlanQuote"><code class="docutils literal notranslate"><span class="pre">PlanQuote</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/pricing.html#nw.pricing.QuoteStatus"><code class="docutils literal notranslate"><span class="pre">QuoteStatus</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/pricing.html#nw.pricing.TOTAL_AGREEMENT_ABS_TOL_USD"><code class="docutils literal notranslate"><span class="pre">TOTAL_AGREEMENT_ABS_TOL_USD</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/pricing.html#nw.pricing.cost_records"><code class="docutils literal notranslate"><span class="pre">cost_records()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/pricing.html#nw.pricing.current_quote"><code class="docutils literal notranslate"><span class="pre">current_quote()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/pricing.html#nw.pricing.plan_from_cost_records"><code class="docutils literal notranslate"><span class="pre">plan_from_cost_records()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/pricing.html#nw.pricing.quote_from_cost_records"><code class="docutils literal notranslate"><span class="pre">quote_from_cost_records()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/pricing.html#nw.pricing.quote_render_decision"><code class="docutils literal notranslate"><span class="pre">quote_render_decision()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/pricing.html#nw.pricing.unquotable"><code class="docutils literal notranslate"><span class="pre">unquotable()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/project.html">nw.project</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/project.html#nw.project.CharacterImage"><code class="docutils literal notranslate"><span class="pre">CharacterImage</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/project.html#nw.project.Project"><code class="docutils literal notranslate"><span class="pre">Project</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/renderers.html">nw.renderers</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/renderers.html#nw.renderers.Strategy"><code class="docutils literal notranslate"><span class="pre">Strategy</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/renderers.html#nw.renderers.get_strategy"><code class="docutils literal notranslate"><span class="pre">get_strategy()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/renderers.html#nw.renderers.list_strategies"><code class="docutils literal notranslate"><span class="pre">list_strategies()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/renderers.html#nw.renderers.register_strategy"><code class="docutils literal notranslate"><span class="pre">register_strategy()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/renderers.html#nw.renderers.strategies"><code class="docutils literal notranslate"><span class="pre">strategies</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/renderers/_common.html">nw.renderers._common</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/renderers/_common.html#nw.renderers._common.download_to"><code class="docutils literal notranslate"><span class="pre">download_to()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/renderers/_common.html#nw.renderers._common.loop_image_with_audio"><code class="docutils literal notranslate"><span class="pre">loop_image_with_audio()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/renderers/_common.html#nw.renderers._common.trim_or_pad_video"><code class="docutils literal notranslate"><span class="pre">trim_or_pad_video()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/renderers/_common.html#nw.renderers._common.upload_local_file"><code class="docutils literal notranslate"><span class="pre">upload_local_file()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/renderers/composite_lipsync.html">nw.renderers.composite_lipsync</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/renderers/composite_lipsync.html#nw.renderers.composite_lipsync.CompositeLipsyncStrategy"><code class="docutils literal notranslate"><span class="pre">CompositeLipsyncStrategy</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/renderers/image_to_video.html">nw.renderers.image_to_video</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/renderers/image_to_video.html#nw.renderers.image_to_video.ImageToVideoStrategy"><code class="docutils literal notranslate"><span class="pre">ImageToVideoStrategy</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/renderers/lipsync.html">nw.renderers.lipsync</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/renderers/lipsync.html#nw.renderers.lipsync.LipsyncStrategy"><code class="docutils literal notranslate"><span class="pre">LipsyncStrategy</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/renderers/still.html">nw.renderers.still</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/renderers/still.html#nw.renderers.still.StillStrategy"><code class="docutils literal notranslate"><span class="pre">StillStrategy</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/renderers/text_to_video.html">nw.renderers.text_to_video</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/renderers/text_to_video.html#nw.renderers.text_to_video.TextToVideoStrategy"><code class="docutils literal notranslate"><span class="pre">TextToVideoStrategy</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/schema.html">nw.schema</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/schema.html#nw.schema.CharacterRef"><code class="docutils literal notranslate"><span class="pre">CharacterRef</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/schema.html#nw.schema.DecisionEntry"><code class="docutils literal notranslate"><span class="pre">DecisionEntry</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/schema.html#nw.schema.EnvironmentRef"><code class="docutils literal notranslate"><span class="pre">EnvironmentRef</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/schema.html#nw.schema.ProjectSpec"><code class="docutils literal notranslate"><span class="pre">ProjectSpec</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/schema.html#nw.schema.ProjectSummary"><code class="docutils literal notranslate"><span class="pre">ProjectSummary</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/schema.html#nw.schema.ResumptionBrief"><code class="docutils literal notranslate"><span class="pre">ResumptionBrief</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/schema.html#nw.schema.SectionSpec"><code class="docutils literal notranslate"><span class="pre">SectionSpec</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/schema.html#nw.schema.ShotSpec"><code class="docutils literal notranslate"><span class="pre">ShotSpec</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/schema.html#nw.schema.SongInfo"><code class="docutils literal notranslate"><span class="pre">SongInfo</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/script_segmentation.html">nw.script_segmentation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/script_segmentation.html#nw.script_segmentation.LLM"><code class="docutils literal notranslate"><span class="pre">LLM</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/script_segmentation.html#nw.script_segmentation.PanelProposal"><code class="docutils literal notranslate"><span class="pre">PanelProposal</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/script_segmentation.html#nw.script_segmentation.build_prompt"><code class="docutils literal notranslate"><span class="pre">build_prompt()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/script_segmentation.html#nw.script_segmentation.segment_script_into_panels"><code class="docutils literal notranslate"><span class="pre">segment_script_into_panels()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/secrets.html">nw.secrets</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/secrets.html#nw.secrets.FAL_SECRET"><code class="docutils literal notranslate"><span class="pre">FAL_SECRET</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/secrets.html#nw.secrets.RedactedError"><code class="docutils literal notranslate"><span class="pre">RedactedError</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/secrets.html#nw.secrets.Secrets"><code class="docutils literal notranslate"><span class="pre">Secrets</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/secrets.html#nw.secrets.as_secrets"><code class="docutils literal notranslate"><span class="pre">as_secrets()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/secrets.html#nw.secrets.redact"><code class="docutils literal notranslate"><span class="pre">redact()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/secrets.html#nw.secrets.redact_exception"><code class="docutils literal notranslate"><span class="pre">redact_exception()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/secrets.html#nw.secrets.using_secrets"><code class="docutils literal notranslate"><span class="pre">using_secrets()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/storyboard.html">nw.storyboard</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/storyboard.html#nw.storyboard.execute_render_panel_images"><code class="docutils literal notranslate"><span class="pre">execute_render_panel_images()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/storyboard.html#nw.storyboard.open_storyboard"><code class="docutils literal notranslate"><span class="pre">open_storyboard()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/storyboard.html#nw.storyboard.plan_render_panel_images"><code class="docutils literal notranslate"><span class="pre">plan_render_panel_images()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/storyboard.html#nw.storyboard.project_asset_id"><code class="docutils literal notranslate"><span class="pre">project_asset_id()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/storyboard.html#nw.storyboard.save_storyboard"><code class="docutils literal notranslate"><span class="pre">save_storyboard()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/storyboard.html#nw.storyboard.storyboard_db_path"><code class="docutils literal notranslate"><span class="pre">storyboard_db_path()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/storyboard.html#nw.storyboard.storyboard_from_shots"><code class="docutils literal notranslate"><span class="pre">storyboard_from_shots()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/transforms.html">nw.transforms</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.BaseTransform"><code class="docutils literal notranslate"><span class="pre">BaseTransform</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.CacheModeConflict"><code class="docutils literal notranslate"><span class="pre">CacheModeConflict</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.DFLT_IMPL_VERSION"><code class="docutils literal notranslate"><span class="pre">DFLT_IMPL_VERSION</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.FanOutItemResult"><code class="docutils literal notranslate"><span class="pre">FanOutItemResult</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.FanOutPlan"><code class="docutils literal notranslate"><span class="pre">FanOutPlan</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.FanOutResult"><code class="docutils literal notranslate"><span class="pre">FanOutResult</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.FanOutUnit"><code class="docutils literal notranslate"><span class="pre">FanOutUnit</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.Secrets"><code class="docutils literal notranslate"><span class="pre">Secrets</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.Transform"><code class="docutils literal notranslate"><span class="pre">Transform</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.TransformInputs"><code class="docutils literal notranslate"><span class="pre">TransformInputs</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.TransformResult"><code class="docutils literal notranslate"><span class="pre">TransformResult</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.WorkItem"><code class="docutils literal notranslate"><span class="pre">WorkItem</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.as_secrets"><code class="docutils literal notranslate"><span class="pre">as_secrets()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.cache_key"><code class="docutils literal notranslate"><span class="pre">cache_key()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.cached_output"><code class="docutils literal notranslate"><span class="pre">cached_output()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.fan_out_execute"><code class="docutils literal notranslate"><span class="pre">fan_out_execute()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.fan_out_plan"><code class="docutils literal notranslate"><span class="pre">fan_out_plan()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.get_transform"><code class="docutils literal notranslate"><span class="pre">get_transform()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.list_transforms"><code class="docutils literal notranslate"><span class="pre">list_transforms()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.redact"><code class="docutils literal notranslate"><span class="pre">redact()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.redact_exception"><code class="docutils literal notranslate"><span class="pre">redact_exception()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.register_transform"><code class="docutils literal notranslate"><span class="pre">register_transform()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.resolve_cache_mode"><code class="docutils literal notranslate"><span class="pre">resolve_cache_mode()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.stamp_transform_identity"><code class="docutils literal notranslate"><span class="pre">stamp_transform_identity()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.transform_catalog"><code class="docutils literal notranslate"><span class="pre">transform_catalog()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.transforms"><code class="docutils literal notranslate"><span class="pre">transforms</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.using_secrets"><code class="docutils literal notranslate"><span class="pre">using_secrets()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms.html#nw.transforms.work_item_instance_id"><code class="docutils literal notranslate"><span class="pre">work_item_instance_id()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/transforms/_adapters.html">nw.transforms._adapters</a></li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/transforms/_adapters/render_strategy.html">nw.transforms._adapters.render_strategy</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms/_adapters/render_strategy.html#nw.transforms._adapters.render_strategy.RenderStrategyParams"><code class="docutils literal notranslate"><span class="pre">RenderStrategyParams</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms/_adapters/render_strategy.html#nw.transforms._adapters.render_strategy.RenderStrategyTransform"><code class="docutils literal notranslate"><span class="pre">RenderStrategyTransform</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/transforms/_cache_mode.html">nw.transforms._cache_mode</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms/_cache_mode.html#nw.transforms._cache_mode.CacheModeConflict"><code class="docutils literal notranslate"><span class="pre">CacheModeConflict</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms/_cache_mode.html#nw.transforms._cache_mode.resolve_cache_mode"><code class="docutils literal notranslate"><span class="pre">resolve_cache_mode()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/transforms/_provenance.html">nw.transforms._provenance</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms/_provenance.html#nw.transforms._provenance.derive_provenance"><code class="docutils literal notranslate"><span class="pre">derive_provenance()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/transforms/fanout.html">nw.transforms.fanout</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms/fanout.html#nw.transforms.fanout.DFLT_GENERATE_WHEN"><code class="docutils literal notranslate"><span class="pre">DFLT_GENERATE_WHEN</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms/fanout.html#nw.transforms.fanout.FanOutItemResult"><code class="docutils literal notranslate"><span class="pre">FanOutItemResult</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms/fanout.html#nw.transforms.fanout.FanOutPlan"><code class="docutils literal notranslate"><span class="pre">FanOutPlan</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms/fanout.html#nw.transforms.fanout.FanOutResult"><code class="docutils literal notranslate"><span class="pre">FanOutResult</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms/fanout.html#nw.transforms.fanout.FanOutUnit"><code class="docutils literal notranslate"><span class="pre">FanOutUnit</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms/fanout.html#nw.transforms.fanout.GenerateWhen"><code class="docutils literal notranslate"><span class="pre">GenerateWhen</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms/fanout.html#nw.transforms.fanout.UnitStatus"><code class="docutils literal notranslate"><span class="pre">UnitStatus</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms/fanout.html#nw.transforms.fanout.WORK_ITEM_NAMESPACE"><code class="docutils literal notranslate"><span class="pre">WORK_ITEM_NAMESPACE</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms/fanout.html#nw.transforms.fanout.WorkItem"><code class="docutils literal notranslate"><span class="pre">WorkItem</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms/fanout.html#nw.transforms.fanout.fan_out_execute"><code class="docutils literal notranslate"><span class="pre">fan_out_execute()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms/fanout.html#nw.transforms.fanout.fan_out_plan"><code class="docutils literal notranslate"><span class="pre">fan_out_plan()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/transforms/fanout.html#nw.transforms.fanout.work_item_instance_id"><code class="docutils literal notranslate"><span class="pre">work_item_instance_id()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="module_docs/nw/workflow.html">nw.workflow</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/workflow.html#nw.workflow.ShotPreparation"><code class="docutils literal notranslate"><span class="pre">ShotPreparation</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/workflow.html#nw.workflow.execute_render"><code class="docutils literal notranslate"><span class="pre">execute_render()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/workflow.html#nw.workflow.plan_render_shot"><code class="docutils literal notranslate"><span class="pre">plan_render_shot()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="module_docs/nw/workflow.html#nw.workflow.prepare_shot"><code class="docutils literal notranslate"><span class="pre">prepare_shot()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</div>
-</section>
-<section id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Link to this heading"></a></h1>
-<ul class="simple">
-<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
-<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
-<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
-</ul>
-<p>Release: 0.0.52</p>
-<p>Last change: Sep 11, 2026</p>
-</section>
-
-
-           </div>
-          </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="module_docs/nw.html" class="btn btn-neutral float-right" title="nw" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
-
-  <hr/>
-
-  <div role="contentinfo">
-    <p></p>
-  </div>
-
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
-
-</footer>
-        </div>
-      </div>
-    </section>
-  </div>
-  <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script> 
-
-</body>
+      <script src="_static/copybutton.js?v=fd10adb8"></script>
+      <script src="_static/shibuya.js?v=50760d75"></script></body>
 </html>

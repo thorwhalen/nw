@@ -1,4 +1,0 @@
-nw.transforms._adapters
-=======================
-.. automodule:: nw.transforms._adapters
-   :members:

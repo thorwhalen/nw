@@ -1,0 +1,14 @@
+nw.experiment
+=============
+
+.. automodule:: nw.experiment
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      apply_to_projects
+      clone_project
+      summarize_all
+   

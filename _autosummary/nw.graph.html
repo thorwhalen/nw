@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="grass" data-content_root="../">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>nw.graph - nw</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="nw.graph_backend" href="nw.graph_backend.html" /><link rel="prev" title="nw.genres" href="nw.genres.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d88b86f9" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=2ceb65ce" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    
+  <meta property="og:type" content="website"/><meta property="og:title" content="nw.graph"/>
+    <meta name="twitter:card" content="summary"/>
+  
+<link rel="alternate" type="text/markdown" href="nw.graph.html.md">
+<link rel="describedby" href="../llms.txt" type="text/markdown">
+</head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="../index.html">
+      
+      
+      <strong>nw</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/thorwhalen/nw" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="0"><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="nw.html">nw</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="nw.freshness.html">nw.freshness</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.inspect.html">nw.inspect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.checks.html">nw.checks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.bodies.html">nw.bodies</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.character_ref.html">nw.bodies.character_ref</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.decision.html">nw.bodies.decision</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.environment_ref.html">nw.bodies.environment_ref</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.genre_envelope.html">nw.bodies.genre_envelope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.render_result.html">nw.bodies.render_result</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.section.html">nw.bodies.section</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.shot.html">nw.bodies.shot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.unproduced_output.html">nw.bodies.unproduced_output</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.verifying_trace.html">nw.bodies.verifying_trace</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="nw.delivery.html">nw.delivery</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.experiment.html">nw.experiment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.genres.html">nw.genres</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">nw.graph</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.graph_backend.html">nw.graph_backend</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.jobs.html">nw.jobs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.migrate.html">nw.migrate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.pricing.html">nw.pricing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.project.html">nw.project</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.renderers.html">nw.renderers</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="nw.renderers.composite_lipsync.html">nw.renderers.composite_lipsync</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.renderers.image_to_video.html">nw.renderers.image_to_video</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.renderers.lipsync.html">nw.renderers.lipsync</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.renderers.still.html">nw.renderers.still</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.renderers.text_to_video.html">nw.renderers.text_to_video</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="nw.schema.html">nw.schema</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.script_segmentation.html">nw.script_segmentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.secrets.html">nw.secrets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.storyboard.html">nw.storyboard</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.transforms.html">nw.transforms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.validation.html">nw.validation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.workflow.html">nw.workflow</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../ai-agents.html">For AI agents</a></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#nw.graph.ProjectGraph"><code class="docutils literal notranslate"><span class="pre">ProjectGraph</span></code></a><ul>
+<li><a class="reference internal" href="#nw.graph.ProjectGraph.add_annotation"><code class="docutils literal notranslate"><span class="pre">ProjectGraph.add_annotation()</span></code></a></li>
+<li><a class="reference internal" href="#nw.graph.ProjectGraph.add_unproduced_output"><code class="docutils literal notranslate"><span class="pre">ProjectGraph.add_unproduced_output()</span></code></a></li>
+<li><a class="reference internal" href="#nw.graph.ProjectGraph.append_decision"><code class="docutils literal notranslate"><span class="pre">ProjectGraph.append_decision()</span></code></a></li>
+<li><a class="reference internal" href="#nw.graph.ProjectGraph.genre_envelope"><code class="docutils literal notranslate"><span class="pre">ProjectGraph.genre_envelope()</span></code></a></li>
+<li><a class="reference internal" href="#nw.graph.ProjectGraph.remove_annotation"><code class="docutils literal notranslate"><span class="pre">ProjectGraph.remove_annotation()</span></code></a></li>
+<li><a class="reference internal" href="#nw.graph.ProjectGraph.set_genre_envelope"><code class="docutils literal notranslate"><span class="pre">ProjectGraph.set_genre_envelope()</span></code></a></li>
+<li><a class="reference internal" href="#nw.graph.ProjectGraph.unproduced_outputs"><code class="docutils literal notranslate"><span class="pre">ProjectGraph.unproduced_outputs()</span></code></a></li>
+<li><a class="reference internal" href="#nw.graph.ProjectGraph.upsert_character_ref"><code class="docutils literal notranslate"><span class="pre">ProjectGraph.upsert_character_ref()</span></code></a></li>
+<li><a class="reference internal" href="#nw.graph.ProjectGraph.upsert_environment_ref"><code class="docutils literal notranslate"><span class="pre">ProjectGraph.upsert_environment_ref()</span></code></a></li>
+<li><a class="reference internal" href="#nw.graph.ProjectGraph.upsert_section"><code class="docutils literal notranslate"><span class="pre">ProjectGraph.upsert_section()</span></code></a></li>
+<li><a class="reference internal" href="#nw.graph.ProjectGraph.upsert_shot"><code class="docutils literal notranslate"><span class="pre">ProjectGraph.upsert_shot()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#nw.graph.StoredCharacterRef"><code class="docutils literal notranslate"><span class="pre">StoredCharacterRef</span></code></a></li>
+<li><a class="reference internal" href="#nw.graph.StoredDecision"><code class="docutils literal notranslate"><span class="pre">StoredDecision</span></code></a></li>
+<li><a class="reference internal" href="#nw.graph.StoredEnvironmentRef"><code class="docutils literal notranslate"><span class="pre">StoredEnvironmentRef</span></code></a></li>
+<li><a class="reference internal" href="#nw.graph.StoredSection"><code class="docutils literal notranslate"><span class="pre">StoredSection</span></code></a></li>
+<li><a class="reference internal" href="#nw.graph.StoredShot"><code class="docutils literal notranslate"><span class="pre">StoredShot</span></code></a></li>
+<li><a class="reference internal" href="#nw.graph.StoredUnproducedOutput"><code class="docutils literal notranslate"><span class="pre">StoredUnproducedOutput</span></code></a></li>
+<li><a class="reference internal" href="#nw.graph.all_project_stores"><code class="docutils literal notranslate"><span class="pre">all_project_stores()</span></code></a></li>
+<li><a class="reference internal" href="#nw.graph.annotations_at_tier"><code class="docutils literal notranslate"><span class="pre">annotations_at_tier()</span></code></a></li>
+<li><a class="reference internal" href="#nw.graph.backfill_traces"><code class="docutils literal notranslate"><span class="pre">backfill_traces()</span></code></a></li>
+<li><a class="reference internal" href="#nw.graph.collect_orphan_traces"><code class="docutils literal notranslate"><span class="pre">collect_orphan_traces()</span></code></a></li>
+<li><a class="reference internal" href="#nw.graph.derived_from"><code class="docutils literal notranslate"><span class="pre">derived_from()</span></code></a></li>
+<li><a class="reference internal" href="#nw.graph.descendants_of"><code class="docutils literal notranslate"><span class="pre">descendants_of()</span></code></a></li>
+<li><a class="reference internal" href="#nw.graph.iter_all_annotations"><code class="docutils literal notranslate"><span class="pre">iter_all_annotations()</span></code></a></li>
+<li><a class="reference internal" href="#nw.graph.open_project_stores"><code class="docutils literal notranslate"><span class="pre">open_project_stores()</span></code></a></li>
+<li><a class="reference internal" href="#nw.graph.remove_annotations_with_traces"><code class="docutils literal notranslate"><span class="pre">remove_annotations_with_traces()</span></code></a></li>
+</ul>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../index.html"><span itemprop="name">nw</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../api.html"><span itemprop="name">API reference</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="2" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="nw.html"><span itemprop="name">nw</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="3" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">nw.graph</strong>
+        <meta itemprop="position" content="4" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+  <article class="yue dark-code" role="main">
+          <section id="module-nw.graph">
+<span id="nw-graph"></span><h1>nw.graph<a class="headerlink" href="#module-nw.graph" title="Link to this heading">#</a></h1>
+<p>The project annotation graph — read/write helpers + reelee-style traversals.</p>
+<p>A nw project’s SSOT for sections, shots, character/environment refs, and
+decisions is a per-project lacing <code class="xref py py-class docutils literal notranslate"><span class="pre">SqliteStore</span></code> at
+<code class="docutils literal notranslate"><span class="pre">project.annot.sqlite</span></code>. This module wraps that store with typed helpers
+so the rest of nw doesn’t need to know about tier names, MediaRef
+construction, or annotation envelopes.</p>
+<p>Usage from inside the package (illustrative — <code class="docutils literal notranslate"><span class="pre">project_root</span></code>, <code class="docutils literal notranslate"><span class="pre">shot_body</span></code>
+and <code class="docutils literal notranslate"><span class="pre">TimeInterval</span></code> are the caller’s fixtures, not defined here, so the
+executable lines are skipped rather than exercised):</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">nw.graph</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProjectGraph</span>
+</span><span data-line="2"><span class="gp">&gt;&gt;&gt; </span><span class="n">g</span> <span class="o">=</span> <span class="n">ProjectGraph</span><span class="p">(</span><span class="n">project_root</span><span class="p">)</span>
+</span><span data-line="3"><span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">upsert_shot_body</span><span class="p">(</span><span class="n">shot_body</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="n">TimeInterval</span><span class="o">.</span><span class="n">from_seconds</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+</span><span data-line="4"><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">shot</span> <span class="ow">in</span> <span class="n">g</span><span class="o">.</span><span class="n">shots</span><span class="p">():</span>
+</span><span data-line="5"><span class="gp">... </span>    <span class="o">...</span>
+</span></pre></div>
+</div>
+<p>For reelee’s freshness analysis (planned in §7 of the system overview),
+<a class="reference internal" href="#nw.graph.derived_from" title="nw.graph.derived_from"><code class="xref py py-func docutils literal notranslate"><span class="pre">derived_from()</span></code></a> and <a class="reference internal" href="#nw.graph.descendants_of" title="nw.graph.descendants_of"><code class="xref py py-func docutils literal notranslate"><span class="pre">descendants_of()</span></code></a> walk the
+<code class="docutils literal notranslate"><span class="pre">provenance.was_derived_from</span></code> edges across <strong>all</strong> stores in a project
+(project graph + storyboard + alignment). Those are <em>reachability</em> queries.
+The freshness query that compares content — <code class="docutils literal notranslate"><span class="pre">nw.stale_after</span></code> — lives in
+<a class="reference internal" href="nw.freshness.html#module-nw.freshness" title="nw.freshness"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nw.freshness</span></code></a>; this module is where its input, the verifying trace, is
+written (see <a class="reference internal" href="#nw.graph.ProjectGraph.add_annotation" title="nw.graph.ProjectGraph.add_annotation"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ProjectGraph.add_annotation()</span></code></a>).</p>
+<p class="rubric">Functions</p>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.graph.all_project_stores" title="nw.graph.all_project_stores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">all_project_stores</span></code></a>(project_root)</p></td>
+<td><p>Return the <strong>existing</strong> lacing-store file paths under a project.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.graph.annotations_at_tier" title="nw.graph.annotations_at_tier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">annotations_at_tier</span></code></a>(project_root, tier)</p></td>
+<td><p>Return every annotation at the given tier across all of the project's stores.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.graph.backfill_traces" title="nw.graph.backfill_traces"><code class="xref py py-obj docutils literal notranslate"><span class="pre">backfill_traces</span></code></a>(project_root, *[, execute])</p></td>
+<td><p>Bless a pre-trace project so the verifying-trace rule can read it (nw#58).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.graph.collect_orphan_traces" title="nw.graph.collect_orphan_traces"><code class="xref py py-obj docutils literal notranslate"><span class="pre">collect_orphan_traces</span></code></a>(project_root)</p></td>
+<td><p>Drop verifying traces whose target annotation no longer exists.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.graph.derived_from" title="nw.graph.derived_from"><code class="xref py py-obj docutils literal notranslate"><span class="pre">derived_from</span></code></a>(project_root, annotation_id)</p></td>
+<td><p>Return the annotations this one was directly derived from.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.graph.descendants_of" title="nw.graph.descendants_of"><code class="xref py py-obj docutils literal notranslate"><span class="pre">descendants_of</span></code></a>(project_root, ancestor_id)</p></td>
+<td><p>Return every annotation whose provenance chain leads back to <code class="docutils literal notranslate"><span class="pre">ancestor_id</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.graph.iter_all_annotations" title="nw.graph.iter_all_annotations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">iter_all_annotations</span></code></a>(project_root)</p></td>
+<td><p>Walk every annotation in every store under a project (any backend).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.graph.open_project_stores" title="nw.graph.open_project_stores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">open_project_stores</span></code></a>(project_root)</p></td>
+<td><p>Yield an iterator of open stores, one per scope, honouring the backend.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.graph.remove_annotations_with_traces" title="nw.graph.remove_annotations_with_traces"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_annotations_with_traces</span></code></a>(store, ...[, ...])</p></td>
+<td><p>Remove annotations from <code class="docutils literal notranslate"><span class="pre">store</span></code>, plus every trace in it naming them.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="rubric">Classes</p>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.graph.ProjectGraph" title="nw.graph.ProjectGraph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ProjectGraph</span></code></a>(project_root)</p></td>
+<td><p>Typed read/write facade over the project's lacing graph store.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.graph.StoredCharacterRef" title="nw.graph.StoredCharacterRef"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StoredCharacterRef</span></code></a>(annotation_id, body)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.graph.StoredDecision" title="nw.graph.StoredDecision"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StoredDecision</span></code></a>(annotation_id, body)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.graph.StoredEnvironmentRef" title="nw.graph.StoredEnvironmentRef"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StoredEnvironmentRef</span></code></a>(annotation_id, body)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.graph.StoredSection" title="nw.graph.StoredSection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StoredSection</span></code></a>(annotation_id, interval, body)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.graph.StoredShot" title="nw.graph.StoredShot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StoredShot</span></code></a>(annotation_id, interval, body)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.graph.StoredUnproducedOutput" title="nw.graph.StoredUnproducedOutput"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StoredUnproducedOutput</span></code></a>(annotation_id, body)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.graph.ProjectGraph">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.graph.</span></span><span class="sig-name descname"><span class="pre">ProjectGraph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_root</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/graph.html#ProjectGraph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.graph.ProjectGraph" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Typed read/write facade over the project’s lacing graph store.</p>
+<p>Use <code class="xref py py-meth docutils literal notranslate"><span class="pre">Project.graph()</span></code> to get one rather than constructing directly.
+Each method opens-and-closes the underlying store so concurrent
+reads/writes from different processes are safe (SqliteStore is
+file-locked).</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.graph.ProjectGraph.add_annotation">
+<span class="sig-name descname"><span class="pre">add_annotation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ann</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">call_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/graph.html#ProjectGraph.add_annotation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.graph.ProjectGraph.add_annotation" title="Link to this definition">#</a></dt>
+<dd><p>Write one annotation to the project graph, plus its verifying trace.</p>
+<p>Registers <code class="docutils literal notranslate"><span class="pre">ann.tier</span></code> if it isn’t a known tier yet — <code class="docutils literal notranslate"><span class="pre">SqliteStore</span></code>
+enforces a foreign key on <code class="docutils literal notranslate"><span class="pre">tier</span></code>, so writing under a fresh tier
+(e.g. a Transform output kind) would otherwise fail. <code class="docutils literal notranslate"><span class="pre">add_tier</span></code> is
+idempotent, so this is a no-op for the built-in project tiers.</p>
+<p>This is the single choke point every <em>derived</em> annotation in nw and
+reelee passes through, which is why the verifying trace
+(<a class="reference internal" href="nw.bodies.verifying_trace.html#module-nw.bodies.verifying_trace" title="nw.bodies.verifying_trace"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nw.bodies.verifying_trace</span></code></a>) is recorded here rather than in
+<code class="docutils literal notranslate"><span class="pre">derive_provenance</span></code>: that helper returns a <code class="docutils literal notranslate"><span class="pre">Provenance</span></code> and has
+no store to write to, and threading one in would change a signature
+with production callsites in three repos. Writing at persist time
+also covers the paths that build a <code class="docutils literal notranslate"><span class="pre">Provenance</span></code> by hand.</p>
+<p>Annotations with no <code class="docutils literal notranslate"><span class="pre">was_derived_from</span></code> parents get no trace — there
+is nothing to verify, and they are nobody’s descendant.</p>
+<p>It is also where a matching <a class="reference internal" href="#nw.graph.ProjectGraph.add_unproduced_output" title="nw.graph.ProjectGraph.add_unproduced_output"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_unproduced_output()</span></code></a> record is
+retired (nw#44): a successful write is proof the thing that record
+described has now been produced. <code class="docutils literal notranslate"><span class="pre">instance_id</span></code> / <code class="docutils literal notranslate"><span class="pre">call_index</span></code>
+identify <em>this write’s</em> unit precisely (see
+<a class="reference internal" href="nw.bodies.unproduced_output.html#module-nw.bodies.unproduced_output" title="nw.bodies.unproduced_output"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nw.bodies.unproduced_output</span></code></a>’s module docstring for the key);
+omit <code class="docutils literal notranslate"><span class="pre">instance_id</span></code> only when it is not known — the retirement then
+falls back to <code class="docutils literal notranslate"><span class="pre">(transform_name,</span> <span class="pre">call_index,</span> <span class="pre">upstream)</span></code>, which still
+cannot distinguish two DIFFERENT units sharing both an upstream set
+and a <code class="docutils literal notranslate"><span class="pre">call_index</span></code> (the residual case the module docstring names),
+so it may retire nothing, or (rarely) the wrong record.</p>
+<p>**Bypassing this method (a raw <code class="docutils literal notranslate"><span class="pre">store.add</span></code>) leaves a matching
+unproduced-output record in place** — it reads as a live blocker
+after reload even though this write produced the thing it described.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.graph.ProjectGraph.add_unproduced_output">
+<span class="sig-name descname"><span class="pre">add_unproduced_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">skeleton</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reason</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blocked_by</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">instance_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">call_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">was_attributed_to</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/graph.html#ProjectGraph.add_unproduced_output"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.graph.ProjectGraph.add_unproduced_output" title="Link to this definition">#</a></dt>
+<dd><p>Persist why a planned output was never produced (nw#44).</p>
+<p>Mirrors one entry of <code class="docutils literal notranslate"><span class="pre">TransformResult.failed</span></code> / <code class="docutils literal notranslate"><span class="pre">.blocked</span></code>
+(<a class="reference internal" href="nw.html#nw.FailedOutput" title="nw.transforms.FailedOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">nw.transforms.FailedOutput</span></code></a>) — pass its <code class="docutils literal notranslate"><span class="pre">skeleton</span></code>,
+<code class="docutils literal notranslate"><span class="pre">status</span></code>, <code class="docutils literal notranslate"><span class="pre">reason</span></code>, <code class="docutils literal notranslate"><span class="pre">error</span></code> and <code class="docutils literal notranslate"><span class="pre">blocked_by</span></code> straight through.
+Written under <code class="xref py py-data docutils literal notranslate"><span class="pre">nw.bodies.UNPRODUCED_OUTPUT_BODY_SCHEMA_URI</span></code>,
+never under <code class="docutils literal notranslate"><span class="pre">skeleton.body_schema_uri</span></code> (see the module’s docstring
+on why that tier is reserved for what was actually produced).</p>
+<p><code class="docutils literal notranslate"><span class="pre">instance_id</span></code> (a fan-out unit’s
+<code class="xref py py-func docutils literal notranslate"><span class="pre">work_item_instance_id()</span></code>) and
+<code class="docutils literal notranslate"><span class="pre">call_index</span></code> (this output’s position within its <code class="docutils literal notranslate"><span class="pre">execute()</span></code>
+call’s skeleton tuple) together form the identity
+<a class="reference internal" href="#nw.graph.ProjectGraph.add_annotation" title="nw.graph.ProjectGraph.add_annotation"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_annotation()</span></code></a> retires by — see
+<a class="reference internal" href="nw.bodies.unproduced_output.html#module-nw.bodies.unproduced_output" title="nw.bodies.unproduced_output"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nw.bodies.unproduced_output</span></code></a>’s module docstring for the full
+key. <strong>Dedupes on that identity</strong>: a record already outstanding for
+the same key is removed before this one is written, so a unit
+failing twice leaves one current record, not two.</p>
+<p>Parentless, like a verifying trace.</p>
+<p><code class="docutils literal notranslate"><span class="pre">reason</span></code> never stores raw exception text — see the module
+docstring’s “reason never carries raw exception text”. When
+<code class="docutils literal notranslate"><span class="pre">error</span></code> is given, the original <code class="docutils literal notranslate"><span class="pre">reason</span></code> is logged
+(<code class="docutils literal notranslate"><span class="pre">logging.getLogger(&quot;nw.graph&quot;)</span></code>, <code class="docutils literal notranslate"><span class="pre">WARNING</span></code>) and the persisted
+<code class="docutils literal notranslate"><span class="pre">reason</span></code> becomes a fixed sentence naming <code class="docutils literal notranslate"><span class="pre">error</span></code>’s type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.graph.ProjectGraph.append_decision">
+<span class="sig-name descname"><span class="pre">append_decision</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">body</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">was_attributed_to</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'user:nw'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">was_derived_from</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/graph.html#ProjectGraph.append_decision"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.graph.ProjectGraph.append_decision" title="Link to this definition">#</a></dt>
+<dd><p>Append a decision; never replaces an existing one (the log is append-only).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.graph.ProjectGraph.genre_envelope">
+<span class="sig-name descname"><span class="pre">genre_envelope</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/graph.html#ProjectGraph.genre_envelope"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.graph.ProjectGraph.genre_envelope" title="Link to this definition">#</a></dt>
+<dd><p>The recorded genre envelope, or <code class="docutils literal notranslate"><span class="pre">None</span></code> for a genre-less project.</p>
+<p>The read half of <a class="reference internal" href="#nw.graph.ProjectGraph.set_genre_envelope" title="nw.graph.ProjectGraph.set_genre_envelope"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set_genre_envelope()</span></code></a>; consumers should reach
+it through <a class="reference internal" href="nw.html#nw.Project.resolved_genre" title="nw.Project.resolved_genre"><code class="xref py py-meth docutils literal notranslate"><span class="pre">nw.Project.resolved_genre()</span></code></a>, which returns the
+plain-dict envelope shape <code class="xref py py-func docutils literal notranslate"><span class="pre">nw.genres.resolve_genre()</span></code> produces.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference internal" href="nw.bodies.genre_envelope.html#nw.bodies.genre_envelope.GenreEnvelopeBodyV1" title="nw.bodies.genre_envelope.GenreEnvelopeBodyV1"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenreEnvelopeBodyV1</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.graph.ProjectGraph.remove_annotation">
+<span class="sig-name descname"><span class="pre">remove_annotation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">annotation_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/graph.html#ProjectGraph.remove_annotation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.graph.ProjectGraph.remove_annotation" title="Link to this definition">#</a></dt>
+<dd><p>Remove one annotation from the project graph, with its verifying traces.</p>
+<p>The delete counterpart of <a class="reference internal" href="#nw.graph.ProjectGraph.add_annotation" title="nw.graph.ProjectGraph.add_annotation"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_annotation()</span></code></a> (nw#36): every trace
+whose <code class="docutils literal notranslate"><span class="pre">for_annotation_id</span></code> names <code class="docutils literal notranslate"><span class="pre">annotation_id</span></code> goes with it, so a
+deletion never leaves a sidecar behind — an orphaned trace is inert
+for freshness but grows the store without bound, and if the id is
+later re-used it can even answer a freshness query from digests
+recorded for content that is no longer there.</p>
+<p>Only the project graph store is touched — the store
+<a class="reference internal" href="#nw.graph.ProjectGraph.add_annotation" title="nw.graph.ProjectGraph.add_annotation"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_annotation()</span></code></a> writes to. Annotations living in the other
+scopes (storyboard, alignment) are removed by their own facades;
+<a class="reference internal" href="#nw.graph.collect_orphan_traces" title="nw.graph.collect_orphan_traces"><code class="xref py py-func docutils literal notranslate"><span class="pre">collect_orphan_traces()</span></code></a> is the project-wide backstop.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Whether <code class="docutils literal notranslate"><span class="pre">annotation_id</span></code> itself was present (its traces are
+removed either way).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.graph.ProjectGraph.set_genre_envelope">
+<span class="sig-name descname"><span class="pre">set_genre_envelope</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">body</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">was_attributed_to</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'agent:nw.genres'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/graph.html#ProjectGraph.set_genre_envelope"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.graph.ProjectGraph.set_genre_envelope" title="Link to this definition">#</a></dt>
+<dd><p>Record the resolved <code class="docutils literal notranslate"><span class="pre">{genre,</span> <span class="pre">template,</span> <span class="pre">params}</span></code> envelope; return its id.</p>
+<p>Singleton per project (nw#32): the tier is the identity, so
+re-initializing replaces the recorded envelope in place — the
+annotation id is stable across replacements, like every entity
+upsert. A no-op write (same envelope) writes nothing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.graph.ProjectGraph.unproduced_outputs">
+<span class="sig-name descname"><span class="pre">unproduced_outputs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/graph.html#ProjectGraph.unproduced_outputs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.graph.ProjectGraph.unproduced_outputs" title="Link to this definition">#</a></dt>
+<dd><p>Every unproduced-output record still outstanding, oldest first.</p>
+<p>A record disappears the moment <a class="reference internal" href="#nw.graph.ProjectGraph.add_annotation" title="nw.graph.ProjectGraph.add_annotation"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_annotation()</span></code></a> writes a real
+output for the same identity, or another <a class="reference internal" href="#nw.graph.ProjectGraph.add_unproduced_output" title="nw.graph.ProjectGraph.add_unproduced_output"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_unproduced_output()</span></code></a>
+call for the same identity supersedes it (dedupe) — what this
+returns is exactly “still missing”, survives a reload, and is not a
+cache of any in-memory <code class="docutils literal notranslate"><span class="pre">TransformResult</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference internal" href="#nw.graph.StoredUnproducedOutput" title="nw.graph.StoredUnproducedOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">StoredUnproducedOutput</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.graph.ProjectGraph.upsert_character_ref">
+<span class="sig-name descname"><span class="pre">upsert_character_ref</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">body</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">was_attributed_to</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'user:nw'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/graph.html#ProjectGraph.upsert_character_ref"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.graph.ProjectGraph.upsert_character_ref" title="Link to this definition">#</a></dt>
+<dd><p>Insert-or-update the character ref with this <code class="docutils literal notranslate"><span class="pre">name</span></code>; return its id.</p>
+<p>The id is <em>stable</em> across edits — see <code class="xref py py-func docutils literal notranslate"><span class="pre">_upsert()</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.graph.ProjectGraph.upsert_environment_ref">
+<span class="sig-name descname"><span class="pre">upsert_environment_ref</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">body</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">was_attributed_to</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'user:nw'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/graph.html#ProjectGraph.upsert_environment_ref"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.graph.ProjectGraph.upsert_environment_ref" title="Link to this definition">#</a></dt>
+<dd><p>Insert-or-update the environment ref with this <code class="docutils literal notranslate"><span class="pre">name</span></code>; return its id.</p>
+<p>The id is <em>stable</em> across edits — see <code class="xref py py-func docutils literal notranslate"><span class="pre">_upsert()</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.graph.ProjectGraph.upsert_section">
+<span class="sig-name descname"><span class="pre">upsert_section</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">body</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">was_attributed_to</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'user:nw'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/graph.html#ProjectGraph.upsert_section"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.graph.ProjectGraph.upsert_section" title="Link to this definition">#</a></dt>
+<dd><p>Insert-or-update the section with this <code class="docutils literal notranslate"><span class="pre">section_id</span></code>; return its id.</p>
+<p>The id is <em>stable</em> across edits — see <code class="xref py py-func docutils literal notranslate"><span class="pre">_upsert()</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.graph.ProjectGraph.upsert_shot">
+<span class="sig-name descname"><span class="pre">upsert_shot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">body</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">was_attributed_to</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'user:nw'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/graph.html#ProjectGraph.upsert_shot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.graph.ProjectGraph.upsert_shot" title="Link to this definition">#</a></dt>
+<dd><p>Insert-or-update the shot with this <code class="docutils literal notranslate"><span class="pre">shot_id</span></code>; return its id.</p>
+<p>The id is <em>stable</em> across edits — see <code class="xref py py-func docutils literal notranslate"><span class="pre">_upsert()</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.graph.StoredCharacterRef">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.graph.</span></span><span class="sig-name descname"><span class="pre">StoredCharacterRef</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">annotation_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">body</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/graph.html#StoredCharacterRef"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.graph.StoredCharacterRef" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="field-list simple">
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.graph.StoredDecision">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.graph.</span></span><span class="sig-name descname"><span class="pre">StoredDecision</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">annotation_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">body</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/graph.html#StoredDecision"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.graph.StoredDecision" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="field-list simple">
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.graph.StoredEnvironmentRef">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.graph.</span></span><span class="sig-name descname"><span class="pre">StoredEnvironmentRef</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">annotation_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">body</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/graph.html#StoredEnvironmentRef"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.graph.StoredEnvironmentRef" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="field-list simple">
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.graph.StoredSection">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.graph.</span></span><span class="sig-name descname"><span class="pre">StoredSection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">annotation_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">body</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/graph.html#StoredSection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.graph.StoredSection" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="field-list simple">
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.graph.StoredShot">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.graph.</span></span><span class="sig-name descname"><span class="pre">StoredShot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">annotation_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">body</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/graph.html#StoredShot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.graph.StoredShot" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="field-list simple">
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.graph.StoredUnproducedOutput">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.graph.</span></span><span class="sig-name descname"><span class="pre">StoredUnproducedOutput</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">annotation_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">body</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/graph.html#StoredUnproducedOutput"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.graph.StoredUnproducedOutput" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dl class="field-list simple">
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.graph.all_project_stores">
+<span class="sig-prename descclassname"><span class="pre">nw.graph.</span></span><span class="sig-name descname"><span class="pre">all_project_stores</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_root</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/graph.html#all_project_stores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.graph.all_project_stores" title="Link to this definition">#</a></dt>
+<dd><p>Return the <strong>existing</strong> lacing-store file paths under a project.</p>
+<p>SQLite-mode only — these are filesystem paths. Code that walks or mutates
+project stores should route through <a class="reference internal" href="#nw.graph.open_project_stores" title="nw.graph.open_project_stores"><code class="xref py py-func docutils literal notranslate"><span class="pre">open_project_stores()</span></code></a> (which
+honours the backend seam) rather than opening these paths directly, so it
+keeps working when the backend is Postgres.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.graph.annotations_at_tier">
+<span class="sig-prename descclassname"><span class="pre">nw.graph.</span></span><span class="sig-name descname"><span class="pre">annotations_at_tier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/graph.html#annotations_at_tier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.graph.annotations_at_tier" title="Link to this definition">#</a></dt>
+<dd><p>Return every annotation at the given tier across all of the project’s stores.</p>
+<p>Useful for reelee views that lens on a single annotation kind:
+<code class="docutils literal notranslate"><span class="pre">annotations_at_tier(root,</span> <span class="pre">&quot;shot&quot;)</span></code> returns every shot annotation
+regardless of which store it lives in (project graph vs. storyboard
+vs. alignment).</p>
+<p>Asks each store for the tier rather than deserializing every annotation
+and filtering. <code class="docutils literal notranslate"><span class="pre">by_tier</span></code> is a real indexed query on all four lacing
+backends and was called by nothing in nw; this walked the whole project
+to answer a question about one tier. Measured on 2000 annotations with
+200 at the tier: <strong>33.5 ms → 3.9 ms</strong>, and the gap widens with project
+size because one is O(all rows) and the other O(matching).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.graph.backfill_traces">
+<span class="sig-prename descclassname"><span class="pre">nw.graph.</span></span><span class="sig-name descname"><span class="pre">backfill_traces</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_root</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">execute</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/graph.html#backfill_traces"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.graph.backfill_traces" title="Link to this definition">#</a></dt>
+<dd><p>Bless a pre-trace project so the verifying-trace rule can read it (nw#58).</p>
+<p>On a project whose annotations predate nw#24’s trace-writing, the
+verifying-trace rule is a behavior change, not a wrapper: every derived
+annotation reads stale (<code class="docutils literal notranslate"><span class="pre">no-trace</span></code>), and nothing heals them — regen
+skips non-Transform-produced annotations, and body updates write no
+trace. This writes, for each derived annotation with no trace, a trace
+against its parents’ CURRENT content digests: blessing at-rest state as
+fresh, which is exactly the old timestamp rule’s verdict for at-rest
+data — semantics-preserving at the moment of migration.</p>
+<p><strong>Report-only by default.</strong> The first thing run against a real user’s
+projects should be a read; pass <code class="docutils literal notranslate"><span class="pre">execute=True</span></code> to write. Idempotent
+either way: an annotation that already has a usable trace is counted in
+<code class="docutils literal notranslate"><span class="pre">already_traced</span></code> and never rewritten, so a partial run is simply
+re-run rather than reasoned about. One caveat keeps “a read” honest at
+the FILE level: stores are opened with <code class="docutils literal notranslate"><span class="pre">migrate=True</span></code>, so a store
+stamped at an older lacing schema is upgraded ON OPEN even under the
+default — run this only where the build that serves these stores is
+already the new one (the D-vg-mcp-10 deploy ordering; a pre-migrated
+file makes an old serving build refuse it).</p>
+<p><strong>Not blessed, by design — the old rule’s own stale verdicts.</strong> A parent
+edited AFTER the annotation was derived is exactly the
+pending-regeneration state the old timestamp rule reported stale;
+blessing it would silently clear a real signal. Such annotations land in
+<code class="docutils literal notranslate"><span class="pre">skipped</span></code> and stay no-trace-stale — same verdict, and a later regen
+writes the true trace through the chokepoint. (Exact preservation in the
+other direction is impossible — the trace rule recurses where the old
+rule was one-hop — but that residual over-reports, the direction
+<a class="reference internal" href="nw.freshness.html#module-nw.freshness" title="nw.freshness"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nw.freshness</span></code></a> documents as the safe one.)</p>
+<p>What is deliberately NOT blessed, each with a <code class="docutils literal notranslate"><span class="pre">skipped</span></code> entry naming
+the annotation and the reason:</p>
+<ul class="simple">
+<li><p>a parent that no longer exists — that annotation is genuinely
+<code class="docutils literal notranslate"><span class="pre">upstream-missing</span></code>, and a fabricated trace would hide a real hole;</p></li>
+<li><p>a parent list carrying artifact refs (64-hex asset ids) — the
+annotation-tier trace cannot cover them (nw#55), and a trace over a
+subset of the parents reads as stale anyway (“upstream set is not
+exactly <code class="docutils literal notranslate"><span class="pre">was_derived_from</span></code>”), so writing one would be decoration;</p></li>
+<li><p>a parent whose body cannot be digested — broken data at the producer,
+same rule as <code class="xref py py-func docutils literal notranslate"><span class="pre">build_verifying_trace()</span></code>.</p></li>
+</ul>
+<p>Parentless annotations are never stale by contract, so they are counted
+(<code class="docutils literal notranslate"><span class="pre">parentless</span></code>) and need nothing.</p>
+<p>Returns one project’s report — callers migrating a tree of projects loop
+and get per-project summaries for free:
+<code class="docutils literal notranslate"><span class="pre">{&quot;project&quot;,</span> <span class="pre">&quot;stores_found&quot;,</span> <span class="pre">&quot;examined&quot;,</span> <span class="pre">&quot;backfilled&quot;,</span> <span class="pre">&quot;already_traced&quot;,</span>
+<span class="pre">&quot;traced_unusable&quot;,</span> <span class="pre">&quot;parentless&quot;,</span>
+<span class="pre">&quot;skipped&quot;:</span> <span class="pre">[{&quot;annotation_id&quot;,</span> <span class="pre">&quot;reason&quot;},</span> <span class="pre">...],</span> <span class="pre">&quot;executed&quot;}</span></code>.
+<code class="docutils literal notranslate"><span class="pre">backfilled</span></code> is the count of traces written when <code class="docutils literal notranslate"><span class="pre">execute=True</span></code>, and
+of traces that WOULD be written otherwise; <code class="docutils literal notranslate"><span class="pre">executed</span></code> says which
+reading applies. Read <code class="docutils literal notranslate"><span class="pre">stores_found</span></code> before trusting zeros: a typo’d
+or empty root reports all-zero COUNTS, and <code class="docutils literal notranslate"><span class="pre">stores_found</span> <span class="pre">==</span> <span class="pre">0</span></code> is what
+distinguishes “nothing to migrate” from “not a project here”.
+<code class="docutils literal notranslate"><span class="pre">traced_unusable</span></code> counts annotations whose existing trace the
+freshness rule cannot use (foreign digest scheme, mismatched upstream
+set) — permanently stale, deliberately not overwritten here; expect it
+to be zero on genuine pre-trace projects. A broken project (corrupt
+store, unreadable <code class="docutils literal notranslate"><span class="pre">project.json</span></code>) RAISES rather than reporting —
+catch per root in a tree loop so one damaged project is recorded, not
+silently averaged away.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.graph.collect_orphan_traces">
+<span class="sig-prename descclassname"><span class="pre">nw.graph.</span></span><span class="sig-name descname"><span class="pre">collect_orphan_traces</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_root</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/graph.html#collect_orphan_traces"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.graph.collect_orphan_traces" title="Link to this definition">#</a></dt>
+<dd><p>Drop verifying traces whose target annotation no longer exists.</p>
+<p>The backstop for deletion paths that do not (or cannot) go through
+<a class="reference internal" href="#nw.graph.remove_annotations_with_traces" title="nw.graph.remove_annotations_with_traces"><code class="xref py py-func docutils literal notranslate"><span class="pre">remove_annotations_with_traces()</span></code></a> — a direct <code class="docutils literal notranslate"><span class="pre">store.remove</span></code>, an
+external tool, history from before deletions collected traces (nw#36).
+Walks every store under the project; a trace is an orphan when its
+<code class="docutils literal notranslate"><span class="pre">for_annotation_id</span></code> resolves in <strong>none</strong> of them. Idempotent, and safe
+to run as routine maintenance: an orphaned trace is never consulted by
+<a class="reference internal" href="nw.freshness.html#module-nw.freshness" title="nw.freshness"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nw.freshness</span></code></a>, so removing it changes no freshness answer.</p>
+<p>A trace whose body cannot be read (not a dict, unparseable target id) is
+left in place: it may be an orphan, but deleting what we cannot identify
+is worse than carrying it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code></a>]</span></p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The ids of the trace annotations removed, in store order.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.graph.derived_from">
+<span class="sig-prename descclassname"><span class="pre">nw.graph.</span></span><span class="sig-name descname"><span class="pre">derived_from</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotation_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/graph.html#derived_from"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.graph.derived_from" title="Link to this definition">#</a></dt>
+<dd><p>Return the annotations this one was directly derived from.</p>
+<p>Walks <code class="docutils literal notranslate"><span class="pre">provenance.was_derived_from</span></code> <em>one hop only</em> across all of the
+project’s stores.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.graph.descendants_of">
+<span class="sig-prename descclassname"><span class="pre">nw.graph.</span></span><span class="sig-name descname"><span class="pre">descendants_of</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ancestor_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/graph.html#descendants_of"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.graph.descendants_of" title="Link to this definition">#</a></dt>
+<dd><p>Return every annotation whose provenance chain leads back to <code class="docutils literal notranslate"><span class="pre">ancestor_id</span></code>.</p>
+<p>Walks <code class="docutils literal notranslate"><span class="pre">provenance.was_derived_from</span></code> <em>transitively</em> across all of the
+project’s lacing stores. This is the operation reelee’s freshness
+analysis is built on (system overview §7): when a node changes, every
+annotation in the closure of this set is “downstream of the change.”</p>
+<p>Deterministic order: (generation time, id) — the same public ordering
+contract as <a class="reference internal" href="nw.freshness.html#nw.freshness.stale_verdicts" title="nw.freshness.stale_verdicts"><code class="xref py py-func docutils literal notranslate"><span class="pre">nw.freshness.stale_verdicts()</span></code></a>. The closure used to be
+returned in set-iteration (hash-derived) order, which leaked into every
+consumer’s output (nw#39).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.graph.iter_all_annotations">
+<span class="sig-prename descclassname"><span class="pre">nw.graph.</span></span><span class="sig-name descname"><span class="pre">iter_all_annotations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_root</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/graph.html#iter_all_annotations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.graph.iter_all_annotations" title="Link to this definition">#</a></dt>
+<dd><p>Walk every annotation in every store under a project (any backend).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterator" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterator</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.graph.open_project_stores">
+<span class="sig-prename descclassname"><span class="pre">nw.graph.</span></span><span class="sig-name descname"><span class="pre">open_project_stores</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_root</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/graph.html#open_project_stores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.graph.open_project_stores" title="Link to this definition">#</a></dt>
+<dd><p>Yield an iterator of open stores, one per scope, honouring the backend.</p>
+<p>The backend-aware replacement for <code class="docutils literal notranslate"><span class="pre">for</span> <span class="pre">p</span> <span class="pre">in</span> <span class="pre">all_project_stores(...):</span>
+<span class="pre">SqliteStore(p)</span></code>. Under SQLite it visits each existing per-scope file;
+under Postgres it visits each scope’s tenant in the shared DB. Use it for
+both reads (walk <code class="docutils literal notranslate"><span class="pre">.all()</span></code>) and writes (<code class="docutils literal notranslate"><span class="pre">.remove</span></code> / <code class="docutils literal notranslate"><span class="pre">.add</span></code>).</p>
+<p>Each store is closed before the next opens, so consume each store’s
+annotations before advancing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterator" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterator</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterator" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterator</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">IntervalAnnotationStore</span></code>]]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.graph.remove_annotations_with_traces">
+<span class="sig-prename descclassname"><span class="pre">nw.graph.</span></span><span class="sig-name descname"><span class="pre">remove_annotations_with_traces</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">store</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotation_ids</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/graph.html#remove_annotations_with_traces"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.graph.remove_annotations_with_traces" title="Link to this definition">#</a></dt>
+<dd><p>Remove annotations from <code class="docutils literal notranslate"><span class="pre">store</span></code>, plus every trace in it naming them.</p>
+<p>The store-level primitive behind every nw deletion path
+(<a class="reference internal" href="#nw.graph.ProjectGraph.remove_annotation" title="nw.graph.ProjectGraph.remove_annotation"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ProjectGraph.remove_annotation()</span></code></a>, <code class="docutils literal notranslate"><span class="pre">write_spec</span></code>’s entity
+reconciliation, the storyboard wipe). A verifying trace is a sidecar of
+the annotation it describes; removing one without the other leaks an
+inert row per deletion, forever (nw#36).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>store</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">IntervalAnnotationStore</span></code></span>) – An <strong>open</strong> store — the caller owns its lifecycle.</p></li>
+<li><p><strong>annotation_ids</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code></a>]</span>) – Ids to remove. Missing ids are ignored.</p></li>
+<li><p><strong>annotations</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code>]]</span>) – The store’s annotations, if the caller already
+materialized <code class="docutils literal notranslate"><span class="pre">list(store.all())</span></code> — avoids a second scan.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#set" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">set</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code></a>]</span></p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The subset of <code class="docutils literal notranslate"><span class="pre">annotation_ids</span></code> that was actually present. Trace
+removals are not reported: they are bookkeeping, not content.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="nw.genres.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">nw.genres</div></div>
+    </a>
+  </div><div class="navigation-next">
+    <a href="nw.graph_backend.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">nw.graph_backend</div>
+      </div>
+      <i class="i-lucide chevron-right"></i>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright">
+  <p>
+    Made with
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+  <a href="https://github.com/thorwhalen/nw" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div>
+    </div>
+  </div>
+</footer>
+      <script src="../_static/documentation_options.js?v=1c03bfdc"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=fd10adb8"></script>
+      <script src="../_static/shibuya.js?v=50760d75"></script></body>
+</html>

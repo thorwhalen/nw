@@ -1,0 +1,20 @@
+nw.workflow
+===========
+
+.. automodule:: nw.workflow
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      execute_render
+      plan_render_shot
+      prepare_shot
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      ShotPreparation
+   

@@ -1,4 +1,0 @@
-nw.freshness
-============
-.. automodule:: nw.freshness
-   :members:

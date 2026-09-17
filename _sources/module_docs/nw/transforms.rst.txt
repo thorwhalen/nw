@@ -1,4 +1,0 @@
-nw.transforms
-=============
-.. automodule:: nw.transforms
-   :members:

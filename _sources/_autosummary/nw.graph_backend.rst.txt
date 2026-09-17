@@ -1,0 +1,21 @@
+nw.graph\_backend
+=================
+
+.. automodule:: nw.graph_backend
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      selected_backend
+      open_graph_store
+      iter_scope_stores
+      scope_name_for_db
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      GraphBackend
+   

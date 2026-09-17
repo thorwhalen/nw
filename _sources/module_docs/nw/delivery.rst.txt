@@ -1,4 +1,0 @@
-nw.delivery
-===========
-.. automodule:: nw.delivery
-   :members:

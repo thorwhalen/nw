@@ -1,4 +1,0 @@
-nw.schema
-=========
-.. automodule:: nw.schema
-   :members:

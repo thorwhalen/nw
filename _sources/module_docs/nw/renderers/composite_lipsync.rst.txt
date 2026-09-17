@@ -1,4 +1,0 @@
-nw.renderers.composite_lipsync
-==============================
-.. automodule:: nw.renderers.composite_lipsync
-   :members:

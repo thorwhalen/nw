@@ -1,0 +1,13 @@
+nw.project
+==========
+
+.. automodule:: nw.project
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      CharacterImage
+      Project
+   

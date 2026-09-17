@@ -1,0 +1,19 @@
+nw.bodies.verifying\_trace
+==========================
+
+.. automodule:: nw.bodies.verifying_trace
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      build_verifying_trace
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      UpstreamDigestV1
+      VerifyingTraceBodyV1
+   

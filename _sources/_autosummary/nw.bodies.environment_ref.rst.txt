@@ -1,0 +1,12 @@
+nw.bodies.environment\_ref
+==========================
+
+.. automodule:: nw.bodies.environment_ref
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      EnvironmentRefBodyV1
+   

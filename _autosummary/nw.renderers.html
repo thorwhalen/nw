@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="grass" data-content_root="../">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>nw.renderers - nw</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="nw.renderers.composite_lipsync" href="nw.renderers.composite_lipsync.html" /><link rel="prev" title="nw.project" href="nw.project.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d88b86f9" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=2ceb65ce" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    
+  <meta property="og:type" content="website"/><meta property="og:title" content="nw.renderers"/>
+    <meta name="twitter:card" content="summary"/>
+  
+<link rel="alternate" type="text/markdown" href="nw.renderers.html.md">
+<link rel="describedby" href="../llms.txt" type="text/markdown">
+</head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="../index.html">
+      
+      
+      <strong>nw</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/thorwhalen/nw" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="0"><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="nw.html">nw</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="nw.freshness.html">nw.freshness</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.inspect.html">nw.inspect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.checks.html">nw.checks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.bodies.html">nw.bodies</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.character_ref.html">nw.bodies.character_ref</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.decision.html">nw.bodies.decision</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.environment_ref.html">nw.bodies.environment_ref</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.genre_envelope.html">nw.bodies.genre_envelope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.render_result.html">nw.bodies.render_result</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.section.html">nw.bodies.section</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.shot.html">nw.bodies.shot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.unproduced_output.html">nw.bodies.unproduced_output</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.verifying_trace.html">nw.bodies.verifying_trace</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="nw.delivery.html">nw.delivery</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.experiment.html">nw.experiment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.genres.html">nw.genres</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.graph.html">nw.graph</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.graph_backend.html">nw.graph_backend</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.jobs.html">nw.jobs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.migrate.html">nw.migrate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.pricing.html">nw.pricing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.project.html">nw.project</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">nw.renderers</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="nw.renderers.composite_lipsync.html">nw.renderers.composite_lipsync</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.renderers.image_to_video.html">nw.renderers.image_to_video</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.renderers.lipsync.html">nw.renderers.lipsync</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.renderers.still.html">nw.renderers.still</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.renderers.text_to_video.html">nw.renderers.text_to_video</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="nw.schema.html">nw.schema</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.script_segmentation.html">nw.script_segmentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.secrets.html">nw.secrets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.storyboard.html">nw.storyboard</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.transforms.html">nw.transforms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.validation.html">nw.validation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.workflow.html">nw.workflow</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../ai-agents.html">For AI agents</a></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#nw.renderers.Strategy"><code class="docutils literal notranslate"><span class="pre">Strategy</span></code></a><ul>
+<li><a class="reference internal" href="#nw.renderers.Strategy.materialize"><code class="docutils literal notranslate"><span class="pre">Strategy.materialize()</span></code></a></li>
+<li><a class="reference internal" href="#nw.renderers.Strategy.plan"><code class="docutils literal notranslate"><span class="pre">Strategy.plan()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#nw.renderers.get_strategy"><code class="docutils literal notranslate"><span class="pre">get_strategy()</span></code></a></li>
+<li><a class="reference internal" href="#nw.renderers.list_strategies"><code class="docutils literal notranslate"><span class="pre">list_strategies()</span></code></a></li>
+<li><a class="reference internal" href="#nw.renderers.register_strategy"><code class="docutils literal notranslate"><span class="pre">register_strategy()</span></code></a></li>
+<li><a class="reference internal" href="#nw.renderers.strategies"><code class="docutils literal notranslate"><span class="pre">strategies</span></code></a></li>
+</ul>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../index.html"><span itemprop="name">nw</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../api.html"><span itemprop="name">API reference</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="2" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="nw.html"><span itemprop="name">nw</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="3" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">nw.renderers</strong>
+        <meta itemprop="position" content="4" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+  <article class="yue dark-code" role="main">
+          <section id="module-nw.renderers">
+<span id="nw-renderers"></span><h1>nw.renderers<a class="headerlink" href="#module-nw.renderers" title="Link to this heading">#</a></h1>
+<p>Render strategies — pluggable, plan-producing, <strong>shot-typed</strong>.</p>
+<p><strong>Scope.</strong> A Strategy is the plug-in point of the <em>shot</em> render unit
+(<a class="reference internal" href="nw.workflow.html#module-nw.workflow" title="nw.workflow"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nw.workflow</span></code></a>) — and, through the adapter in
+<code class="docutils literal notranslate"><span class="pre">nw/transforms/_adapters/render_strategy.py</span></code>, of the <strong>general engine too</strong>.
+That adapter wraps <em>every</em> registered strategy at import time, so registering
+one here publishes a <code class="docutils literal notranslate"><span class="pre">shot_to_render_result.fal.&lt;name&gt;</span></code> Transform for free,
+and <a class="reference internal" href="nw.html#nw.Genre" title="nw.genres.Genre"><code class="xref py py-class docutils literal notranslate"><span class="pre">nw.genres.Genre</span></code></a> validates a genre’s <code class="docutils literal notranslate"><span class="pre">strategy_names</span></code> against
+this registry. The two registries are one pipeline with two front doors, not
+two pipelines — the README says the same thing under “Render strategies”.</p>
+<p>What a Strategy <strong>cannot</strong> express is a render that is not a video shot: it is
+typed to a <a class="reference internal" href="nw.workflow.html#nw.workflow.ShotPreparation" title="nw.workflow.ShotPreparation"><code class="xref py py-class docutils literal notranslate"><span class="pre">nw.workflow.ShotPreparation</span></code></a> in and an <code class="docutils literal notranslate"><span class="pre">output.mp4</span></code> out.
+So the split is by render <em>kind</em>, not by registry:</p>
+<ul class="simple">
+<li><p>a new way to render a <strong>shot</strong> → register a Strategy here, and get the
+Transform adaptation for free;</p></li>
+<li><p>a new render <strong>kind</strong> — audio weave, slideshow, anything whose input is not a
+shot — → register a <a class="reference internal" href="nw.html#nw.Transform" title="nw.transforms.Transform"><code class="xref py py-class docutils literal notranslate"><span class="pre">nw.transforms.Transform</span></code></a> directly; that registry
+is the render-kind-agnostic one.</p></li>
+</ul>
+<p>See nw#9.</p>
+<p>A <em>strategy</em> knows how to turn a <a class="reference internal" href="nw.workflow.html#nw.workflow.ShotPreparation" title="nw.workflow.ShotPreparation"><code class="xref py py-class docutils literal notranslate"><span class="pre">nw.workflow.ShotPreparation</span></code></a> into:</p>
+<ol class="arabic simple">
+<li><p>A <code class="xref py py-class docutils literal notranslate"><span class="pre">falaw.Plan</span></code> (pure data — <a class="reference internal" href="#nw.renderers.Strategy.plan" title="nw.renderers.Strategy.plan"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Strategy.plan()</span></code></a>).</p></li>
+<li><p>A final <code class="docutils literal notranslate"><span class="pre">output.mp4</span></code> path, given the Plan’s executed Artifacts
+(<a class="reference internal" href="#nw.renderers.Strategy.materialize" title="nw.renderers.Strategy.materialize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Strategy.materialize()</span></code></a>).</p></li>
+</ol>
+<p>Strategies are registered with an <code class="xref py py-class docutils literal notranslate"><span class="pre">xdol.Registry</span></code> keyed by name. Apps
+can register their own strategies (e.g. <code class="docutils literal notranslate"><span class="pre">composite_lipsync</span></code>, <code class="docutils literal notranslate"><span class="pre">slideshow</span></code>,
+<code class="docutils literal notranslate"><span class="pre">panel</span></code>) without modifying nw.</p>
+<p>Built-in strategies (registered at import):</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">lipsync</span></code>            — character anchor + audio → talking video (omnihuman)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">image_to_video</span></code>     — env / fresh storyboard still → animated clip</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">text_to_video</span></code>      — prompt-only short clip</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">still</span></code>              — image looped over audio (no video gen)</p></li>
+<li><dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">composite_lipsync</span></code>  — character + environment + audio → composite-then-talk</dt><dd><p>(“Thor in a bell tower playing piano, lipsynced”)</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p class="rubric">Module Attributes</p>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.renderers.strategies" title="nw.renderers.strategies"><code class="xref py py-obj docutils literal notranslate"><span class="pre">strategies</span></code></a></p></td>
+<td><p>Public registry — apps add strategies via <code class="docutils literal notranslate"><span class="pre">strategies.register(&quot;name&quot;,</span> <span class="pre">impl)</span></code>.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="rubric">Functions</p>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.renderers.get_strategy" title="nw.renderers.get_strategy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_strategy</span></code></a>(name)</p></td>
+<td><p>Look up a strategy by name; raises if unknown.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.renderers.list_strategies" title="nw.renderers.list_strategies"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list_strategies</span></code></a>()</p></td>
+<td><p>Return all registered strategy names (sorted).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.renderers.register_strategy" title="nw.renderers.register_strategy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_strategy</span></code></a>(name, impl)</p></td>
+<td><p>Register a strategy.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="rubric">Classes</p>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.renderers.Strategy" title="nw.renderers.Strategy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strategy</span></code></a>(*args, **kwargs)</p></td>
+<td><p>Render-strategy contract.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.renderers.Strategy">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.renderers.</span></span><span class="sig-name descname"><span class="pre">Strategy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/renderers.html#Strategy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.renderers.Strategy" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Protocol" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></a></p>
+<p>Render-strategy contract.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.renderers.Strategy.materialize">
+<span class="sig-name descname"><span class="pre">materialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prep</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artifacts</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/renderers.html#Strategy.materialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.renderers.Strategy.materialize" title="Link to this definition">#</a></dt>
+<dd><p>Turn executed Artifacts into <code class="docutils literal notranslate"><span class="pre">shot_dir/output.mp4</span></code>. May download +
+run ffmpeg, but no fal calls.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type">Path</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.renderers.Strategy.plan">
+<span class="sig-name descname"><span class="pre">plan</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prep</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">quality</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'balanced'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_overrides</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/renderers.html#Strategy.plan"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.renderers.Strategy.plan" title="Link to this definition">#</a></dt>
+<dd><p>Build a <code class="xref py py-class docutils literal notranslate"><span class="pre">falaw.Plan</span></code> for the prepared shot. No fal calls.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Plan</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.renderers.get_strategy">
+<span class="sig-prename descclassname"><span class="pre">nw.renderers.</span></span><span class="sig-name descname"><span class="pre">get_strategy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/renderers.html#get_strategy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.renderers.get_strategy" title="Link to this definition">#</a></dt>
+<dd><p>Look up a strategy by name; raises if unknown.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#nw.renderers.Strategy" title="nw.renderers.Strategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">Strategy</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.renderers.list_strategies">
+<span class="sig-prename descclassname"><span class="pre">nw.renderers.</span></span><span class="sig-name descname"><span class="pre">list_strategies</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/renderers.html#list_strategies"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.renderers.list_strategies" title="Link to this definition">#</a></dt>
+<dd><p>Return all registered strategy names (sorted).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.renderers.register_strategy">
+<span class="sig-prename descclassname"><span class="pre">nw.renderers.</span></span><span class="sig-name descname"><span class="pre">register_strategy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">impl</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/renderers.html#register_strategy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.renderers.register_strategy" title="Link to this definition">#</a></dt>
+<dd><p>Register a strategy. Returns <code class="docutils literal notranslate"><span class="pre">impl</span></code> so it can be used inline.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#nw.renderers.Strategy" title="nw.renderers.Strategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">Strategy</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="nw.renderers.strategies">
+<span class="sig-prename descclassname"><span class="pre">nw.renderers.</span></span><span class="sig-name descname"><span class="pre">strategies</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Registry</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Registry</span> <span class="pre">nw.renderers&gt;</span></span><a class="headerlink" href="#nw.renderers.strategies" title="Link to this definition">#</a></dt>
+<dd><p>Public registry — apps add strategies via <code class="docutils literal notranslate"><span class="pre">strategies.register(&quot;name&quot;,</span> <span class="pre">impl)</span></code>.</p>
+</dd></dl>
+
+<p class="rubric">Modules</p>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="nw.renderers.composite_lipsync.html#module-nw.renderers.composite_lipsync" title="nw.renderers.composite_lipsync"><code class="xref py py-obj docutils literal notranslate"><span class="pre">composite_lipsync</span></code></a></p></td>
+<td><p>Strategy: composite_lipsync — character + environment + audio → talking video.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="nw.renderers.image_to_video.html#module-nw.renderers.image_to_video" title="nw.renderers.image_to_video"><code class="xref py py-obj docutils literal notranslate"><span class="pre">image_to_video</span></code></a></p></td>
+<td><p>Strategy: image_to_video — env or fresh-storyboard still → animated clip.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="nw.renderers.lipsync.html#module-nw.renderers.lipsync" title="nw.renderers.lipsync"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lipsync</span></code></a></p></td>
+<td><p>Strategy: lipsync — character anchor + audio → talking video.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="nw.renderers.still.html#module-nw.renderers.still" title="nw.renderers.still"><code class="xref py py-obj docutils literal notranslate"><span class="pre">still</span></code></a></p></td>
+<td><p>Strategy: still — image looped over audio (no fal video gen).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="nw.renderers.text_to_video.html#module-nw.renderers.text_to_video" title="nw.renderers.text_to_video"><code class="xref py py-obj docutils literal notranslate"><span class="pre">text_to_video</span></code></a></p></td>
+<td><p>Strategy: text_to_video — prompt-only short clip.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="nw.project.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">nw.project</div></div>
+    </a>
+  </div><div class="navigation-next">
+    <a href="nw.renderers.composite_lipsync.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">nw.renderers.composite_lipsync</div>
+      </div>
+      <i class="i-lucide chevron-right"></i>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright">
+  <p>
+    Made with
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+  <a href="https://github.com/thorwhalen/nw" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div>
+    </div>
+  </div>
+</footer>
+      <script src="../_static/documentation_options.js?v=1c03bfdc"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=fd10adb8"></script>
+      <script src="../_static/shibuya.js?v=50760d75"></script></body>
+</html>

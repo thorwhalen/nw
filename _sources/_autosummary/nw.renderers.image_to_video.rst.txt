@@ -1,0 +1,12 @@
+nw.renderers.image\_to\_video
+=============================
+
+.. automodule:: nw.renderers.image_to_video
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      ImageToVideoStrategy
+   

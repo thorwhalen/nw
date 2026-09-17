@@ -1,0 +1,25 @@
+nw.script\_segmentation
+=======================
+
+.. automodule:: nw.script_segmentation
+
+   
+   .. rubric:: Module Attributes
+
+   .. autosummary::
+   
+      LLM
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      build_prompt
+      segment_script_into_panels
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      PanelProposal
+   

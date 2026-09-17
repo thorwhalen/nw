@@ -1,0 +1,20 @@
+nw.schema
+=========
+
+.. automodule:: nw.schema
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      CharacterRef
+      DecisionEntry
+      EnvironmentRef
+      ProjectSpec
+      ProjectSummary
+      ResumptionBrief
+      SectionSpec
+      ShotSpec
+      SongInfo
+   

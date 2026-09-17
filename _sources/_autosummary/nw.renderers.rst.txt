@@ -1,0 +1,37 @@
+nw.renderers
+============
+
+.. automodule:: nw.renderers
+
+   
+   .. rubric:: Module Attributes
+
+   .. autosummary::
+   
+      strategies
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      get_strategy
+      list_strategies
+      register_strategy
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Strategy
+   
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :recursive:
+
+   composite_lipsync
+   image_to_video
+   lipsync
+   still
+   text_to_video

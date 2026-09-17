@@ -1,4 +1,0 @@
-nw.script_segmentation
-======================
-.. automodule:: nw.script_segmentation
-   :members:

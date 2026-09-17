@@ -1,0 +1,36 @@
+nw.delivery
+===========
+
+.. automodule:: nw.delivery
+
+   
+   .. rubric:: Module Attributes
+
+   .. autosummary::
+   
+      REF_WORD
+      Lister
+      ProjectLister
+      MAX_TITLE_LEN
+      DELIVERY_FUNCTIONS
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      parse_ref
+      format_ref
+      check_title
+      caller_key
+      safe_message
+      check_delivery_source
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Deliverable
+      Resolver
+      ProjectSummary
+      Organiser
+   

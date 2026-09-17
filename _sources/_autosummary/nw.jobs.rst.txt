@@ -1,0 +1,35 @@
+nw.jobs
+=======
+
+.. automodule:: nw.jobs
+
+   
+   .. rubric:: Module Attributes
+
+   .. autosummary::
+   
+      UNREADABLE_PLAN_REASON
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      cancel_job
+      enqueue
+      estimate
+      get_job
+      list_jobs
+      predict_total_s
+      summarize
+      to_dict
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      DurationLearningMiddleware
+      Job
+      JobCost
+      JobProgress
+      JobsConfig
+   

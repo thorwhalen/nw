@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="grass" data-content_root="../">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>nw.bodies.unproduced_output - nw</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="nw.bodies.verifying_trace" href="nw.bodies.verifying_trace.html" /><link rel="prev" title="nw.bodies.shot" href="nw.bodies.shot.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d88b86f9" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=2ceb65ce" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    
+  <meta property="og:type" content="website"/><meta property="og:title" content="nw.bodies.unproduced_output"/>
+    <meta name="twitter:card" content="summary"/>
+  
+<link rel="alternate" type="text/markdown" href="nw.bodies.unproduced_output.html.md">
+<link rel="describedby" href="../llms.txt" type="text/markdown">
+</head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="../index.html">
+      
+      
+      <strong>nw</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/thorwhalen/nw" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="0"><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="nw.html">nw</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="nw.freshness.html">nw.freshness</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.inspect.html">nw.inspect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.checks.html">nw.checks</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="nw.bodies.html">nw.bodies</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.character_ref.html">nw.bodies.character_ref</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.decision.html">nw.bodies.decision</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.environment_ref.html">nw.bodies.environment_ref</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.genre_envelope.html">nw.bodies.genre_envelope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.render_result.html">nw.bodies.render_result</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.section.html">nw.bodies.section</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.shot.html">nw.bodies.shot</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">nw.bodies.unproduced_output</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.verifying_trace.html">nw.bodies.verifying_trace</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="nw.delivery.html">nw.delivery</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.experiment.html">nw.experiment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.genres.html">nw.genres</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.graph.html">nw.graph</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.graph_backend.html">nw.graph_backend</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.jobs.html">nw.jobs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.migrate.html">nw.migrate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.pricing.html">nw.pricing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.project.html">nw.project</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.renderers.html">nw.renderers</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="nw.renderers.composite_lipsync.html">nw.renderers.composite_lipsync</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.renderers.image_to_video.html">nw.renderers.image_to_video</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.renderers.lipsync.html">nw.renderers.lipsync</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.renderers.still.html">nw.renderers.still</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.renderers.text_to_video.html">nw.renderers.text_to_video</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="nw.schema.html">nw.schema</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.script_segmentation.html">nw.script_segmentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.secrets.html">nw.secrets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.storyboard.html">nw.storyboard</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.transforms.html">nw.transforms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.validation.html">nw.validation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.workflow.html">nw.workflow</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../ai-agents.html">For AI agents</a></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#why-a-sidecar-tier-rather-than-the-output-kind-s-own-schema">Why a sidecar tier rather than the output kind&#8217;s own schema</a></li>
+<li><a class="reference internal" href="#identity-and-lifecycle">Identity and lifecycle</a></li>
+<li><a class="reference internal" href="#two-properties-this-schema-deliberately-shares-with-the-verifying-trace">Two properties this schema deliberately shares with the verifying trace</a></li>
+<li><a class="reference internal" href="#reason-never-carries-raw-exception-text"><code class="docutils literal notranslate"><span class="pre">reason</span></code> never carries raw exception text</a></li>
+<li><a class="reference internal" href="#nw.bodies.unproduced_output.UnproducedOutputBodyV1"><code class="docutils literal notranslate"><span class="pre">UnproducedOutputBodyV1</span></code></a><ul>
+<li><a class="reference internal" href="#nw.bodies.unproduced_output.UnproducedOutputBodyV1.model_config"><code class="docutils literal notranslate"><span class="pre">UnproducedOutputBodyV1.model_config</span></code></a></li>
+</ul>
+</li>
+</ul>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../index.html"><span itemprop="name">nw</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../api.html"><span itemprop="name">API reference</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="2" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="nw.html"><span itemprop="name">nw</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="3" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="nw.bodies.html"><span itemprop="name">nw.bodies</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="4" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">nw.bodies.unproduced_output</strong>
+        <meta itemprop="position" content="5" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+  <article class="yue dark-code" role="main">
+          <section id="module-nw.bodies.unproduced_output">
+<span id="nw-bodies-unproduced-output"></span><h1>nw.bodies.unproduced_output<a class="headerlink" href="#module-nw.bodies.unproduced_output" title="Link to this heading">#</a></h1>
+<p>Body schema for unproduced-output records — nw#44.</p>
+<p>URI: <code class="docutils literal notranslate"><span class="pre">annot://schema/unproduced-output/v1</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">TransformResult.failed</span></code> / <code class="docutils literal notranslate"><span class="pre">.blocked</span></code> (nw#25) carry a reason for a
+planned output that was never produced, but only within the response that
+produced them — reload the project and the hole is unexplained again. This
+schema is the persisted record of that reason, written through
+<a class="reference internal" href="nw.graph.html#nw.graph.ProjectGraph.add_unproduced_output" title="nw.graph.ProjectGraph.add_unproduced_output"><code class="xref py py-meth docutils literal notranslate"><span class="pre">nw.graph.ProjectGraph.add_unproduced_output()</span></code></a> at the same choke point
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">execute()</span></code> writes successes through
+(<code class="docutils literal notranslate"><span class="pre">RenderStrategyTransform.execute</span></code> self-stamps the same way, since it
+overrides <code class="docutils literal notranslate"><span class="pre">execute</span></code> and bypasses the base implementation).</p>
+<section id="why-a-sidecar-tier-rather-than-the-output-kind-s-own-schema">
+<h2>Why a sidecar tier rather than the output kind’s own schema<a class="headerlink" href="#why-a-sidecar-tier-rather-than-the-output-kind-s-own-schema" title="Link to this heading">#</a></h2>
+<p>Reading the live registry, most output kinds already validate as an empty
+skeleton — so nothing on the <em>write</em> side forces a new tier. The <em>read</em> side
+decides it: several consumers (e.g. a retry planner) compute “already
+produced” from rows carrying the output kind’s <code class="docutils literal notranslate"><span class="pre">body_schema_uri</span></code>. A
+tombstone written under that URI would mark the failed unit **already
+produced**, and a retry would never be planned again — turning a transient
+failure into a permanent one. So this is its own tier, never borrowing the
+output kind’s URI, exactly like <a class="reference internal" href="nw.bodies.verifying_trace.html#module-nw.bodies.verifying_trace" title="nw.bodies.verifying_trace"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nw.bodies.verifying_trace</span></code></a> never
+borrows its target’s.</p>
+</section>
+<section id="identity-and-lifecycle">
+<h2>Identity and lifecycle<a class="headerlink" href="#identity-and-lifecycle" title="Link to this heading">#</a></h2>
+<p>A record’s retirement/dedup key is <strong>not</strong> just <code class="docutils literal notranslate"><span class="pre">(transform_name,</span>
+<span class="pre">upstream)</span></code> — two units of the same fan-out (different <code class="docutils literal notranslate"><span class="pre">mapping_key</span></code>, e.g.
+two panels of the same beat) can share an identical upstream set, and
+keying on upstream alone let one unit’s success retire an <em>unrelated</em> unit’s
+still-outstanding record. The real key is:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">(transform_name,</span> <span class="pre">instance_id,</span> <span class="pre">call_index)</span></code> when <code class="docutils literal notranslate"><span class="pre">instance_id</span></code> is
+known — the fan-out unit’s own
+<code class="xref py py-func docutils literal notranslate"><span class="pre">nw.transforms.fanout.work_item_instance_id()</span></code> (a pure function of</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">(transform_name,</span> <span class="pre">mapping_key)</span></code>), threaded from</p>
+</div></blockquote>
+<dl class="simple">
+<dt><code class="xref py py-func docutils literal notranslate"><span class="pre">fan_out_execute()</span></code> through an <code class="docutils literal notranslate"><span class="pre">execute()</span></code></dt><dd><p>implementation that accepts the <code class="docutils literal notranslate"><span class="pre">unit_instance_id</span></code> keyword (the same
+accepts-it-or-not seam <code class="xref py py-func docutils literal notranslate"><span class="pre">_accepts_keyword()</span></code>
+already uses for <code class="docutils literal notranslate"><span class="pre">on_failure</span></code>). <code class="docutils literal notranslate"><span class="pre">call_index</span></code> still has to agree even
+here: a unit’s own plan can carry more than one call, and matching on
+<code class="docutils literal notranslate"><span class="pre">instance_id</span></code> alone would collapse two of that unit’s own outputs into
+one key;</p>
+</dd>
+</dl>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">(transform_name,</span> <span class="pre">call_index,</span> <span class="pre">upstream)</span></code> otherwise — <code class="docutils literal notranslate"><span class="pre">call_index</span></code> is
+this output’s position within its <code class="docutils literal notranslate"><span class="pre">execute()</span></code> call’s <code class="docutils literal notranslate"><span class="pre">skeleton</span></code> tuple,
+which disambiguates multiple outputs of one batch call that share
+identical upstream parents even with no fan-out involved. This fallback
+is still not a full identity: two DIFFERENT units run outside a fan-out
+(no <code class="docutils literal notranslate"><span class="pre">instance_id</span></code> threaded at all) with identical upstream parents and
+the same <code class="docutils literal notranslate"><span class="pre">call_index</span></code> still alias, and one succeeding retires the
+other’s record too — the residual version of the original bug, scoped to
+callers that never pass <code class="docutils literal notranslate"><span class="pre">unit_instance_id</span></code>.</p></li>
+</ul>
+<p><a class="reference internal" href="nw.graph.html#nw.graph.ProjectGraph.add_unproduced_output" title="nw.graph.ProjectGraph.add_unproduced_output"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_unproduced_output()</span></code></a> <strong>dedupes on this key</strong>:
+a second record for the same identity replaces the first rather than
+accumulating — a unit failing twice must not leave a first-run reason
+readable as a live blocker after the unit has since failed differently (or
+the record is stale but still there). <a class="reference internal" href="nw.graph.html#nw.graph.ProjectGraph.add_annotation" title="nw.graph.ProjectGraph.add_annotation"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_annotation()</span></code></a>
+retires (removes) any record matching a real output’s identity the moment
+that output is written — a successful retry clears its own record.</p>
+<p>**A write that bypasses <code class="docutils literal notranslate"><span class="pre">add_annotation</span></code> — a raw <code class="docutils literal notranslate"><span class="pre">store.add</span></code> — leaves
+its matching record in place.** It reads back as a live blocker after
+reload even though the output was, in fact, produced. Route every derived
+write through <a class="reference internal" href="nw.graph.html#nw.graph.ProjectGraph.add_annotation" title="nw.graph.ProjectGraph.add_annotation"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_annotation()</span></code></a>, as the module
+docstring on <a class="reference internal" href="nw.graph.html#module-nw.graph" title="nw.graph"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nw.graph</span></code></a> already requires for verifying traces.</p>
+</section>
+<section id="two-properties-this-schema-deliberately-shares-with-the-verifying-trace">
+<h2>Two properties this schema deliberately shares with the verifying trace<a class="headerlink" href="#two-properties-this-schema-deliberately-shares-with-the-verifying-trace" title="Link to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p><strong>Parentless.</strong> <code class="docutils literal notranslate"><span class="pre">was_derived_from</span></code> is empty; the link to what it
+describes runs through the body’s own identity fields instead. Wiring it
+as a provenance edge would put every record into its subject’s
+<code class="docutils literal notranslate"><span class="pre">descendants_of</span></code> set, and — worse — <a class="reference internal" href="nw.freshness.html#module-nw.freshness" title="nw.freshness"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nw.freshness</span></code></a> would read
+matching digests as fresh, reporting a hole as verified-fresh.</p></li>
+<li><p><strong>Excluded from freshness by construction.</strong> Because it is parentless it
+never appears in any <code class="docutils literal notranslate"><span class="pre">descendants_of</span></code> walk, so <code class="docutils literal notranslate"><span class="pre">stale_verdicts_all</span></code> /
+<code class="docutils literal notranslate"><span class="pre">/api/freshness</span></code> are untouched and no lacing migration is owed. It is
+also excluded from <a class="reference internal" href="nw.html#nw.Project" title="nw.Project"><code class="xref py py-func docutils literal notranslate"><span class="pre">nw.Project()</span></code></a>’s resumption-brief “last authored
+change” the same way (<code class="docutils literal notranslate"><span class="pre">nw.project._BOOKKEEPING_TIERS</span></code>) — it is written
+<em>after</em> the run it describes, not authored by the user.</p></li>
+</ol>
+</section>
+<section id="reason-never-carries-raw-exception-text">
+<h2><code class="docutils literal notranslate"><span class="pre">reason</span></code> never carries raw exception text<a class="headerlink" href="#reason-never-carries-raw-exception-text" title="Link to this heading">#</a></h2>
+<p>The graph is exportable project data, and an exception’s <code class="docutils literal notranslate"><span class="pre">str()</span></code> can carry
+a signed URL, a local path, or other operational detail that does not belong
+in it. When the <code class="docutils literal notranslate"><span class="pre">FailedOutput</span></code> this record is built from carries an
+<code class="docutils literal notranslate"><span class="pre">error</span></code>, <a class="reference internal" href="nw.graph.html#nw.graph.ProjectGraph.add_unproduced_output" title="nw.graph.ProjectGraph.add_unproduced_output"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_unproduced_output()</span></code></a> stores a
+fixed sentence plus <code class="docutils literal notranslate"><span class="pre">error_type</span></code> here and logs the original reason instead
+(<code class="docutils literal notranslate"><span class="pre">logging.getLogger(&quot;nw.graph&quot;)</span></code>, at <code class="docutils literal notranslate"><span class="pre">WARNING</span></code>). A <code class="docutils literal notranslate"><span class="pre">reason</span></code> with no
+<code class="docutils literal notranslate"><span class="pre">error</span></code> (e.g. a <code class="docutils literal notranslate"><span class="pre">&quot;blocked&quot;</span></code> output’s falaw-supplied human string, the
+whole point of nw#25 — <em>“skipped: no dialogue in this panel”</em>) is stored
+as-is.</p>
+<p class="rubric">Classes</p>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.bodies.unproduced_output.UnproducedOutputBodyV1" title="nw.bodies.unproduced_output.UnproducedOutputBodyV1"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UnproducedOutputBodyV1</span></code></a>(**data)</p></td>
+<td><p>Body of an unproduced-output record.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.bodies.unproduced_output.UnproducedOutputBodyV1">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.bodies.unproduced_output.</span></span><span class="sig-name descname"><span class="pre">UnproducedOutputBodyV1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/bodies/unproduced_output.html#UnproducedOutputBodyV1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.bodies.unproduced_output.UnproducedOutputBodyV1" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>Body of an unproduced-output record.</p>
+<p><code class="docutils literal notranslate"><span class="pre">status</span></code> mirrors <code class="xref py py-class docutils literal notranslate"><span class="pre">nw.transforms.fanout.UnitStatus</span></code>’s two
+unproduced cases: <code class="docutils literal notranslate"><span class="pre">&quot;failed&quot;</span></code> (the call itself failed) or <code class="docutils literal notranslate"><span class="pre">&quot;blocked&quot;</span></code>
+(an upstream call in the same plan failed first). <code class="docutils literal notranslate"><span class="pre">upstream</span></code> is stored
+for the <code class="docutils literal notranslate"><span class="pre">call_index</span></code> fallback identity (see the module docstring); it
+is not itself a sufficient key.</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.bodies.unproduced_output.UnproducedOutputBodyV1.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.ClassVar" title="(in Python v3.14)"><span class="pre">ClassVar</span></a><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'extra':</span> <span class="pre">'forbid',</span> <span class="pre">'frozen':</span> <span class="pre">True}</span></span><a class="headerlink" href="#nw.bodies.unproduced_output.UnproducedOutputBodyV1.model_config" title="Link to this definition">#</a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<code class="code docutils literal notranslate"><span class="pre">ConfigDict</span></code>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="nw.bodies.shot.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">nw.bodies.shot</div></div>
+    </a>
+  </div><div class="navigation-next">
+    <a href="nw.bodies.verifying_trace.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">nw.bodies.verifying_trace</div>
+      </div>
+      <i class="i-lucide chevron-right"></i>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright">
+  <p>
+    Made with
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+  <a href="https://github.com/thorwhalen/nw" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div>
+    </div>
+  </div>
+</footer>
+      <script src="../_static/documentation_options.js?v=1c03bfdc"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=fd10adb8"></script>
+      <script src="../_static/shibuya.js?v=50760d75"></script></body>
+</html>
