@@ -411,9 +411,9 @@ resolved, independent checks run concurrently, and one report at the end.
 
 ```python
 report = nw.validate(film, checks=["media.encode_complete", "media.no_long_freeze"])
-report.ok          # False if anything failed *or if any check could not run*
+report.ok  # False if anything failed *or if any check could not run*
 print(report.summary())
-report.raise_if_failed()   # a hard gate before a publish
+report.raise_if_failed()  # a hard gate before a publish
 ```
 
 Three checks ship with nw (`nw.menu()`), each of which has caught a real defect
@@ -428,9 +428,13 @@ picture freezes")` turn a request into a selection instead of exposing a
 forty-item enum to a model.
 
 ```python
-@nw.register_check(name="type.captions_complete", summary="no caption is cut",
-                   requires=("media.streams_present",), cost="dear",
-                   example_requests=("is the text cut off", "the caption is truncated"))
+@nw.register_check(
+    name="type.captions_complete",
+    summary="no caption is cut",
+    requires=("media.streams_present",),
+    cost="dear",
+    example_requests=("is the text cut off", "the caption is truncated"),
+)
 def _captions_complete(film, ctx): ...
 ```
 

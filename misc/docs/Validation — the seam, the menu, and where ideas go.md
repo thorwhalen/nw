@@ -30,9 +30,9 @@ A gate placed by the substrate is a gate that fires at the wrong moment, on some
 from nw import validate, menu, suggest
 
 report = validate(film_path, checks=["media.encode_complete", "media.no_long_freeze"])
-report.ok            # False if anything failed *or if any check could not run*
-report.summary()     # a few lines a human reads without unpacking anything
-report.raise_if_failed()   # for a hard gate
+report.ok  # False if anything failed *or if any check could not run*
+report.summary()  # a few lines a human reads without unpacking anything
+report.raise_if_failed()  # for a hard gate
 ```
 
 Four distinctions the types exist to keep apart, because blurring any of them produces a suite that reports all clear on a machine where half of it was never installed:
