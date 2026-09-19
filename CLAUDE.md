@@ -67,7 +67,26 @@ it. Layering: `lacing → nw → falaw.Plan → backends` — nothing above
 - **Genres & jobs** (`nw/genres.py`, `nw/jobs.py`) — the genre/template
   registry (`genre_catalog()`, resolved envelopes persisted on the project)
   and durable async jobs (idempotency by `falaw.plan_hash`; store writes are
-  atomic via temp-file + `os.replace`).
+  atomic via temp-file + `os.replace`). **Placement** (nw#84): a
+  `GenreProjectFactory` takes `projects_dir` — *a factory places a project
+  where its caller asks; it does not own the location* — so a host that will
+  **serve** a guest genre's project (reelee serving braidio's
+  `commentary_weave`) puts it where its own resolver looks, instead of under
+  the guest app's data home where nothing of the host's can address it.
+  `None` = the app's own workspace, so every pre-existing caller and factory
+  is unchanged; a pre-placement factory handed one is **refused** (ask
+  `can_place_genre_project` first — the probe binds the whole call, because a
+  positional-only `projects_dir` is a name in `parameters` that cannot be
+  passed). One that accepts and ignores it is caught by an outcome check on
+  the created root — **acceptance is not the guarantee, the outcome is** — and
+  an outcome nw cannot verify is a failure, never a pass. The check is
+  `got == projects_dir/<project_id>`, whole path and basename, because the
+  host gets no root back and addresses the project by exactly that path, and
+  because the realistic misplacement is the same tail under a different data
+  root. The rollback is **bounded by the placement**: that branch is the one
+  where nw has decided it does not know what the factory did, so recursively
+  deleting the root it was handed — inside the *host's* tree — would turn a
+  guest's off-by-one into the loss of a whole per-caller projects directory.
 
 ## Validation (`nw/validation.py`, checks in `nw/checks.py`)
 

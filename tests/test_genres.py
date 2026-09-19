@@ -6,6 +6,8 @@ the substrate-readiness helpers). The registry is process-global, so tests
 that mutate it snapshot and restore it via the ``clean_registry`` fixture.
 """
 
+from pathlib import Path
+
 import pytest
 
 import nw
@@ -174,7 +176,12 @@ def test_exposed_on_nw_namespace():
     assert nw.get_genre is get_genre
     assert callable(nw.list_genres)
     assert nw.Template is Template
-    for name in ("genre_catalog", "describe_genre", "recommend_genre", "resolve_defaults"):
+    for name in (
+        "genre_catalog",
+        "describe_genre",
+        "recommend_genre",
+        "resolve_defaults",
+    ):
         assert callable(getattr(nw, name))
 
 
@@ -290,8 +297,15 @@ def test_genre_to_dict_shape():
     assert [t["slug"] for t in d["templates"]] == ["solo", "duo"]
     assert d["templates"][0]["params"] == {"format_id": "solo"}
     assert set(d) == {
-        "slug", "title", "description", "status", "ready",
-        "intake_kinds", "cost_profile", "defaults", "templates",
+        "slug",
+        "title",
+        "description",
+        "status",
+        "ready",
+        "intake_kinds",
+        "cost_profile",
+        "defaults",
+        "templates",
     }
 
 
@@ -317,9 +331,17 @@ def test_recommend_genre(clean_registry):
 def test_resolve_defaults_with_and_without_template(clean_registry):
     register_genre(_av_genre(slug="res_demo"))
     scratch = resolve_defaults("res_demo")
-    assert scratch == {"genre": "res_demo", "template": None, "params": {"format_id": "solo"}}
+    assert scratch == {
+        "genre": "res_demo",
+        "template": None,
+        "params": {"format_id": "solo"},
+    }
     picked = resolve_defaults("res_demo", "duo")
-    assert picked == {"genre": "res_demo", "template": "duo", "params": {"format_id": "duo"}}
+    assert picked == {
+        "genre": "res_demo",
+        "template": "duo",
+        "params": {"format_id": "duo"},
+    }
     with pytest.raises(KeyError):
         resolve_defaults("res_demo", "missing")
 
@@ -335,7 +357,10 @@ def clean_resolvers():
     try:
         yield
     finally:
-        for reg, before in ((genres, genres_before), (genre_resolvers, resolvers_before)):
+        for reg, before in (
+            (genres, genres_before),
+            (genre_resolvers, resolvers_before),
+        ):
             for key in list(reg.keys()):
                 del reg[key]
             for key, value in before.items():
@@ -551,14 +576,19 @@ def test_create_genre_project_orchestrates_resolve_factory_initialize(clean_fact
         "pf_disp", "u@x.com", "myproj", title="My Proj", template="duo"
     )
     assert seen == {
-        "caller": "u@x.com", "project_id": "myproj",
-        "title": "My Proj", "params": {"format_id": "duo"},
+        "caller": "u@x.com",
+        "project_id": "myproj",
+        "title": "My Proj",
+        "params": {"format_id": "duo"},
     }
     assert seeded == {"params": {"format_id": "duo"}}  # initializer ran
     # returns the factory info (minus the live project) + the resolved envelope
     assert out == {
-        "project_id": "myproj", "title": "My Proj",
-        "genre": "pf_disp", "template": "duo", "params": {"format_id": "duo"},
+        "project_id": "myproj",
+        "title": "My Proj",
+        "genre": "pf_disp",
+        "template": "duo",
+        "params": {"format_id": "duo"},
     }
 
 
@@ -567,13 +597,17 @@ def test_create_genre_project_title_defaults_to_project_id(clean_factories):
     got = {}
     register_genre_project_factory(
         "pf_title",
-        lambda caller, pid, *, title, template, params: got.update(title=title) or {"project": None},
+        lambda caller, pid, *, title, template, params: (
+            got.update(title=title) or {"project": None}
+        ),
     )
     create_genre_project("pf_title", "u@x.com", "pid1")
     assert got["title"] == "pid1"
 
 
-def test_create_genre_project_rolls_back_on_initializer_failure(tmp_path, clean_factories):
+def test_create_genre_project_rolls_back_on_initializer_failure(
+    tmp_path, clean_factories
+):
     # All-or-nothing: a failing initializer removes the just-created project (root).
     register_genre(_av_genre(slug="pf_boom"))
     proj_root = tmp_path / "made"
@@ -616,8 +650,381 @@ def test_register_genre_project_factory_validates_and_has(clean_factories):
 
 def test_project_factory_symbols_reexported_on_nw():
     for name in (
-        "GenreProjectFactory", "genre_project_factories",
-        "register_genre_project_factory", "has_genre_project_factory",
+        "GenreProjectFactory",
+        "genre_project_factories",
+        "register_genre_project_factory",
+        "has_genre_project_factory",
         "create_genre_project",
     ):
         assert hasattr(nw, name), name
+
+
+# --- placement: a factory places a project where its CALLER asks ------------
+#
+# The rule these pin: *a genre project factory places a project where its caller
+# asks; it does not own the location.* Before ``projects_dir`` the factory decided
+# storage, so a host that had to SERVE the project got one under the guest app's own
+# data home — a sibling of nothing the host could address. The tests below are
+# ordered by what each one would miss if it were the only one.
+
+
+class _RootOnly:
+    """The minimum a factory's returned project has to be for nw: a ``root``."""
+
+    def __init__(self, root):
+        self.root = root
+
+
+def _placing_factory(record):
+    """A factory that honours placement, recording what it was handed."""
+
+    def factory(caller, project_id, *, title, template, params, projects_dir=None):
+        record["projects_dir"] = projects_dir
+        root = (
+            Path(projects_dir) if projects_dir else Path(record["fallback"])
+        ) / project_id
+        root.mkdir(parents=True, exist_ok=True)
+
+        class _Proj:
+            pass
+
+        p = _Proj()
+        p.root = str(root)
+        return {"project": p, "project_id": project_id}
+
+    return factory
+
+
+def test_can_place_genre_project_reads_the_signature(clean_factories):
+    def old(caller, project_id, *, title, template, params):
+        return {"project": None}
+
+    def new(caller, project_id, *, title, template, params, projects_dir=None):
+        return {"project": None}
+
+    def kwargsy(caller, project_id, **kwargs):
+        return {"project": None}
+
+    register_genre_project_factory("pl_old", old)
+    register_genre_project_factory("pl_new", new)
+    register_genre_project_factory("pl_kw", kwargsy)
+    assert nw.can_place_genre_project("pl_old") is False
+    assert nw.can_place_genre_project("pl_new") is True
+    # ``**kwargs`` is the only honest reading of the signature — the OUTCOME check
+    # is what catches one that takes the argument and ignores it.
+    assert nw.can_place_genre_project("pl_kw") is True
+    assert nw.can_place_genre_project("pl_unregistered") is False
+
+
+def test_no_placement_asked_leaves_a_pre_placement_factory_untouched(
+    tmp_path, clean_factories
+):
+    """The compatibility guarantee: every existing caller AND factory keeps working.
+
+    A pre-placement factory is called with the pre-placement argument list — passing
+    ``projects_dir=None`` to it would be a ``TypeError`` on the create path, which is
+    the break this adaptation exists to avoid.
+    """
+    register_genre(_av_genre(slug="pl_compat"))
+    got = {}
+
+    def old(caller, project_id, *, title, template, params):
+        got.update(caller=caller, project_id=project_id)
+        return {"project": None, "project_id": project_id}
+
+    register_genre_project_factory("pl_compat", old)
+    out = create_genre_project("pl_compat", "u@x.com", "p1")
+    assert out["project_id"] == "p1"
+    assert got == {"caller": "u@x.com", "project_id": "p1"}
+
+
+def test_placement_reaches_the_factory_and_the_project_lands_there(
+    tmp_path, clean_factories
+):
+    register_genre(_av_genre(slug="pl_here"))
+    record = {"fallback": tmp_path / "guest_app_home"}
+    register_genre_project_factory("pl_here", _placing_factory(record))
+    host_dir = tmp_path / "host" / "projects" / "u@x.com"
+    host_dir.mkdir(parents=True)
+
+    out = create_genre_project("pl_here", "u@x.com", "p1", projects_dir=host_dir)
+    assert out["project_id"] == "p1"
+    assert record["projects_dir"] == host_dir
+    # The point: a DIRECT child of the directory the host enumerates.
+    assert (host_dir / "p1").is_dir()
+
+
+def test_a_pre_placement_factory_refuses_a_placement_before_touching_disk(
+    tmp_path, clean_factories
+):
+    """Refusal, never silent misplacement — and refusal BEFORE any side effect.
+
+    The negative control for the whole feature: a version that simply dropped the
+    argument would pass every other test here, create the project in the guest app's
+    own home, and report success — which is exactly the two-worlds failure.
+    """
+    register_genre(_av_genre(slug="pl_refuse"))
+    guest_home = tmp_path / "guest_app_home"
+    made = []
+
+    def old(caller, project_id, *, title, template, params):
+        root = guest_home / project_id
+        root.mkdir(parents=True)
+        made.append(root)
+        return {"project": None}
+
+    register_genre_project_factory("pl_refuse", old)
+    host_dir = tmp_path / "host"
+    host_dir.mkdir()
+    # The message is part of the contract, not decoration: without the explicit
+    # check the call still fails — with Python's raw binding TypeError, which tells
+    # a host nothing about what to do. Matching on the actionable half is what
+    # distinguishes nw's refusal from an accident that happens to abort.
+    with pytest.raises(TypeError, match="can_place_genre_project"):
+        create_genre_project("pl_refuse", "u@x.com", "p1", projects_dir=host_dir)
+    assert made == []  # never ran
+    assert not guest_home.exists()
+
+
+def test_a_factory_that_accepts_a_placement_and_ignores_it_is_refused(
+    tmp_path, clean_factories
+):
+    """Acceptance is not the guarantee; the outcome is.
+
+    A ``**kwargs`` factory, or one that declares the keyword and forgets to use it,
+    produces a project that is fine on disk and invisible to the host that asked for
+    it — indistinguishable, on every host surface, from a create that did nothing.
+
+    The misplaced project is deliberately **left on disk**: see
+    ``test_a_misplaced_project_outside_the_placement_is_not_deleted``.
+    """
+    register_genre(_av_genre(slug="pl_liar"))
+    elsewhere = tmp_path / "elsewhere"
+
+    def liar(caller, project_id, *, title, template, params, projects_dir=None):
+        root = elsewhere / project_id
+        root.mkdir(parents=True)
+        return {"project": _RootOnly(root)}
+
+    register_genre_project_factory("pl_liar", liar)
+    host_dir = tmp_path / "host"
+    host_dir.mkdir()
+    with pytest.raises(RuntimeError, match="did not honour projects_dir"):
+        create_genre_project("pl_liar", "u@x.com", "p1", projects_dir=host_dir)
+
+
+def test_a_misplaced_project_outside_the_placement_is_not_deleted(
+    tmp_path, clean_factories
+):
+    """The rollback is BOUNDED by the placement, and that is the point.
+
+    A placement adds a second, much easier trigger for the all-or-nothing rollback —
+    and it fires *precisely when nw has concluded it does not know what the factory
+    did*. Recursively deleting a path nw does not understand, inside the **host's**
+    tree, is not a rollback. The shape that makes this concrete: a factory that
+    places correctly on disk and returns the wrong ``root`` (here, the host's whole
+    per-caller projects directory).
+    """
+    register_genre(_av_genre(slug="pl_offbyone"))
+    host_dir = tmp_path / "host" / "projects" / "u@x.com"
+    host_dir.mkdir(parents=True)
+    (host_dir / "someone_elses_film").mkdir()
+
+    def off_by_one(caller, project_id, *, title, template, params, projects_dir=None):
+        root = Path(projects_dir) / project_id
+        root.mkdir(parents=True)
+        # correct on disk, wrong in the report: the CONTAINER, not the project
+        return {"project": _RootOnly(Path(projects_dir))}
+
+    register_genre_project_factory("pl_offbyone", off_by_one)
+    with pytest.raises(RuntimeError, match="did not honour projects_dir"):
+        create_genre_project("pl_offbyone", "u@x.com", "p1", projects_dir=host_dir)
+    assert host_dir.is_dir()
+    assert (host_dir / "someone_elses_film").is_dir()  # NOT collateral damage
+
+
+def test_a_misplacement_inside_the_placement_is_rolled_back(tmp_path, clean_factories):
+    """The other side of the bound: what nw asked for, it may clean up."""
+    register_genre(_av_genre(slug="pl_renamer"))
+    host_dir = tmp_path / "host"
+    host_dir.mkdir()
+
+    def renamer(caller, project_id, *, title, template, params, projects_dir=None):
+        root = Path(projects_dir) / f"braidio-{project_id}"
+        root.mkdir(parents=True)
+        return {"project": _RootOnly(root)}
+
+    register_genre_project_factory("pl_renamer", renamer)
+    with pytest.raises(RuntimeError, match="did not honour projects_dir"):
+        create_genre_project("pl_renamer", "u@x.com", "p1", projects_dir=host_dir)
+    assert not (host_dir / "braidio-p1").exists()
+    assert host_dir.is_dir()
+
+
+def test_the_basename_is_verified_because_the_host_addresses_by_it(
+    tmp_path, clean_factories
+):
+    """Right parent, wrong name is a misplacement.
+
+    ``create_genre_project`` drops the live project from its JSON result, so the host
+    addresses the new project as ``projects_dir/<project_id>``. A check on the parent
+    alone leaves the half the host actually relies on unverified.
+    """
+    register_genre(_av_genre(slug="pl_base"))
+    host_dir = tmp_path / "host"
+    host_dir.mkdir()
+
+    def slugifier(caller, project_id, *, title, template, params, projects_dir=None):
+        root = Path(projects_dir) / project_id.replace("_", "-")
+        root.mkdir(parents=True)
+        return {"project": _RootOnly(root)}
+
+    register_genre_project_factory("pl_base", slugifier)
+    with pytest.raises(RuntimeError, match="did not honour projects_dir"):
+        create_genre_project("pl_base", "u@x.com", "my_show", projects_dir=host_dir)
+
+
+def test_a_misplacement_that_shares_the_last_component_is_refused(
+    tmp_path, clean_factories
+):
+    """The realistic misplacement: same tail, different data root.
+
+    ``{braidio_home}/projects/{email}/`` against ``{reelee_home}/projects/{email}/``
+    is the actual field shape, and it is exactly what a comparison on the last path
+    component would wave through — reporting success while the project lands in the
+    other world.
+    """
+    register_genre(_av_genre(slug="pl_tail"))
+    host_dir = tmp_path / "reelee" / "projects" / "u@x.com"
+    guest_dir = tmp_path / "braidio" / "projects" / "u@x.com"
+    host_dir.mkdir(parents=True)
+
+    def other_root(caller, project_id, *, title, template, params, projects_dir=None):
+        root = guest_dir / project_id
+        root.mkdir(parents=True)
+        return {"project": _RootOnly(root)}
+
+    register_genre_project_factory("pl_tail", other_root)
+    with pytest.raises(RuntimeError, match="did not honour projects_dir"):
+        create_genre_project("pl_tail", "u@x.com", "ep_01", projects_dir=host_dir)
+
+
+def test_an_unverifiable_outcome_is_a_failure_not_a_pass(tmp_path, clean_factories):
+    """A factory that accepts a placement and returns no project cannot be checked.
+
+    The direction that silence resolves to must not be "success": a factory can
+    accept the keyword (``**kwargs`` binds), ignore it, return nothing addressable,
+    and otherwise pass every gate — reporting a create the host will never find.
+    """
+    register_genre(_av_genre(slug="pl_silent"))
+    host_dir = tmp_path / "host"
+    host_dir.mkdir()
+
+    def silent(caller, project_id, **kwargs):
+        return {"project": None, "project_id": project_id}
+
+    register_genre_project_factory("pl_silent", silent)
+    with pytest.raises(RuntimeError, match="returned no created project"):
+        create_genre_project("pl_silent", "u@x.com", "p1", projects_dir=host_dir)
+
+
+def test_placement_is_verified_before_the_project_is_seeded(tmp_path, clean_factories):
+    """Order: check the outcome, THEN initialize.
+
+    Seeding a misplaced project and deleting it afterwards writes annotations (and
+    creates the graph store) somewhere nw is about to declare it does not understand.
+    """
+    register_genre(_av_genre(slug="pl_order"))
+    seeded = []
+    elsewhere = tmp_path / "elsewhere"
+
+    def misplacer(caller, project_id, *, title, template, params, projects_dir=None):
+        root = elsewhere / project_id
+        root.mkdir(parents=True)
+        return {"project": _RootOnly(root)}
+
+    register_genre_project_factory("pl_order", misplacer)
+    register_genre_initializer("pl_order", lambda g, t, p, params: seeded.append(p))
+    host_dir = tmp_path / "host"
+    host_dir.mkdir()
+    with pytest.raises(RuntimeError, match="did not honour projects_dir"):
+        create_genre_project("pl_order", "u@x.com", "p1", projects_dir=host_dir)
+    assert seeded == []
+
+
+@pytest.mark.parametrize("factory_resolves", [True, False], ids=["resolved", "raw"])
+def test_a_symlinked_placement_is_not_a_misplacement(
+    tmp_path, clean_factories, factory_resolves
+):
+    """Both sides resolve, and that is load-bearing rather than tidiness.
+
+    ``nw.Project.__init__`` resolves its root, so a factory built on it reports a
+    RESOLVED path while a host's ``projects_dir`` typically is not resolved; a
+    hand-rolled factory reports back the raw path it was handed. Both spellings name
+    the same directory, and without ``.resolve()`` on **both** sides one of the two
+    is refused — and, before the rollback was bounded, deleted. Parametrised because
+    the two directions are separate mutations: dropping either call alone still
+    passes the other case.
+    """
+    register_genre(_av_genre(slug="pl_link"))
+    real = tmp_path / "real_projects"
+    real.mkdir()
+    link = tmp_path / "link_projects"
+    link.symlink_to(real, target_is_directory=True)
+
+    def factory(caller, project_id, *, title, template, params, projects_dir=None):
+        root = Path(projects_dir) / project_id
+        root.mkdir(parents=True)
+        reported = root.resolve() if factory_resolves else root
+        return {"project": _RootOnly(reported), "project_id": project_id}
+
+    register_genre_project_factory("pl_link", factory)
+    out = create_genre_project("pl_link", "u@x.com", "p1", projects_dir=link)
+    assert out["project_id"] == "p1"
+    assert (real / "p1").is_dir()
+
+
+def test_an_empty_placement_is_refused_rather_than_meaning_the_cwd(
+    tmp_path, clean_factories
+):
+    """``Path("")`` is the process CWD, so a blank placement would write user data
+    into wherever the server happens to be running — typically the deploy tree."""
+    register_genre(_av_genre(slug="pl_blank"))
+    register_genre_project_factory(
+        "pl_blank", lambda c, pid, **kw: {"project": None, "project_id": pid}
+    )
+    for blank in ("", "   "):
+        with pytest.raises(ValueError, match="is empty"):
+            create_genre_project("pl_blank", "u@x.com", "p1", projects_dir=blank)
+
+
+def test_a_keyword_that_cannot_actually_be_passed_does_not_count_as_accepting(
+    clean_factories,
+):
+    """The probe is a bind, not a name lookup.
+
+    ``projects_dir`` declared positional-only, or as ``*projects_dir``, is a name in
+    ``parameters`` that cannot be passed as a keyword — a membership test reads all
+    three alike and would report the factory placeable, turning nw's named refusal
+    into a raw binding ``TypeError`` from inside the call.
+    """
+    ns: dict = {}
+    exec(
+        "def posonly(caller, project_id, projects_dir, /, *, title, template, params):\n"
+        "    return {'project': None}\n",
+        ns,
+    )
+
+    def varargs(caller, project_id, *projects_dir, title, template, params):
+        return {"project": None}
+
+    register_genre_project_factory("pl_posonly", ns["posonly"])
+    register_genre_project_factory("pl_varargs", varargs)
+    assert nw.can_place_genre_project("pl_posonly") is False
+    assert nw.can_place_genre_project("pl_varargs") is False
+
+
+def test_placement_symbols_are_reexported_on_nw():
+    for name in ("can_place_genre_project", "PLACEMENT_ARG"):
+        assert hasattr(nw, name), name
+    assert nw.PLACEMENT_ARG == "projects_dir"

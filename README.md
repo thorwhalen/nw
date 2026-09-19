@@ -91,11 +91,31 @@ nw.initialize_genre("music-video", proj, template="cinematic_clip")
 # 3. create — for a *plugged-in* genre a host aggregates but doesn't own:
 #    the owning app supplies "make a project for this in the caller's own space"
 nw.create_genre_project("commentary-weave", caller_id, "ep_01")
+
+# ...and when the host will SERVE the project, it says where it goes:
+nw.create_genre_project(
+    "commentary-weave", caller_id, "ep_01", projects_dir=my_projects_dir
+)
 ```
 
 An initializer must confine its side effects to the project it is given, so a
 failed create can be reverted by removing the project folder —
 `create_genre_project` rolls back automatically and is all-or-nothing.
+
+**A genre project factory places a project where its caller asks; it does not own
+the location.** `projects_dir` is the directory the project folder is created *in*
+(the new project's root is `projects_dir/<project_id>`), so a host that has to
+*serve* a guest genre's project can put it where its own resolver and lister look —
+without which the project is a sibling of nothing the host can address. `None` (the
+default) leaves placement to the genre's app, so every pre-existing caller is
+unchanged. Ask `nw.can_place_genre_project(slug)` first: a factory written before
+this argument existed is **refused** rather than quietly satisfied somewhere else.
+One that accepts the argument and ignores it is caught by an *outcome* check on the
+created root — acceptance is not the guarantee, the outcome is — and an outcome nw
+cannot verify (a factory that accepts a placement and returns no project) is a
+failure rather than a pass. The rollback that follows is **bounded by the
+placement**: nothing outside it is deleted, because that branch is precisely the one
+where nw has concluded it does not know what the factory did.
 
 The naming rationale (Genre / Template over `kind` / `format` / `recipe` / …) is
 in [thorwhalen/nw#10](https://github.com/thorwhalen/nw/issues/10) and the
@@ -505,7 +525,9 @@ nw.apply_to_projects(roots, lambda p: nw.compose_report(p), parallel=True)
     nw.genre_project_factories,
     nw.register_genre_project_factory,
     nw.has_genre_project_factory,
+    nw.can_place_genre_project,
     nw.create_genre_project,
+    nw.PLACEMENT_ARG,
 )
 
 # Transforms — the A -> B arrow

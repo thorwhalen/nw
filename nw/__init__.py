@@ -178,7 +178,9 @@ from .genres import (
     genre_project_factories,
     register_genre_project_factory,
     has_genre_project_factory,
+    can_place_genre_project,
     create_genre_project,
+    PLACEMENT_ARG,
 )
 from .schema import (
     SCHEMA_VERSION,
@@ -235,7 +237,9 @@ __all__ = [
     "genre_project_factories",
     "register_genre_project_factory",
     "has_genre_project_factory",
+    "can_place_genre_project",
     "create_genre_project",
+    "PLACEMENT_ARG",
     "Project",
     "ProjectGraph",
     "StoredUnproducedOutput",
