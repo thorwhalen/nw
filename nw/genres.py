@@ -42,10 +42,12 @@ schemas + Transforms" stance is in
 
 from __future__ import annotations
 
+import inspect
 from collections.abc import Mapping
 from dataclasses import dataclass, field
+from pathlib import Path
 from types import MappingProxyType
-from typing import TYPE_CHECKING, Any, Callable, Optional
+from typing import TYPE_CHECKING, Any, Callable, Optional, Union
 
 from xdol import Registry
 
@@ -592,14 +594,44 @@ def _persist_genre_envelope(
 # "create a fresh project for this genre in the CALLER's own space", so a host can offer
 # ``create_project(genre)`` for any plugged-in genre without knowing its storage. A
 # host's OWN genres (which it places itself) do NOT use this registry.
+#
+# PLACEMENT (``projects_dir``). The original contract had no location argument, so the
+# genre's app necessarily decided storage — sound while a host only aggregated each
+# genre's *tools* in each genre's own workspace, and wrong the moment a host has to
+# *serve* the project: a project created under the guest app's data home is a sibling of
+# nothing the host can address, so the host's lister never lists it and its project
+# header cannot name it. The rule, which generalises past any one genre:
+#
+#     a genre project factory places a project where its caller asks;
+#     it does not own the location.
+#
+# So the contract gains ``projects_dir``, defaulting to ``None`` = the owning app's own
+# workspace — every pre-existing caller and factory keeps working unchanged.
 # ---------------------------------------------------------------------------
 
-#: A genre project factory: ``(caller, project_id, *, title, template, params) -> dict``.
-#: Creates a NEW project for a plugged-in ``genre`` in ``caller``'s own (e.g. email-keyed)
-#: space and returns info including ``{"project": <created project>, ...}`` — see
-#: :func:`create_genre_project` (which seeds it then strips the live object from the JSON
-#: result). **Contract:** confine creation to the caller's own space (so a host can offer
-#: it multi-tenant safely); a host-tenancy genre does NOT register here.
+#: The keyword a factory declares to accept host placement — see
+#: :data:`GenreProjectFactory` and :func:`can_place_genre_project`.
+PLACEMENT_ARG = "projects_dir"
+
+#: A genre project factory:
+#: ``(caller, project_id, *, title, template, params, projects_dir=None) -> dict``.
+#: Creates a NEW project for a plugged-in ``genre`` and returns info including
+#: ``{"project": <created project>, ...}`` — see :func:`create_genre_project` (which
+#: seeds it then strips the live object from the JSON result).
+#:
+#: **Placement.** ``projects_dir`` is the directory the new project folder is created
+#: *in* — the new project's root is ``projects_dir/<project_id>``, so it is a sibling of
+#: whatever else the host keeps there. ``None`` (the default, and what a host that has no
+#: opinion passes) means *the owning app's own workspace for* ``caller``, which is the
+#: pre-placement behaviour. A factory that accepts ``projects_dir`` MUST honour it;
+#: :func:`create_genre_project` verifies the created project actually landed there and
+#: rolls back if it did not, because a factory that quietly places it elsewhere is the
+#: exact failure placement exists to remove.
+#:
+#: **Caller-space contract (unchanged for** ``projects_dir=None`` **).** With no
+#: placement, confine creation to the caller's own space so a host can offer it
+#: multi-tenant safely. With a placement, the *host* has already decided the caller's
+#: space and owns that guarantee. A host-tenancy genre does NOT register here.
 GenreProjectFactory = Callable[..., dict]
 
 #: Registry of per-genre project factories, keyed by genre slug (the owning app registers).
@@ -645,6 +677,145 @@ def has_genre_project_factory(slug: str) -> bool:
     return slug in genre_project_factories
 
 
+def _accepts_placement(factory: "GenreProjectFactory") -> bool:
+    """Whether ``factory`` can actually be *called* with :data:`PLACEMENT_ARG`.
+
+    Signature inspection rather than a required argument + a major version bump,
+    because this registry holds **third-party callables**: nw is published, and the
+    apps that register here (braidio, muvid, reelee) release on their own cadences,
+    so requiring the argument would turn every not-yet-updated factory into a
+    ``TypeError`` on the create path — the most user-visible one there is. Adaptation
+    costs nothing when no placement is asked for, and :func:`create_genre_project`
+    refuses (rather than silently misplacing) when one is.
+
+    The probe is a **bind of the whole call**, not a name lookup: ``projects_dir``
+    declared positional-only, or as ``*projects_dir``, is a name in ``parameters``
+    that cannot be passed as a keyword, and a membership test reads all three alike.
+    ``bind_partial`` is not enough either — it tolerates a positional-only parameter
+    passed by keyword, which the real call does not. So the probe binds exactly the
+    argument list :func:`create_genre_project` is about to pass; the values are
+    irrelevant, only whether they go anywhere.
+
+    ``**kwargs`` binds, so it counts as accepting: it is the only honest reading of
+    the signature. It is also why acceptance is not the guarantee — the *outcome*
+    check in :func:`create_genre_project` is, and it catches a factory that takes the
+    argument and ignores it however the signature is spelled.
+    """
+    try:
+        sig = inspect.signature(factory)
+    except (TypeError, ValueError):  # a C callable with no introspectable signature
+        return False
+    try:
+        sig.bind(
+            None,  # caller
+            None,  # project_id
+            title=None,
+            template=None,
+            params={},
+            **{PLACEMENT_ARG: None},
+        )
+    except TypeError:
+        return False
+    return True
+
+
+def can_place_genre_project(slug: str) -> bool:
+    """True iff ``slug``'s registered factory accepts host **placement**.
+
+    The question a host asks *before* offering "create a project of this genre here":
+    a genre whose factory predates :data:`PLACEMENT_ARG` can still be created, but
+    only in its own app's workspace — where the host cannot address it. False for an
+    unregistered genre.
+
+    >>> def _old(caller, project_id, *, title, template, params):
+    ...     return {"project": None}
+    >>> def _new(caller, project_id, *, title, template, params, projects_dir=None):
+    ...     return {"project": None}
+    >>> _ = register_genre_project_factory("_place_old", _old)
+    >>> _ = register_genre_project_factory("_place_new", _new)
+    >>> can_place_genre_project("_place_old"), can_place_genre_project("_place_new")
+    (False, True)
+    >>> can_place_genre_project("_place_nope")
+    False
+    >>> del genre_project_factories["_place_old"]
+    >>> del genre_project_factories["_place_new"]
+    """
+    if slug not in genre_project_factories:
+        return False
+    return _accepts_placement(genre_project_factories[slug])
+
+
+def _project_root(project) -> Optional[Path]:
+    """``project.root`` as a :class:`Path`, or ``None`` when there isn't one.
+
+    Tolerates a missing attribute, ``None``, a ``str``, and a property that raises —
+    the last because this is called from rollback paths, where an exception would
+    replace the real error with a confusing one from inside the cleanup.
+    """
+    try:
+        root = getattr(project, "root", None)
+    except Exception:
+        return None
+    if root is None:
+        return None
+    try:
+        return Path(root)
+    except TypeError:
+        return None
+
+
+def _verify_placement(project, projects_dir: Path, *, genre: str, project_id: str):
+    """Assert the just-created ``project`` IS ``projects_dir/<project_id>``.
+
+    The mechanism that makes placement a contract rather than a hint. A factory may
+    declare the keyword and ignore it (or absorb it into ``**kwargs``), and the
+    resulting project is *fine on disk* — it is just somewhere the host cannot see,
+    which is indistinguishable from "the create silently did nothing" on every host
+    surface. So the outcome is checked, not the intention.
+
+    **The whole path, not a suffix of it.** The realistic misplacement is not an
+    exotic one: it is the same tail under a different data root
+    (``{braidio_home}/projects/{email}/`` against ``{reelee_home}/projects/{email}/``),
+    which is exactly what a comparison on the last component alone would wave through.
+
+    **The basename too**, because the host does not get the created root back — the
+    result is JSON-able and deliberately drops the live project — so it addresses the
+    new project as ``projects_dir/<project_id>``. Verifying only the parent would
+    leave the half the host actually relies on unchecked; a factory that slugifies or
+    prefixes the id produces a project nothing can then open by name.
+
+    **An unverifiable outcome is a failure, not a pass.** A factory that accepts the
+    placement and returns no live project (or one with no ``root``) leaves nw unable
+    to say where the project went, and the direction that silence resolves to must
+    not be "success" — that is precisely the two-worlds report this exists to
+    prevent. A factory that predates the argument is never asked, so nothing that
+    worked before is affected.
+
+    ``.resolve()`` on both sides is load-bearing, not tidiness: ``nw.Project.__init__``
+    resolves its root, so a factory built on it returns a *resolved* path while a
+    host's ``projects_dir`` is typically not resolved — under a symlinked data root a
+    non-resolving comparison refuses a correctly-placed project.
+    """
+    want = Path(projects_dir).resolve()
+    got = _project_root(project)
+    if got is None:
+        raise RuntimeError(
+            f"genre {genre!r}'s project factory accepted {PLACEMENT_ARG!r} but "
+            "returned no created project, so nw cannot verify where the project "
+            f"went. A factory that accepts a placement must return "
+            '``{"project": <the created project>, ...}``.'
+        )
+    got = got.resolve()
+    if got != want / project_id:
+        raise RuntimeError(
+            f"genre {genre!r}'s project factory did not honour projects_dir: asked "
+            f"for {want / project_id}, got {got}. A factory that declares "
+            f"{PLACEMENT_ARG!r} must create at {PLACEMENT_ARG}/<project_id> — the "
+            "host addresses the new project by exactly that path, and a project "
+            "anywhere else is unreachable by whoever asked for it."
+        )
+
+
 def create_genre_project(
     genre: str,
     caller: str,
@@ -652,6 +823,7 @@ def create_genre_project(
     *,
     title: Optional[str] = None,
     template: Optional[str] = None,
+    projects_dir: Optional[Union[str, Path]] = None,
 ) -> dict:
     """Create + seed a new project for a PLUGGED-IN ``genre`` in ``caller``'s space.
 
@@ -666,8 +838,18 @@ def create_genre_project(
     association survives this call returning; read it back via
     :meth:`nw.Project.resolved_genre`.
 
+    ``projects_dir`` is the **placement**: the directory to create the project folder
+    in, so a host that will *serve* the project can put it where its own resolver
+    looks. ``None`` (the default) leaves placement to the genre's app, which is the
+    pre-placement behaviour. Ask :func:`can_place_genre_project` first, or handle the
+    ``TypeError`` a pre-placement factory raises here — the request is refused **before
+    any filesystem effect**, never quietly satisfied somewhere else.
+
     Raises :class:`KeyError` on an unknown genre/template, or a genre with no registered
-    factory (a host's own genre is created by the host, not via this path).
+    factory (a host's own genre is created by the host, not via this path);
+    :class:`TypeError` when ``projects_dir`` is given for a factory that does not accept
+    it; :class:`RuntimeError` (after rolling the create back) when a factory accepted a
+    placement and did not honour it.
     """
     if genre not in genre_project_factories:
         known = sorted(genre_project_factories.keys())
@@ -675,16 +857,51 @@ def create_genre_project(
             f"genre {genre!r} has no project factory (registered: {known}); a host's "
             "own genres are created by the host, not via create_genre_project."
         )
+    factory = genre_project_factories[genre]
+    extra: dict = {}
+    placement: Optional[Path] = None
+    if projects_dir is not None:
+        placement = Path(projects_dir)
+        if not str(projects_dir).strip():
+            # "" is not "no opinion": `Path("")` is the process's CWD, so accepting a
+            # blank would create real user projects wherever the server happens to be
+            # running — typically the deploy tree. An empty placement is a caller bug
+            # (a tool schema defaulting to ""), and a loud one beats a silent one.
+            raise ValueError(
+                f"{PLACEMENT_ARG} is empty; pass a directory, or None for the "
+                "genre's own workspace."
+            )
+        # Refuse BEFORE resolving or creating anything. Ignoring the placement would
+        # succeed, report success, and leave the project where the asking host cannot
+        # see it — the failure this argument exists to remove.
+        if not _accepts_placement(factory):
+            raise TypeError(
+                f"genre {genre!r}'s project factory does not accept "
+                f"{PLACEMENT_ARG!r}, so it cannot create a project at "
+                f"{projects_dir}; it places projects in its own app's workspace. "
+                "Ask can_place_genre_project() first, or update that factory to "
+                f"accept {PLACEMENT_ARG}."
+            )
+        extra[PLACEMENT_ARG] = placement
     envelope = resolve_genre(genre, template)  # validates genre + template
     params = envelope["params"]
-    info = genre_project_factories[genre](
-        caller, project_id, title=title or project_id, template=template, params=params
+    info = factory(
+        caller,
+        project_id,
+        title=title or project_id,
+        template=template,
+        params=params,
+        **extra,
     )
     project = info.get("project") if isinstance(info, dict) else None
     try:
+        if placement is not None:
+            _verify_placement(project, placement, genre=genre, project_id=project_id)
         initialize_genre(genre, project, template=template, params=params)
     except Exception:
-        _rollback_project(project)  # all-or-nothing: leave no half-built orphan
+        # all-or-nothing: leave no half-built orphan — but see _rollback_project on
+        # why a placement BOUNDS what may be deleted rather than widening it.
+        _rollback_project(project, within=placement)
         raise
     result = (
         {k: v for k, v in info.items() if k != "project"}
@@ -697,17 +914,40 @@ def create_genre_project(
     return result
 
 
-def _rollback_project(project) -> None:
-    """Best-effort delete of a just-created project after a failed seed (all-or-nothing).
+def _rollback_project(project, *, within: Optional[Path] = None) -> None:
+    """Best-effort delete of a just-created project after a failure (all-or-nothing).
 
-    Removes ``project.root`` if present — the factory creates in the caller's own space,
-    so this only reverts what was just made.
+    Removes ``project.root`` if present. Without a placement that is as safe as it
+    was before placement existed: the factory created in its own app's space, and
+    ``project.root`` is what it just made there.
+
+    ``within`` is the load-bearing part. A placement adds a second, much easier
+    trigger for this function — :func:`_verify_placement` — and that trigger fires
+    *precisely when nw has concluded it does not know what the factory did*.
+    Recursively deleting a path nw does not understand, inside the **host's** tree
+    rather than the guest app's, is not a rollback: a factory that places correctly
+    on disk and returns the wrong ``root`` (its parent, say, or ``Path.home()``)
+    would have the host's whole per-caller projects directory removed, reported as a
+    clean all-or-nothing abort.
+
+    So when a placement was asked for, nothing outside it is touched: only a strict
+    descendant of ``within`` is deleted, which is both what nw asked the factory to
+    create and the only thing it can know was not already there. Anything else is
+    left on disk, and the error the caller sees names where it is.
     """
-    root = getattr(project, "root", None)
-    if root is not None:
-        import shutil
+    root = _project_root(project)
+    if root is None:
+        return
+    if within is not None:
+        try:
+            resolved, bound = root.resolve(), Path(within).resolve()
+        except OSError:
+            return
+        if bound not in resolved.parents:
+            return  # outside the placement — not ours to delete
+    import shutil
 
-        shutil.rmtree(root, ignore_errors=True)
+    shutil.rmtree(root, ignore_errors=True)
 
 
 __all__ = [
@@ -734,5 +974,7 @@ __all__ = [
     "genre_project_factories",
     "register_genre_project_factory",
     "has_genre_project_factory",
+    "can_place_genre_project",
     "create_genre_project",
+    "PLACEMENT_ARG",
 ]
