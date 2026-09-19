@@ -1,4 +1,4 @@
-> built 2026-09-17 15:55 UTC from c3bd5fe (main) · nw 0.0.54. Details: build_info.json
+> built 2026-09-19 22:46 UTC from 5ea2d5b (main) · nw 0.0.55. Details: build_info.json
 
 # index.html.md
 
@@ -97,11 +97,31 @@ nw.initialize_genre("music-video", proj, template="cinematic_clip")
 # 3. create — for a *plugged-in* genre a host aggregates but doesn't own:
 #    the owning app supplies "make a project for this in the caller's own space"
 nw.create_genre_project("commentary-weave", caller_id, "ep_01")
+
+# ...and when the host will SERVE the project, it says where it goes:
+nw.create_genre_project(
+    "commentary-weave", caller_id, "ep_01", projects_dir=my_projects_dir
+)
 ```
 
 An initializer must confine its side effects to the project it is given, so a
 failed create can be reverted by removing the project folder —
 `create_genre_project` rolls back automatically and is all-or-nothing.
+
+**A genre project factory places a project where its caller asks; it does not own
+the location.** `projects_dir` is the directory the project folder is created *in*
+(the new project’s root is `projects_dir/<project_id>`), so a host that has to
+*serve* a guest genre’s project can put it where its own resolver and lister look —
+without which the project is a sibling of nothing the host can address. `None` (the
+default) leaves placement to the genre’s app, so every pre-existing caller is
+unchanged. Ask `nw.can_place_genre_project(slug)` first: a factory written before
+this argument existed is **refused** rather than quietly satisfied somewhere else.
+One that accepts the argument and ignores it is caught by an *outcome* check on the
+created root — acceptance is not the guarantee, the outcome is — and an outcome nw
+cannot verify (a factory that accepts a placement and returns no project) is a
+failure rather than a pass. The rollback that follows is **bounded by the
+placement**: nothing outside it is deleted, because that branch is precisely the one
+where nw has concluded it does not know what the factory did.
 
 The naming rationale (Genre / Template over `kind` / `format` / `recipe` / …) is
 in [thorwhalen/nw#10](https://github.com/thorwhalen/nw/issues/10) and the
@@ -509,7 +529,9 @@ nw.apply_to_projects(roots, lambda p: nw.compose_report(p), parallel=True)
     nw.genre_project_factories,
     nw.register_genre_project_factory,
     nw.has_genre_project_factory,
+    nw.can_place_genre_project,
     nw.create_genre_project,
+    nw.PLACEMENT_ARG,
 )
 
 # Transforms — the A -> B arrow
@@ -2904,6 +2926,7 @@ are recorded as linked artifacts), see
 | [`initialize_genre`](_autosummary/nw.html.md#nw.initialize_genre)(genre, project, \*[, ...])        | Seed a freshly-created `project` for `genre` (+ optional `template`).                                                                |
 | [`register_genre_project_factory`](_autosummary/nw.html.md#nw.register_genre_project_factory)(slug, factory)      | Register a project factory for a genre slug; returns it for inline use.                                                              |
 | [`has_genre_project_factory`](_autosummary/nw.html.md#nw.has_genre_project_factory)(slug)                    | True iff a plugged-in project factory is registered for `slug`.                                                                      |
+| [`can_place_genre_project`](_autosummary/nw.html.md#nw.can_place_genre_project)(slug)                      | True iff `slug`'s registered factory accepts host **placement**.                                                                     |
 | [`create_genre_project`](_autosummary/nw.html.md#nw.create_genre_project)(genre, caller, ...[, ...])    | Create + seed a new project for a PLUGGED-IN `genre` in `caller`'s space.                                                            |
 | [`annotations_at_tier`](_autosummary/nw.html.md#nw.annotations_at_tier)(project_root, tier)            | Return every annotation at the given tier across all of the project's stores.                                                        |
 | [`apply_to_projects`](_autosummary/nw.html.md#nw.apply_to_projects)(roots, fn, \*[, parallel])       | Apply `fn` to each project at `roots` and collect the results.                                                                       |
@@ -4745,6 +4768,33 @@ silently averaged away.
 * **Return type:**
   [`dict`](https://docs.python.org/3/builtins/stdtypes.html#dict)
 
+### nw.can_place_genre_project(slug)
+
+True iff `slug`’s registered factory accepts host **placement**.
+
+The question a host asks *before* offering “create a project of this genre here”:
+a genre whose factory predates `PLACEMENT_ARG` can still be created, but
+only in its own app’s workspace — where the host cannot address it. False for an
+unregistered genre.
+
+* **Return type:**
+  [`bool`](https://docs.python.org/3/builtins/functions.html#bool)
+
+```pycon
+>>> def _old(caller, project_id, *, title, template, params):
+...     return {"project": None}
+>>> def _new(caller, project_id, *, title, template, params, projects_dir=None):
+...     return {"project": None}
+>>> _ = register_genre_project_factory("_place_old", _old)
+>>> _ = register_genre_project_factory("_place_new", _new)
+>>> can_place_genre_project("_place_old"), can_place_genre_project("_place_new")
+(False, True)
+>>> can_place_genre_project("_place_nope")
+False
+>>> del genre_project_factories["_place_old"]
+>>> del genre_project_factories["_place_new"]
+```
+
 ### nw.clone_project(src_root, dst_root, , preserve=('song', 'lyrics', 'characters'), reset=('script', 'shots', 'output', '.nw'), title=None, force=False)
 
 Clone an nw project to a new root.
@@ -4819,7 +4869,7 @@ wrote before nw#74.
 ['application', 'cache_status', 'estimated_cost_usd', 'tool']
 ```
 
-### nw.create_genre_project(genre, caller, project_id, , title=None, template=None)
+### nw.create_genre_project(genre, caller, project_id, , title=None, template=None, projects_dir=None)
 
 Create + seed a new project for a PLUGGED-IN `genre` in `caller`’s space.
 
@@ -4834,8 +4884,18 @@ all-or-nothing guarantee, since a failure there rolls the whole create back — 
 association survives this call returning; read it back via
 [`nw.Project.resolved_genre()`](_autosummary/nw.html.md#nw.Project.resolved_genre).
 
+`projects_dir` is the **placement**: the directory to create the project folder
+in, so a host that will *serve* the project can put it where its own resolver
+looks. `None` (the default) leaves placement to the genre’s app, which is the
+pre-placement behaviour. Ask [`can_place_genre_project()`](_autosummary/nw.html.md#nw.can_place_genre_project) first, or handle the
+`TypeError` a pre-placement factory raises here — the request is refused \*\*before
+any filesystem effect\*\*, never quietly satisfied somewhere else.
+
 Raises [`KeyError`](https://docs.python.org/3/builtins/exceptions.html#KeyError) on an unknown genre/template, or a genre with no registered
-factory (a host’s own genre is created by the host, not via this path).
+factory (a host’s own genre is created by the host, not via this path);
+[`TypeError`](https://docs.python.org/3/builtins/exceptions.html#TypeError) when `projects_dir` is given for a factory that does not accept
+it; [`RuntimeError`](https://docs.python.org/3/builtins/exceptions.html#RuntimeError) (after rolling the create back) when a factory accepted a
+placement and did not honour it.
 
 * **Return type:**
   [`dict`](https://docs.python.org/3/builtins/stdtypes.html#dict)
@@ -8710,7 +8770,7 @@ produce different URLs. The local file paths are byte-stable.
 
 # About this build
 
-This documentation was built on **2026-09-17 15:55 UTC** from commit <a href="https://github.com/thorwhalen/nw/commit/c3bd5fe0a2b957ab8ede7544b98f8e89aa790e67"><code>c3bd5fe</code></a> on branch <code>main</code>, for **nw 0.0.54** (from <code>pyproject.toml</code>).
+This documentation was built on **2026-09-19 22:46 UTC** from commit <a href="https://github.com/thorwhalen/nw/commit/5ea2d5baf3634a2a9854d85acf80c662391ab991"><code>5ea2d5b</code></a> on branch <code>main</code>, for **nw 0.0.55** (from <code>pyproject.toml</code>).
 
 #### NOTE
 Nothing suggests a mismatch: the tree was clean at the commit above, and the documented version is the one on PyPI.
@@ -8719,9 +8779,9 @@ Nothing suggests a mismatch: the tree was clean at the commit above, and the doc
 
 |                     |                                                                                                                                                      |
 |---------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Commit              | <a href="https://github.com/thorwhalen/nw/commit/c3bd5fe0a2b957ab8ede7544b98f8e89aa790e67"><code>c3bd5fe0a2b957ab8ede7544b98f8e89aa790e67</code></a> |
+| Commit              | <a href="https://github.com/thorwhalen/nw/commit/5ea2d5baf3634a2a9854d85acf80c662391ab991"><code>5ea2d5baf3634a2a9854d85acf80c662391ab991</code></a> |
 | Branch              | <code>main</code>                                                                                                                                    |
-| Tags at this commit | <code>0.0.54</code>                                                                                                                                  |
+| Tags at this commit | <code>0.0.55</code>                                                                                                                                  |
 | Working tree        | clean                                                                                                                                                |
 | Remote              | <code>https://github.com/thorwhalen/nw</code>                                                                                                        |
 
@@ -8730,9 +8790,9 @@ Nothing suggests a mismatch: the tree was clean at the commit above, and the doc
 |              |                                                                                            |
 |--------------|--------------------------------------------------------------------------------------------|
 | Repository   | <code>thorwhalen/nw</code>                                                                 |
-| Run          | <a href="https://github.com/thorwhalen/nw/actions/runs/35243055110">35243055110</a>        |
+| Run          | <a href="https://github.com/thorwhalen/nw/actions/runs/35474152771">35474152771</a>        |
 | Ref          | <code>refs/heads/main</code>                                                               |
-| Event commit | <code>180996ed2a3f9492a0affddfe945f617934b7490</code> (in the history of the built commit) |
+| Event commit | <code>cf5e67ef97e4cee248f9e37b5f272c76c4d738f2</code> (in the history of the built commit) |
 
 ## Tools
 
@@ -8757,13 +8817,13 @@ Nothing suggests a mismatch: the tree was clean at the commit above, and the doc
 
 ## Package on PyPI
 
-Latest release: <a href="https://pypi.org/project/nw/0.0.54/">0.0.54</a>, the same as the documented version.
+Latest release: <a href="https://pypi.org/project/nw/0.0.55/">0.0.55</a>, the same as the documented version.
 
 ## Reproduce
 
 ```bash
 git clone https://github.com/thorwhalen/nw && cd nw
-git checkout c3bd5fe0a2b957ab8ede7544b98f8e89aa790e67
+git checkout 5ea2d5baf3634a2a9854d85acf80c662391ab991
 pip install "epythet==0.2.12"
 epythet quickstart . --ignore tests/ scrap/ examples/
 ```

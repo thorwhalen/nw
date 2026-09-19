@@ -20,6 +20,7 @@
       initialize_genre
       register_genre_project_factory
       has_genre_project_factory
+      can_place_genre_project
       create_genre_project
       annotations_at_tier
       apply_to_projects

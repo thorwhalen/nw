@@ -44,7 +44,7 @@
 - [nw.validation](_autosummary/nw.validation.html.md): Pluggable validation of finished work — the seam, not the checks.
 - [nw.workflow](_autosummary/nw.workflow.html.md): Workflow: prepare → plan → execute, for a **video shot**.
 - [For AI agents](ai-agents.html.md): `nw` ships artifacts for coding agents alongside its code. This page lists
-- [About this build](about-this-build.html.md): This documentation was built on **2026-09-17 15:55 UTC** from commit <a href="https://github.com/tho...
+- [About this build](about-this-build.html.md): This documentation was built on **2026-09-19 22:46 UTC** from commit <a href="https://github.com/tho...
 
 ---
 

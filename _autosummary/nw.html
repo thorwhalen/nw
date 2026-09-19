@@ -368,6 +368,7 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#nw.apply_to_projects"><code class="docutils literal notranslate"><span class="pre">apply_to_projects()</span></code></a></li>
 <li><a class="reference internal" href="#nw.as_secrets"><code class="docutils literal notranslate"><span class="pre">as_secrets()</span></code></a></li>
 <li><a class="reference internal" href="#nw.backfill_traces"><code class="docutils literal notranslate"><span class="pre">backfill_traces()</span></code></a></li>
+<li><a class="reference internal" href="#nw.can_place_genre_project"><code class="docutils literal notranslate"><span class="pre">can_place_genre_project()</span></code></a></li>
 <li><a class="reference internal" href="#nw.clone_project"><code class="docutils literal notranslate"><span class="pre">clone_project()</span></code></a></li>
 <li><a class="reference internal" href="#nw.collect_orphan_traces"><code class="docutils literal notranslate"><span class="pre">collect_orphan_traces()</span></code></a></li>
 <li><a class="reference internal" href="#nw.compose_report"><code class="docutils literal notranslate"><span class="pre">compose_report()</span></code></a></li>
@@ -531,178 +532,181 @@ are recorded as linked artifacts), see
 <tr class="row-even"><td><p><a class="reference internal" href="#nw.has_genre_project_factory" title="nw.has_genre_project_factory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">has_genre_project_factory</span></code></a>(slug)</p></td>
 <td><p>True iff a plugged-in project factory is registered for <code class="docutils literal notranslate"><span class="pre">slug</span></code>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nw.create_genre_project" title="nw.create_genre_project"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_genre_project</span></code></a>(genre, caller, ...[, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.can_place_genre_project" title="nw.can_place_genre_project"><code class="xref py py-obj docutils literal notranslate"><span class="pre">can_place_genre_project</span></code></a>(slug)</p></td>
+<td><p>True iff <code class="docutils literal notranslate"><span class="pre">slug</span></code>'s registered factory accepts host <strong>placement</strong>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.create_genre_project" title="nw.create_genre_project"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_genre_project</span></code></a>(genre, caller, ...[, ...])</p></td>
 <td><p>Create + seed a new project for a PLUGGED-IN <code class="docutils literal notranslate"><span class="pre">genre</span></code> in <code class="docutils literal notranslate"><span class="pre">caller</span></code>'s space.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nw.annotations_at_tier" title="nw.annotations_at_tier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">annotations_at_tier</span></code></a>(project_root, tier)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.annotations_at_tier" title="nw.annotations_at_tier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">annotations_at_tier</span></code></a>(project_root, tier)</p></td>
 <td><p>Return every annotation at the given tier across all of the project's stores.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nw.apply_to_projects" title="nw.apply_to_projects"><code class="xref py py-obj docutils literal notranslate"><span class="pre">apply_to_projects</span></code></a>(roots, fn, *[, parallel])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.apply_to_projects" title="nw.apply_to_projects"><code class="xref py py-obj docutils literal notranslate"><span class="pre">apply_to_projects</span></code></a>(roots, fn, *[, parallel])</p></td>
 <td><p>Apply <code class="docutils literal notranslate"><span class="pre">fn</span></code> to each project at <code class="docutils literal notranslate"><span class="pre">roots</span></code> and collect the results.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nw.clone_project" title="nw.clone_project"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clone_project</span></code></a>(src_root, dst_root, *[, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.clone_project" title="nw.clone_project"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clone_project</span></code></a>(src_root, dst_root, *[, ...])</p></td>
 <td><p>Clone an nw project to a new root.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nw.backfill_traces" title="nw.backfill_traces"><code class="xref py py-obj docutils literal notranslate"><span class="pre">backfill_traces</span></code></a>(project_root, *[, execute])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.backfill_traces" title="nw.backfill_traces"><code class="xref py py-obj docutils literal notranslate"><span class="pre">backfill_traces</span></code></a>(project_root, *[, execute])</p></td>
 <td><p>Bless a pre-trace project so the verifying-trace rule can read it (nw#58).</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nw.collect_orphan_traces" title="nw.collect_orphan_traces"><code class="xref py py-obj docutils literal notranslate"><span class="pre">collect_orphan_traces</span></code></a>(project_root)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.collect_orphan_traces" title="nw.collect_orphan_traces"><code class="xref py py-obj docutils literal notranslate"><span class="pre">collect_orphan_traces</span></code></a>(project_root)</p></td>
 <td><p>Drop verifying traces whose target annotation no longer exists.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nw.compose_report" title="nw.compose_report"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compose_report</span></code></a>(project, *[, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.compose_report" title="nw.compose_report"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compose_report</span></code></a>(project, *[, ...])</p></td>
 <td><p>Per-shot reports + final-compose inspection in one call.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nw.derived_from" title="nw.derived_from"><code class="xref py py-obj docutils literal notranslate"><span class="pre">derived_from</span></code></a>(project_root, annotation_id)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.derived_from" title="nw.derived_from"><code class="xref py py-obj docutils literal notranslate"><span class="pre">derived_from</span></code></a>(project_root, annotation_id)</p></td>
 <td><p>Return the annotations this one was directly derived from.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nw.descendants_of" title="nw.descendants_of"><code class="xref py py-obj docutils literal notranslate"><span class="pre">descendants_of</span></code></a>(project_root, ancestor_id)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.descendants_of" title="nw.descendants_of"><code class="xref py py-obj docutils literal notranslate"><span class="pre">descendants_of</span></code></a>(project_root, ancestor_id)</p></td>
 <td><p>Return every annotation whose provenance chain leads back to <code class="docutils literal notranslate"><span class="pre">ancestor_id</span></code>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nw.execute_render" title="nw.execute_render"><code class="xref py py-obj docutils literal notranslate"><span class="pre">execute_render</span></code></a>(prep, plan, *[, on_event, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.execute_render" title="nw.execute_render"><code class="xref py py-obj docutils literal notranslate"><span class="pre">execute_render</span></code></a>(prep, plan, *[, on_event, ...])</p></td>
 <td><p>Execute a Plan, materialize the result as <code class="docutils literal notranslate"><span class="pre">shot_dir/output.mp4</span></code>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nw.execute_render_panel_images" title="nw.execute_render_panel_images"><code class="xref py py-obj docutils literal notranslate"><span class="pre">execute_render_panel_images</span></code></a>(project, ...[, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.execute_render_panel_images" title="nw.execute_render_panel_images"><code class="xref py py-obj docutils literal notranslate"><span class="pre">execute_render_panel_images</span></code></a>(project, ...[, ...])</p></td>
 <td><p>Execute <code class="docutils literal notranslate"><span class="pre">plan</span></code>, download each artifact, attach a PanelImage.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nw.get_genre" title="nw.get_genre"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_genre</span></code></a>(slug)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.get_genre" title="nw.get_genre"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_genre</span></code></a>(slug)</p></td>
 <td><p>Look up a genre by slug; raises <a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#KeyError" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">KeyError</span></code></a> with the known slugs.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nw.get_strategy" title="nw.get_strategy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_strategy</span></code></a>(name)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.get_strategy" title="nw.get_strategy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_strategy</span></code></a>(name)</p></td>
 <td><p>Look up a strategy by name; raises if unknown.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nw.get_transform" title="nw.get_transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_transform</span></code></a>(name)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.get_transform" title="nw.get_transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_transform</span></code></a>(name)</p></td>
 <td><p>Look up a Transform instance by name; raises with the known names.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nw.is_migrated" title="nw.is_migrated"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_migrated</span></code></a>(project_root)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.is_migrated" title="nw.is_migrated"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_migrated</span></code></a>(project_root)</p></td>
 <td><p>True iff this project has been migrated to the lacing graph.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nw.iter_all_annotations" title="nw.iter_all_annotations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">iter_all_annotations</span></code></a>(project_root)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.iter_all_annotations" title="nw.iter_all_annotations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">iter_all_annotations</span></code></a>(project_root)</p></td>
 <td><p>Walk every annotation in every store under a project (any backend).</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nw.list_genres" title="nw.list_genres"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list_genres</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.list_genres" title="nw.list_genres"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list_genres</span></code></a>()</p></td>
 <td><p>Return all registered genre slugs (sorted).</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nw.list_strategies" title="nw.list_strategies"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list_strategies</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.list_strategies" title="nw.list_strategies"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list_strategies</span></code></a>()</p></td>
 <td><p>Return all registered strategy names (sorted).</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nw.list_transforms" title="nw.list_transforms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list_transforms</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.list_transforms" title="nw.list_transforms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list_transforms</span></code></a>()</p></td>
 <td><p>Return all registered Transform names (sorted).</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nw.migrate_to_graph" title="nw.migrate_to_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">migrate_to_graph</span></code></a>(project_root, *[, backup, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.migrate_to_graph" title="nw.migrate_to_graph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">migrate_to_graph</span></code></a>(project_root, *[, backup, ...])</p></td>
 <td><p>Migrate <code class="docutils literal notranslate"><span class="pre">project_root</span></code>'s project.json into the lacing graph.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nw.open_project_stores" title="nw.open_project_stores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">open_project_stores</span></code></a>(project_root)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.open_project_stores" title="nw.open_project_stores"><code class="xref py py-obj docutils literal notranslate"><span class="pre">open_project_stores</span></code></a>(project_root)</p></td>
 <td><p>Yield an iterator of open stores, one per scope, honouring the backend.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nw.open_storyboard" title="nw.open_storyboard"><code class="xref py py-obj docutils literal notranslate"><span class="pre">open_storyboard</span></code></a>(project)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.open_storyboard" title="nw.open_storyboard"><code class="xref py py-obj docutils literal notranslate"><span class="pre">open_storyboard</span></code></a>(project)</p></td>
 <td><p>Load the project's storyboard.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nw.plan_render_panel_images" title="nw.plan_render_panel_images"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plan_render_panel_images</span></code></a>(storyboard, *[, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.plan_render_panel_images" title="nw.plan_render_panel_images"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plan_render_panel_images</span></code></a>(storyboard, *[, ...])</p></td>
 <td><p>Build a Plan that generates a seed image for each panel that lacks one.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nw.plan_render_shot" title="nw.plan_render_shot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plan_render_shot</span></code></a>(prep, *[, quality, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.plan_render_shot" title="nw.plan_render_shot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plan_render_shot</span></code></a>(prep, *[, quality, ...])</p></td>
 <td><p>Build a <code class="xref py py-class docutils literal notranslate"><span class="pre">falaw.Plan</span></code> for rendering a prepared shot.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nw.cost_records" title="nw.cost_records"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cost_records</span></code></a>(plan)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.cost_records" title="nw.cost_records"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cost_records</span></code></a>(plan)</p></td>
 <td><p>The JSON-able per-call cost rows nw persists in a decision payload.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nw.current_quote" title="nw.current_quote"><code class="xref py py-obj docutils literal notranslate"><span class="pre">current_quote</span></code></a>(plan, *[, pricers])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.current_quote" title="nw.current_quote"><code class="xref py py-obj docutils literal notranslate"><span class="pre">current_quote</span></code></a>(plan, *[, pricers])</p></td>
 <td><p>Re-quote <code class="docutils literal notranslate"><span class="pre">plan</span></code> at today's rates and report the result honestly.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nw.plan_from_cost_records" title="nw.plan_from_cost_records"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plan_from_cost_records</span></code></a>(records)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.plan_from_cost_records" title="nw.plan_from_cost_records"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plan_from_cost_records</span></code></a>(records)</p></td>
 <td><p>Rebuild a re-quotable <code class="xref py py-class docutils literal notranslate"><span class="pre">falaw.Plan</span></code> from <a class="reference internal" href="#nw.cost_records" title="nw.cost_records"><code class="xref py py-func docutils literal notranslate"><span class="pre">cost_records()</span></code></a> rows.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nw.quote_from_cost_records" title="nw.quote_from_cost_records"><code class="xref py py-obj docutils literal notranslate"><span class="pre">quote_from_cost_records</span></code></a>(records, *[, pricers])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.quote_from_cost_records" title="nw.quote_from_cost_records"><code class="xref py py-obj docutils literal notranslate"><span class="pre">quote_from_cost_records</span></code></a>(records, *[, pricers])</p></td>
 <td><p>Today's price for the calls stored in a decision payload.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nw.quote_render_decision" title="nw.quote_render_decision"><code class="xref py py-obj docutils literal notranslate"><span class="pre">quote_render_decision</span></code></a>(payload, *[, pricers])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.quote_render_decision" title="nw.quote_render_decision"><code class="xref py py-obj docutils literal notranslate"><span class="pre">quote_render_decision</span></code></a>(payload, *[, pricers])</p></td>
 <td><p>Today's price for a <code class="docutils literal notranslate"><span class="pre">render_shot</span></code> decision payload.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nw.unquotable" title="nw.unquotable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unquotable</span></code></a>(reason)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.unquotable" title="nw.unquotable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unquotable</span></code></a>(reason)</p></td>
 <td><p>A quote for something that could not be re-quoted at all.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nw.prepare_shot" title="nw.prepare_shot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_shot</span></code></a>(project, shot_id, *[, upload])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.prepare_shot" title="nw.prepare_shot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepare_shot</span></code></a>(project, shot_id, *[, upload])</p></td>
 <td><p>Resolve all local inputs for rendering a shot.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nw.project_asset_id" title="nw.project_asset_id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">project_asset_id</span></code></a>(project)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.project_asset_id" title="nw.project_asset_id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">project_asset_id</span></code></a>(project)</p></td>
 <td><p>The asset_id used for storyboard panel references.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nw.register_genre" title="nw.register_genre"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_genre</span></code></a>(genre)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.register_genre" title="nw.register_genre"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_genre</span></code></a>(genre)</p></td>
 <td><p>Register a <a class="reference internal" href="#nw.Genre" title="nw.Genre"><code class="xref py py-class docutils literal notranslate"><span class="pre">Genre</span></code></a> under its <code class="docutils literal notranslate"><span class="pre">slug</span></code>; returns it for inline use.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nw.register_strategy" title="nw.register_strategy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_strategy</span></code></a>(name, impl)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.register_strategy" title="nw.register_strategy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_strategy</span></code></a>(name, impl)</p></td>
 <td><p>Register a strategy.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nw.register_transform" title="nw.register_transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_transform</span></code></a>(name[, impl])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.register_transform" title="nw.register_transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_transform</span></code></a>(name[, impl])</p></td>
 <td><p>Register a Transform under <code class="docutils literal notranslate"><span class="pre">name</span></code>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nw.transform_catalog" title="nw.transform_catalog"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transform_catalog</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.transform_catalog" title="nw.transform_catalog"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transform_catalog</span></code></a>()</p></td>
 <td><p>Every registered Transform as a JSON-able capability entry (sorted by name).</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nw.stamp_transform_identity" title="nw.stamp_transform_identity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stamp_transform_identity</span></code></a>(plan, transform)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.stamp_transform_identity" title="nw.stamp_transform_identity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stamp_transform_identity</span></code></a>(plan, transform)</p></td>
 <td><p>Fold <code class="docutils literal notranslate"><span class="pre">transform.impl_version</span></code> into every call's cache identity.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nw.work_item_instance_id" title="nw.work_item_instance_id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">work_item_instance_id</span></code></a>(transform_name, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.work_item_instance_id" title="nw.work_item_instance_id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">work_item_instance_id</span></code></a>(transform_name, ...)</p></td>
 <td><p>The instance id of one fan-out unit: UUIDv5 of <code class="docutils literal notranslate"><span class="pre">(transform_name,</span> <span class="pre">mapping_key)</span></code>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nw.fan_out_plan" title="nw.fan_out_plan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fan_out_plan</span></code></a>(transform, project, items, *, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.fan_out_plan" title="nw.fan_out_plan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fan_out_plan</span></code></a>(transform, project, items, *, ...)</p></td>
 <td><p>Plan one Transform across <code class="docutils literal notranslate"><span class="pre">items</span></code> — each unit an ordinary <code class="docutils literal notranslate"><span class="pre">plan()</span></code> call.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nw.fan_out_execute" title="nw.fan_out_execute"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fan_out_execute</span></code></a>(transform, project, fan_out, *)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.fan_out_execute" title="nw.fan_out_execute"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fan_out_execute</span></code></a>(transform, project, fan_out, *)</p></td>
 <td><p>Execute a planned fan-out, one ordinary <code class="docutils literal notranslate"><span class="pre">transform.execute</span></code> per unit.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nw.as_secrets" title="nw.as_secrets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">as_secrets</span></code></a>(secrets)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.as_secrets" title="nw.as_secrets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">as_secrets</span></code></a>(secrets)</p></td>
 <td><p>Coerce a caller-supplied mapping to <a class="reference internal" href="#nw.Secrets" title="nw.Secrets"><code class="xref py py-class docutils literal notranslate"><span class="pre">Secrets</span></code></a>; empty → <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nw.redact" title="nw.redact"><code class="xref py py-obj docutils literal notranslate"><span class="pre">redact</span></code></a>(text, secrets)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.redact" title="nw.redact"><code class="xref py py-obj docutils literal notranslate"><span class="pre">redact</span></code></a>(text, secrets)</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">text</span></code> with every secret value replaced by <code class="docutils literal notranslate"><span class="pre">&lt;redacted:name&gt;</span></code>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nw.redact_exception" title="nw.redact_exception"><code class="xref py py-obj docutils literal notranslate"><span class="pre">redact_exception</span></code></a>(error, secrets)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.redact_exception" title="nw.redact_exception"><code class="xref py py-obj docutils literal notranslate"><span class="pre">redact_exception</span></code></a>(error, secrets)</p></td>
 <td><p>The exception to re-raise so that nothing it <em>renders</em> carries a secret.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nw.using_secrets" title="nw.using_secrets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">using_secrets</span></code></a>(secrets)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.using_secrets" title="nw.using_secrets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">using_secrets</span></code></a>(secrets)</p></td>
 <td><p>Bind the secrets nw itself knows how to use, for the duration of a block.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nw.save_storyboard" title="nw.save_storyboard"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_storyboard</span></code></a>(project, storyboard, *, ...)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.save_storyboard" title="nw.save_storyboard"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_storyboard</span></code></a>(project, storyboard, *, ...)</p></td>
 <td><p>Persist a Storyboard into the project's SqliteStore.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nw.shot_report" title="nw.shot_report"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shot_report</span></code></a>(project, shot_id, *[, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.shot_report" title="nw.shot_report"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shot_report</span></code></a>(project, shot_id, *[, ...])</p></td>
 <td><p>Inspect <code class="docutils literal notranslate"><span class="pre">shots/&lt;shot_id&gt;/output.mp4</span></code> and return a typed report.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nw.menu" title="nw.menu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">menu</span></code></a>(*[, cost])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.menu" title="nw.menu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">menu</span></code></a>(*[, cost])</p></td>
 <td><p>Every registered check, name-ordered — what a user chooses from.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nw.plan_checks" title="nw.plan_checks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plan_checks</span></code></a>(selection)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.plan_checks" title="nw.plan_checks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plan_checks</span></code></a>(selection)</p></td>
 <td><p>Order the selection into waves that may each run concurrently.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nw.register_check" title="nw.register_check"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_check</span></code></a>([check])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.register_check" title="nw.register_check"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_check</span></code></a>([check])</p></td>
 <td><p>Add a check to the menu, as a call or as a decorator.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nw.suggest" title="nw.suggest"><code class="xref py py-obj docutils literal notranslate"><span class="pre">suggest</span></code></a>(request, *[, include_paid])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.suggest" title="nw.suggest"><code class="xref py py-obj docutils literal notranslate"><span class="pre">suggest</span></code></a>(request, *[, include_paid])</p></td>
 <td><p>Checks whose <code class="docutils literal notranslate"><span class="pre">example_requests</span></code> look like what the user just asked for.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nw.validate" title="nw.validate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate</span></code></a>(target, *[, checks, max_workers, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.validate" title="nw.validate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate</span></code></a>(target, *[, checks, max_workers, ...])</p></td>
 <td><p>Run <code class="docutils literal notranslate"><span class="pre">checks</span></code> against <code class="docutils literal notranslate"><span class="pre">target</span></code> and report.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nw.all_stale" title="nw.all_stale"><code class="xref py py-obj docutils literal notranslate"><span class="pre">all_stale</span></code></a>(project_root)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.all_stale" title="nw.all_stale"><code class="xref py py-obj docutils literal notranslate"><span class="pre">all_stale</span></code></a>(project_root)</p></td>
 <td><p>Every annotation that is currently stale, regardless of cause.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nw.stale_after" title="nw.stale_after"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stale_after</span></code></a>(project_root, changed_id)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.stale_after" title="nw.stale_after"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stale_after</span></code></a>(project_root, changed_id)</p></td>
 <td><p>Return every annotation that <code class="docutils literal notranslate"><span class="pre">changed_id</span></code> actually invalidated.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nw.stale_verdicts" title="nw.stale_verdicts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stale_verdicts</span></code></a>(project_root, changed_id)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.stale_verdicts" title="nw.stale_verdicts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stale_verdicts</span></code></a>(project_root, changed_id)</p></td>
 <td><p>Classify every annotation downstream of <code class="docutils literal notranslate"><span class="pre">changed_id</span></code>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nw.stale_verdicts_all" title="nw.stale_verdicts_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stale_verdicts_all</span></code></a>(project_root)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.stale_verdicts_all" title="nw.stale_verdicts_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stale_verdicts_all</span></code></a>(project_root)</p></td>
 <td><p>Classify every derived annotation in the project — the snapshot form.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nw.storyboard_db_path" title="nw.storyboard_db_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">storyboard_db_path</span></code></a>(project)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.storyboard_db_path" title="nw.storyboard_db_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">storyboard_db_path</span></code></a>(project)</p></td>
 <td><p>Return the path to the project's storyboard SQLite store.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nw.storyboard_from_shots" title="nw.storyboard_from_shots"><code class="xref py py-obj docutils literal notranslate"><span class="pre">storyboard_from_shots</span></code></a>(project, *[, title, style])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.storyboard_from_shots" title="nw.storyboard_from_shots"><code class="xref py py-obj docutils literal notranslate"><span class="pre">storyboard_from_shots</span></code></a>(project, *[, title, style])</p></td>
 <td><p>Build a one-panel-per-shot draft Storyboard from a project's shots.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nw.summarize_all" title="nw.summarize_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">summarize_all</span></code></a>(roots)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.summarize_all" title="nw.summarize_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">summarize_all</span></code></a>(roots)</p></td>
 <td><p>Convenience: return a <a class="reference internal" href="#nw.ProjectSummary" title="nw.ProjectSummary"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProjectSummary</span></code></a> for each project.</p></td>
 </tr>
 </tbody>
@@ -2969,6 +2973,35 @@ silently averaged away.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="nw.can_place_genre_project">
+<span class="sig-prename descclassname"><span class="pre">nw.</span></span><span class="sig-name descname"><span class="pre">can_place_genre_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slug</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/genres.html#can_place_genre_project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.can_place_genre_project" title="Link to this definition">#</a></dt>
+<dd><p>True iff <code class="docutils literal notranslate"><span class="pre">slug</span></code>’s registered factory accepts host <strong>placement</strong>.</p>
+<p>The question a host asks <em>before</em> offering “create a project of this genre here”:
+a genre whose factory predates <code class="xref py py-data docutils literal notranslate"><span class="pre">PLACEMENT_ARG</span></code> can still be created, but
+only in its own app’s workspace — where the host cannot address it. False for an
+unregistered genre.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
+</dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="nf">_old</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+</span><span data-line="2"><span class="gp">... </span>    <span class="k">return</span> <span class="p">{</span><span class="s2">"project"</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+</span><span data-line="3"><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="nf">_new</span><span class="p">(</span><span class="n">caller</span><span class="p">,</span> <span class="n">project_id</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">projects_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+</span><span data-line="4"><span class="gp">... </span>    <span class="k">return</span> <span class="p">{</span><span class="s2">"project"</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+</span><span data-line="5"><span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">register_genre_project_factory</span><span class="p">(</span><span class="s2">"_place_old"</span><span class="p">,</span> <span class="n">_old</span><span class="p">)</span>
+</span><span data-line="6"><span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">register_genre_project_factory</span><span class="p">(</span><span class="s2">"_place_new"</span><span class="p">,</span> <span class="n">_new</span><span class="p">)</span>
+</span><span data-line="7"><span class="gp">&gt;&gt;&gt; </span><span class="n">can_place_genre_project</span><span class="p">(</span><span class="s2">"_place_old"</span><span class="p">),</span> <span class="n">can_place_genre_project</span><span class="p">(</span><span class="s2">"_place_new"</span><span class="p">)</span>
+</span><span data-line="8"><span class="go">(False, True)</span>
+</span><span data-line="9"><span class="gp">&gt;&gt;&gt; </span><span class="n">can_place_genre_project</span><span class="p">(</span><span class="s2">"_place_nope"</span><span class="p">)</span>
+</span><span data-line="10"><span class="go">False</span>
+</span><span data-line="11"><span class="gp">&gt;&gt;&gt; </span><span class="k">del</span> <span class="n">genre_project_factories</span><span class="p">[</span><span class="s2">"_place_old"</span><span class="p">]</span>
+</span><span data-line="12"><span class="gp">&gt;&gt;&gt; </span><span class="k">del</span> <span class="n">genre_project_factories</span><span class="p">[</span><span class="s2">"_place_new"</span><span class="p">]</span>
+</span></pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="nw.clone_project">
 <span class="sig-prename descclassname"><span class="pre">nw.</span></span><span class="sig-name descname"><span class="pre">clone_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src_root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dst_root</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">preserve</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('song',</span> <span class="pre">'lyrics',</span> <span class="pre">'characters')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('script',</span> <span class="pre">'shots',</span> <span class="pre">'output',</span> <span class="pre">'.nw')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/experiment.html#clone_project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.clone_project" title="Link to this definition">#</a></dt>
 <dd><p>Clone an nw project to a new root.</p>
@@ -3060,7 +3093,7 @@ wrote before nw#74.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="nw.create_genre_project">
-<span class="sig-prename descclassname"><span class="pre">nw.</span></span><span class="sig-name descname"><span class="pre">create_genre_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">genre</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">caller</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/genres.html#create_genre_project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.create_genre_project" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">nw.</span></span><span class="sig-name descname"><span class="pre">create_genre_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">genre</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">caller</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">project_id</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">template</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">projects_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/genres.html#create_genre_project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.create_genre_project" title="Link to this definition">#</a></dt>
 <dd><p>Create + seed a new project for a PLUGGED-IN <code class="docutils literal notranslate"><span class="pre">genre</span></code> in <code class="docutils literal notranslate"><span class="pre">caller</span></code>’s space.</p>
 <p>The <em>create</em>-counterpart to <a class="reference internal" href="#nw.resolve_genre" title="nw.resolve_genre"><code class="xref py py-func docutils literal notranslate"><span class="pre">resolve_genre()</span></code></a> (params) + <a class="reference internal" href="#nw.initialize_genre" title="nw.initialize_genre"><code class="xref py py-func docutils literal notranslate"><span class="pre">initialize_genre()</span></code></a>
 (seed): resolve → the genre’s factory (create in the caller’s space) → initialize.
@@ -3072,8 +3105,17 @@ envelope is <strong>persisted on the project</strong> by the initialize step (nw
 all-or-nothing guarantee, since a failure there rolls the whole create back — so the
 association survives this call returning; read it back via
 <a class="reference internal" href="#nw.Project.resolved_genre" title="nw.Project.resolved_genre"><code class="xref py py-meth docutils literal notranslate"><span class="pre">nw.Project.resolved_genre()</span></code></a>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">projects_dir</span></code> is the <strong>placement</strong>: the directory to create the project folder
+in, so a host that will <em>serve</em> the project can put it where its own resolver
+looks. <code class="docutils literal notranslate"><span class="pre">None</span></code> (the default) leaves placement to the genre’s app, which is the
+pre-placement behaviour. Ask <a class="reference internal" href="#nw.can_place_genre_project" title="nw.can_place_genre_project"><code class="xref py py-func docutils literal notranslate"><span class="pre">can_place_genre_project()</span></code></a> first, or handle the
+<code class="docutils literal notranslate"><span class="pre">TypeError</span></code> a pre-placement factory raises here — the request is refused **before
+any filesystem effect**, never quietly satisfied somewhere else.</p>
 <p>Raises <a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#KeyError" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">KeyError</span></code></a> on an unknown genre/template, or a genre with no registered
-factory (a host’s own genre is created by the host, not via this path).</p>
+factory (a host’s own genre is created by the host, not via this path);
+<a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#TypeError" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeError</span></code></a> when <code class="docutils literal notranslate"><span class="pre">projects_dir</span></code> is given for a factory that does not accept
+it; <a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#RuntimeError" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">RuntimeError</span></code></a> (after rolling the create back) when a factory accepted a
+placement and did not honour it.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></span></p>
@@ -4450,7 +4492,7 @@ addressable across runs.</p>
     </div>
   </div>
 </footer>
-      <script src="../_static/documentation_options.js?v=1c03bfdc"></script>
+      <script src="../_static/documentation_options.js?v=b87b3bc5"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>

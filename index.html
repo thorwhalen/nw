@@ -285,11 +285,30 @@ many genres can serve any of them without knowing which app owns which.</p>
 </span><span data-line="9"><span class="c1"># 3. create — for a *plugged-in* genre a host aggregates but doesn't own:</span>
 </span><span data-line="10"><span class="c1">#    the owning app supplies "make a project for this in the caller's own space"</span>
 </span><span data-line="11"><span class="n">nw</span><span class="o">.</span><span class="n">create_genre_project</span><span class="p">(</span><span class="s2">"commentary-weave"</span><span class="p">,</span> <span class="n">caller_id</span><span class="p">,</span> <span class="s2">"ep_01"</span><span class="p">)</span>
+</span><span data-line="12">
+</span><span data-line="13"><span class="c1"># ...and when the host will SERVE the project, it says where it goes:</span>
+</span><span data-line="14"><span class="n">nw</span><span class="o">.</span><span class="n">create_genre_project</span><span class="p">(</span>
+</span><span data-line="15">    <span class="s2">"commentary-weave"</span><span class="p">,</span> <span class="n">caller_id</span><span class="p">,</span> <span class="s2">"ep_01"</span><span class="p">,</span> <span class="n">projects_dir</span><span class="o">=</span><span class="n">my_projects_dir</span>
+</span><span data-line="16"><span class="p">)</span>
 </span></pre></div>
 </div>
 <p>An initializer must confine its side effects to the project it is given, so a
 failed create can be reverted by removing the project folder —
 <code class="docutils literal notranslate"><span class="pre">create_genre_project</span></code> rolls back automatically and is all-or-nothing.</p>
+<p><strong>A genre project factory places a project where its caller asks; it does not own
+the location.</strong> <code class="docutils literal notranslate"><span class="pre">projects_dir</span></code> is the directory the project folder is created <em>in</em>
+(the new project’s root is <code class="docutils literal notranslate"><span class="pre">projects_dir/&lt;project_id&gt;</span></code>), so a host that has to
+<em>serve</em> a guest genre’s project can put it where its own resolver and lister look —
+without which the project is a sibling of nothing the host can address. <code class="docutils literal notranslate"><span class="pre">None</span></code> (the
+default) leaves placement to the genre’s app, so every pre-existing caller is
+unchanged. Ask <code class="docutils literal notranslate"><span class="pre">nw.can_place_genre_project(slug)</span></code> first: a factory written before
+this argument existed is <strong>refused</strong> rather than quietly satisfied somewhere else.
+One that accepts the argument and ignores it is caught by an <em>outcome</em> check on the
+created root — acceptance is not the guarantee, the outcome is — and an outcome nw
+cannot verify (a factory that accepts a placement and returns no project) is a
+failure rather than a pass. The rollback that follows is <strong>bounded by the
+placement</strong>: nothing outside it is deleted, because that branch is precisely the one
+where nw has concluded it does not know what the factory did.</p>
 <p>The naming rationale (Genre / Template over <code class="docutils literal notranslate"><span class="pre">kind</span></code> / <code class="docutils literal notranslate"><span class="pre">format</span></code> / <code class="docutils literal notranslate"><span class="pre">recipe</span></code> / …) is
 in <a class="reference external" href="https://github.com/thorwhalen/nw/issues/10">thorwhalen/nw#10</a> and the
 architecture discussion that settled it.</p>
@@ -682,98 +701,100 @@ a shell loop:</p>
 </span><span data-line="31">    <span class="n">nw</span><span class="o">.</span><span class="n">genre_project_factories</span><span class="p">,</span>
 </span><span data-line="32">    <span class="n">nw</span><span class="o">.</span><span class="n">register_genre_project_factory</span><span class="p">,</span>
 </span><span data-line="33">    <span class="n">nw</span><span class="o">.</span><span class="n">has_genre_project_factory</span><span class="p">,</span>
-</span><span data-line="34">    <span class="n">nw</span><span class="o">.</span><span class="n">create_genre_project</span><span class="p">,</span>
-</span><span data-line="35"><span class="p">)</span>
-</span><span data-line="36">
-</span><span data-line="37"><span class="c1"># Transforms — the A -&gt; B arrow</span>
-</span><span data-line="38"><span class="p">(</span>
-</span><span data-line="39">    <span class="n">nw</span><span class="o">.</span><span class="n">Transform</span><span class="p">,</span>
-</span><span data-line="40">    <span class="n">nw</span><span class="o">.</span><span class="n">BaseTransform</span><span class="p">,</span>
-</span><span data-line="41">    <span class="n">nw</span><span class="o">.</span><span class="n">TransformInputs</span><span class="p">,</span>
-</span><span data-line="42">    <span class="n">nw</span><span class="o">.</span><span class="n">TransformResult</span><span class="p">,</span>
-</span><span data-line="43"><span class="p">)</span>
-</span><span data-line="44"><span class="n">nw</span><span class="o">.</span><span class="n">transforms</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">register_transform</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">get_transform</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">list_transforms</span>
-</span><span data-line="45">
-</span><span data-line="46"><span class="c1"># Folder facade</span>
-</span><span data-line="47"><span class="n">nw</span><span class="o">.</span><span class="n">Project</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">Project</span><span class="o">.</span><span class="n">init</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">CharacterImage</span>
-</span><span data-line="48">
-</span><span data-line="49"><span class="c1"># Schema</span>
-</span><span data-line="50"><span class="p">(</span>
-</span><span data-line="51">    <span class="n">nw</span><span class="o">.</span><span class="n">ProjectSpec</span><span class="p">,</span>
-</span><span data-line="52">    <span class="n">nw</span><span class="o">.</span><span class="n">ProjectSummary</span><span class="p">,</span>
-</span><span data-line="53">    <span class="n">nw</span><span class="o">.</span><span class="n">ResumptionBrief</span><span class="p">,</span>
-</span><span data-line="54">    <span class="n">nw</span><span class="o">.</span><span class="n">DecisionEntry</span><span class="p">,</span>
-</span><span data-line="55">    <span class="n">nw</span><span class="o">.</span><span class="n">SectionSpec</span><span class="p">,</span>
-</span><span data-line="56">    <span class="n">nw</span><span class="o">.</span><span class="n">ShotSpec</span><span class="p">,</span>
-</span><span data-line="57"><span class="p">)</span>
-</span><span data-line="58"><span class="n">nw</span><span class="o">.</span><span class="n">CharacterRef</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">EnvironmentRef</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">SongInfo</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">SCHEMA_VERSION</span>
-</span><span data-line="59">
-</span><span data-line="60"><span class="c1"># Render workflow</span>
-</span><span data-line="61"><span class="n">nw</span><span class="o">.</span><span class="n">prepare_shot</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">plan_render_shot</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">execute_render</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">ShotPreparation</span>
-</span><span data-line="62">
-</span><span data-line="63"><span class="c1"># Async jobs</span>
-</span><span data-line="64"><span class="n">nw</span><span class="o">.</span><span class="n">jobs</span><span class="o">.</span><span class="n">estimate</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">jobs</span><span class="o">.</span><span class="n">enqueue</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">jobs</span><span class="o">.</span><span class="n">list_jobs</span>
-</span><span data-line="65"><span class="n">nw</span><span class="o">.</span><span class="n">jobs</span><span class="o">.</span><span class="n">get_job</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">jobs</span><span class="o">.</span><span class="n">cancel_job</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">jobs</span><span class="o">.</span><span class="n">to_dict</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">jobs</span><span class="o">.</span><span class="n">JobsConfig</span>
-</span><span data-line="66">
-</span><span data-line="67"><span class="c1"># Strategies</span>
-</span><span data-line="68"><span class="p">(</span>
-</span><span data-line="69">    <span class="n">nw</span><span class="o">.</span><span class="n">Strategy</span><span class="p">,</span>
-</span><span data-line="70">    <span class="n">nw</span><span class="o">.</span><span class="n">get_strategy</span><span class="p">,</span>
-</span><span data-line="71">    <span class="n">nw</span><span class="o">.</span><span class="n">list_strategies</span><span class="p">,</span>
-</span><span data-line="72"><span class="p">)</span>
-</span><span data-line="73"><span class="n">nw</span><span class="o">.</span><span class="n">register_strategy</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">strategies</span>
-</span><span data-line="74">
-</span><span data-line="75"><span class="c1"># Storyboard</span>
-</span><span data-line="76"><span class="p">(</span>
-</span><span data-line="77">    <span class="n">nw</span><span class="o">.</span><span class="n">open_storyboard</span><span class="p">,</span>
-</span><span data-line="78">    <span class="n">nw</span><span class="o">.</span><span class="n">save_storyboard</span><span class="p">,</span>
-</span><span data-line="79">    <span class="n">nw</span><span class="o">.</span><span class="n">storyboard_from_shots</span><span class="p">,</span>
-</span><span data-line="80"><span class="p">)</span>
-</span><span data-line="81"><span class="p">(</span>
-</span><span data-line="82">    <span class="n">nw</span><span class="o">.</span><span class="n">plan_render_panel_images</span><span class="p">,</span>
-</span><span data-line="83">    <span class="n">nw</span><span class="o">.</span><span class="n">execute_render_panel_images</span><span class="p">,</span>
-</span><span data-line="84"><span class="p">)</span>
-</span><span data-line="85"><span class="n">nw</span><span class="o">.</span><span class="n">storyboard_db_path</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">project_asset_id</span>
-</span><span data-line="86">
-</span><span data-line="87"><span class="c1"># Inspect / QA</span>
-</span><span data-line="88"><span class="p">(</span>
-</span><span data-line="89">    <span class="n">nw</span><span class="o">.</span><span class="n">shot_report</span><span class="p">,</span>
-</span><span data-line="90">    <span class="n">nw</span><span class="o">.</span><span class="n">compose_report</span><span class="p">,</span>
-</span><span data-line="91">    <span class="n">nw</span><span class="o">.</span><span class="n">ShotReport</span><span class="p">,</span>
-</span><span data-line="92">    <span class="n">nw</span><span class="o">.</span><span class="n">ComposeReport</span><span class="p">,</span>
-</span><span data-line="93"><span class="p">)</span>
-</span><span data-line="94"><span class="n">nw</span><span class="o">.</span><span class="n">FrozenSegment</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">Gap</span>
-</span><span data-line="95">
-</span><span data-line="96"><span class="c1"># Validation — the pluggable menu</span>
-</span><span data-line="97"><span class="p">(</span>
-</span><span data-line="98">    <span class="n">nw</span><span class="o">.</span><span class="n">validate</span><span class="p">,</span>
-</span><span data-line="99">    <span class="n">nw</span><span class="o">.</span><span class="n">menu</span><span class="p">,</span>
-</span><span data-line="100">    <span class="n">nw</span><span class="o">.</span><span class="n">suggest</span><span class="p">,</span>
-</span><span data-line="101">    <span class="n">nw</span><span class="o">.</span><span class="n">plan_checks</span><span class="p">,</span>
-</span><span data-line="102">    <span class="n">nw</span><span class="o">.</span><span class="n">register_check</span><span class="p">,</span>
-</span><span data-line="103">    <span class="n">nw</span><span class="o">.</span><span class="n">checks</span><span class="p">,</span>
-</span><span data-line="104"><span class="p">)</span>
-</span><span data-line="105"><span class="n">nw</span><span class="o">.</span><span class="n">Check</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">Finding</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">CheckResult</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">ValidationReport</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">ValidationError</span>
-</span><span data-line="106">
-</span><span data-line="107"><span class="c1"># Graph / provenance</span>
-</span><span data-line="108"><span class="p">(</span>
-</span><span data-line="109">    <span class="n">nw</span><span class="o">.</span><span class="n">ProjectGraph</span><span class="p">,</span>
-</span><span data-line="110">    <span class="n">nw</span><span class="o">.</span><span class="n">derived_from</span><span class="p">,</span>
-</span><span data-line="111">    <span class="n">nw</span><span class="o">.</span><span class="n">descendants_of</span><span class="p">,</span>
-</span><span data-line="112">    <span class="n">nw</span><span class="o">.</span><span class="n">stale_after</span><span class="p">,</span>
-</span><span data-line="113">    <span class="n">nw</span><span class="o">.</span><span class="n">stale_verdicts</span><span class="p">,</span>
-</span><span data-line="114">    <span class="n">nw</span><span class="o">.</span><span class="n">stale_verdicts_all</span><span class="p">,</span>
-</span><span data-line="115">    <span class="n">nw</span><span class="o">.</span><span class="n">all_stale</span><span class="p">,</span>
-</span><span data-line="116">    <span class="n">nw</span><span class="o">.</span><span class="n">FreshnessVerdict</span><span class="p">,</span>
-</span><span data-line="117"><span class="p">)</span>
-</span><span data-line="118"><span class="n">nw</span><span class="o">.</span><span class="n">annotations_at_tier</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">iter_all_annotations</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">open_project_stores</span>
-</span><span data-line="119"><span class="n">nw</span><span class="o">.</span><span class="n">ProjectGraph</span><span class="o">.</span><span class="n">unproduced_outputs</span>  <span class="c1"># why a blocked/failed output was never produced</span>
-</span><span data-line="120">
-</span><span data-line="121"><span class="c1"># Experiments</span>
-</span><span data-line="122"><span class="n">nw</span><span class="o">.</span><span class="n">clone_project</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">apply_to_projects</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">summarize_all</span>
-</span><span data-line="123">
-</span><span data-line="124"><span class="c1"># Migration</span>
-</span><span data-line="125"><span class="n">nw</span><span class="o">.</span><span class="n">migrate_to_graph</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">is_migrated</span>
+</span><span data-line="34">    <span class="n">nw</span><span class="o">.</span><span class="n">can_place_genre_project</span><span class="p">,</span>
+</span><span data-line="35">    <span class="n">nw</span><span class="o">.</span><span class="n">create_genre_project</span><span class="p">,</span>
+</span><span data-line="36">    <span class="n">nw</span><span class="o">.</span><span class="n">PLACEMENT_ARG</span><span class="p">,</span>
+</span><span data-line="37"><span class="p">)</span>
+</span><span data-line="38">
+</span><span data-line="39"><span class="c1"># Transforms — the A -&gt; B arrow</span>
+</span><span data-line="40"><span class="p">(</span>
+</span><span data-line="41">    <span class="n">nw</span><span class="o">.</span><span class="n">Transform</span><span class="p">,</span>
+</span><span data-line="42">    <span class="n">nw</span><span class="o">.</span><span class="n">BaseTransform</span><span class="p">,</span>
+</span><span data-line="43">    <span class="n">nw</span><span class="o">.</span><span class="n">TransformInputs</span><span class="p">,</span>
+</span><span data-line="44">    <span class="n">nw</span><span class="o">.</span><span class="n">TransformResult</span><span class="p">,</span>
+</span><span data-line="45"><span class="p">)</span>
+</span><span data-line="46"><span class="n">nw</span><span class="o">.</span><span class="n">transforms</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">register_transform</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">get_transform</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">list_transforms</span>
+</span><span data-line="47">
+</span><span data-line="48"><span class="c1"># Folder facade</span>
+</span><span data-line="49"><span class="n">nw</span><span class="o">.</span><span class="n">Project</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">Project</span><span class="o">.</span><span class="n">init</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">CharacterImage</span>
+</span><span data-line="50">
+</span><span data-line="51"><span class="c1"># Schema</span>
+</span><span data-line="52"><span class="p">(</span>
+</span><span data-line="53">    <span class="n">nw</span><span class="o">.</span><span class="n">ProjectSpec</span><span class="p">,</span>
+</span><span data-line="54">    <span class="n">nw</span><span class="o">.</span><span class="n">ProjectSummary</span><span class="p">,</span>
+</span><span data-line="55">    <span class="n">nw</span><span class="o">.</span><span class="n">ResumptionBrief</span><span class="p">,</span>
+</span><span data-line="56">    <span class="n">nw</span><span class="o">.</span><span class="n">DecisionEntry</span><span class="p">,</span>
+</span><span data-line="57">    <span class="n">nw</span><span class="o">.</span><span class="n">SectionSpec</span><span class="p">,</span>
+</span><span data-line="58">    <span class="n">nw</span><span class="o">.</span><span class="n">ShotSpec</span><span class="p">,</span>
+</span><span data-line="59"><span class="p">)</span>
+</span><span data-line="60"><span class="n">nw</span><span class="o">.</span><span class="n">CharacterRef</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">EnvironmentRef</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">SongInfo</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">SCHEMA_VERSION</span>
+</span><span data-line="61">
+</span><span data-line="62"><span class="c1"># Render workflow</span>
+</span><span data-line="63"><span class="n">nw</span><span class="o">.</span><span class="n">prepare_shot</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">plan_render_shot</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">execute_render</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">ShotPreparation</span>
+</span><span data-line="64">
+</span><span data-line="65"><span class="c1"># Async jobs</span>
+</span><span data-line="66"><span class="n">nw</span><span class="o">.</span><span class="n">jobs</span><span class="o">.</span><span class="n">estimate</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">jobs</span><span class="o">.</span><span class="n">enqueue</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">jobs</span><span class="o">.</span><span class="n">list_jobs</span>
+</span><span data-line="67"><span class="n">nw</span><span class="o">.</span><span class="n">jobs</span><span class="o">.</span><span class="n">get_job</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">jobs</span><span class="o">.</span><span class="n">cancel_job</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">jobs</span><span class="o">.</span><span class="n">to_dict</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">jobs</span><span class="o">.</span><span class="n">JobsConfig</span>
+</span><span data-line="68">
+</span><span data-line="69"><span class="c1"># Strategies</span>
+</span><span data-line="70"><span class="p">(</span>
+</span><span data-line="71">    <span class="n">nw</span><span class="o">.</span><span class="n">Strategy</span><span class="p">,</span>
+</span><span data-line="72">    <span class="n">nw</span><span class="o">.</span><span class="n">get_strategy</span><span class="p">,</span>
+</span><span data-line="73">    <span class="n">nw</span><span class="o">.</span><span class="n">list_strategies</span><span class="p">,</span>
+</span><span data-line="74"><span class="p">)</span>
+</span><span data-line="75"><span class="n">nw</span><span class="o">.</span><span class="n">register_strategy</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">strategies</span>
+</span><span data-line="76">
+</span><span data-line="77"><span class="c1"># Storyboard</span>
+</span><span data-line="78"><span class="p">(</span>
+</span><span data-line="79">    <span class="n">nw</span><span class="o">.</span><span class="n">open_storyboard</span><span class="p">,</span>
+</span><span data-line="80">    <span class="n">nw</span><span class="o">.</span><span class="n">save_storyboard</span><span class="p">,</span>
+</span><span data-line="81">    <span class="n">nw</span><span class="o">.</span><span class="n">storyboard_from_shots</span><span class="p">,</span>
+</span><span data-line="82"><span class="p">)</span>
+</span><span data-line="83"><span class="p">(</span>
+</span><span data-line="84">    <span class="n">nw</span><span class="o">.</span><span class="n">plan_render_panel_images</span><span class="p">,</span>
+</span><span data-line="85">    <span class="n">nw</span><span class="o">.</span><span class="n">execute_render_panel_images</span><span class="p">,</span>
+</span><span data-line="86"><span class="p">)</span>
+</span><span data-line="87"><span class="n">nw</span><span class="o">.</span><span class="n">storyboard_db_path</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">project_asset_id</span>
+</span><span data-line="88">
+</span><span data-line="89"><span class="c1"># Inspect / QA</span>
+</span><span data-line="90"><span class="p">(</span>
+</span><span data-line="91">    <span class="n">nw</span><span class="o">.</span><span class="n">shot_report</span><span class="p">,</span>
+</span><span data-line="92">    <span class="n">nw</span><span class="o">.</span><span class="n">compose_report</span><span class="p">,</span>
+</span><span data-line="93">    <span class="n">nw</span><span class="o">.</span><span class="n">ShotReport</span><span class="p">,</span>
+</span><span data-line="94">    <span class="n">nw</span><span class="o">.</span><span class="n">ComposeReport</span><span class="p">,</span>
+</span><span data-line="95"><span class="p">)</span>
+</span><span data-line="96"><span class="n">nw</span><span class="o">.</span><span class="n">FrozenSegment</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">Gap</span>
+</span><span data-line="97">
+</span><span data-line="98"><span class="c1"># Validation — the pluggable menu</span>
+</span><span data-line="99"><span class="p">(</span>
+</span><span data-line="100">    <span class="n">nw</span><span class="o">.</span><span class="n">validate</span><span class="p">,</span>
+</span><span data-line="101">    <span class="n">nw</span><span class="o">.</span><span class="n">menu</span><span class="p">,</span>
+</span><span data-line="102">    <span class="n">nw</span><span class="o">.</span><span class="n">suggest</span><span class="p">,</span>
+</span><span data-line="103">    <span class="n">nw</span><span class="o">.</span><span class="n">plan_checks</span><span class="p">,</span>
+</span><span data-line="104">    <span class="n">nw</span><span class="o">.</span><span class="n">register_check</span><span class="p">,</span>
+</span><span data-line="105">    <span class="n">nw</span><span class="o">.</span><span class="n">checks</span><span class="p">,</span>
+</span><span data-line="106"><span class="p">)</span>
+</span><span data-line="107"><span class="n">nw</span><span class="o">.</span><span class="n">Check</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">Finding</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">CheckResult</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">ValidationReport</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">ValidationError</span>
+</span><span data-line="108">
+</span><span data-line="109"><span class="c1"># Graph / provenance</span>
+</span><span data-line="110"><span class="p">(</span>
+</span><span data-line="111">    <span class="n">nw</span><span class="o">.</span><span class="n">ProjectGraph</span><span class="p">,</span>
+</span><span data-line="112">    <span class="n">nw</span><span class="o">.</span><span class="n">derived_from</span><span class="p">,</span>
+</span><span data-line="113">    <span class="n">nw</span><span class="o">.</span><span class="n">descendants_of</span><span class="p">,</span>
+</span><span data-line="114">    <span class="n">nw</span><span class="o">.</span><span class="n">stale_after</span><span class="p">,</span>
+</span><span data-line="115">    <span class="n">nw</span><span class="o">.</span><span class="n">stale_verdicts</span><span class="p">,</span>
+</span><span data-line="116">    <span class="n">nw</span><span class="o">.</span><span class="n">stale_verdicts_all</span><span class="p">,</span>
+</span><span data-line="117">    <span class="n">nw</span><span class="o">.</span><span class="n">all_stale</span><span class="p">,</span>
+</span><span data-line="118">    <span class="n">nw</span><span class="o">.</span><span class="n">FreshnessVerdict</span><span class="p">,</span>
+</span><span data-line="119"><span class="p">)</span>
+</span><span data-line="120"><span class="n">nw</span><span class="o">.</span><span class="n">annotations_at_tier</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">iter_all_annotations</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">open_project_stores</span>
+</span><span data-line="121"><span class="n">nw</span><span class="o">.</span><span class="n">ProjectGraph</span><span class="o">.</span><span class="n">unproduced_outputs</span>  <span class="c1"># why a blocked/failed output was never produced</span>
+</span><span data-line="122">
+</span><span data-line="123"><span class="c1"># Experiments</span>
+</span><span data-line="124"><span class="n">nw</span><span class="o">.</span><span class="n">clone_project</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">apply_to_projects</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">summarize_all</span>
+</span><span data-line="125">
+</span><span data-line="126"><span class="c1"># Migration</span>
+</span><span data-line="127"><span class="n">nw</span><span class="o">.</span><span class="n">migrate_to_graph</span><span class="p">,</span> <span class="n">nw</span><span class="o">.</span><span class="n">is_migrated</span>
 </span></pre></div>
 </div>
 </section>
@@ -840,7 +861,7 @@ succeed (<a class="reference external" href="https://github.com/thorwhalen/nw/is
 </section>
 </section>
 
-<p class="epythet-provenance" style="font-size:.8em;opacity:.65;margin-top:2.5em;text-align:right">built 2026-09-17 15:55 UTC from <a href="https://github.com/thorwhalen/nw/commit/c3bd5fe0a2b957ab8ede7544b98f8e89aa790e67">c3bd5fe</a> (main) · nw 0.0.54 · <a href="about-this-build.html">about this build</a></p>
+<p class="epythet-provenance" style="font-size:.8em;opacity:.65;margin-top:2.5em;text-align:right">built 2026-09-19 22:46 UTC from <a href="https://github.com/thorwhalen/nw/commit/5ea2d5baf3634a2a9854d85acf80c662391ab991">5ea2d5b</a> (main) · nw 0.0.55 · <a href="about-this-build.html">about this build</a></p>
         </article><button class="back-to-top" type="button">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
     <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
@@ -875,7 +896,7 @@ succeed (<a class="reference external" href="https://github.com/thorwhalen/nw/is
     </div>
   </div>
 </footer>
-      <script src="_static/documentation_options.js?v=1c03bfdc"></script>
+      <script src="_static/documentation_options.js?v=b87b3bc5"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="_static/clipboard.min.js?v=a7894cd8"></script>

@@ -48,6 +48,7 @@ are recorded as linked artifacts), see
 | [`initialize_genre`](#nw.initialize_genre)(genre, project, \*[, ...])        | Seed a freshly-created `project` for `genre` (+ optional `template`).                                                                |
 | [`register_genre_project_factory`](#nw.register_genre_project_factory)(slug, factory)      | Register a project factory for a genre slug; returns it for inline use.                                                              |
 | [`has_genre_project_factory`](#nw.has_genre_project_factory)(slug)                    | True iff a plugged-in project factory is registered for `slug`.                                                                      |
+| [`can_place_genre_project`](#nw.can_place_genre_project)(slug)                      | True iff `slug`'s registered factory accepts host **placement**.                                                                     |
 | [`create_genre_project`](#nw.create_genre_project)(genre, caller, ...[, ...])    | Create + seed a new project for a PLUGGED-IN `genre` in `caller`'s space.                                                            |
 | [`annotations_at_tier`](#nw.annotations_at_tier)(project_root, tier)            | Return every annotation at the given tier across all of the project's stores.                                                        |
 | [`apply_to_projects`](#nw.apply_to_projects)(roots, fn, \*[, parallel])       | Apply `fn` to each project at `roots` and collect the results.                                                                       |
@@ -1889,6 +1890,33 @@ silently averaged away.
 * **Return type:**
   [`dict`](https://docs.python.org/3/builtins/stdtypes.html#dict)
 
+### nw.can_place_genre_project(slug)
+
+True iff `slug`’s registered factory accepts host **placement**.
+
+The question a host asks *before* offering “create a project of this genre here”:
+a genre whose factory predates `PLACEMENT_ARG` can still be created, but
+only in its own app’s workspace — where the host cannot address it. False for an
+unregistered genre.
+
+* **Return type:**
+  [`bool`](https://docs.python.org/3/builtins/functions.html#bool)
+
+```pycon
+>>> def _old(caller, project_id, *, title, template, params):
+...     return {"project": None}
+>>> def _new(caller, project_id, *, title, template, params, projects_dir=None):
+...     return {"project": None}
+>>> _ = register_genre_project_factory("_place_old", _old)
+>>> _ = register_genre_project_factory("_place_new", _new)
+>>> can_place_genre_project("_place_old"), can_place_genre_project("_place_new")
+(False, True)
+>>> can_place_genre_project("_place_nope")
+False
+>>> del genre_project_factories["_place_old"]
+>>> del genre_project_factories["_place_new"]
+```
+
 ### nw.clone_project(src_root, dst_root, , preserve=('song', 'lyrics', 'characters'), reset=('script', 'shots', 'output', '.nw'), title=None, force=False)
 
 Clone an nw project to a new root.
@@ -1963,7 +1991,7 @@ wrote before nw#74.
 ['application', 'cache_status', 'estimated_cost_usd', 'tool']
 ```
 
-### nw.create_genre_project(genre, caller, project_id, , title=None, template=None)
+### nw.create_genre_project(genre, caller, project_id, , title=None, template=None, projects_dir=None)
 
 Create + seed a new project for a PLUGGED-IN `genre` in `caller`’s space.
 
@@ -1978,8 +2006,18 @@ all-or-nothing guarantee, since a failure there rolls the whole create back — 
 association survives this call returning; read it back via
 [`nw.Project.resolved_genre()`](#nw.Project.resolved_genre).
 
+`projects_dir` is the **placement**: the directory to create the project folder
+in, so a host that will *serve* the project can put it where its own resolver
+looks. `None` (the default) leaves placement to the genre’s app, which is the
+pre-placement behaviour. Ask [`can_place_genre_project()`](#nw.can_place_genre_project) first, or handle the
+`TypeError` a pre-placement factory raises here — the request is refused \*\*before
+any filesystem effect\*\*, never quietly satisfied somewhere else.
+
 Raises [`KeyError`](https://docs.python.org/3/builtins/exceptions.html#KeyError) on an unknown genre/template, or a genre with no registered
-factory (a host’s own genre is created by the host, not via this path).
+factory (a host’s own genre is created by the host, not via this path);
+[`TypeError`](https://docs.python.org/3/builtins/exceptions.html#TypeError) when `projects_dir` is given for a factory that does not accept
+it; [`RuntimeError`](https://docs.python.org/3/builtins/exceptions.html#RuntimeError) (after rolling the create back) when a factory accepted a
+placement and did not honour it.
 
 * **Return type:**
   [`dict`](https://docs.python.org/3/builtins/stdtypes.html#dict)
