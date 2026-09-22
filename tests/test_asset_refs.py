@@ -67,7 +67,9 @@ def test_a_skeleton_with_no_artifact_yet_names_none():
     assert asset_refs_of(_ann(PANEL, {"artifact_id": None, "images": []})) == ()
 
 
-@pytest.mark.parametrize("bad", ["sha256:" + A[:57], "https://x/y.png", A.upper(), 42])
+@pytest.mark.parametrize(
+    "bad", ["sha256:" + A[:57], "https://x/y.png", A.upper(), 42, A + "\n", "", " " + A]
+)
 def test_a_declared_path_yielding_a_non_asset_id_is_refused_at_plan_time(bad):
     with pytest.raises(AssetRefDeclarationError, match=PANEL):
         derive_provenance(T, TransformInputs(primary=(_ann(PANEL, {"artifact_id": bad}),)))
@@ -87,3 +89,11 @@ def test_explicit_asset_refs_are_validated_too():
     with pytest.raises(AssetRefDeclarationError):
         # A UUID string would otherwise become an ANNOTATION parent via lacing's union.
         derive_provenance(T, TransformInputs(primary=(p1,)), asset_refs=[str(uuid4())])
+
+
+def test_an_explicit_ref_with_a_trailing_newline_is_refused():
+    """``re.match`` with ``$`` accepts ``A + "\\n"``; lacing then refuses it with a
+    pydantic error far from the declaration. The check is a full match."""
+    p1 = _ann(PANEL, {"artifact_id": A})
+    with pytest.raises(AssetRefDeclarationError):
+        derive_provenance(T, TransformInputs(primary=(p1,)), asset_refs=[A + "\n"])
