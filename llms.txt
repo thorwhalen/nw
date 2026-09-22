@@ -5,10 +5,10 @@
 
 ## Pages
 
-- [nw](index.html.md): **Narrative Workflow** — the substrate audiovisual production apps are built on.
-- [API reference](api.html.md): | [`nw`](_autosummary/nw.html.md#module-nw)   | nw — Narrative Workflow.   |
+- [nw](index.html.md): &#42;&#42;Narrative Workflow&#42;&#42; — the substrate audiovisual production apps are built on.
+- [API reference](api.html.md): | &#96;nw&#96;   | nw — Narrative Workflow.   |
 - [nw](_autosummary/nw.html.md): nw — Narrative Workflow.
-- [nw.freshness](_autosummary/nw.freshness.html.md): Freshness with **early cutoff** — what is *actually* out of date.
+- [nw.freshness](_autosummary/nw.freshness.html.md): Freshness with &#42;&#42;early cutoff&#42;&#42; — what is &#42;actually&#42; out of date.
 - [nw.inspect](_autosummary/nw.inspect.html.md): QA helpers — typed reports about rendered shots.
 - [nw.checks](_autosummary/nw.checks.html.md): The checks nw itself ships — a small, honest default menu.
 - [nw.bodies](_autosummary/nw.bodies.html.md): Body schemas for nw’s project-graph annotations.
@@ -21,34 +21,34 @@
 - [nw.bodies.shot](_autosummary/nw.bodies.shot.html.md): Body schema for shots — the renderable visual unit.
 - [nw.bodies.unproduced_output](_autosummary/nw.bodies.unproduced_output.html.md): Body schema for unproduced-output records — nw#44.
 - [nw.bodies.verifying_trace](_autosummary/nw.bodies.verifying_trace.html.md): Body schema for verifying traces — what makes early cutoff possible.
-- [nw.delivery](_autosummary/nw.delivery.html.md): What a genre hands back when a human wants to *hold* what it made.
+- [nw.delivery](_autosummary/nw.delivery.html.md): What a genre hands back when a human wants to &#42;hold&#42; what it made.
 - [nw.experiment](_autosummary/nw.experiment.html.md): Experiment helpers — clone projects, apply operations across siblings.
 - [nw.genres](_autosummary/nw.genres.html.md): A typed dict-backed plugin registry.
 - [nw.graph](_autosummary/nw.graph.html.md): The project annotation graph — read/write helpers + reelee-style traversals.
 - [nw.graph_backend](_autosummary/nw.graph_backend.html.md): Config-driven backend selection for nw’s annotation graph stores.
-- [nw.jobs](_autosummary/nw.jobs.html.md): nw.jobs — a project-scoped async **job** facade over `au`.
+- [nw.jobs](_autosummary/nw.jobs.html.md): nw.jobs — a project-scoped async &#42;&#42;job&#42;&#42; facade over &#96;au&#96;.
 - [nw.migrate](_autosummary/nw.migrate.html.md): Idempotent migration: project.json (sections/shots/refs) → lacing graph.
 - [nw.pricing](_autosummary/nw.pricing.html.md): Re-quoting a persisted plan at today’s rates (nw#74).
 - [nw.project](_autosummary/nw.project.html.md): Project facade: a folder on disk → typed reads, typed writes, typed summary.
-- [nw.renderers](_autosummary/nw.renderers.html.md): Render strategies — pluggable, plan-producing, **shot-typed**.
+- [nw.renderers](_autosummary/nw.renderers.html.md): Render strategies — pluggable, plan-producing, &#42;&#42;shot-typed&#42;&#42;.
 - [nw.renderers.composite_lipsync](_autosummary/nw.renderers.composite_lipsync.html.md): Strategy: composite_lipsync — character + environment + audio → talking video.
 - [nw.renderers.image_to_video](_autosummary/nw.renderers.image_to_video.html.md): Strategy: image_to_video — env or fresh-storyboard still → animated clip.
 - [nw.renderers.lipsync](_autosummary/nw.renderers.lipsync.html.md): Strategy: lipsync — character anchor + audio → talking video.
 - [nw.renderers.still](_autosummary/nw.renderers.still.html.md): Strategy: still — image looped over audio (no fal video gen).
 - [nw.renderers.text_to_video](_autosummary/nw.renderers.text_to_video.html.md): Strategy: text_to_video — prompt-only short clip.
 - [nw.schema](_autosummary/nw.schema.html.md): Schema for an nw project — narrative-workflow SSOT data shapes.
-- [nw.script_segmentation](_autosummary/nw.script_segmentation.html.md): `nw.script_segmentation` — narrow LLM-backed helper that converts a
-- [nw.secrets](_autosummary/nw.secrets.html.md): Execution secrets — credentials that reach `execute` and nothing else.
+- [nw.script_segmentation](_autosummary/nw.script_segmentation.html.md): &#96;nw.script_segmentation&#96; — narrow LLM-backed helper that converts a
+- [nw.secrets](_autosummary/nw.secrets.html.md): Execution secrets — credentials that reach &#96;execute&#96; and nothing else.
 - [nw.storyboard](_autosummary/nw.storyboard.html.md): Storyboard ↔ Project bridge.
 - [nw.transforms](_autosummary/nw.transforms.html.md): A typed dict-backed plugin registry.
 - [nw.validation](_autosummary/nw.validation.html.md): Pluggable validation of finished work — the seam, not the checks.
-- [nw.workflow](_autosummary/nw.workflow.html.md): Workflow: prepare → plan → execute, for a **video shot**.
-- [For AI agents](ai-agents.html.md): `nw` ships artifacts for coding agents alongside its code. This page lists
-- [About this build](about-this-build.html.md): This documentation was built on **2026-09-19 22:46 UTC** from commit <a href="https://github.com/tho...
+- [nw.workflow](_autosummary/nw.workflow.html.md): Workflow: prepare → plan → execute, for a &#42;&#42;video shot&#42;&#42;.
+- [For AI agents](ai-agents.html.md): &#96;nw&#96; ships artifacts for coding agents alongside its code. This page lists
+- [About this build](about-this-build.html.md): This documentation was built on &#42;&#42;2026-09-22 13:00 UTC&#42;&#42; from commit &lt;a href="https://github.com/tho...
 
----
+## Optional
 
-For more comprehensive documentation, see [nw.md](nw.md)
+- [nw.md](nw.md): Complete documentation in a single file.
 
 ## Build
 

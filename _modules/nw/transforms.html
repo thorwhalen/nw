@@ -928,176 +928,188 @@ data-aria-dark="Switch to auto color mode">
 <div class="viewcode-block" id="register_transform">
 <a class="viewcode-back" href="../../_autosummary/nw.html#nw.register_transform">[docs]</a>
 </span><span data-line="751"><span class="k">def</span><span class="w"> </span><span class="nf">register_transform</span><span class="p">(</span>
-</span><span data-line="752">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">impl</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Transform</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span data-line="753"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Transform</span> <span class="o">|</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">type</span><span class="p">],</span> <span class="nb">type</span><span class="p">]:</span>
-</span><span data-line="754"><span class="w">    </span><span class="sd">"""Register a Transform under ``name``. Two forms:</span>
-</span><span data-line="755">
-</span><span data-line="756"><span class="sd">    Direct — pass an instance::</span>
-</span><span data-line="757">
-</span><span data-line="758"><span class="sd">        register_transform("clips_to_animatic.ffmpeg", ClipsToAnimatic())</span>
-</span><span data-line="759">
-</span><span data-line="760"><span class="sd">    Decorator — decorate a class; it is instantiated and the *instance* is</span>
-</span><span data-line="761"><span class="sd">    registered (so :func:`get_transform` always returns something callable),</span>
-</span><span data-line="762"><span class="sd">    and the class is returned unchanged::</span>
-</span><span data-line="763">
-</span><span data-line="764"><span class="sd">        @register_transform("beat_to_panel.llm.default")</span>
-</span><span data-line="765"><span class="sd">        class BeatToPanelLLM(BaseTransform):</span>
-</span><span data-line="766"><span class="sd">            ...</span>
-</span><span data-line="767">
-</span><span data-line="768"><span class="sd">    Registration validates the contract the registry's consumers depend on:</span>
-</span><span data-line="769"><span class="sd">    an empty ``output_kind`` is refused loudly, in the same spirit as the</span>
-</span><span data-line="770"><span class="sd">    registry's ``on_conflict="error"`` — an agent's unit of work must have a</span>
-</span><span data-line="771"><span class="sd">    declared output type, or "the job runs successfully but produces</span>
-</span><span data-line="772"><span class="sd">    nothing retrievable" becomes invisible to every layer that reports</span>
-</span><span data-line="773"><span class="sd">    success (nw#27).</span>
-</span><span data-line="774"><span class="sd">    """</span>
-</span><span data-line="775">
-</span><span data-line="776">    <span class="k">def</span><span class="w"> </span><span class="nf">_checked</span><span class="p">(</span><span class="n">instance</span><span class="p">:</span> <span class="n">Transform</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Transform</span><span class="p">:</span>
-</span><span data-line="777">        <span class="n">version</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="s2">"impl_version"</span><span class="p">,</span> <span class="n">DFLT_IMPL_VERSION</span><span class="p">)</span>
-</span><span data-line="778">        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">version</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-</span><span data-line="779">            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-</span><span data-line="780">                <span class="sa">f</span><span class="s2">"register_transform(</span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2">): </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">."</span>
-</span><span data-line="781">                <span class="sa">f</span><span class="s2">"impl_version must be a str, got </span><span class="si">{</span><span class="n">version</span><span class="si">!r}</span><span class="s2"> "</span>
-</span><span data-line="782">                <span class="sa">f</span><span class="s2">"(</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">version</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">). A non-str version defeats the "</span>
-</span><span data-line="783">                <span class="s2">"omit-if-default cache sentinel while rendering identically "</span>
-</span><span data-line="784">                <span class="s2">"in provenance."</span>
-</span><span data-line="785">            <span class="p">)</span>
-</span><span data-line="786">        <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="s2">"output_kind"</span><span class="p">,</span> <span class="s2">""</span><span class="p">):</span>
-</span><span data-line="787">            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-</span><span data-line="788">                <span class="sa">f</span><span class="s2">"register_transform(</span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2">): </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> "</span>
-</span><span data-line="789">                <span class="s2">"declares no output_kind. Every Transform must declare the "</span>
-</span><span data-line="790">                <span class="s2">"body-schema URI it produces — an undeclared output type is "</span>
-</span><span data-line="791">                <span class="s2">"a unit of work whose success is unverifiable."</span>
-</span><span data-line="792">            <span class="p">)</span>
-</span><span data-line="793">        <span class="n">shape</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="s2">"generate_when"</span><span class="p">,</span> <span class="n">DFLT_GENERATE_WHEN</span><span class="p">)</span>
-</span><span data-line="794">        <span class="k">if</span> <span class="n">shape</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"static"</span><span class="p">,</span> <span class="s2">"dynamic"</span><span class="p">):</span>
-</span><span data-line="795">            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-</span><span data-line="796">                <span class="sa">f</span><span class="s2">"register_transform(</span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2">): </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">."</span>
-</span><span data-line="797">                <span class="sa">f</span><span class="s2">"generate_when must be 'static' or 'dynamic', got </span><span class="si">{</span><span class="n">shape</span><span class="si">!r}</span><span class="s2">. "</span>
-</span><span data-line="798">                <span class="s2">"The declaration is what lets a cost gate tell a real "</span>
-</span><span data-line="799">                <span class="s2">"pre-flight estimate from an honest unknown (nw#26) — an "</span>
-</span><span data-line="800">                <span class="s2">"unrecognised value would be read as neither."</span>
-</span><span data-line="801">            <span class="p">)</span>
-</span><span data-line="802">        <span class="k">return</span> <span class="n">instance</span>
-</span><span data-line="803">
-</span><span data-line="804">    <span class="k">if</span> <span class="n">impl</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="805">
-</span><span data-line="806">        <span class="k">def</span><span class="w"> </span><span class="nf">_decorator</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">:</span>
-</span><span data-line="807">            <span class="n">transforms</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">_checked</span><span class="p">(</span><span class="bp">cls</span><span class="p">()))</span>
-</span><span data-line="808">            <span class="k">return</span> <span class="bp">cls</span>
-</span><span data-line="809">
-</span><span data-line="810">        <span class="k">return</span> <span class="n">_decorator</span>
-</span><span data-line="811">    <span class="k">return</span> <span class="n">transforms</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">_checked</span><span class="p">(</span><span class="n">impl</span><span class="p">))</span></div>
-
-</span><span data-line="812">
-</span><span data-line="813">
-<div class="viewcode-block" id="get_transform">
-<a class="viewcode-back" href="../../_autosummary/nw.html#nw.get_transform">[docs]</a>
-</span><span data-line="814"><span class="k">def</span><span class="w"> </span><span class="nf">get_transform</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Transform</span><span class="p">:</span>
-</span><span data-line="815"><span class="w">    </span><span class="sd">"""Look up a Transform instance by name; raises with the known names."""</span>
-</span><span data-line="816">    <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">transforms</span><span class="p">:</span>
-</span><span data-line="817">        <span class="n">known</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">transforms</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-</span><span data-line="818">        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
-</span><span data-line="819">            <span class="sa">f</span><span class="s2">"No Transform </span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2">; registered: </span><span class="si">{</span><span class="n">known</span><span class="si">}</span><span class="s2">. Apps register "</span>
-</span><span data-line="820">            <span class="s2">"custom Transforms via `nw.register_transform(name, impl)` or the "</span>
-</span><span data-line="821">            <span class="s2">"`@nw.register_transform('name')` class decorator."</span>
-</span><span data-line="822">        <span class="p">)</span>
-</span><span data-line="823">    <span class="k">return</span> <span class="n">transforms</span><span class="p">[</span><span class="n">name</span><span class="p">]</span></div>
+</span><span data-line="752">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="753">    <span class="n">impl</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Transform</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="754">    <span class="o">*</span><span class="p">,</span>
+</span><span data-line="755">    <span class="n">tags</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
+</span><span data-line="756"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Transform</span> <span class="o">|</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">type</span><span class="p">],</span> <span class="nb">type</span><span class="p">]:</span>
+</span><span data-line="757"><span class="w">    </span><span class="sd">"""Register a Transform under ``name``. Two forms:</span>
+</span><span data-line="758">
+</span><span data-line="759"><span class="sd">    Direct — pass an instance::</span>
+</span><span data-line="760">
+</span><span data-line="761"><span class="sd">        register_transform("clips_to_animatic.ffmpeg", ClipsToAnimatic())</span>
+</span><span data-line="762">
+</span><span data-line="763"><span class="sd">    Decorator — decorate a class; it is instantiated and the *instance* is</span>
+</span><span data-line="764"><span class="sd">    registered (so :func:`get_transform` always returns something callable),</span>
+</span><span data-line="765"><span class="sd">    and the class is returned unchanged::</span>
+</span><span data-line="766">
+</span><span data-line="767"><span class="sd">        @register_transform("beat_to_panel.llm.default")</span>
+</span><span data-line="768"><span class="sd">        class BeatToPanelLLM(BaseTransform):</span>
+</span><span data-line="769"><span class="sd">            ...</span>
+</span><span data-line="770">
+</span><span data-line="771"><span class="sd">    Registration validates the contract the registry's consumers depend on:</span>
+</span><span data-line="772"><span class="sd">    an empty ``output_kind`` is refused loudly, in the same spirit as the</span>
+</span><span data-line="773"><span class="sd">    registry's ``on_conflict="error"`` — an agent's unit of work must have a</span>
+</span><span data-line="774"><span class="sd">    declared output type, or "the job runs successfully but produces</span>
+</span><span data-line="775"><span class="sd">    nothing retrievable" becomes invisible to every layer that reports</span>
+</span><span data-line="776"><span class="sd">    success (nw#27).</span>
+</span><span data-line="777">
+</span><span data-line="778"><span class="sd">    ``tags`` is passed straight through to :meth:`xdol.Registry.register`</span>
+</span><span data-line="779"><span class="sd">    (``transforms.keys_with_tag(tag)`` / ``transforms.search(tags=...)``</span>
+</span><span data-line="780"><span class="sd">    read it back). The field exists so a licence, a capability class, or a</span>
+</span><span data-line="781"><span class="sd">    cost class has somewhere to live *before* the registry opens to</span>
+</span><span data-line="782"><span class="sd">    third-party registrants — nw#29 stays closed to third parties for now</span>
+</span><span data-line="783"><span class="sd">    (see that issue and ``misc/docs/Transform Registry — third-party</span>
+</span><span data-line="784"><span class="sd">    extension.md``); this is the one piece of that decision worth doing</span>
+</span><span data-line="785"><span class="sd">    regardless of when, or whether, the registry opens.</span>
+</span><span data-line="786"><span class="sd">    """</span>
+</span><span data-line="787">
+</span><span data-line="788">    <span class="k">def</span><span class="w"> </span><span class="nf">_checked</span><span class="p">(</span><span class="n">instance</span><span class="p">:</span> <span class="n">Transform</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Transform</span><span class="p">:</span>
+</span><span data-line="789">        <span class="n">version</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="s2">"impl_version"</span><span class="p">,</span> <span class="n">DFLT_IMPL_VERSION</span><span class="p">)</span>
+</span><span data-line="790">        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">version</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+</span><span data-line="791">            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+</span><span data-line="792">                <span class="sa">f</span><span class="s2">"register_transform(</span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2">): </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">."</span>
+</span><span data-line="793">                <span class="sa">f</span><span class="s2">"impl_version must be a str, got </span><span class="si">{</span><span class="n">version</span><span class="si">!r}</span><span class="s2"> "</span>
+</span><span data-line="794">                <span class="sa">f</span><span class="s2">"(</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">version</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">). A non-str version defeats the "</span>
+</span><span data-line="795">                <span class="s2">"omit-if-default cache sentinel while rendering identically "</span>
+</span><span data-line="796">                <span class="s2">"in provenance."</span>
+</span><span data-line="797">            <span class="p">)</span>
+</span><span data-line="798">        <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="s2">"output_kind"</span><span class="p">,</span> <span class="s2">""</span><span class="p">):</span>
+</span><span data-line="799">            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+</span><span data-line="800">                <span class="sa">f</span><span class="s2">"register_transform(</span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2">): </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> "</span>
+</span><span data-line="801">                <span class="s2">"declares no output_kind. Every Transform must declare the "</span>
+</span><span data-line="802">                <span class="s2">"body-schema URI it produces — an undeclared output type is "</span>
+</span><span data-line="803">                <span class="s2">"a unit of work whose success is unverifiable."</span>
+</span><span data-line="804">            <span class="p">)</span>
+</span><span data-line="805">        <span class="n">shape</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="s2">"generate_when"</span><span class="p">,</span> <span class="n">DFLT_GENERATE_WHEN</span><span class="p">)</span>
+</span><span data-line="806">        <span class="k">if</span> <span class="n">shape</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"static"</span><span class="p">,</span> <span class="s2">"dynamic"</span><span class="p">):</span>
+</span><span data-line="807">            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+</span><span data-line="808">                <span class="sa">f</span><span class="s2">"register_transform(</span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2">): </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">."</span>
+</span><span data-line="809">                <span class="sa">f</span><span class="s2">"generate_when must be 'static' or 'dynamic', got </span><span class="si">{</span><span class="n">shape</span><span class="si">!r}</span><span class="s2">. "</span>
+</span><span data-line="810">                <span class="s2">"The declaration is what lets a cost gate tell a real "</span>
+</span><span data-line="811">                <span class="s2">"pre-flight estimate from an honest unknown (nw#26) — an "</span>
+</span><span data-line="812">                <span class="s2">"unrecognised value would be read as neither."</span>
+</span><span data-line="813">            <span class="p">)</span>
+</span><span data-line="814">        <span class="k">return</span> <span class="n">instance</span>
+</span><span data-line="815">
+</span><span data-line="816">    <span class="k">if</span> <span class="n">impl</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="817">
+</span><span data-line="818">        <span class="k">def</span><span class="w"> </span><span class="nf">_decorator</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">:</span>
+</span><span data-line="819">            <span class="n">transforms</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">_checked</span><span class="p">(</span><span class="bp">cls</span><span class="p">()),</span> <span class="n">tags</span><span class="o">=</span><span class="n">tags</span><span class="p">)</span>
+</span><span data-line="820">            <span class="k">return</span> <span class="bp">cls</span>
+</span><span data-line="821">
+</span><span data-line="822">        <span class="k">return</span> <span class="n">_decorator</span>
+</span><span data-line="823">    <span class="k">return</span> <span class="n">transforms</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">_checked</span><span class="p">(</span><span class="n">impl</span><span class="p">),</span> <span class="n">tags</span><span class="o">=</span><span class="n">tags</span><span class="p">)</span></div>
 
 </span><span data-line="824">
 </span><span data-line="825">
+<div class="viewcode-block" id="get_transform">
+<a class="viewcode-back" href="../../_autosummary/nw.html#nw.get_transform">[docs]</a>
+</span><span data-line="826"><span class="k">def</span><span class="w"> </span><span class="nf">get_transform</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Transform</span><span class="p">:</span>
+</span><span data-line="827"><span class="w">    </span><span class="sd">"""Look up a Transform instance by name; raises with the known names."""</span>
+</span><span data-line="828">    <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">transforms</span><span class="p">:</span>
+</span><span data-line="829">        <span class="n">known</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">transforms</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+</span><span data-line="830">        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
+</span><span data-line="831">            <span class="sa">f</span><span class="s2">"No Transform </span><span class="si">{</span><span class="n">name</span><span class="si">!r}</span><span class="s2">; registered: </span><span class="si">{</span><span class="n">known</span><span class="si">}</span><span class="s2">. Apps register "</span>
+</span><span data-line="832">            <span class="s2">"custom Transforms via `nw.register_transform(name, impl)` or the "</span>
+</span><span data-line="833">            <span class="s2">"`@nw.register_transform('name')` class decorator."</span>
+</span><span data-line="834">        <span class="p">)</span>
+</span><span data-line="835">    <span class="k">return</span> <span class="n">transforms</span><span class="p">[</span><span class="n">name</span><span class="p">]</span></div>
+
+</span><span data-line="836">
+</span><span data-line="837">
 <div class="viewcode-block" id="list_transforms">
 <a class="viewcode-back" href="../../_autosummary/nw.html#nw.list_transforms">[docs]</a>
-</span><span data-line="826"><span class="k">def</span><span class="w"> </span><span class="nf">list_transforms</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-</span><span data-line="827"><span class="w">    </span><span class="sd">"""Return all registered Transform names (sorted)."""</span>
-</span><span data-line="828">    <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">transforms</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
+</span><span data-line="838"><span class="k">def</span><span class="w"> </span><span class="nf">list_transforms</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+</span><span data-line="839"><span class="w">    </span><span class="sd">"""Return all registered Transform names (sorted)."""</span>
+</span><span data-line="840">    <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">transforms</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
 
-</span><span data-line="829">
-</span><span data-line="830">
+</span><span data-line="841">
+</span><span data-line="842">
 <div class="viewcode-block" id="transform_catalog">
 <a class="viewcode-back" href="../../_autosummary/nw.html#nw.transform_catalog">[docs]</a>
-</span><span data-line="831"><span class="k">def</span><span class="w"> </span><span class="nf">transform_catalog</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
-</span><span data-line="832"><span class="w">    </span><span class="sd">"""Every registered Transform as a JSON-able capability entry (sorted by name).</span>
-</span><span data-line="833">
-</span><span data-line="834"><span class="sd">    The typed-capability surface an HTTP route / MCP tool builder / agent</span>
-</span><span data-line="835"><span class="sd">    serves or selects from, mirroring :func:`nw.genre_catalog` (nw#28): a</span>
-</span><span data-line="836"><span class="sd">    consumer needs no registry-internal knowledge to render or compose.</span>
-</span><span data-line="837"><span class="sd">    Entry shape::</span>
-</span><span data-line="838">
-</span><span data-line="839"><span class="sd">        {name, input_kinds, output_kind, is_batch, generate_when,</span>
-</span><span data-line="840"><span class="sd">         impl_version, params_schema}</span>
-</span><span data-line="841">
-</span><span data-line="842"><span class="sd">    ``name`` is the registry key (the addressable name). ``params_schema``</span>
-</span><span data-line="843"><span class="sd">    is the params model's JSON Schema — ``{}`` for a Transform with no</span>
-</span><span data-line="844"><span class="sd">    params — and is what an MCP tool definition is built from. The whole</span>
-</span><span data-line="845"><span class="sd">    list is JSON-serializable as returned.</span>
-</span><span data-line="846"><span class="sd">    """</span>
-</span><span data-line="847">    <span class="n">entries</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span data-line="848">    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">list_transforms</span><span class="p">():</span>
-</span><span data-line="849">        <span class="n">transform</span> <span class="o">=</span> <span class="n">transforms</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
-</span><span data-line="850">        <span class="n">params_model</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">transform</span><span class="p">,</span> <span class="s2">"params_model"</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">))</span>
-</span><span data-line="851">        <span class="n">entries</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-</span><span data-line="852">            <span class="p">{</span>
-</span><span data-line="853">                <span class="s2">"name"</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
-</span><span data-line="854">                <span class="s2">"input_kinds"</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">transform</span><span class="o">.</span><span class="n">input_kinds</span><span class="p">),</span>
-</span><span data-line="855">                <span class="s2">"output_kind"</span><span class="p">:</span> <span class="n">transform</span><span class="o">.</span><span class="n">output_kind</span><span class="p">,</span>
-</span><span data-line="856">                <span class="s2">"is_batch"</span><span class="p">:</span> <span class="n">transform</span><span class="o">.</span><span class="n">is_batch</span><span class="p">,</span>
-</span><span data-line="857">                <span class="s2">"generate_when"</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span>
-</span><span data-line="858">                    <span class="n">transform</span><span class="p">,</span> <span class="s2">"generate_when"</span><span class="p">,</span> <span class="n">DFLT_GENERATE_WHEN</span>
-</span><span data-line="859">                <span class="p">),</span>
-</span><span data-line="860">                <span class="s2">"impl_version"</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">transform</span><span class="p">,</span> <span class="s2">"impl_version"</span><span class="p">,</span> <span class="n">DFLT_IMPL_VERSION</span><span class="p">),</span>
-</span><span data-line="861">                <span class="s2">"params_schema"</span><span class="p">:</span> <span class="p">(</span>
-</span><span data-line="862">                    <span class="p">{}</span>
-</span><span data-line="863">                    <span class="k">if</span> <span class="n">params_model</span> <span class="ow">is</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
-</span><span data-line="864">                    <span class="k">else</span> <span class="n">params_model</span><span class="o">.</span><span class="n">model_json_schema</span><span class="p">()</span>
-</span><span data-line="865">                <span class="p">),</span>
-</span><span data-line="866">            <span class="p">}</span>
-</span><span data-line="867">        <span class="p">)</span>
-</span><span data-line="868">    <span class="k">return</span> <span class="n">entries</span></div>
+</span><span data-line="843"><span class="k">def</span><span class="w"> </span><span class="nf">transform_catalog</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
+</span><span data-line="844"><span class="w">    </span><span class="sd">"""Every registered Transform as a JSON-able capability entry (sorted by name).</span>
+</span><span data-line="845">
+</span><span data-line="846"><span class="sd">    The typed-capability surface an HTTP route / MCP tool builder / agent</span>
+</span><span data-line="847"><span class="sd">    serves or selects from, mirroring :func:`nw.genre_catalog` (nw#28): a</span>
+</span><span data-line="848"><span class="sd">    consumer needs no registry-internal knowledge to render or compose.</span>
+</span><span data-line="849"><span class="sd">    Entry shape::</span>
+</span><span data-line="850">
+</span><span data-line="851"><span class="sd">        {name, input_kinds, output_kind, is_batch, generate_when,</span>
+</span><span data-line="852"><span class="sd">         impl_version, params_schema}</span>
+</span><span data-line="853">
+</span><span data-line="854"><span class="sd">    ``name`` is the registry key (the addressable name). ``params_schema``</span>
+</span><span data-line="855"><span class="sd">    is the params model's JSON Schema — ``{}`` for a Transform with no</span>
+</span><span data-line="856"><span class="sd">    params — and is what an MCP tool definition is built from. The whole</span>
+</span><span data-line="857"><span class="sd">    list is JSON-serializable as returned.</span>
+</span><span data-line="858"><span class="sd">    """</span>
+</span><span data-line="859">    <span class="n">entries</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span data-line="860">    <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">list_transforms</span><span class="p">():</span>
+</span><span data-line="861">        <span class="n">transform</span> <span class="o">=</span> <span class="n">transforms</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+</span><span data-line="862">        <span class="n">params_model</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">transform</span><span class="p">,</span> <span class="s2">"params_model"</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">))</span>
+</span><span data-line="863">        <span class="n">entries</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+</span><span data-line="864">            <span class="p">{</span>
+</span><span data-line="865">                <span class="s2">"name"</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+</span><span data-line="866">                <span class="s2">"input_kinds"</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">transform</span><span class="o">.</span><span class="n">input_kinds</span><span class="p">),</span>
+</span><span data-line="867">                <span class="s2">"output_kind"</span><span class="p">:</span> <span class="n">transform</span><span class="o">.</span><span class="n">output_kind</span><span class="p">,</span>
+</span><span data-line="868">                <span class="s2">"is_batch"</span><span class="p">:</span> <span class="n">transform</span><span class="o">.</span><span class="n">is_batch</span><span class="p">,</span>
+</span><span data-line="869">                <span class="s2">"generate_when"</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span>
+</span><span data-line="870">                    <span class="n">transform</span><span class="p">,</span> <span class="s2">"generate_when"</span><span class="p">,</span> <span class="n">DFLT_GENERATE_WHEN</span>
+</span><span data-line="871">                <span class="p">),</span>
+</span><span data-line="872">                <span class="s2">"impl_version"</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">transform</span><span class="p">,</span> <span class="s2">"impl_version"</span><span class="p">,</span> <span class="n">DFLT_IMPL_VERSION</span><span class="p">),</span>
+</span><span data-line="873">                <span class="s2">"params_schema"</span><span class="p">:</span> <span class="p">(</span>
+</span><span data-line="874">                    <span class="p">{}</span>
+</span><span data-line="875">                    <span class="k">if</span> <span class="n">params_model</span> <span class="ow">is</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="876">                    <span class="k">else</span> <span class="n">params_model</span><span class="o">.</span><span class="n">model_json_schema</span><span class="p">()</span>
+</span><span data-line="877">                <span class="p">),</span>
+</span><span data-line="878">            <span class="p">}</span>
+</span><span data-line="879">        <span class="p">)</span>
+</span><span data-line="880">    <span class="k">return</span> <span class="n">entries</span></div>
 
-</span><span data-line="869">
-</span><span data-line="870">
-</span><span data-line="871"><span class="c1"># --- import adapters so the built-in render-strategy Transforms self-register</span>
-</span><span data-line="872"><span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">_adapters</span> <span class="k">as</span> <span class="n">_adapters</span>  <span class="c1"># noqa: E402,F401</span>
-</span><span data-line="873">
-</span><span data-line="874">
-</span><span data-line="875"><span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-</span><span data-line="876">    <span class="s2">"Transform"</span><span class="p">,</span>
-</span><span data-line="877">    <span class="s2">"TransformInputs"</span><span class="p">,</span>
-</span><span data-line="878">    <span class="s2">"TransformResult"</span><span class="p">,</span>
-</span><span data-line="879">    <span class="s2">"BaseTransform"</span><span class="p">,</span>
-</span><span data-line="880">    <span class="s2">"DFLT_IMPL_VERSION"</span><span class="p">,</span>
-</span><span data-line="881">    <span class="s2">"transforms"</span><span class="p">,</span>
-</span><span data-line="882">    <span class="s2">"register_transform"</span><span class="p">,</span>
-</span><span data-line="883">    <span class="s2">"get_transform"</span><span class="p">,</span>
-</span><span data-line="884">    <span class="s2">"list_transforms"</span><span class="p">,</span>
-</span><span data-line="885">    <span class="s2">"transform_catalog"</span><span class="p">,</span>
-</span><span data-line="886">    <span class="s2">"stamp_transform_identity"</span><span class="p">,</span>
-</span><span data-line="887">    <span class="s2">"CacheModeConflict"</span><span class="p">,</span>
-</span><span data-line="888">    <span class="s2">"resolve_cache_mode"</span><span class="p">,</span>
-</span><span data-line="889">    <span class="s2">"cache_key"</span><span class="p">,</span>
-</span><span data-line="890">    <span class="s2">"cached_output"</span><span class="p">,</span>
-</span><span data-line="891">    <span class="c1"># execution secrets — the per-caller credential seam</span>
-</span><span data-line="892">    <span class="s2">"Secrets"</span><span class="p">,</span>
-</span><span data-line="893">    <span class="s2">"FAL_SECRET"</span><span class="p">,</span>
-</span><span data-line="894">    <span class="s2">"as_secrets"</span><span class="p">,</span>
-</span><span data-line="895">    <span class="s2">"redact"</span><span class="p">,</span>
-</span><span data-line="896">    <span class="s2">"redact_exception"</span><span class="p">,</span>
-</span><span data-line="897">    <span class="s2">"using_secrets"</span><span class="p">,</span>
-</span><span data-line="898">    <span class="c1"># fan-out (nw#26)</span>
-</span><span data-line="899">    <span class="s2">"GenerateWhen"</span><span class="p">,</span>
-</span><span data-line="900">    <span class="s2">"DFLT_GENERATE_WHEN"</span><span class="p">,</span>
-</span><span data-line="901">    <span class="s2">"WORK_ITEM_NAMESPACE"</span><span class="p">,</span>
-</span><span data-line="902">    <span class="s2">"WorkItem"</span><span class="p">,</span>
-</span><span data-line="903">    <span class="s2">"work_item_instance_id"</span><span class="p">,</span>
-</span><span data-line="904">    <span class="s2">"FanOutUnit"</span><span class="p">,</span>
-</span><span data-line="905">    <span class="s2">"FanOutPlan"</span><span class="p">,</span>
-</span><span data-line="906">    <span class="s2">"fan_out_plan"</span><span class="p">,</span>
-</span><span data-line="907">    <span class="s2">"UnitStatus"</span><span class="p">,</span>
-</span><span data-line="908">    <span class="s2">"FanOutItemResult"</span><span class="p">,</span>
-</span><span data-line="909">    <span class="s2">"FanOutResult"</span><span class="p">,</span>
-</span><span data-line="910">    <span class="s2">"fan_out_execute"</span><span class="p">,</span>
-</span><span data-line="911"><span class="p">]</span>
+</span><span data-line="881">
+</span><span data-line="882">
+</span><span data-line="883"><span class="c1"># --- import adapters so the built-in render-strategy Transforms self-register</span>
+</span><span data-line="884"><span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">_adapters</span> <span class="k">as</span> <span class="n">_adapters</span>  <span class="c1"># noqa: E402,F401</span>
+</span><span data-line="885">
+</span><span data-line="886">
+</span><span data-line="887"><span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+</span><span data-line="888">    <span class="s2">"Transform"</span><span class="p">,</span>
+</span><span data-line="889">    <span class="s2">"TransformInputs"</span><span class="p">,</span>
+</span><span data-line="890">    <span class="s2">"TransformResult"</span><span class="p">,</span>
+</span><span data-line="891">    <span class="s2">"BaseTransform"</span><span class="p">,</span>
+</span><span data-line="892">    <span class="s2">"DFLT_IMPL_VERSION"</span><span class="p">,</span>
+</span><span data-line="893">    <span class="s2">"transforms"</span><span class="p">,</span>
+</span><span data-line="894">    <span class="s2">"register_transform"</span><span class="p">,</span>
+</span><span data-line="895">    <span class="s2">"get_transform"</span><span class="p">,</span>
+</span><span data-line="896">    <span class="s2">"list_transforms"</span><span class="p">,</span>
+</span><span data-line="897">    <span class="s2">"transform_catalog"</span><span class="p">,</span>
+</span><span data-line="898">    <span class="s2">"stamp_transform_identity"</span><span class="p">,</span>
+</span><span data-line="899">    <span class="s2">"CacheModeConflict"</span><span class="p">,</span>
+</span><span data-line="900">    <span class="s2">"resolve_cache_mode"</span><span class="p">,</span>
+</span><span data-line="901">    <span class="s2">"cache_key"</span><span class="p">,</span>
+</span><span data-line="902">    <span class="s2">"cached_output"</span><span class="p">,</span>
+</span><span data-line="903">    <span class="c1"># execution secrets — the per-caller credential seam</span>
+</span><span data-line="904">    <span class="s2">"Secrets"</span><span class="p">,</span>
+</span><span data-line="905">    <span class="s2">"FAL_SECRET"</span><span class="p">,</span>
+</span><span data-line="906">    <span class="s2">"as_secrets"</span><span class="p">,</span>
+</span><span data-line="907">    <span class="s2">"redact"</span><span class="p">,</span>
+</span><span data-line="908">    <span class="s2">"redact_exception"</span><span class="p">,</span>
+</span><span data-line="909">    <span class="s2">"using_secrets"</span><span class="p">,</span>
+</span><span data-line="910">    <span class="c1"># fan-out (nw#26)</span>
+</span><span data-line="911">    <span class="s2">"GenerateWhen"</span><span class="p">,</span>
+</span><span data-line="912">    <span class="s2">"DFLT_GENERATE_WHEN"</span><span class="p">,</span>
+</span><span data-line="913">    <span class="s2">"WORK_ITEM_NAMESPACE"</span><span class="p">,</span>
+</span><span data-line="914">    <span class="s2">"WorkItem"</span><span class="p">,</span>
+</span><span data-line="915">    <span class="s2">"work_item_instance_id"</span><span class="p">,</span>
+</span><span data-line="916">    <span class="s2">"FanOutUnit"</span><span class="p">,</span>
+</span><span data-line="917">    <span class="s2">"FanOutPlan"</span><span class="p">,</span>
+</span><span data-line="918">    <span class="s2">"fan_out_plan"</span><span class="p">,</span>
+</span><span data-line="919">    <span class="s2">"UnitStatus"</span><span class="p">,</span>
+</span><span data-line="920">    <span class="s2">"FanOutItemResult"</span><span class="p">,</span>
+</span><span data-line="921">    <span class="s2">"FanOutResult"</span><span class="p">,</span>
+</span><span data-line="922">    <span class="s2">"fan_out_execute"</span><span class="p">,</span>
+</span><span data-line="923"><span class="p">]</span>
 </span></pre></div>
         </article><button class="back-to-top" type="button">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -1125,7 +1137,7 @@ data-aria-dark="Switch to auto color mode">
     </div>
   </div>
 </footer>
-      <script src="../../_static/documentation_options.js?v=b87b3bc5"></script>
+      <script src="../../_static/documentation_options.js?v=8f83b1af"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>

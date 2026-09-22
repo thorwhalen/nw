@@ -83,7 +83,7 @@ are recorded as linked artifacts), see
 | [`project_asset_id`](#nw.project_asset_id)(project)                          | The asset_id used for storyboard panel references.                                                                                   |
 | [`register_genre`](#nw.register_genre)(genre)                              | Register a [`Genre`](#nw.Genre) under its `slug`; returns it for inline use.                       |
 | [`register_strategy`](#nw.register_strategy)(name, impl)                      | Register a strategy.                                                                                                                 |
-| [`register_transform`](#nw.register_transform)(name[, impl])                   | Register a Transform under `name`.                                                                                                   |
+| [`register_transform`](#nw.register_transform)(name[, impl, tags])             | Register a Transform under `name`.                                                                                                   |
 | [`transform_catalog`](#nw.transform_catalog)()                                | Every registered Transform as a JSON-able capability entry (sorted by name).                                                         |
 | [`stamp_transform_identity`](#nw.stamp_transform_identity)(plan, transform)          | Fold `transform.impl_version` into every call's cache identity.                                                                      |
 | [`work_item_instance_id`](#nw.work_item_instance_id)(transform_name, ...)         | The instance id of one fan-out unit: UUIDv5 of `(transform_name, mapping_key)`.                                                      |
@@ -2750,7 +2750,7 @@ Register a strategy. Returns `impl` so it can be used inline.
 * **Return type:**
   [`Strategy`](nw.renderers.html.md#nw.renderers.Strategy)
 
-### nw.register_transform(name, impl=None)
+### nw.register_transform(name, impl=None, , tags=())
 
 Register a Transform under `name`. Two forms:
 
@@ -2776,6 +2776,15 @@ registry’s `on_conflict="error"` — an agent’s unit of work must have a
 declared output type, or “the job runs successfully but produces
 nothing retrievable” becomes invisible to every layer that reports
 success (nw#27).
+
+`tags` is passed straight through to `xdol.Registry.register()`
+(`transforms.keys_with_tag(tag)` / `transforms.search(tags=...)`
+read it back). The field exists so a licence, a capability class, or a
+cost class has somewhere to live *before* the registry opens to
+third-party registrants — nw#29 stays closed to third parties for now
+(see that issue and `misc/docs/Transform Registry — third-party
+extension.md`); this is the one piece of that decision worth doing
+regardless of when, or whether, the registry opens.
 
 * **Return type:**
   `Union`[[`Transform`](#nw.Transform), [`Callable`](https://docs.python.org/3/library/typing.html#typing.Callable)[[[`type`](https://docs.python.org/3/builtins/functions.html#type)], [`type`](https://docs.python.org/3/builtins/functions.html#type)]]

@@ -1,4 +1,4 @@
-> built 2026-09-19 22:46 UTC from 5ea2d5b (main) · nw 0.0.55. Details: build_info.json
+> built 2026-09-22 13:00 UTC from b979f1e (main) · nw 0.0.56. Details: build_info.json
 
 # index.html.md
 
@@ -2961,7 +2961,7 @@ are recorded as linked artifacts), see
 | [`project_asset_id`](_autosummary/nw.html.md#nw.project_asset_id)(project)                          | The asset_id used for storyboard panel references.                                                                                   |
 | [`register_genre`](_autosummary/nw.html.md#nw.register_genre)(genre)                              | Register a [`Genre`](_autosummary/nw.html.md#nw.Genre) under its `slug`; returns it for inline use.                       |
 | [`register_strategy`](_autosummary/nw.html.md#nw.register_strategy)(name, impl)                      | Register a strategy.                                                                                                                 |
-| [`register_transform`](_autosummary/nw.html.md#nw.register_transform)(name[, impl])                   | Register a Transform under `name`.                                                                                                   |
+| [`register_transform`](_autosummary/nw.html.md#nw.register_transform)(name[, impl, tags])             | Register a Transform under `name`.                                                                                                   |
 | [`transform_catalog`](_autosummary/nw.html.md#nw.transform_catalog)()                                | Every registered Transform as a JSON-able capability entry (sorted by name).                                                         |
 | [`stamp_transform_identity`](_autosummary/nw.html.md#nw.stamp_transform_identity)(plan, transform)          | Fold `transform.impl_version` into every call's cache identity.                                                                      |
 | [`work_item_instance_id`](_autosummary/nw.html.md#nw.work_item_instance_id)(transform_name, ...)         | The instance id of one fan-out unit: UUIDv5 of `(transform_name, mapping_key)`.                                                      |
@@ -5628,7 +5628,7 @@ Register a strategy. Returns `impl` so it can be used inline.
 * **Return type:**
   [`Strategy`](_autosummary/nw.renderers.html.md#nw.renderers.Strategy)
 
-### nw.register_transform(name, impl=None)
+### nw.register_transform(name, impl=None, , tags=())
 
 Register a Transform under `name`. Two forms:
 
@@ -5654,6 +5654,15 @@ registry’s `on_conflict="error"` — an agent’s unit of work must have a
 declared output type, or “the job runs successfully but produces
 nothing retrievable” becomes invisible to every layer that reports
 success (nw#27).
+
+`tags` is passed straight through to `xdol.Registry.register()`
+(`transforms.keys_with_tag(tag)` / `transforms.search(tags=...)`
+read it back). The field exists so a licence, a capability class, or a
+cost class has somewhere to live *before* the registry opens to
+third-party registrants — nw#29 stays closed to third parties for now
+(see that issue and `misc/docs/Transform Registry — third-party
+extension.md`); this is the one piece of that decision worth doing
+regardless of when, or whether, the registry opens.
 
 * **Return type:**
   `Union`[[`Transform`](_autosummary/nw.html.md#nw.Transform), [`Callable`](https://docs.python.org/3/library/typing.html#typing.Callable)[[[`type`](https://docs.python.org/3/builtins/functions.html#type)], [`type`](https://docs.python.org/3/builtins/functions.html#type)]]
@@ -8770,7 +8779,7 @@ produce different URLs. The local file paths are byte-stable.
 
 # About this build
 
-This documentation was built on **2026-09-19 22:46 UTC** from commit <a href="https://github.com/thorwhalen/nw/commit/5ea2d5baf3634a2a9854d85acf80c662391ab991"><code>5ea2d5b</code></a> on branch <code>main</code>, for **nw 0.0.55** (from <code>pyproject.toml</code>).
+This documentation was built on **2026-09-22 13:00 UTC** from commit <a href="https://github.com/thorwhalen/nw/commit/b979f1e7ecc6bc49c9d9dce07af16e3b40638797"><code>b979f1e</code></a> on branch <code>main</code>, for **nw 0.0.56** (from <code>pyproject.toml</code>).
 
 #### NOTE
 Nothing suggests a mismatch: the tree was clean at the commit above, and the documented version is the one on PyPI.
@@ -8779,9 +8788,9 @@ Nothing suggests a mismatch: the tree was clean at the commit above, and the doc
 
 |                     |                                                                                                                                                      |
 |---------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Commit              | <a href="https://github.com/thorwhalen/nw/commit/5ea2d5baf3634a2a9854d85acf80c662391ab991"><code>5ea2d5baf3634a2a9854d85acf80c662391ab991</code></a> |
+| Commit              | <a href="https://github.com/thorwhalen/nw/commit/b979f1e7ecc6bc49c9d9dce07af16e3b40638797"><code>b979f1e7ecc6bc49c9d9dce07af16e3b40638797</code></a> |
 | Branch              | <code>main</code>                                                                                                                                    |
-| Tags at this commit | <code>0.0.55</code>                                                                                                                                  |
+| Tags at this commit | <code>0.0.56</code>                                                                                                                                  |
 | Working tree        | clean                                                                                                                                                |
 | Remote              | <code>https://github.com/thorwhalen/nw</code>                                                                                                        |
 
@@ -8790,9 +8799,9 @@ Nothing suggests a mismatch: the tree was clean at the commit above, and the doc
 |              |                                                                                            |
 |--------------|--------------------------------------------------------------------------------------------|
 | Repository   | <code>thorwhalen/nw</code>                                                                 |
-| Run          | <a href="https://github.com/thorwhalen/nw/actions/runs/35474152771">35474152771</a>        |
+| Run          | <a href="https://github.com/thorwhalen/nw/actions/runs/35730381724">35730381724</a>        |
 | Ref          | <code>refs/heads/main</code>                                                               |
-| Event commit | <code>cf5e67ef97e4cee248f9e37b5f272c76c4d738f2</code> (in the history of the built commit) |
+| Event commit | <code>d4385cf9ffbd5fb5e587dd39b0c7eea47b6b9ad2</code> (in the history of the built commit) |
 
 ## Tools
 
@@ -8817,13 +8826,13 @@ Nothing suggests a mismatch: the tree was clean at the commit above, and the doc
 
 ## Package on PyPI
 
-Latest release: <a href="https://pypi.org/project/nw/0.0.55/">0.0.55</a>, the same as the documented version.
+Latest release: <a href="https://pypi.org/project/nw/0.0.56/">0.0.56</a>, the same as the documented version.
 
 ## Reproduce
 
 ```bash
 git clone https://github.com/thorwhalen/nw && cd nw
-git checkout 5ea2d5baf3634a2a9854d85acf80c662391ab991
+git checkout b979f1e7ecc6bc49c9d9dce07af16e3b40638797
 pip install "epythet==0.2.12"
 epythet quickstart . --ignore tests/ scrap/ examples/
 ```
