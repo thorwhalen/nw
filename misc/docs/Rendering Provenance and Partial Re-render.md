@@ -249,13 +249,23 @@ freshness work is sequenced *before* any fan-out primitive.
    stores with `migrate=True` so pre-D5 v1 files upgrade rather than refuse
    (nw#53).
 
-**The artifact tier is now *representable* but still *empty*.** The lineage
+**The artifact tier: the writer exists; producers opt in (nw#55).** The lineage
 graph is complete at the annotation tier (`nw/transforms/_provenance.py`
-`derive_provenance` populates `was_derived_from` on every Transform output) —
-but it populates **annotation ids only**. Nothing in nw yet emits an
-artifact→artifact `AssetId` edge, so the tier where the expensive things live
-still has no lineage. The blocker moved from lacing to nw; that remaining work
-is tracked separately and is not part of nw#9.
+`derive_provenance` populates `was_derived_from` on every Transform output).
+Since nw#55 it also appends the artifact `asset_id`s each input *names* — per a
+declaration made by whoever owns the input's body schema
+(`nw.transforms.register_asset_refs(uri, asset_fields("artifact_id", "images[].artifact_id"))`),
+never by sweeping body keys. An undeclared schema contributes nothing, so
+provenance is byte-identical until a producer declares. The verifying trace
+records artifact parents verbatim (`upstream_assets`): an asset id is its own
+content digest, so it cannot change, only be replaced — and replacing it
+changes the body of the annotation that names it, which that annotation's
+digest already catches. nw declares only `render-result/v1`. Declaring an app
+schema (reelee's panels, braidio's source media) is that app's change, and it
+must ship with one fix: any code comparing `was_derived_from` as a *set* for
+identity (a "fresh equivalent" lookup) must compare the annotation partition
+(`lacing.model.partition_provenance_refs(...)[0]`), or the first run after
+declaring misses its cache.
 
 ### Two verbs, not one
 

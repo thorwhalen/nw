@@ -150,16 +150,23 @@ def test_a_missing_parent_is_skipped_not_fabricated(tmp_path):
     assert d.id in _stale_ids(proj.root)
 
 
-def test_artifact_refs_are_skipped_with_their_reason(tmp_path):
+def test_artifact_refs_are_blessed_and_recorded_verbatim(tmp_path):
+    """nw#55: an artifact parent (64-hex asset id) is its own content digest,
+    so the backfill records it in ``upstream_assets`` beside the annotation
+    parents' digests -- and the row reads fresh. (Until nw#55 this row was
+    skipped as "the annotation-tier trace cannot cover them".)"""
     proj = nw.Project.init(tmp_path / "p")
     a_id = _authored(proj)
     mixed = _legacy_derived(proj, (a_id, "c" * 64), body={"url": "m"})
 
     report = nw.backfill_traces(proj.root, execute=True)
-    assert report["backfilled"] == 0
-    assert [s["annotation_id"] for s in report["skipped"]] == [str(mixed.id)]
-    assert "artifact refs" in report["skipped"][0]["reason"]
-    assert _traced_targets(proj.root) == set()
+    assert report["backfilled"] == 1
+    assert report["skipped"] == []
+    assert _traced_targets(proj.root) == {mixed.id}
+    assert mixed.id not in _stale_ids(proj.root)
+
+    again = nw.backfill_traces(proj.root, execute=True)
+    assert again["already_traced"] == 1 and again["backfilled"] == 0
 
 
 def test_annotations_written_through_the_chokepoint_are_left_alone(tmp_path):

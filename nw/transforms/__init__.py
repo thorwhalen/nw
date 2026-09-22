@@ -883,6 +883,14 @@ def transform_catalog() -> list[dict]:
 # --- import adapters so the built-in render-strategy Transforms self-register
 from . import _adapters as _adapters  # noqa: E402,F401
 
+# --- artifact-tier lineage: which artifacts a body schema names (nw#55)
+from .asset_refs import (  # noqa: E402
+    AssetRefDeclarationError,
+    asset_fields,
+    asset_refs_of,
+    register_asset_refs,
+)
+
 
 __all__ = [
     "Transform",
@@ -920,4 +928,9 @@ __all__ = [
     "FanOutItemResult",
     "FanOutResult",
     "fan_out_execute",
+    # artifact-tier lineage (nw#55)
+    "AssetRefDeclarationError",
+    "asset_fields",
+    "asset_refs_of",
+    "register_asset_refs",
 ]

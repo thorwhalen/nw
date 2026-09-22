@@ -84,19 +84,16 @@ Stated so nobody reads more into the number than is there:
 - **The plan → execute window.** The trace is written when the output is
   *persisted*, so an upstream mutated between planning and writing is
   recorded at its newer value. That needs a concurrent edit during a render.
-- **The artifact tier.** Deliberately out of scope — but for a different
-  reason than this line used to give. Artifact → artifact lineage has been
-  *representable* since thorwhalen/lacing#14 landed (2026-08-16):
-  ``lacing.Provenance.was_derived_from`` is ``list[ProvenanceRef]`` where
-  ``ProvenanceRef = UUID | AssetId``. What keeps it out of scope HERE is that
-  nothing in nw *writes* artifact refs yet: the typed writers
-  (``append_decision``, the ``_put``/``_upsert`` helpers) take
-  ``tuple[UUID, ...]``, and an annotation arriving at
-  :meth:`ProjectGraph.add_annotation` with an asset-id parent is persisted
-  but gets NO verifying trace — the parent never resolves as an annotation,
-  so the trace is declined and the row reads no-trace-stale
-  (thorwhalen/nw#55). This module is the **annotation** tier only until
-  that changes.
+- **An artifact's bytes behind its id.** Artifact parents (64-hex asset
+  ids in ``was_derived_from``, representable since thorwhalen/lacing#14 and
+  written by :func:`~nw.transforms._provenance.derive_provenance` for
+  inputs whose body schema declares its asset fields — nw#55,
+  :mod:`nw.transforms.asset_refs`) are recorded in the trace's
+  ``upstream_assets`` and never re-checked: an asset id *is* the SHA-256 of
+  its bytes, so it cannot change, only be replaced — and replacing it
+  changes the body of the annotation that names it, which that annotation's
+  own digest catches. An artifact parent counts toward "the trace's upstream
+  set is exactly ``was_derived_from``" like any other parent.
 """
 
 from __future__ import annotations
@@ -300,11 +297,17 @@ def _verdicts_for(
             }
         except (ValueError, AttributeError, TypeError):
             return FreshnessVerdict(ann, True, REASON_TRACE_UNREADABLE)
-        if set(recorded) != set(parents):
+        if set(recorded) | set(trace.upstream_assets) != set(parents):
             # The trace does not describe this annotation's current parents —
             # a parent added, removed or rewritten since. Nothing to compare.
             return FreshnessVerdict(ann, True, REASON_TRACE_PARENTS_DIFFER)
         for pid in parents:
+            if not isinstance(pid, UUID):
+                # An artifact parent (64-hex asset id, nw#55): its id IS its
+                # content digest, so it cannot have changed under us — and a
+                # replaced artifact changes the body of the annotation that
+                # names it, which that annotation's own digest catches.
+                continue
             parent = by_id.get(pid)
             if parent is None:
                 return FreshnessVerdict(ann, True, REASON_UPSTREAM_MISSING, pid)
