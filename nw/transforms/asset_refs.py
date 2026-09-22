@@ -59,7 +59,9 @@ from lacing import Annotation
 AssetRefResolver = Callable[[dict], Iterable[Any]]
 """``body -> iterable of asset ids`` (``None`` entries are skipped)."""
 
-_ASSET_ID = re.compile(r"[0-9a-f]{64}")  # always .fullmatch: `$` matches before a trailing "\n"
+_ASSET_ID = re.compile(
+    r"[0-9a-f]{64}"
+)  # always .fullmatch: `$` matches before a trailing "\n"
 
 #: ``{body_schema_uri: resolver}``. Written by :func:`register_asset_refs`.
 _RESOLVERS: dict[str, AssetRefResolver] = {}
