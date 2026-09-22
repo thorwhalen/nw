@@ -776,7 +776,9 @@ class DurationLearningMiddleware(Middleware):
     bucket, never a corrupted one (nw#67 — a 4-render job used to write its
     4-fold duration into the ``image`` bucket single-image jobs read from).
     A job whose *only* key is the coarse one (no model/operation) keeps
-    learning in it as before — it has nowhere else to learn. Two deliberate departures
+    learning in it as before — it has nowhere else to learn. Such a job that
+    really covers N units should still declare ``units``, or it writes its
+    N-fold duration into the shared bucket, exactly as before nw#67. Two deliberate departures
     from ``au``'s built-in metrics:
 
     - **Self-timed** (``time.monotonic`` in ``before_compute`` → ``after_compute``)
