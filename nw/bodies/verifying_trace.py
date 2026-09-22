@@ -109,8 +109,7 @@ class VerifyingTraceBodyV1(BaseModel):
     upstream: tuple[UpstreamDigestV1, ...] = Field(
         default=(),
         description=(
-            "One entry per distinct annotation parent, in ``was_derived_from`` "
-            "order."
+            "One entry per distinct annotation parent, in ``was_derived_from`` order."
         ),
     )
     upstream_assets: tuple[AssetId, ...] = Field(
