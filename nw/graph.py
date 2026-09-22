@@ -649,7 +649,7 @@ class ProjectGraph:
     # -- verifying traces ----------------------------------------------------
 
     def _verifying_trace_for(
-        self, annotation_id: UUID, parent_ids: Iterable[UUID]
+        self, annotation_id: UUID, parent_ids: Iterable["UUID | str"]
     ) -> Optional[Annotation]:
         """Build the verifying trace for a derived annotation, or ``None``.
 
@@ -661,10 +661,14 @@ class ProjectGraph:
         wanted = tuple(dict.fromkeys(parent_ids))
         if not wanted:
             return None
+        # Only annotation parents are resolved; artifact parents (64-hex
+        # asset ids, nw#55) are recorded verbatim by build_verifying_trace.
         return build_verifying_trace(
             for_annotation_id=annotation_id,
             parent_ids=wanted,
-            upstream=self._resolve_annotations(wanted),
+            upstream=self._resolve_annotations(
+                tuple(p for p in wanted if isinstance(p, UUID))
+            ),
             asset_id=self.asset_id,
         )
 
@@ -1007,19 +1011,11 @@ def backfill_traces(project_root: str | Path, *, execute: bool = False) -> dict:
             else:
                 traced_unusable += 1
             continue
-        alien = [p for p in parents if not isinstance(p, UUID)]
-        if alien:
-            skipped.append(
-                {
-                    "annotation_id": str(ann.id),
-                    "reason": (
-                        "parents include artifact refs (asset ids); the "
-                        "annotation-tier trace cannot cover them (nw#55)"
-                    ),
-                }
-            )
-            continue
-        missing = [p for p in parents if p not in by_id]
+        # Artifact parents (64-hex asset ids, nw#55) need no resolving: an
+        # asset id is its own content digest, so the trace records it as is.
+        # Every rule below is about the ANNOTATION parents.
+        ann_parents = tuple(p for p in parents if isinstance(p, UUID))
+        missing = [p for p in ann_parents if p not in by_id]
         if missing:
             skipped.append(
                 {
@@ -1034,7 +1030,7 @@ def backfill_traces(project_root: str | Path, *, execute: bool = False) -> dict:
             continue
         unplaceable = [
             i
-            for i in (ann.id, *parents)
+            for i in (ann.id, *ann_parents)
             if not by_id[i].provenance.generated_at_is_known
         ]
         if unplaceable:
@@ -1058,7 +1054,7 @@ def backfill_traces(project_root: str | Path, *, execute: bool = False) -> dict:
         own_t = ann.provenance.generated_at_time.to_seconds()
         edited = [
             p
-            for p in parents
+            for p in ann_parents
             if by_id[p].provenance.generated_at_time.to_seconds() > own_t
         ]
         if edited:
@@ -1081,7 +1077,7 @@ def backfill_traces(project_root: str | Path, *, execute: bool = False) -> dict:
         trace = build_verifying_trace(
             for_annotation_id=ann.id,
             parent_ids=parents,
-            upstream=[by_id[p] for p in parents],
+            upstream=[by_id[p] for p in ann_parents],
             asset_id=graph.asset_id,
         )
         if trace is None:
@@ -1137,7 +1133,7 @@ def _trace_is_usable(body, parents: tuple) -> bool:
         recorded = {UUID(u.annotation_id) for u in body.upstream}
     except (ValueError, TypeError, AttributeError):
         return False
-    return recorded == set(parents)
+    return recorded | set(body.upstream_assets) == set(parents)
 
 
 def _trace_target(ann: Annotation) -> Optional[UUID]:

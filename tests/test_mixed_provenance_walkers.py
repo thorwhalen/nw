@@ -2,22 +2,23 @@
 
 Since lacing#14, ``Provenance.was_derived_from`` is ``list[ProvenanceRef]``
 where ``ProvenanceRef = UUID | AssetId`` (64-hex, format-disjoint from a
-UUID). Nothing in nw WRITES asset refs yet, but they can arrive — through
-raw store writes, foreign producers, or the day nw grows the edge-writer —
-and nw#55's audit question was whether the annotation-tier walkers crash,
-lie, or degrade safely on one. Measured answer: they degrade safely, and
-each safe behaviour is pinned here so a refactor that starts crashing on a
-64-hex parent (or silently treating it as a resolvable annotation) goes red.
+UUID). nw writes them itself since nw#55 (``derive_provenance`` reads each
+input's declared asset fields, :mod:`nw.transforms.asset_refs`); they also
+arrive through raw store writes and foreign producers. The audit question was
+whether the annotation-tier walkers crash, lie, or degrade safely on one;
+each behaviour is pinned here so a refactor that starts crashing on a 64-hex
+parent (or silently treating it as a resolvable annotation) goes red.
 
 The audited-safe behaviours:
 
 - reachability (``descendants_of`` / ``derived_from`` / the children index)
   IGNORES asset-id parents — they name artifacts, not annotations;
-- freshness reads a mixed-parent annotation as stale (``no-trace``: the
-  trace chokepoint declines a trace it cannot complete) — over-reporting,
-  the direction the module documents as safe;
-- ``backfill_traces`` skips it with its nw#55 reason rather than blessing a
-  partial trace.
+- a mixed-parent annotation written RAW (bypassing the chokepoint) has no
+  trace and reads ``no-trace`` stale — over-reporting, the safe direction;
+- through the chokepoint it gets a trace whose ``upstream_assets`` records
+  the artifact parents verbatim, and reads fresh; a change to an annotation
+  parent still reads ``upstream-changed`` (nw#55);
+- ``backfill_traces`` blesses it the same way (until nw#55 it was skipped).
 """
 
 from __future__ import annotations
@@ -96,10 +97,9 @@ def test_freshness_reads_mixed_parentage_as_stale_never_crashes(tmp_path):
     assert verdicts[child.id].is_stale
 
 
-def test_the_chokepoint_declines_a_trace_it_cannot_complete(tmp_path):
-    """add_annotation on a mixed-parent annotation persists it TRACE-LESS —
-    a partial trace (UUID parents only) would read fresh while an artifact
-    input changed, which is the unsafe direction."""
+def test_a_raw_write_bypasses_the_chokepoint_and_gets_no_trace(tmp_path):
+    """The fixture writes with ``store.add``, not ``add_annotation`` — the
+    documented way to end up stale forever. No trace is fabricated for it."""
     proj, a_id, mixed, child = _project_with_mixed_parentage(tmp_path)
     from nw.bodies import VERIFYING_TRACE_TIER
 
@@ -111,9 +111,89 @@ def test_the_chokepoint_declines_a_trace_it_cannot_complete(tmp_path):
     assert str(mixed.id) not in trace_targets
 
 
-def test_backfill_skips_mixed_parentage_with_its_reason(tmp_path):
+def test_backfill_blesses_mixed_parentage_recording_the_assets(tmp_path):
     proj, a_id, mixed, child = _project_with_mixed_parentage(tmp_path)
     report = nw.backfill_traces(proj.root, execute=True)
-    skipped = {s["annotation_id"]: s["reason"] for s in report["skipped"]}
-    assert str(mixed.id) in skipped
-    assert "artifact refs" in skipped[str(mixed.id)]
+    assert str(mixed.id) not in {s["annotation_id"] for s in report["skipped"]}
+    verdicts = {v.annotation.id: v for v in nw.freshness.stale_verdicts_all(proj.root)}
+    assert not verdicts[mixed.id].is_stale
+    assert not verdicts[child.id].is_stale
+
+
+def _add_through_chokepoint(proj, parents, url):
+    ann = Annotation(
+        id=uuid4(),
+        tier="render-result",
+        reference=MediaRef(
+            asset_id=proj.graph.asset_id, interval=TimeInterval.from_seconds(0, 0)
+        ),
+        body={"url": url},
+        body_schema_uri="annot://schema/render-result/v1",
+        provenance=Provenance(
+            was_generated_by="transform:test@1",
+            was_attributed_to="agent:test",
+            was_derived_from=list(parents),
+            generated_at_time=RationalTime.now(),
+            activity="derive",
+        ),
+    )
+    proj.graph.add_annotation(ann)
+    return ann
+
+
+def _trace_body(proj, target_id):
+    from nw.bodies import VERIFYING_TRACE_TIER
+
+    (body,) = [
+        a.body
+        for a in nw.iter_all_annotations(proj.root)
+        if a.tier == VERIFYING_TRACE_TIER
+        and isinstance(a.body, dict)
+        and a.body.get("for_annotation_id") == str(target_id)
+    ]
+    return body
+
+
+def test_the_chokepoint_traces_mixed_parentage_and_it_reads_fresh(tmp_path):
+    proj = nw.Project.init(tmp_path / "p")
+    a_id = proj.graph.upsert_section(
+        SectionBodyV1(section_id="s", label="x"),
+        interval=TimeInterval.from_seconds(0, 4),
+    )
+    mixed = _add_through_chokepoint(proj, [a_id, ASSET_REF], "m")
+
+    body = _trace_body(proj, mixed.id)
+    assert body["upstream_assets"] == [ASSET_REF]
+    assert [u["annotation_id"] for u in body["upstream"]] == [str(a_id)]
+    verdicts = {v.annotation.id: v for v in nw.freshness.stale_verdicts_all(proj.root)}
+    assert not verdicts[mixed.id].is_stale
+
+    # Early cutoff still works on the annotation half: change the parent.
+    proj.graph.upsert_section(
+        SectionBodyV1(section_id="s", label="changed"),
+        interval=TimeInterval.from_seconds(0, 4),
+    )
+    verdicts = {v.annotation.id: v for v in nw.freshness.stale_verdicts_all(proj.root)}
+    assert verdicts[mixed.id].is_stale
+    assert verdicts[mixed.id].reason == "upstream-changed"
+
+
+def test_an_asset_only_parentage_is_traced_and_fresh(tmp_path):
+    proj = nw.Project.init(tmp_path / "p")
+    only = _add_through_chokepoint(proj, [ASSET_REF], "o")
+    body = _trace_body(proj, only.id)
+    assert body["upstream"] == [] and body["upstream_assets"] == [ASSET_REF]
+    verdicts = {v.annotation.id: v for v in nw.freshness.stale_verdicts_all(proj.root)}
+    assert not verdicts[only.id].is_stale
+
+
+def test_a_trace_with_no_artifact_parents_is_byte_identical_to_before(tmp_path):
+    """No ``upstream_assets`` key at all when there are none — so an nw that
+    predates the field (``extra="forbid"``) still reads every ordinary trace."""
+    proj = nw.Project.init(tmp_path / "p")
+    a_id = proj.graph.upsert_section(
+        SectionBodyV1(section_id="s", label="x"),
+        interval=TimeInterval.from_seconds(0, 4),
+    )
+    plain = _add_through_chokepoint(proj, [a_id], "p")
+    assert "upstream_assets" not in _trace_body(proj, plain.id)

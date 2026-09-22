@@ -58,6 +58,7 @@ from pydantic import BaseModel, Field
 
 from lacing import Annotation, MediaRef, Provenance, RationalTime, TimeInterval
 from lacing.digest import VALUE_DIGEST_SCHEME, annotation_value_digest
+from lacing.model import AssetId, partition_provenance_refs
 from lacing.schema import register_body_schema
 
 
@@ -108,7 +109,21 @@ class VerifyingTraceBodyV1(BaseModel):
     upstream: tuple[UpstreamDigestV1, ...] = Field(
         default=(),
         description=(
-            "One entry per distinct provenance parent, in ``was_derived_from`` order."
+            "One entry per distinct annotation parent, in ``was_derived_from`` "
+            "order."
+        ),
+    )
+    upstream_assets: tuple[AssetId, ...] = Field(
+        default=(),
+        description=(
+            "The distinct artifact ``asset_id`` parents (64-hex), in "
+            "``was_derived_from`` order (nw#55). Recorded, not digested: an "
+            "asset id IS its content digest, so it cannot change — only be "
+            "replaced, and replacing it changes the body of whichever "
+            "annotation names it, which ``upstream`` already catches. Omitted "
+            "from the stored body when empty, so a trace with no artifact "
+            "parents is byte-identical to one written before this field existed "
+            "(and stays readable by an nw that predates it)."
         ),
     )
 
@@ -119,7 +134,7 @@ register_body_schema(VERIFYING_TRACE_BODY_SCHEMA_URI, VerifyingTraceBodyV1)
 def build_verifying_trace(
     *,
     for_annotation_id: UUID,
-    parent_ids: Iterable[UUID],
+    parent_ids: Iterable["UUID | str"],
     upstream: Sequence[Annotation],
     asset_id: str,
 ) -> Optional[Annotation]:
@@ -127,11 +142,13 @@ def build_verifying_trace(
 
     Args:
         for_annotation_id: Id of the annotation being described.
-        parent_ids: Its ``provenance.was_derived_from``. Duplicates are
-            collapsed, order preserved.
-        upstream: The resolved parent annotations. **Must cover every id in
-            ``parent_ids``** — a trace that omits a parent would let that
-            parent change unnoticed.
+        parent_ids: Its ``provenance.was_derived_from`` — annotation ids
+            (``UUID``) and artifact asset ids (64-hex ``str``, nw#55).
+            Duplicates are collapsed, order preserved.
+        upstream: The resolved parent annotations. **Must cover every
+            annotation id in ``parent_ids``** — a trace that omits a parent
+            would let that parent change unnoticed. Asset ids need no
+            resolving: they are recorded as they are.
         asset_id: The project's asset id, for the sentinel reference.
 
     Returns:
@@ -145,10 +162,11 @@ def build_verifying_trace(
     wanted = tuple(dict.fromkeys(parent_ids))
     if not wanted:
         return None
+    annotation_parents, asset_parents = partition_provenance_refs(list(wanted))
 
     by_id = {a.id: a for a in upstream}
     entries: list[UpstreamDigestV1] = []
-    for pid in wanted:
+    for pid in annotation_parents:
         parent = by_id.get(pid)
         if parent is None:
             return None
@@ -166,12 +184,15 @@ def build_verifying_trace(
         for_annotation_id=str(for_annotation_id),
         digest_scheme=VALUE_DIGEST_SCHEME,
         upstream=tuple(entries),
+        upstream_assets=tuple(asset_parents),
     )
     return Annotation(
         id=_uuid.uuid4(),
         tier=VERIFYING_TRACE_TIER,
         reference=MediaRef(asset_id=asset_id, interval=TimeInterval.from_seconds(0, 0)),
-        body=body.model_dump(mode="json"),
+        body=body.model_dump(
+            mode="json", exclude=set() if asset_parents else {"upstream_assets"}
+        ),
         body_schema_uri=VERIFYING_TRACE_BODY_SCHEMA_URI,
         provenance=Provenance(
             was_generated_by="agent:nw.freshness",
