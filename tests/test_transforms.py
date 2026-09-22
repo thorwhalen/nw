@@ -202,6 +202,38 @@ def test_register_transform_decorator_form():
         transforms.pop("x_to_y.test.deco", None)
 
 
+def test_register_transform_threads_tags_through_both_forms():
+    # nw#29: tags exist so a licence / capability / cost class has somewhere
+    # to live before the registry ever validates one, without waiting on the
+    # larger third-party-extension decision.
+    class _Direct(BaseTransform):
+        name = "x_to_y.test.tagged_direct"
+        output_kind = "annot://schema/test-output/v1"
+
+    try:
+        register_transform(
+            "x_to_y.test.tagged_direct", _Direct(), tags=("license:mit",)
+        )
+        assert "x_to_y.test.tagged_direct" in transforms.keys_with_tag(
+            "license:mit"
+        )
+    finally:
+        transforms.pop("x_to_y.test.tagged_direct", None)
+
+    try:
+
+        @register_transform("x_to_y.test.tagged_deco", tags=("license:mit",))
+        class _Deco(BaseTransform):
+            name = "x_to_y.test.tagged_deco"
+            output_kind = "annot://schema/test-output/v1"
+
+        assert "x_to_y.test.tagged_deco" in transforms.keys_with_tag(
+            "license:mit"
+        )
+    finally:
+        transforms.pop("x_to_y.test.tagged_deco", None)
+
+
 # ---------------------------------------------------------------------------
 # BaseTransform
 # ---------------------------------------------------------------------------
