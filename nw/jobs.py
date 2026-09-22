@@ -313,7 +313,11 @@ def enqueue(
             object raises there. The dict hashes to the identical
             ``plan_hash`` (:func:`_plan_for_identity`) and re-quotes the same
             way, so nothing is lost by serializing it — :func:`estimate`,
-            which never writes a record, accepts either.
+            which never writes a record, accepts either. A ``"units"`` entry
+            (a positive ``int``) says how many ``output_kind`` units the
+            job's wall-time covers — ``4`` for four image renders. Only a job
+            that declares it teaches the shared coarse ``output_kind`` ETA
+            bucket, per unit (nw#67); see :class:`DurationLearningMiddleware`.
         on_event: sink for the render's lifecycle events (reelee wires this to
             its ``agent_log`` / SSE tail). Events are stamped with
             ``job_id``/``run_id`` and mirrored into progress/cost/eta.
@@ -351,12 +355,14 @@ def enqueue(
 
     Raises:
         KeyError: if ``kind`` is not in ``dispatch``.
+        ValueError: if ``params["units"]`` is present but not a positive ``int``.
     """
     rt = _runtime(project, config)
     dispatch = dispatch or {}
     idempotency_key = idempotency_key or _default_idempotency_key(project, kind, params)
     job_id = idempotency_key  # the au store key IS the idempotency key
     label = label or _default_label(kind, params)
+    units = _eta_units(params)
     eta_candidates, output_kind = _eta_candidates(params, config)
 
     with rt.lock:
@@ -388,6 +394,7 @@ def enqueue(
             "finished_at": None,
             "eta_candidates": [list(c) for c in eta_candidates],
             "output_kind": output_kind,
+            "units": units,
             "expected_cache_hit": bool(params.get("expected_cache_hit", False)),
             "cached": False,
             "cancel_requested": False,
@@ -755,9 +762,16 @@ def to_dict(job: Job) -> dict:
 class DurationLearningMiddleware(Middleware):
     """Keyed, percentile duration learner — a cousin of ``au.MetricsMiddleware``.
 
-    Records the render wall-time under every ETA-key candidate for the job, so
-    a cold specific key backs off to a warmer coarse one. Two deliberate
-    departures from ``au``'s built-in metrics:
+    Records the render wall-time under the job's ETA-key candidates, so a cold
+    specific key backs off to a warmer coarse one. The specific ``learned``
+    keys get the whole-job sample. The coarse ``output_kind`` key is **shared
+    across operations** and means *seconds per unit*, so it is written only
+    when the job declared ``params["units"]``, and then with ``elapsed /
+    units``. A job of unknown multiplicity never touches a shared bucket:
+    forgetting ``units`` costs a cold coarse bucket, never a corrupted one
+    (nw#67 — a 4-render job used to write its 4-fold duration into the
+    ``image`` bucket single-image jobs read from). Two deliberate departures
+    from ``au``'s built-in metrics:
 
     - **Self-timed** (``time.monotonic`` in ``before_compute`` → ``after_compute``)
       rather than reading ``result.duration``: ``ThreadBackend`` constructs a
@@ -814,8 +828,14 @@ class DurationLearningMiddleware(Middleware):
             if not record or record.get("cached"):
                 return  # cache-hit (or unknown) → do NOT learn
             candidates = record.get("eta_candidates") or []
-            for cand in candidates:
-                self._record_sample_locked(cand[0], elapsed)
+            units = record.get("units")
+            for key, confidence in (tuple(c[:2]) for c in candidates):
+                if confidence == _COARSE:
+                    if units is None:
+                        continue  # unknown multiplicity: never a shared bucket
+                    self._record_sample_locked(key, elapsed / units)
+                else:
+                    self._record_sample_locked(key, elapsed)
 
     def on_error(self, key: str, error: Exception) -> None:
         with self._lock:
@@ -838,6 +858,7 @@ def predict_total_s(
     *,
     durations: MutableMapping,
     expected_cache_hit: bool = False,
+    units: int | None = None,
     config: JobsConfig = DEFAULT_CONFIG,
 ) -> _Prediction:
     """Predict the total render seconds for a job as ``(p50, p90, confidence)``.
@@ -846,7 +867,12 @@ def predict_total_s(
     ``>= n_min`` samples wins (median, with a real or synthesized p90). Falls
     back through the coarse key, the output-kind key, then the cold prior. An
     all-cache-hit plan short-circuits to ``cache_hit_floor_s`` (``"exact"``).
+
+    ``units`` scales the per-unit answers — a ``learned_coarse`` hit and the
+    cold prior — to the job; a specific ``learned`` key already holds
+    whole-job samples and is returned as is. ``None`` means one.
     """
+    scale = units or 1
     if expected_cache_hit:
         return _Prediction(config.cache_hit_floor_s, config.cache_hit_floor_s, "exact")
     for cand in eta_candidates:
@@ -857,8 +883,10 @@ def predict_total_s(
             p90 = _percentile(samples, 90)
             if p90 is None or p90 < p50:
                 p90 = p50 * config.overrun_factor
+            if conf == _COARSE:
+                p50, p90 = p50 * scale, p90 * scale
             return _Prediction(p50, p90, conf)
-    prior = config.prior_total_s.get(output_kind, config.default_prior_total_s)
+    prior = scale * config.prior_total_s.get(output_kind, config.default_prior_total_s)
     return _Prediction(prior, prior * config.overrun_factor, "prior")
 
 
@@ -1402,6 +1430,7 @@ def _project_job(rt, record, au_result, config) -> Job:
             record.get("output_kind"),
             durations=rt.durations,
             expected_cache_hit=record.get("expected_cache_hit", False),
+            units=record.get("units"),
             config=config,
         )
         predicted_total_s = prediction.p50
@@ -1613,11 +1642,47 @@ def _default_label(kind, params) -> str:
     return pretty
 
 
+#: The confidence tag of the shared, per-unit ``output_kind`` rung of the ladder.
+_COARSE = "learned_coarse"
+
+
+def _eta_units(params) -> int | None:
+    """``params["units"]`` validated: a positive ``int``, or ``None`` when absent.
+
+    >>> _eta_units({}) is None
+    True
+    >>> _eta_units({"units": 4})
+    4
+    >>> _eta_units({"units": True})
+    Traceback (most recent call last):
+    ...
+    ValueError: params['units'] must be a positive int (the number of output_kind units the job covers); got True
+    """
+    if "units" not in params or params["units"] is None:
+        return None
+    units = params["units"]
+    if isinstance(units, bool) or not isinstance(units, int) or units < 1:
+        raise ValueError(
+            "params['units'] must be a positive int (the number of output_kind "
+            f"units the job covers); got {units!r}"
+        )
+    return units
+
+
 def _eta_candidates(params, config):
     """Ordered ``[(key, confidence), …]`` ETA-key candidates (most specific first)
-    plus the inferred output kind."""
+    plus the inferred output kind.
+
+    A job declaring ``units > 1`` gets its own specific keys (suffixed
+    ``|x<units>``), since its whole-job duration is not comparable with the same
+    operation run once. ``units`` absent or ``1`` leaves every key as it was.
+    The coarse ``output_kind`` key is per unit and never suffixed.
+    """
     app = params.get("model") or params.get("application")
     tool = params.get("tool") or params.get("operation")
+    units = _eta_units(params)
+    if app and tool and units is not None and units > 1:
+        tool = f"{tool}|x{units}"
     output_kind = params.get("output_kind") or _infer_output_kind(params, app, tool)
     dur_bucket = _dur_bucket(params.get("duration_s"), config)
 
@@ -1627,7 +1692,7 @@ def _eta_candidates(params, config):
     if app and tool:
         candidates.append((f"{app}|{tool}", "learned"))
     if output_kind:
-        candidates.append((output_kind, "learned_coarse"))
+        candidates.append((output_kind, _COARSE))
     return candidates, output_kind
 
 

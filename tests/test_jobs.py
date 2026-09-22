@@ -1234,3 +1234,119 @@ def test_summarize_does_not_reap_someone_elses_job(project):
 
     assert rows[0].status == jobs.RUNNING, "a read-only summary reaped a job"
     release.set()
+
+
+# ---------------------------------------------------------------------------
+# nw#67 — a multi-unit job must not poison the shared per-unit coarse bucket
+# ---------------------------------------------------------------------------
+
+IMAGE_X4 = {"model": "fal-ai/flux-pro", "operation": "panel_alternates", "units": 4}
+
+
+def _run_to_end(project, kind, params, cfg):
+    release = threading.Event()
+    release.set()
+    job = jobs.enqueue(
+        project, kind, params, dispatch={kind: _blocking_stub(release)}, config=cfg
+    )
+    _poll_until(
+        project, job.job_id, lambda j: j.status in jobs.TERMINAL_STATUSES, config=cfg
+    )
+    return job
+
+
+def test_units_suffix_only_the_specific_keys():
+    cfg = JobsConfig()
+    cands, okind = jobs._eta_candidates(dict(IMAGE_X4, duration_s=6), cfg)
+    keys = [c[0] for c in cands]
+    assert okind == "image"
+    assert keys[0].startswith("fal-ai/flux-pro|panel_alternates|x4|")
+    assert keys[1] == "fal-ai/flux-pro|panel_alternates|x4"
+    assert keys[2] == "image", "the coarse key is per unit and never suffixed"
+
+
+@pytest.mark.parametrize("units", [None, 1])
+def test_units_absent_or_one_leaves_every_key_as_it_was(units):
+    cfg = JobsConfig()
+    params = dict(VIDEO_PARAMS) if units is None else dict(VIDEO_PARAMS, units=units)
+    assert jobs._eta_candidates(params, cfg) == jobs._eta_candidates(VIDEO_PARAMS, cfg)
+
+
+def test_undeclared_units_never_writes_the_coarse_bucket(project):
+    """The exact shape of nw#67: hinted, no units, output_kind inferred ('panel')."""
+    cfg = JobsConfig(n_min=1)
+    rt = jobs._runtime(project, cfg)
+    params = {"model": "fal-ai/flux-pro", "operation": "panel_alternates_x4"}
+    cands, okind = jobs._eta_candidates(params, cfg)
+    assert okind == "image"
+    _run_to_end(project, "panel.alternates", params, cfg)
+    assert len(jobs._durations_get(rt.durations, cands[0][0])) == 1
+    assert jobs._durations_get(rt.durations, "image") == []
+
+
+def test_units_one_writes_the_raw_sample_to_coarse(project):
+    cfg = JobsConfig(n_min=1)
+    rt = jobs._runtime(project, cfg)
+    params = dict(VIDEO_PARAMS, units=1)
+    _run_to_end(project, "panel.animate", params, cfg)
+    cands, _ = jobs._eta_candidates(params, cfg)
+    specific = jobs._durations_get(rt.durations, cands[0][0])
+    coarse = jobs._durations_get(rt.durations, "video")
+    assert len(specific) == 1 and coarse == pytest.approx(specific)
+
+
+def test_units_n_writes_a_per_unit_sample_to_coarse(project):
+    cfg = JobsConfig(n_min=1)
+    rt = jobs._runtime(project, cfg)
+    _run_to_end(project, "panel.alternates", IMAGE_X4, cfg)
+    cands, _ = jobs._eta_candidates(IMAGE_X4, cfg)
+    (whole,) = jobs._durations_get(rt.durations, cands[0][0])
+    (per_unit,) = jobs._durations_get(rt.durations, "image")
+    assert per_unit == pytest.approx(whole / 4)
+
+
+def test_predict_scales_coarse_and_prior_by_units_but_not_specific(project):
+    cfg = JobsConfig(n_min=2)
+    rt = jobs._runtime(project, cfg)
+    cands, okind = jobs._eta_candidates(IMAGE_X4, cfg)
+
+    cold = jobs.predict_total_s(cands, okind, durations=rt.durations, units=4, config=cfg)
+    assert cold.confidence == "prior"
+    assert cold.p50 == 4 * cfg.prior_total_s["image"]
+
+    jobs._durations_put(rt.durations, "image", [10.0, 10.0])
+    coarse = jobs.predict_total_s(cands, okind, durations=rt.durations, units=4, config=cfg)
+    assert coarse.confidence == "learned_coarse"
+    assert coarse.p50 == 40.0 and coarse.p90 >= coarse.p50
+
+    jobs._durations_put(rt.durations, cands[0][0], [50.0, 50.0])
+    specific = jobs.predict_total_s(cands, okind, durations=rt.durations, units=4, config=cfg)
+    assert specific.confidence == "learned"
+    assert specific.p50 == 50.0, "whole-job samples are not scaled again"
+
+
+@pytest.mark.parametrize("bad", [0, -1, "4", True, 2.0])
+def test_enqueue_refuses_a_malformed_units_and_stores_nothing(project, bad):
+    with pytest.raises(ValueError, match="units"):
+        jobs.enqueue(
+            project,
+            "panel.alternates",
+            dict(IMAGE_X4, units=bad),
+            dispatch={"panel.alternates": lambda *a, **k: {}},
+        )
+    assert jobs.list_jobs(project) == []
+
+
+def test_a_running_multi_unit_job_reports_a_scaled_cold_prior(project):
+    release = threading.Event()
+    job = jobs.enqueue(
+        project,
+        "panel.alternates",
+        IMAGE_X4,
+        dispatch={"panel.alternates": _blocking_stub(release)},
+    )
+    running = _poll_until(project, job.job_id, lambda j: j.status == jobs.RUNNING)
+    assert running.confidence == "prior"
+    assert running.predicted_total_s == 4 * jobs.DEFAULT_CONFIG.prior_total_s["image"]
+    release.set()
+    _poll_until(project, job.job_id, lambda j: j.status in jobs.TERMINAL_STATUSES)
