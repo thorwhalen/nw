@@ -95,16 +95,19 @@ Build the trace annotation for one derived annotation, or `None`.
 
 * **Parameters:**
   * **for_annotation_id** ([`UUID`](https://docs.python.org/3/library/uuid.html#uuid.UUID)) – Id of the annotation being described.
-  * **parent_ids** ([`Iterable`](https://docs.python.org/3/library/typing.html#typing.Iterable)[[`UUID`](https://docs.python.org/3/library/uuid.html#uuid.UUID)]) – Its `provenance.was_derived_from`. Duplicates are
-    collapsed, order preserved.
-  * **upstream** ([`Sequence`](https://docs.python.org/3/library/typing.html#typing.Sequence)[`Annotation`]) – The resolved parent annotations. \*\*Must cover every id in
+  * **parent_ids** ([`Iterable`](https://docs.python.org/3/library/typing.html#typing.Iterable)[[`UUID`](https://docs.python.org/3/library/uuid.html#uuid.UUID) | [`str`](https://docs.python.org/3/builtins/stdtypes.html#str)]) – Its `provenance.was_derived_from` — annotation ids
+    (`UUID`) and artifact asset ids (64-hex `str`, nw#55).
+    Duplicates are collapsed, order preserved.
+  * **upstream** ([`Sequence`](https://docs.python.org/3/library/typing.html#typing.Sequence)[`Annotation`]) – The resolved parent annotations. \*\*Must cover every
+    annotation id in 
 
     ```
     ``
     ```
 
-    parent_ids\`\`\*\* — a trace that omits a parent would let that
-    parent change unnoticed.
+    parent_ids\`\`\*\* — a trace that omits a parent
+    would let that parent change unnoticed. Asset ids need no
+    resolving: they are recorded as they are.
   * **asset_id** ([`str`](https://docs.python.org/3/builtins/stdtypes.html#str)) – The project’s asset id, for the sentinel reference.
 * **Return type:**
   [`Optional`](https://docs.python.org/3/library/typing.html#typing.Optional)[`Annotation`]

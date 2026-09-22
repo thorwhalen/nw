@@ -237,19 +237,19 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="84"><span class="sd">- **The plan → execute window.** The trace is written when the output is</span>
 </span><span data-line="85"><span class="sd">  *persisted*, so an upstream mutated between planning and writing is</span>
 </span><span data-line="86"><span class="sd">  recorded at its newer value. That needs a concurrent edit during a render.</span>
-</span><span data-line="87"><span class="sd">- **The artifact tier.** Deliberately out of scope — but for a different</span>
-</span><span data-line="88"><span class="sd">  reason than this line used to give. Artifact → artifact lineage has been</span>
-</span><span data-line="89"><span class="sd">  *representable* since thorwhalen/lacing#14 landed (2026-08-16):</span>
-</span><span data-line="90"><span class="sd">  ``lacing.Provenance.was_derived_from`` is ``list[ProvenanceRef]`` where</span>
-</span><span data-line="91"><span class="sd">  ``ProvenanceRef = UUID | AssetId``. What keeps it out of scope HERE is that</span>
-</span><span data-line="92"><span class="sd">  nothing in nw *writes* artifact refs yet: the typed writers</span>
-</span><span data-line="93"><span class="sd">  (``append_decision``, the ``_put``/``_upsert`` helpers) take</span>
-</span><span data-line="94"><span class="sd">  ``tuple[UUID, ...]``, and an annotation arriving at</span>
-</span><span data-line="95"><span class="sd">  :meth:`ProjectGraph.add_annotation` with an asset-id parent is persisted</span>
-</span><span data-line="96"><span class="sd">  but gets NO verifying trace — the parent never resolves as an annotation,</span>
-</span><span data-line="97"><span class="sd">  so the trace is declined and the row reads no-trace-stale</span>
-</span><span data-line="98"><span class="sd">  (thorwhalen/nw#55). This module is the **annotation** tier only until</span>
-</span><span data-line="99"><span class="sd">  that changes.</span>
+</span><span data-line="87"><span class="sd">- **An artifact's bytes behind its id.** Artifact parents (64-hex asset</span>
+</span><span data-line="88"><span class="sd">  ids in ``was_derived_from``, representable since thorwhalen/lacing#14 and</span>
+</span><span data-line="89"><span class="sd">  written by :func:`~nw.transforms._provenance.derive_provenance` for</span>
+</span><span data-line="90"><span class="sd">  inputs whose body schema declares its asset fields — nw#55,</span>
+</span><span data-line="91"><span class="sd">  :mod:`nw.transforms.asset_refs`) are recorded in the trace's</span>
+</span><span data-line="92"><span class="sd">  ``upstream_assets`` and never re-checked: an asset id *is* the SHA-256 of</span>
+</span><span data-line="93"><span class="sd">  its bytes, so it cannot change, only be replaced — and for a *declared*</span>
+</span><span data-line="94"><span class="sd">  ref, replacing it changes the body of the annotation that names it, which</span>
+</span><span data-line="95"><span class="sd">  that annotation's own digest catches. A ref passed through</span>
+</span><span data-line="96"><span class="sd">  ``derive_provenance(asset_refs=...)`` has no naming annotation, so it is</span>
+</span><span data-line="97"><span class="sd">  trusted as-is: whether that artifact still exists, or has been superseded,</span>
+</span><span data-line="98"><span class="sd">  is not checked. An artifact parent counts toward "the trace's upstream set</span>
+</span><span data-line="99"><span class="sd">  is exactly ``was_derived_from``" like any other parent.</span>
 </span><span data-line="100"><span class="sd">"""</span>
 </span><span data-line="101">
 </span><span data-line="102"><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
@@ -465,117 +465,123 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="300">            <span class="p">}</span>
 </span><span data-line="301">        <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
 </span><span data-line="302">            <span class="k">return</span> <span class="n">FreshnessVerdict</span><span class="p">(</span><span class="n">ann</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">REASON_TRACE_UNREADABLE</span><span class="p">)</span>
-</span><span data-line="303">        <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">recorded</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">set</span><span class="p">(</span><span class="n">parents</span><span class="p">):</span>
+</span><span data-line="303">        <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">recorded</span><span class="p">)</span> <span class="o">|</span> <span class="nb">set</span><span class="p">(</span><span class="n">trace</span><span class="o">.</span><span class="n">upstream_assets</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">set</span><span class="p">(</span><span class="n">parents</span><span class="p">):</span>
 </span><span data-line="304">            <span class="c1"># The trace does not describe this annotation's current parents —</span>
 </span><span data-line="305">            <span class="c1"># a parent added, removed or rewritten since. Nothing to compare.</span>
 </span><span data-line="306">            <span class="k">return</span> <span class="n">FreshnessVerdict</span><span class="p">(</span><span class="n">ann</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">REASON_TRACE_PARENTS_DIFFER</span><span class="p">)</span>
 </span><span data-line="307">        <span class="k">for</span> <span class="n">pid</span> <span class="ow">in</span> <span class="n">parents</span><span class="p">:</span>
-</span><span data-line="308">            <span class="n">parent</span> <span class="o">=</span> <span class="n">by_id</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pid</span><span class="p">)</span>
-</span><span data-line="309">            <span class="k">if</span> <span class="n">parent</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="310">                <span class="k">return</span> <span class="n">FreshnessVerdict</span><span class="p">(</span><span class="n">ann</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">REASON_UPSTREAM_MISSING</span><span class="p">,</span> <span class="n">pid</span><span class="p">)</span>
-</span><span data-line="311">            <span class="c1"># Deliberately no timestamp check on the parent: see the module</span>
-</span><span data-line="312">            <span class="c1"># docstring, "A tick-0 parent is not a verdict".</span>
-</span><span data-line="313">            <span class="k">if</span> <span class="n">pid</span> <span class="ow">in</span> <span class="n">recursion_scope</span><span class="p">:</span>
-</span><span data-line="314">                <span class="k">if</span> <span class="n">pid</span> <span class="ow">in</span> <span class="n">resolving</span><span class="p">:</span>
-</span><span data-line="315">                    <span class="c1"># `pid` is an ancestor still being classified, so this edge</span>
-</span><span data-line="316">                    <span class="c1"># closes a provenance cycle — malformed data. Reported on</span>
-</span><span data-line="317">                    <span class="c1"># the edge that closes it rather than swallowed as a</span>
-</span><span data-line="318">                    <span class="c1"># generic "upstream is stale", which is what a re-entry</span>
-</span><span data-line="319">                    <span class="c1"># guard one level up would have produced (and which no</span>
-</span><span data-line="320">                    <span class="c1"># caller could ever observe).</span>
-</span><span data-line="321">                    <span class="k">return</span> <span class="n">FreshnessVerdict</span><span class="p">(</span><span class="n">ann</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">REASON_PROVENANCE_CYCLE</span><span class="p">,</span> <span class="n">pid</span><span class="p">)</span>
-</span><span data-line="322">                <span class="k">if</span> <span class="n">resolve</span><span class="p">(</span><span class="n">pid</span><span class="p">)</span><span class="o">.</span><span class="n">is_stale</span><span class="p">:</span>
-</span><span data-line="323">                    <span class="k">return</span> <span class="n">FreshnessVerdict</span><span class="p">(</span><span class="n">ann</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">REASON_UPSTREAM_STALE</span><span class="p">,</span> <span class="n">pid</span><span class="p">)</span>
-</span><span data-line="324">            <span class="c1"># ``digest_of`` returns None for a body lacing refuses to digest.</span>
-</span><span data-line="325">            <span class="c1"># None is never equal to a recorded 64-hex digest, so the</span>
-</span><span data-line="326">            <span class="c1"># undigestible case falls to "changed" by construction rather than</span>
-</span><span data-line="327">            <span class="c1"># by a separate branch that no test could distinguish.</span>
-</span><span data-line="328">            <span class="k">if</span> <span class="n">digest_of</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span> <span class="o">!=</span> <span class="n">recorded</span><span class="p">[</span><span class="n">pid</span><span class="p">]:</span>
-</span><span data-line="329">                <span class="k">return</span> <span class="n">FreshnessVerdict</span><span class="p">(</span><span class="n">ann</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">REASON_UPSTREAM_CHANGED</span><span class="p">,</span> <span class="n">pid</span><span class="p">)</span>
-</span><span data-line="330">        <span class="k">return</span> <span class="n">FreshnessVerdict</span><span class="p">(</span><span class="n">ann</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">REASON_FRESH</span><span class="p">)</span>
-</span><span data-line="331">
-</span><span data-line="332">    <span class="n">ordered</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
-</span><span data-line="333">        <span class="p">(</span><span class="n">by_id</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">scope</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">by_id</span><span class="p">),</span>
-</span><span data-line="334">        <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">provenance</span><span class="o">.</span><span class="n">generated_at_time</span><span class="o">.</span><span class="n">to_seconds</span><span class="p">(),</span> <span class="nb">str</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">id</span><span class="p">)),</span>
-</span><span data-line="335">    <span class="p">)</span>
-</span><span data-line="336">    <span class="k">return</span> <span class="p">[</span><span class="n">resolve</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">ordered</span><span class="p">]</span>
+</span><span data-line="308">            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pid</span><span class="p">,</span> <span class="n">UUID</span><span class="p">):</span>
+</span><span data-line="309">                <span class="c1"># An artifact parent (64-hex asset id, nw#55): its id IS its</span>
+</span><span data-line="310">                <span class="c1"># content digest, so it cannot have changed under us — and a</span>
+</span><span data-line="311">                <span class="c1"># replaced artifact changes the body of the annotation that</span>
+</span><span data-line="312">                <span class="c1"># names it, which that annotation's own digest catches.</span>
+</span><span data-line="313">                <span class="k">continue</span>
+</span><span data-line="314">            <span class="n">parent</span> <span class="o">=</span> <span class="n">by_id</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pid</span><span class="p">)</span>
+</span><span data-line="315">            <span class="k">if</span> <span class="n">parent</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="316">                <span class="k">return</span> <span class="n">FreshnessVerdict</span><span class="p">(</span><span class="n">ann</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">REASON_UPSTREAM_MISSING</span><span class="p">,</span> <span class="n">pid</span><span class="p">)</span>
+</span><span data-line="317">            <span class="c1"># Deliberately no timestamp check on the parent: see the module</span>
+</span><span data-line="318">            <span class="c1"># docstring, "A tick-0 parent is not a verdict".</span>
+</span><span data-line="319">            <span class="k">if</span> <span class="n">pid</span> <span class="ow">in</span> <span class="n">recursion_scope</span><span class="p">:</span>
+</span><span data-line="320">                <span class="k">if</span> <span class="n">pid</span> <span class="ow">in</span> <span class="n">resolving</span><span class="p">:</span>
+</span><span data-line="321">                    <span class="c1"># `pid` is an ancestor still being classified, so this edge</span>
+</span><span data-line="322">                    <span class="c1"># closes a provenance cycle — malformed data. Reported on</span>
+</span><span data-line="323">                    <span class="c1"># the edge that closes it rather than swallowed as a</span>
+</span><span data-line="324">                    <span class="c1"># generic "upstream is stale", which is what a re-entry</span>
+</span><span data-line="325">                    <span class="c1"># guard one level up would have produced (and which no</span>
+</span><span data-line="326">                    <span class="c1"># caller could ever observe).</span>
+</span><span data-line="327">                    <span class="k">return</span> <span class="n">FreshnessVerdict</span><span class="p">(</span><span class="n">ann</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">REASON_PROVENANCE_CYCLE</span><span class="p">,</span> <span class="n">pid</span><span class="p">)</span>
+</span><span data-line="328">                <span class="k">if</span> <span class="n">resolve</span><span class="p">(</span><span class="n">pid</span><span class="p">)</span><span class="o">.</span><span class="n">is_stale</span><span class="p">:</span>
+</span><span data-line="329">                    <span class="k">return</span> <span class="n">FreshnessVerdict</span><span class="p">(</span><span class="n">ann</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">REASON_UPSTREAM_STALE</span><span class="p">,</span> <span class="n">pid</span><span class="p">)</span>
+</span><span data-line="330">            <span class="c1"># ``digest_of`` returns None for a body lacing refuses to digest.</span>
+</span><span data-line="331">            <span class="c1"># None is never equal to a recorded 64-hex digest, so the</span>
+</span><span data-line="332">            <span class="c1"># undigestible case falls to "changed" by construction rather than</span>
+</span><span data-line="333">            <span class="c1"># by a separate branch that no test could distinguish.</span>
+</span><span data-line="334">            <span class="k">if</span> <span class="n">digest_of</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span> <span class="o">!=</span> <span class="n">recorded</span><span class="p">[</span><span class="n">pid</span><span class="p">]:</span>
+</span><span data-line="335">                <span class="k">return</span> <span class="n">FreshnessVerdict</span><span class="p">(</span><span class="n">ann</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">REASON_UPSTREAM_CHANGED</span><span class="p">,</span> <span class="n">pid</span><span class="p">)</span>
+</span><span data-line="336">        <span class="k">return</span> <span class="n">FreshnessVerdict</span><span class="p">(</span><span class="n">ann</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">REASON_FRESH</span><span class="p">)</span>
 </span><span data-line="337">
-</span><span data-line="338">
+</span><span data-line="338">    <span class="n">ordered</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span>
+</span><span data-line="339">        <span class="p">(</span><span class="n">by_id</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">scope</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">by_id</span><span class="p">),</span>
+</span><span data-line="340">        <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">provenance</span><span class="o">.</span><span class="n">generated_at_time</span><span class="o">.</span><span class="n">to_seconds</span><span class="p">(),</span> <span class="nb">str</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">id</span><span class="p">)),</span>
+</span><span data-line="341">    <span class="p">)</span>
+</span><span data-line="342">    <span class="k">return</span> <span class="p">[</span><span class="n">resolve</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">id</span><span class="p">)</span> <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">ordered</span><span class="p">]</span>
+</span><span data-line="343">
+</span><span data-line="344">
 <div class="viewcode-block" id="stale_after">
 <a class="viewcode-back" href="../../_autosummary/nw.freshness.html#nw.stale_after">[docs]</a>
-</span><span data-line="339"><span class="k">def</span><span class="w"> </span><span class="nf">stale_after</span><span class="p">(</span><span class="n">project_root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span> <span class="n">changed_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]:</span>
-</span><span data-line="340"><span class="w">    </span><span class="sd">"""Return every annotation that ``changed_id`` actually invalidated.</span>
-</span><span data-line="341">
-</span><span data-line="342"><span class="sd">    The freshness operation. ``changed_id``'s descendants are walked and each</span>
-</span><span data-line="343"><span class="sd">    is checked against the upstream value digests it recorded when it was</span>
-</span><span data-line="344"><span class="sd">    written (:mod:`nw.bodies.verifying_trace`). A descendant whose recorded</span>
-</span><span data-line="345"><span class="sd">    inputs still match the current ones is **not** returned — that is the</span>
-</span><span data-line="346"><span class="sd">    early cutoff, and it is why this is not ``descendants_of`` under another</span>
-</span><span data-line="347"><span class="sd">    name. The full rule, and the four things it deliberately does not catch,</span>
-</span><span data-line="348"><span class="sd">    are in this module's docstring.</span>
-</span><span data-line="349">
-</span><span data-line="350"><span class="sd">    The returned list does NOT include ``changed_id`` itself (it is the source</span>
-</span><span data-line="351"><span class="sd">    of the change, not a stale derivative).</span>
-</span><span data-line="352">
-</span><span data-line="353"><span class="sd">    ``descendants_of`` is unchanged and still answers the reachability</span>
-</span><span data-line="354"><span class="sd">    question — "what is downstream of this?" is legitimate and the two verbs</span>
-</span><span data-line="355"><span class="sd">    are no longer synonyms. Use :func:`stale_verdicts` when you need the</span>
-</span><span data-line="356"><span class="sd">    *reason* a given annotation is in (or out of) this set.</span>
-</span><span data-line="357"><span class="sd">    """</span>
-</span><span data-line="358">    <span class="k">return</span> <span class="p">[</span>
-</span><span data-line="359">        <span class="n">v</span><span class="o">.</span><span class="n">annotation</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">stale_verdicts</span><span class="p">(</span><span class="n">project_root</span><span class="p">,</span> <span class="n">changed_id</span><span class="p">)</span> <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">is_stale</span>
-</span><span data-line="360">    <span class="p">]</span></div>
+</span><span data-line="345"><span class="k">def</span><span class="w"> </span><span class="nf">stale_after</span><span class="p">(</span><span class="n">project_root</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span> <span class="n">changed_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]:</span>
+</span><span data-line="346"><span class="w">    </span><span class="sd">"""Return every annotation that ``changed_id`` actually invalidated.</span>
+</span><span data-line="347">
+</span><span data-line="348"><span class="sd">    The freshness operation. ``changed_id``'s descendants are walked and each</span>
+</span><span data-line="349"><span class="sd">    is checked against the upstream value digests it recorded when it was</span>
+</span><span data-line="350"><span class="sd">    written (:mod:`nw.bodies.verifying_trace`). A descendant whose recorded</span>
+</span><span data-line="351"><span class="sd">    inputs still match the current ones is **not** returned — that is the</span>
+</span><span data-line="352"><span class="sd">    early cutoff, and it is why this is not ``descendants_of`` under another</span>
+</span><span data-line="353"><span class="sd">    name. The full rule, and the four things it deliberately does not catch,</span>
+</span><span data-line="354"><span class="sd">    are in this module's docstring.</span>
+</span><span data-line="355">
+</span><span data-line="356"><span class="sd">    The returned list does NOT include ``changed_id`` itself (it is the source</span>
+</span><span data-line="357"><span class="sd">    of the change, not a stale derivative).</span>
+</span><span data-line="358">
+</span><span data-line="359"><span class="sd">    ``descendants_of`` is unchanged and still answers the reachability</span>
+</span><span data-line="360"><span class="sd">    question — "what is downstream of this?" is legitimate and the two verbs</span>
+</span><span data-line="361"><span class="sd">    are no longer synonyms. Use :func:`stale_verdicts` when you need the</span>
+</span><span data-line="362"><span class="sd">    *reason* a given annotation is in (or out of) this set.</span>
+</span><span data-line="363"><span class="sd">    """</span>
+</span><span data-line="364">    <span class="k">return</span> <span class="p">[</span>
+</span><span data-line="365">        <span class="n">v</span><span class="o">.</span><span class="n">annotation</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">stale_verdicts</span><span class="p">(</span><span class="n">project_root</span><span class="p">,</span> <span class="n">changed_id</span><span class="p">)</span> <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">is_stale</span>
+</span><span data-line="366">    <span class="p">]</span></div>
 
-</span><span data-line="361">
-</span><span data-line="362">
-</span><span data-line="363"><span class="c1"># --- internals ---------------------------------------------------------------</span>
-</span><span data-line="364">
-</span><span data-line="365">
-</span><span data-line="366"><span class="k">def</span><span class="w"> </span><span class="nf">_traces_by_target</span><span class="p">(</span>
-</span><span data-line="367">    <span class="n">annotations</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Annotation</span><span class="p">],</span>
-</span><span data-line="368"><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="n">UUID</span><span class="p">,</span> <span class="n">VerifyingTraceBodyV1</span><span class="p">]:</span>
-</span><span data-line="369"><span class="w">    </span><span class="sd">"""Index verifying traces by the annotation each describes.</span>
+</span><span data-line="367">
+</span><span data-line="368">
+</span><span data-line="369"><span class="c1"># --- internals ---------------------------------------------------------------</span>
 </span><span data-line="370">
-</span><span data-line="371"><span class="sd">    When more than one trace names the same target (an annotation re-added</span>
-</span><span data-line="372"><span class="sd">    under the same id), the most recently generated one wins — it describes</span>
-</span><span data-line="373"><span class="sd">    the state that is actually on disk.</span>
-</span><span data-line="374"><span class="sd">    """</span>
-</span><span data-line="375">    <span class="n">best</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">UUID</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">VerifyingTraceBodyV1</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
-</span><span data-line="376">    <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">annotations</span><span class="p">:</span>
-</span><span data-line="377">        <span class="k">if</span> <span class="n">ann</span><span class="o">.</span><span class="n">body_schema_uri</span> <span class="o">!=</span> <span class="n">VERIFYING_TRACE_BODY_SCHEMA_URI</span><span class="p">:</span>
-</span><span data-line="378">            <span class="k">continue</span>
-</span><span data-line="379">        <span class="k">try</span><span class="p">:</span>
-</span><span data-line="380">            <span class="n">body</span> <span class="o">=</span> <span class="n">VerifyingTraceBodyV1</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
-</span><span data-line="381">            <span class="n">target</span> <span class="o">=</span> <span class="n">UUID</span><span class="p">(</span><span class="n">body</span><span class="o">.</span><span class="n">for_annotation_id</span><span class="p">)</span>
-</span><span data-line="382">        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-</span><span data-line="383">            <span class="k">continue</span>
-</span><span data-line="384">        <span class="n">at</span> <span class="o">=</span> <span class="n">ann</span><span class="o">.</span><span class="n">provenance</span><span class="o">.</span><span class="n">generated_at_time</span><span class="o">.</span><span class="n">to_seconds</span><span class="p">()</span>
-</span><span data-line="385">        <span class="n">current</span> <span class="o">=</span> <span class="n">best</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
-</span><span data-line="386">        <span class="k">if</span> <span class="n">current</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">at</span> <span class="o">&gt;=</span> <span class="n">current</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
-</span><span data-line="387">            <span class="n">best</span><span class="p">[</span><span class="n">target</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">at</span><span class="p">,</span> <span class="n">body</span><span class="p">)</span>
-</span><span data-line="388">    <span class="k">return</span> <span class="p">{</span><span class="n">target</span><span class="p">:</span> <span class="n">body</span> <span class="k">for</span> <span class="n">target</span><span class="p">,</span> <span class="p">(</span><span class="n">_at</span><span class="p">,</span> <span class="n">body</span><span class="p">)</span> <span class="ow">in</span> <span class="n">best</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
-</span><span data-line="389">
-</span><span data-line="390">
-</span><span data-line="391"><span class="k">def</span><span class="w"> </span><span class="nf">_children_index</span><span class="p">(</span><span class="n">annotations</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Annotation</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="n">UUID</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">UUID</span><span class="p">]]:</span>
-</span><span data-line="392"><span class="w">    </span><span class="sd">"""``parent_id -&gt; [child_id, ...]`` over ``provenance.was_derived_from``."""</span>
-</span><span data-line="393">    <span class="n">children</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">UUID</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">UUID</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
-</span><span data-line="394">    <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">annotations</span><span class="p">:</span>
-</span><span data-line="395">        <span class="k">for</span> <span class="n">parent</span> <span class="ow">in</span> <span class="n">ann</span><span class="o">.</span><span class="n">provenance</span><span class="o">.</span><span class="n">was_derived_from</span><span class="p">:</span>
-</span><span data-line="396">            <span class="n">children</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
-</span><span data-line="397">    <span class="k">return</span> <span class="n">children</span>
-</span><span data-line="398">
-</span><span data-line="399">
-</span><span data-line="400"><span class="k">def</span><span class="w"> </span><span class="nf">_reachable_from</span><span class="p">(</span><span class="n">ancestor_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">children</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">UUID</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">UUID</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="n">UUID</span><span class="p">]:</span>
-</span><span data-line="401"><span class="w">    </span><span class="sd">"""Transitive closure of ``children`` from ``ancestor_id``, excluding it."""</span>
-</span><span data-line="402">    <span class="n">seen</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="n">UUID</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
-</span><span data-line="403">    <span class="n">frontier</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">children</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ancestor_id</span><span class="p">,</span> <span class="p">()))</span>
-</span><span data-line="404">    <span class="k">while</span> <span class="n">frontier</span><span class="p">:</span>
-</span><span data-line="405">        <span class="n">cur</span> <span class="o">=</span> <span class="n">frontier</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
-</span><span data-line="406">        <span class="k">if</span> <span class="n">cur</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">:</span>
-</span><span data-line="407">            <span class="k">continue</span>
-</span><span data-line="408">        <span class="n">seen</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">cur</span><span class="p">)</span>
-</span><span data-line="409">        <span class="n">frontier</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">children</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">cur</span><span class="p">,</span> <span class="p">()))</span>
-</span><span data-line="410">    <span class="k">return</span> <span class="n">seen</span>
+</span><span data-line="371">
+</span><span data-line="372"><span class="k">def</span><span class="w"> </span><span class="nf">_traces_by_target</span><span class="p">(</span>
+</span><span data-line="373">    <span class="n">annotations</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Annotation</span><span class="p">],</span>
+</span><span data-line="374"><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="n">UUID</span><span class="p">,</span> <span class="n">VerifyingTraceBodyV1</span><span class="p">]:</span>
+</span><span data-line="375"><span class="w">    </span><span class="sd">"""Index verifying traces by the annotation each describes.</span>
+</span><span data-line="376">
+</span><span data-line="377"><span class="sd">    When more than one trace names the same target (an annotation re-added</span>
+</span><span data-line="378"><span class="sd">    under the same id), the most recently generated one wins — it describes</span>
+</span><span data-line="379"><span class="sd">    the state that is actually on disk.</span>
+</span><span data-line="380"><span class="sd">    """</span>
+</span><span data-line="381">    <span class="n">best</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">UUID</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">VerifyingTraceBodyV1</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span data-line="382">    <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">annotations</span><span class="p">:</span>
+</span><span data-line="383">        <span class="k">if</span> <span class="n">ann</span><span class="o">.</span><span class="n">body_schema_uri</span> <span class="o">!=</span> <span class="n">VERIFYING_TRACE_BODY_SCHEMA_URI</span><span class="p">:</span>
+</span><span data-line="384">            <span class="k">continue</span>
+</span><span data-line="385">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="386">            <span class="n">body</span> <span class="o">=</span> <span class="n">VerifyingTraceBodyV1</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
+</span><span data-line="387">            <span class="n">target</span> <span class="o">=</span> <span class="n">UUID</span><span class="p">(</span><span class="n">body</span><span class="o">.</span><span class="n">for_annotation_id</span><span class="p">)</span>
+</span><span data-line="388">        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+</span><span data-line="389">            <span class="k">continue</span>
+</span><span data-line="390">        <span class="n">at</span> <span class="o">=</span> <span class="n">ann</span><span class="o">.</span><span class="n">provenance</span><span class="o">.</span><span class="n">generated_at_time</span><span class="o">.</span><span class="n">to_seconds</span><span class="p">()</span>
+</span><span data-line="391">        <span class="n">current</span> <span class="o">=</span> <span class="n">best</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+</span><span data-line="392">        <span class="k">if</span> <span class="n">current</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">at</span> <span class="o">&gt;=</span> <span class="n">current</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+</span><span data-line="393">            <span class="n">best</span><span class="p">[</span><span class="n">target</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">at</span><span class="p">,</span> <span class="n">body</span><span class="p">)</span>
+</span><span data-line="394">    <span class="k">return</span> <span class="p">{</span><span class="n">target</span><span class="p">:</span> <span class="n">body</span> <span class="k">for</span> <span class="n">target</span><span class="p">,</span> <span class="p">(</span><span class="n">_at</span><span class="p">,</span> <span class="n">body</span><span class="p">)</span> <span class="ow">in</span> <span class="n">best</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+</span><span data-line="395">
+</span><span data-line="396">
+</span><span data-line="397"><span class="k">def</span><span class="w"> </span><span class="nf">_children_index</span><span class="p">(</span><span class="n">annotations</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Annotation</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="n">UUID</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">UUID</span><span class="p">]]:</span>
+</span><span data-line="398"><span class="w">    </span><span class="sd">"""``parent_id -&gt; [child_id, ...]`` over ``provenance.was_derived_from``."""</span>
+</span><span data-line="399">    <span class="n">children</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">UUID</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">UUID</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span data-line="400">    <span class="k">for</span> <span class="n">ann</span> <span class="ow">in</span> <span class="n">annotations</span><span class="p">:</span>
+</span><span data-line="401">        <span class="k">for</span> <span class="n">parent</span> <span class="ow">in</span> <span class="n">ann</span><span class="o">.</span><span class="n">provenance</span><span class="o">.</span><span class="n">was_derived_from</span><span class="p">:</span>
+</span><span data-line="402">            <span class="n">children</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ann</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+</span><span data-line="403">    <span class="k">return</span> <span class="n">children</span>
+</span><span data-line="404">
+</span><span data-line="405">
+</span><span data-line="406"><span class="k">def</span><span class="w"> </span><span class="nf">_reachable_from</span><span class="p">(</span><span class="n">ancestor_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">children</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">UUID</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">UUID</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="nb">set</span><span class="p">[</span><span class="n">UUID</span><span class="p">]:</span>
+</span><span data-line="407"><span class="w">    </span><span class="sd">"""Transitive closure of ``children`` from ``ancestor_id``, excluding it."""</span>
+</span><span data-line="408">    <span class="n">seen</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="n">UUID</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+</span><span data-line="409">    <span class="n">frontier</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">children</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ancestor_id</span><span class="p">,</span> <span class="p">()))</span>
+</span><span data-line="410">    <span class="k">while</span> <span class="n">frontier</span><span class="p">:</span>
+</span><span data-line="411">        <span class="n">cur</span> <span class="o">=</span> <span class="n">frontier</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+</span><span data-line="412">        <span class="k">if</span> <span class="n">cur</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">:</span>
+</span><span data-line="413">            <span class="k">continue</span>
+</span><span data-line="414">        <span class="n">seen</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">cur</span><span class="p">)</span>
+</span><span data-line="415">        <span class="n">frontier</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">children</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">cur</span><span class="p">,</span> <span class="p">()))</span>
+</span><span data-line="416">    <span class="k">return</span> <span class="n">seen</span>
 </span></pre></div>
         </article><button class="back-to-top" type="button">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -603,7 +609,7 @@ data-aria-dark="Switch to auto color mode">
     </div>
   </div>
 </footer>
-      <script src="../../_static/documentation_options.js?v=2bfb35b6"></script>
+      <script src="../../_static/documentation_options.js?v=c3e19674"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>

@@ -211,138 +211,158 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="58">
 </span><span data-line="59"><span class="kn">from</span><span class="w"> </span><span class="nn">lacing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Annotation</span><span class="p">,</span> <span class="n">MediaRef</span><span class="p">,</span> <span class="n">Provenance</span><span class="p">,</span> <span class="n">RationalTime</span><span class="p">,</span> <span class="n">TimeInterval</span>
 </span><span data-line="60"><span class="kn">from</span><span class="w"> </span><span class="nn">lacing.digest</span><span class="w"> </span><span class="kn">import</span> <span class="n">VALUE_DIGEST_SCHEME</span><span class="p">,</span> <span class="n">annotation_value_digest</span>
-</span><span data-line="61"><span class="kn">from</span><span class="w"> </span><span class="nn">lacing.schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_body_schema</span>
-</span><span data-line="62">
+</span><span data-line="61"><span class="kn">from</span><span class="w"> </span><span class="nn">lacing.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">AssetId</span><span class="p">,</span> <span class="n">partition_provenance_refs</span>
+</span><span data-line="62"><span class="kn">from</span><span class="w"> </span><span class="nn">lacing.schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_body_schema</span>
 </span><span data-line="63">
-</span><span data-line="64"><span class="n">VERIFYING_TRACE_BODY_SCHEMA_URI</span> <span class="o">=</span> <span class="s2">"annot://schema/verifying-trace/v1"</span>
-</span><span data-line="65"><span class="n">VERIFYING_TRACE_TIER</span> <span class="o">=</span> <span class="s2">"verifying-trace"</span>
-</span><span data-line="66">
+</span><span data-line="64">
+</span><span data-line="65"><span class="n">VERIFYING_TRACE_BODY_SCHEMA_URI</span> <span class="o">=</span> <span class="s2">"annot://schema/verifying-trace/v1"</span>
+</span><span data-line="66"><span class="n">VERIFYING_TRACE_TIER</span> <span class="o">=</span> <span class="s2">"verifying-trace"</span>
 </span><span data-line="67">
+</span><span data-line="68">
 <div class="viewcode-block" id="UpstreamDigestV1">
 <a class="viewcode-back" href="../../../_autosummary/nw.bodies.verifying_trace.html#nw.bodies.UpstreamDigestV1">[docs]</a>
-</span><span data-line="68"><span class="k">class</span><span class="w"> </span><span class="nc">UpstreamDigestV1</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-</span><span data-line="69"><span class="w">    </span><span class="sd">"""One ``(upstream annotation, its value digest)`` pair."""</span>
-</span><span data-line="70">
-</span><span data-line="71">    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"frozen"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">"extra"</span><span class="p">:</span> <span class="s2">"forbid"</span><span class="p">}</span>
-</span><span data-line="72">
-</span><span data-line="73">    <span class="n">annotation_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="74">        <span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"UUID (as a string) of the upstream annotation."</span>
-</span><span data-line="75">    <span class="p">)</span>
-</span><span data-line="76">    <span class="n">value_digest</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="77">        <span class="o">...</span><span class="p">,</span>
-</span><span data-line="78">        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
-</span><span data-line="79">            <span class="s2">"``lacing.annotation_value_digest`` of that annotation as it was "</span>
-</span><span data-line="80">            <span class="s2">"when the described output was written."</span>
-</span><span data-line="81">        <span class="p">),</span>
-</span><span data-line="82">    <span class="p">)</span></div>
+</span><span data-line="69"><span class="k">class</span><span class="w"> </span><span class="nc">UpstreamDigestV1</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+</span><span data-line="70"><span class="w">    </span><span class="sd">"""One ``(upstream annotation, its value digest)`` pair."""</span>
+</span><span data-line="71">
+</span><span data-line="72">    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"frozen"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">"extra"</span><span class="p">:</span> <span class="s2">"forbid"</span><span class="p">}</span>
+</span><span data-line="73">
+</span><span data-line="74">    <span class="n">annotation_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="75">        <span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"UUID (as a string) of the upstream annotation."</span>
+</span><span data-line="76">    <span class="p">)</span>
+</span><span data-line="77">    <span class="n">value_digest</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="78">        <span class="o">...</span><span class="p">,</span>
+</span><span data-line="79">        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+</span><span data-line="80">            <span class="s2">"``lacing.annotation_value_digest`` of that annotation as it was "</span>
+</span><span data-line="81">            <span class="s2">"when the described output was written."</span>
+</span><span data-line="82">        <span class="p">),</span>
+</span><span data-line="83">    <span class="p">)</span></div>
 
-</span><span data-line="83">
 </span><span data-line="84">
+</span><span data-line="85">
 <div class="viewcode-block" id="VerifyingTraceBodyV1">
 <a class="viewcode-back" href="../../../_autosummary/nw.bodies.verifying_trace.html#nw.bodies.VerifyingTraceBodyV1">[docs]</a>
-</span><span data-line="85"><span class="k">class</span><span class="w"> </span><span class="nc">VerifyingTraceBodyV1</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-</span><span data-line="86"><span class="w">    </span><span class="sd">"""Body of a verifying-trace annotation.</span>
-</span><span data-line="87">
-</span><span data-line="88"><span class="sd">    ``digest_scheme`` is recorded rather than assumed: lacing documents that</span>
-</span><span data-line="89"><span class="sd">    changing ``VALUE_FIELDS`` or the canonicalisation is a breaking</span>
-</span><span data-line="90"><span class="sd">    cache-invalidation event and bumps the scheme string. A trace written</span>
-</span><span data-line="91"><span class="sd">    under an older scheme is not comparable, so :mod:`nw.freshness` treats</span>
-</span><span data-line="92"><span class="sd">    the mismatch as *unverifiable* (therefore stale) instead of comparing</span>
-</span><span data-line="93"><span class="sd">    digests that mean different things.</span>
-</span><span data-line="94"><span class="sd">    """</span>
-</span><span data-line="95">
-</span><span data-line="96">    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"frozen"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">"extra"</span><span class="p">:</span> <span class="s2">"forbid"</span><span class="p">}</span>
-</span><span data-line="97">
-</span><span data-line="98">    <span class="n">for_annotation_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="99">        <span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"UUID (as a string) of the annotation this trace describes."</span>
-</span><span data-line="100">    <span class="p">)</span>
-</span><span data-line="101">    <span class="n">digest_scheme</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="102">        <span class="o">...</span><span class="p">,</span>
-</span><span data-line="103">        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
-</span><span data-line="104">            <span class="s2">"The ``lacing`` digest scheme the ``upstream`` digests were "</span>
-</span><span data-line="105">            <span class="s2">"computed under (``lacing.digest.VALUE_DIGEST_SCHEME``)."</span>
-</span><span data-line="106">        <span class="p">),</span>
-</span><span data-line="107">    <span class="p">)</span>
-</span><span data-line="108">    <span class="n">upstream</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">UpstreamDigestV1</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-</span><span data-line="109">        <span class="n">default</span><span class="o">=</span><span class="p">(),</span>
-</span><span data-line="110">        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
-</span><span data-line="111">            <span class="s2">"One entry per distinct provenance parent, in ``was_derived_from`` order."</span>
-</span><span data-line="112">        <span class="p">),</span>
-</span><span data-line="113">    <span class="p">)</span></div>
+</span><span data-line="86"><span class="k">class</span><span class="w"> </span><span class="nc">VerifyingTraceBodyV1</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+</span><span data-line="87"><span class="w">    </span><span class="sd">"""Body of a verifying-trace annotation.</span>
+</span><span data-line="88">
+</span><span data-line="89"><span class="sd">    ``digest_scheme`` is recorded rather than assumed: lacing documents that</span>
+</span><span data-line="90"><span class="sd">    changing ``VALUE_FIELDS`` or the canonicalisation is a breaking</span>
+</span><span data-line="91"><span class="sd">    cache-invalidation event and bumps the scheme string. A trace written</span>
+</span><span data-line="92"><span class="sd">    under an older scheme is not comparable, so :mod:`nw.freshness` treats</span>
+</span><span data-line="93"><span class="sd">    the mismatch as *unverifiable* (therefore stale) instead of comparing</span>
+</span><span data-line="94"><span class="sd">    digests that mean different things.</span>
+</span><span data-line="95"><span class="sd">    """</span>
+</span><span data-line="96">
+</span><span data-line="97">    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"frozen"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">"extra"</span><span class="p">:</span> <span class="s2">"forbid"</span><span class="p">}</span>
+</span><span data-line="98">
+</span><span data-line="99">    <span class="n">for_annotation_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="100">        <span class="o">...</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"UUID (as a string) of the annotation this trace describes."</span>
+</span><span data-line="101">    <span class="p">)</span>
+</span><span data-line="102">    <span class="n">digest_scheme</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="103">        <span class="o">...</span><span class="p">,</span>
+</span><span data-line="104">        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+</span><span data-line="105">            <span class="s2">"The ``lacing`` digest scheme the ``upstream`` digests were "</span>
+</span><span data-line="106">            <span class="s2">"computed under (``lacing.digest.VALUE_DIGEST_SCHEME``)."</span>
+</span><span data-line="107">        <span class="p">),</span>
+</span><span data-line="108">    <span class="p">)</span>
+</span><span data-line="109">    <span class="n">upstream</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">UpstreamDigestV1</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="110">        <span class="n">default</span><span class="o">=</span><span class="p">(),</span>
+</span><span data-line="111">        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+</span><span data-line="112">            <span class="s2">"One entry per distinct annotation parent, in ``was_derived_from`` order."</span>
+</span><span data-line="113">        <span class="p">),</span>
+</span><span data-line="114">    <span class="p">)</span>
+</span><span data-line="115">    <span class="n">upstream_assets</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">AssetId</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+</span><span data-line="116">        <span class="n">default</span><span class="o">=</span><span class="p">(),</span>
+</span><span data-line="117">        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+</span><span data-line="118">            <span class="s2">"The distinct artifact ``asset_id`` parents (64-hex), in "</span>
+</span><span data-line="119">            <span class="s2">"``was_derived_from`` order (nw#55). Recorded, not digested: an "</span>
+</span><span data-line="120">            <span class="s2">"asset id IS its content digest, so it cannot change — only be "</span>
+</span><span data-line="121">            <span class="s2">"replaced, and replacing it changes the body of whichever "</span>
+</span><span data-line="122">            <span class="s2">"annotation names it, which ``upstream`` already catches. Omitted "</span>
+</span><span data-line="123">            <span class="s2">"from the stored body when empty, so a trace with no artifact "</span>
+</span><span data-line="124">            <span class="s2">"parents is byte-identical to one written before this field existed "</span>
+</span><span data-line="125">            <span class="s2">"(and stays readable by an nw that predates it)."</span>
+</span><span data-line="126">        <span class="p">),</span>
+</span><span data-line="127">    <span class="p">)</span></div>
 
-</span><span data-line="114">
-</span><span data-line="115">
-</span><span data-line="116"><span class="n">register_body_schema</span><span class="p">(</span><span class="n">VERIFYING_TRACE_BODY_SCHEMA_URI</span><span class="p">,</span> <span class="n">VerifyingTraceBodyV1</span><span class="p">)</span>
-</span><span data-line="117">
-</span><span data-line="118">
+</span><span data-line="128">
+</span><span data-line="129">
+</span><span data-line="130"><span class="n">register_body_schema</span><span class="p">(</span><span class="n">VERIFYING_TRACE_BODY_SCHEMA_URI</span><span class="p">,</span> <span class="n">VerifyingTraceBodyV1</span><span class="p">)</span>
+</span><span data-line="131">
+</span><span data-line="132">
 <div class="viewcode-block" id="build_verifying_trace">
 <a class="viewcode-back" href="../../../_autosummary/nw.bodies.verifying_trace.html#nw.bodies.build_verifying_trace">[docs]</a>
-</span><span data-line="119"><span class="k">def</span><span class="w"> </span><span class="nf">build_verifying_trace</span><span class="p">(</span>
-</span><span data-line="120">    <span class="o">*</span><span class="p">,</span>
-</span><span data-line="121">    <span class="n">for_annotation_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span>
-</span><span data-line="122">    <span class="n">parent_ids</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">UUID</span><span class="p">],</span>
-</span><span data-line="123">    <span class="n">upstream</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Annotation</span><span class="p">],</span>
-</span><span data-line="124">    <span class="n">asset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-</span><span data-line="125"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]:</span>
-</span><span data-line="126"><span class="w">    </span><span class="sd">"""Build the trace annotation for one derived annotation, or ``None``.</span>
-</span><span data-line="127">
-</span><span data-line="128"><span class="sd">    Args:</span>
-</span><span data-line="129"><span class="sd">        for_annotation_id: Id of the annotation being described.</span>
-</span><span data-line="130"><span class="sd">        parent_ids: Its ``provenance.was_derived_from``. Duplicates are</span>
-</span><span data-line="131"><span class="sd">            collapsed, order preserved.</span>
-</span><span data-line="132"><span class="sd">        upstream: The resolved parent annotations. **Must cover every id in</span>
-</span><span data-line="133"><span class="sd">            ``parent_ids``** — a trace that omits a parent would let that</span>
-</span><span data-line="134"><span class="sd">            parent change unnoticed.</span>
-</span><span data-line="135"><span class="sd">        asset_id: The project's asset id, for the sentinel reference.</span>
-</span><span data-line="136">
-</span><span data-line="137"><span class="sd">    Returns:</span>
-</span><span data-line="138"><span class="sd">        The trace annotation, or ``None`` when there is nothing to verify</span>
-</span><span data-line="139"><span class="sd">        (no parents) or the trace would be incomplete (a parent could not be</span>
-</span><span data-line="140"><span class="sd">        resolved, or its value could not be digested). ``None`` is the safe</span>
-</span><span data-line="141"><span class="sd">        answer in both cases: :mod:`nw.freshness` reads *no trace* as</span>
-</span><span data-line="142"><span class="sd">        *unverifiable*, so the annotation keeps today's conservative</span>
-</span><span data-line="143"><span class="sd">        reachability behaviour instead of being silently declared fresh.</span>
-</span><span data-line="144"><span class="sd">    """</span>
-</span><span data-line="145">    <span class="n">wanted</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">parent_ids</span><span class="p">))</span>
-</span><span data-line="146">    <span class="k">if</span> <span class="ow">not</span> <span class="n">wanted</span><span class="p">:</span>
-</span><span data-line="147">        <span class="k">return</span> <span class="kc">None</span>
-</span><span data-line="148">
-</span><span data-line="149">    <span class="n">by_id</span> <span class="o">=</span> <span class="p">{</span><span class="n">a</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">a</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">upstream</span><span class="p">}</span>
-</span><span data-line="150">    <span class="n">entries</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">UpstreamDigestV1</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-</span><span data-line="151">    <span class="k">for</span> <span class="n">pid</span> <span class="ow">in</span> <span class="n">wanted</span><span class="p">:</span>
-</span><span data-line="152">        <span class="n">parent</span> <span class="o">=</span> <span class="n">by_id</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pid</span><span class="p">)</span>
-</span><span data-line="153">        <span class="k">if</span> <span class="n">parent</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="154">            <span class="k">return</span> <span class="kc">None</span>
-</span><span data-line="155">        <span class="k">try</span><span class="p">:</span>
-</span><span data-line="156">            <span class="n">digest</span> <span class="o">=</span> <span class="n">annotation_value_digest</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
-</span><span data-line="157">        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-</span><span data-line="158">            <span class="c1"># A body that cannot be digested (e.g. lacing's</span>
-</span><span data-line="159">            <span class="c1"># NonStringBodyKeyError on a non-JSON key) is broken data at the</span>
-</span><span data-line="160">            <span class="c1"># producer. Recording nothing keeps the consumer conservative;</span>
-</span><span data-line="161">            <span class="c1"># recording a partial trace would not.</span>
-</span><span data-line="162">            <span class="k">return</span> <span class="kc">None</span>
-</span><span data-line="163">        <span class="n">entries</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">UpstreamDigestV1</span><span class="p">(</span><span class="n">annotation_id</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">pid</span><span class="p">),</span> <span class="n">value_digest</span><span class="o">=</span><span class="n">digest</span><span class="p">))</span>
-</span><span data-line="164">
-</span><span data-line="165">    <span class="n">body</span> <span class="o">=</span> <span class="n">VerifyingTraceBodyV1</span><span class="p">(</span>
-</span><span data-line="166">        <span class="n">for_annotation_id</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">for_annotation_id</span><span class="p">),</span>
-</span><span data-line="167">        <span class="n">digest_scheme</span><span class="o">=</span><span class="n">VALUE_DIGEST_SCHEME</span><span class="p">,</span>
-</span><span data-line="168">        <span class="n">upstream</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">entries</span><span class="p">),</span>
-</span><span data-line="169">    <span class="p">)</span>
-</span><span data-line="170">    <span class="k">return</span> <span class="n">Annotation</span><span class="p">(</span>
-</span><span data-line="171">        <span class="nb">id</span><span class="o">=</span><span class="n">_uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">(),</span>
-</span><span data-line="172">        <span class="n">tier</span><span class="o">=</span><span class="n">VERIFYING_TRACE_TIER</span><span class="p">,</span>
-</span><span data-line="173">        <span class="n">reference</span><span class="o">=</span><span class="n">MediaRef</span><span class="p">(</span><span class="n">asset_id</span><span class="o">=</span><span class="n">asset_id</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="n">TimeInterval</span><span class="o">.</span><span class="n">from_seconds</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span>
-</span><span data-line="174">        <span class="n">body</span><span class="o">=</span><span class="n">body</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"json"</span><span class="p">),</span>
-</span><span data-line="175">        <span class="n">body_schema_uri</span><span class="o">=</span><span class="n">VERIFYING_TRACE_BODY_SCHEMA_URI</span><span class="p">,</span>
-</span><span data-line="176">        <span class="n">provenance</span><span class="o">=</span><span class="n">Provenance</span><span class="p">(</span>
-</span><span data-line="177">            <span class="n">was_generated_by</span><span class="o">=</span><span class="s2">"agent:nw.freshness"</span><span class="p">,</span>
-</span><span data-line="178">            <span class="n">was_attributed_to</span><span class="o">=</span><span class="s2">"agent:nw.freshness"</span><span class="p">,</span>
-</span><span data-line="179">            <span class="c1"># Deliberately empty — see the module docstring, property 1.</span>
-</span><span data-line="180">            <span class="n">was_derived_from</span><span class="o">=</span><span class="p">[],</span>
-</span><span data-line="181">            <span class="n">generated_at_time</span><span class="o">=</span><span class="n">RationalTime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
-</span><span data-line="182">            <span class="n">activity</span><span class="o">=</span><span class="s2">"record"</span><span class="p">,</span>
-</span><span data-line="183">        <span class="p">),</span>
-</span><span data-line="184">    <span class="p">)</span></div>
+</span><span data-line="133"><span class="k">def</span><span class="w"> </span><span class="nf">build_verifying_trace</span><span class="p">(</span>
+</span><span data-line="134">    <span class="o">*</span><span class="p">,</span>
+</span><span data-line="135">    <span class="n">for_annotation_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">,</span>
+</span><span data-line="136">    <span class="n">parent_ids</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="s2">"UUID | str"</span><span class="p">],</span>
+</span><span data-line="137">    <span class="n">upstream</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Annotation</span><span class="p">],</span>
+</span><span data-line="138">    <span class="n">asset_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="139"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Annotation</span><span class="p">]:</span>
+</span><span data-line="140"><span class="w">    </span><span class="sd">"""Build the trace annotation for one derived annotation, or ``None``.</span>
+</span><span data-line="141">
+</span><span data-line="142"><span class="sd">    Args:</span>
+</span><span data-line="143"><span class="sd">        for_annotation_id: Id of the annotation being described.</span>
+</span><span data-line="144"><span class="sd">        parent_ids: Its ``provenance.was_derived_from`` — annotation ids</span>
+</span><span data-line="145"><span class="sd">            (``UUID``) and artifact asset ids (64-hex ``str``, nw#55).</span>
+</span><span data-line="146"><span class="sd">            Duplicates are collapsed, order preserved.</span>
+</span><span data-line="147"><span class="sd">        upstream: The resolved parent annotations. **Must cover every</span>
+</span><span data-line="148"><span class="sd">            annotation id in ``parent_ids``** — a trace that omits a parent</span>
+</span><span data-line="149"><span class="sd">            would let that parent change unnoticed. Asset ids need no</span>
+</span><span data-line="150"><span class="sd">            resolving: they are recorded as they are.</span>
+</span><span data-line="151"><span class="sd">        asset_id: The project's asset id, for the sentinel reference.</span>
+</span><span data-line="152">
+</span><span data-line="153"><span class="sd">    Returns:</span>
+</span><span data-line="154"><span class="sd">        The trace annotation, or ``None`` when there is nothing to verify</span>
+</span><span data-line="155"><span class="sd">        (no parents) or the trace would be incomplete (a parent could not be</span>
+</span><span data-line="156"><span class="sd">        resolved, or its value could not be digested). ``None`` is the safe</span>
+</span><span data-line="157"><span class="sd">        answer in both cases: :mod:`nw.freshness` reads *no trace* as</span>
+</span><span data-line="158"><span class="sd">        *unverifiable*, so the annotation keeps today's conservative</span>
+</span><span data-line="159"><span class="sd">        reachability behaviour instead of being silently declared fresh.</span>
+</span><span data-line="160"><span class="sd">    """</span>
+</span><span data-line="161">    <span class="n">wanted</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">dict</span><span class="o">.</span><span class="n">fromkeys</span><span class="p">(</span><span class="n">parent_ids</span><span class="p">))</span>
+</span><span data-line="162">    <span class="k">if</span> <span class="ow">not</span> <span class="n">wanted</span><span class="p">:</span>
+</span><span data-line="163">        <span class="k">return</span> <span class="kc">None</span>
+</span><span data-line="164">    <span class="n">annotation_parents</span><span class="p">,</span> <span class="n">asset_parents</span> <span class="o">=</span> <span class="n">partition_provenance_refs</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">wanted</span><span class="p">))</span>
+</span><span data-line="165">
+</span><span data-line="166">    <span class="n">by_id</span> <span class="o">=</span> <span class="p">{</span><span class="n">a</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="n">a</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">upstream</span><span class="p">}</span>
+</span><span data-line="167">    <span class="n">entries</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">UpstreamDigestV1</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span data-line="168">    <span class="k">for</span> <span class="n">pid</span> <span class="ow">in</span> <span class="n">annotation_parents</span><span class="p">:</span>
+</span><span data-line="169">        <span class="n">parent</span> <span class="o">=</span> <span class="n">by_id</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pid</span><span class="p">)</span>
+</span><span data-line="170">        <span class="k">if</span> <span class="n">parent</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="171">            <span class="k">return</span> <span class="kc">None</span>
+</span><span data-line="172">        <span class="k">try</span><span class="p">:</span>
+</span><span data-line="173">            <span class="n">digest</span> <span class="o">=</span> <span class="n">annotation_value_digest</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+</span><span data-line="174">        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+</span><span data-line="175">            <span class="c1"># A body that cannot be digested (e.g. lacing's</span>
+</span><span data-line="176">            <span class="c1"># NonStringBodyKeyError on a non-JSON key) is broken data at the</span>
+</span><span data-line="177">            <span class="c1"># producer. Recording nothing keeps the consumer conservative;</span>
+</span><span data-line="178">            <span class="c1"># recording a partial trace would not.</span>
+</span><span data-line="179">            <span class="k">return</span> <span class="kc">None</span>
+</span><span data-line="180">        <span class="n">entries</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">UpstreamDigestV1</span><span class="p">(</span><span class="n">annotation_id</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">pid</span><span class="p">),</span> <span class="n">value_digest</span><span class="o">=</span><span class="n">digest</span><span class="p">))</span>
+</span><span data-line="181">
+</span><span data-line="182">    <span class="n">body</span> <span class="o">=</span> <span class="n">VerifyingTraceBodyV1</span><span class="p">(</span>
+</span><span data-line="183">        <span class="n">for_annotation_id</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">for_annotation_id</span><span class="p">),</span>
+</span><span data-line="184">        <span class="n">digest_scheme</span><span class="o">=</span><span class="n">VALUE_DIGEST_SCHEME</span><span class="p">,</span>
+</span><span data-line="185">        <span class="n">upstream</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">entries</span><span class="p">),</span>
+</span><span data-line="186">        <span class="n">upstream_assets</span><span class="o">=</span><span class="nb">tuple</span><span class="p">(</span><span class="n">asset_parents</span><span class="p">),</span>
+</span><span data-line="187">    <span class="p">)</span>
+</span><span data-line="188">    <span class="k">return</span> <span class="n">Annotation</span><span class="p">(</span>
+</span><span data-line="189">        <span class="nb">id</span><span class="o">=</span><span class="n">_uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">(),</span>
+</span><span data-line="190">        <span class="n">tier</span><span class="o">=</span><span class="n">VERIFYING_TRACE_TIER</span><span class="p">,</span>
+</span><span data-line="191">        <span class="n">reference</span><span class="o">=</span><span class="n">MediaRef</span><span class="p">(</span><span class="n">asset_id</span><span class="o">=</span><span class="n">asset_id</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="n">TimeInterval</span><span class="o">.</span><span class="n">from_seconds</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span>
+</span><span data-line="192">        <span class="n">body</span><span class="o">=</span><span class="n">body</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span>
+</span><span data-line="193">            <span class="n">mode</span><span class="o">=</span><span class="s2">"json"</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="nb">set</span><span class="p">()</span> <span class="k">if</span> <span class="n">asset_parents</span> <span class="k">else</span> <span class="p">{</span><span class="s2">"upstream_assets"</span><span class="p">}</span>
+</span><span data-line="194">        <span class="p">),</span>
+</span><span data-line="195">        <span class="n">body_schema_uri</span><span class="o">=</span><span class="n">VERIFYING_TRACE_BODY_SCHEMA_URI</span><span class="p">,</span>
+</span><span data-line="196">        <span class="n">provenance</span><span class="o">=</span><span class="n">Provenance</span><span class="p">(</span>
+</span><span data-line="197">            <span class="n">was_generated_by</span><span class="o">=</span><span class="s2">"agent:nw.freshness"</span><span class="p">,</span>
+</span><span data-line="198">            <span class="n">was_attributed_to</span><span class="o">=</span><span class="s2">"agent:nw.freshness"</span><span class="p">,</span>
+</span><span data-line="199">            <span class="c1"># Deliberately empty — see the module docstring, property 1.</span>
+</span><span data-line="200">            <span class="n">was_derived_from</span><span class="o">=</span><span class="p">[],</span>
+</span><span data-line="201">            <span class="n">generated_at_time</span><span class="o">=</span><span class="n">RationalTime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+</span><span data-line="202">            <span class="n">activity</span><span class="o">=</span><span class="s2">"record"</span><span class="p">,</span>
+</span><span data-line="203">        <span class="p">),</span>
+</span><span data-line="204">    <span class="p">)</span></div>
 
 </span></pre></div>
         </article><button class="back-to-top" type="button">
@@ -371,7 +391,7 @@ data-aria-dark="Switch to auto color mode">
     </div>
   </div>
 </footer>
-      <script src="../../../_static/documentation_options.js?v=2bfb35b6"></script>
+      <script src="../../../_static/documentation_options.js?v=c3e19674"></script>
       <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>

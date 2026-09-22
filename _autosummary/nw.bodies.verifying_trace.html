@@ -290,11 +290,13 @@ digests that mean different things.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>for_annotation_id</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code></a></span>) – Id of the annotation being described.</p></li>
-<li><p><strong>parent_ids</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code></a>]</span>) – Its <code class="docutils literal notranslate"><span class="pre">provenance.was_derived_from</span></code>. Duplicates are
-collapsed, order preserved.</p></li>
-<li><p><strong>upstream</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code>]</span>) – The resolved parent annotations. **Must cover every id in
-<a href="#id1"><span class="problematic" id="id2">``</span></a>parent_ids``** — a trace that omits a parent would let that
-parent change unnoticed.</p></li>
+<li><p><strong>parent_ids</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code></a> | <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</span>) – Its <code class="docutils literal notranslate"><span class="pre">provenance.was_derived_from</span></code> — annotation ids
+(<code class="docutils literal notranslate"><span class="pre">UUID</span></code>) and artifact asset ids (64-hex <code class="docutils literal notranslate"><span class="pre">str</span></code>, nw#55).
+Duplicates are collapsed, order preserved.</p></li>
+<li><p><strong>upstream</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Sequence" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code>]</span>) – The resolved parent annotations. **Must cover every
+annotation id in <a href="#id1"><span class="problematic" id="id2">``</span></a>parent_ids``** — a trace that omits a parent
+would let that parent change unnoticed. Asset ids need no
+resolving: they are recorded as they are.</p></li>
 <li><p><strong>asset_id</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – The project’s asset id, for the sentinel reference.</p></li>
 </ul>
 </dd>
@@ -354,7 +356,7 @@ reachability behaviour instead of being silently declared fresh.</p>
     </div>
   </div>
 </footer>
-      <script src="../_static/documentation_options.js?v=2bfb35b6"></script>
+      <script src="../_static/documentation_options.js?v=c3e19674"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>

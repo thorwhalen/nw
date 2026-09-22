@@ -1,4 +1,4 @@
-> built 2026-09-22 14:21 UTC from 1d6bfd9 (main) · nw 0.0.57. Details: build_info.json
+> built 2026-09-22 15:05 UTC from bc26181 (main) · nw 0.0.58. Details: build_info.json
 
 # index.html.md
 
@@ -1031,16 +1031,19 @@ Build the trace annotation for one derived annotation, or `None`.
 
 * **Parameters:**
   * **for_annotation_id** ([`UUID`](https://docs.python.org/3/library/uuid.html#uuid.UUID)) – Id of the annotation being described.
-  * **parent_ids** ([`Iterable`](https://docs.python.org/3/library/typing.html#typing.Iterable)[[`UUID`](https://docs.python.org/3/library/uuid.html#uuid.UUID)]) – Its `provenance.was_derived_from`. Duplicates are
-    collapsed, order preserved.
-  * **upstream** ([`Sequence`](https://docs.python.org/3/library/typing.html#typing.Sequence)[`Annotation`]) – The resolved parent annotations. \*\*Must cover every id in
+  * **parent_ids** ([`Iterable`](https://docs.python.org/3/library/typing.html#typing.Iterable)[[`UUID`](https://docs.python.org/3/library/uuid.html#uuid.UUID) | [`str`](https://docs.python.org/3/builtins/stdtypes.html#str)]) – Its `provenance.was_derived_from` — annotation ids
+    (`UUID`) and artifact asset ids (64-hex `str`, nw#55).
+    Duplicates are collapsed, order preserved.
+  * **upstream** ([`Sequence`](https://docs.python.org/3/library/typing.html#typing.Sequence)[`Annotation`]) – The resolved parent annotations. \*\*Must cover every
+    annotation id in 
 
     ```
     ``
     ```
 
-    parent_ids\`\`\*\* — a trace that omits a parent would let that
-    parent change unnoticed.
+    parent_ids\`\`\*\* — a trace that omits a parent
+    would let that parent change unnoticed. Asset ids need no
+    resolving: they are recorded as they are.
   * **asset_id** ([`str`](https://docs.python.org/3/builtins/stdtypes.html#str)) – The project’s asset id, for the sentinel reference.
 * **Return type:**
   [`Optional`](https://docs.python.org/3/library/typing.html#typing.Optional)[`Annotation`]
@@ -1383,16 +1386,19 @@ Build the trace annotation for one derived annotation, or `None`.
 
 * **Parameters:**
   * **for_annotation_id** ([`UUID`](https://docs.python.org/3/library/uuid.html#uuid.UUID)) – Id of the annotation being described.
-  * **parent_ids** ([`Iterable`](https://docs.python.org/3/library/typing.html#typing.Iterable)[[`UUID`](https://docs.python.org/3/library/uuid.html#uuid.UUID)]) – Its `provenance.was_derived_from`. Duplicates are
-    collapsed, order preserved.
-  * **upstream** ([`Sequence`](https://docs.python.org/3/library/typing.html#typing.Sequence)[`Annotation`]) – The resolved parent annotations. \*\*Must cover every id in
+  * **parent_ids** ([`Iterable`](https://docs.python.org/3/library/typing.html#typing.Iterable)[[`UUID`](https://docs.python.org/3/library/uuid.html#uuid.UUID) | [`str`](https://docs.python.org/3/builtins/stdtypes.html#str)]) – Its `provenance.was_derived_from` — annotation ids
+    (`UUID`) and artifact asset ids (64-hex `str`, nw#55).
+    Duplicates are collapsed, order preserved.
+  * **upstream** ([`Sequence`](https://docs.python.org/3/library/typing.html#typing.Sequence)[`Annotation`]) – The resolved parent annotations. \*\*Must cover every
+    annotation id in 
 
     ```
     ``
     ```
 
-    parent_ids\`\`\*\* — a trace that omits a parent would let that
-    parent change unnoticed.
+    parent_ids\`\`\*\* — a trace that omits a parent
+    would let that parent change unnoticed. Asset ids need no
+    resolving: they are recorded as they are.
   * **asset_id** ([`str`](https://docs.python.org/3/builtins/stdtypes.html#str)) – The project’s asset id, for the sentinel reference.
 * **Return type:**
   [`Optional`](https://docs.python.org/3/library/typing.html#typing.Optional)[`Annotation`]
@@ -2126,19 +2132,19 @@ Stated so nobody reads more into the number than is there:
 - **The plan → execute window.** The trace is written when the output is
   *persisted*, so an upstream mutated between planning and writing is
   recorded at its newer value. That needs a concurrent edit during a render.
-- **The artifact tier.** Deliberately out of scope — but for a different
-  reason than this line used to give. Artifact → artifact lineage has been
-  *representable* since thorwhalen/lacing#14 landed (2026-08-16):
-  `lacing.Provenance.was_derived_from` is `list[ProvenanceRef]` where
-  `ProvenanceRef = UUID | AssetId`. What keeps it out of scope HERE is that
-  nothing in nw *writes* artifact refs yet: the typed writers
-  (`append_decision`, the `_put`/`_upsert` helpers) take
-  `tuple[UUID, ...]`, and an annotation arriving at
-  `ProjectGraph.add_annotation()` with an asset-id parent is persisted
-  > but gets NO verifying trace — the parent never resolves as an annotation,
-  > so the trace is declined and the row reads no-trace-stale
-  > (thorwhalen/nw#55). This module is the **annotation** tier only until
-  > that changes.
+- **An artifact’s bytes behind its id.** Artifact parents (64-hex asset
+  ids in `was_derived_from`, representable since thorwhalen/lacing#14 and
+  written by `derive_provenance()` for
+  inputs whose body schema declares its asset fields — nw#55,
+  `nw.transforms.asset_refs`) are recorded in the trace’s
+  > `upstream_assets` and never re-checked: an asset id *is* the SHA-256 of
+  > its bytes, so it cannot change, only be replaced — and for a *declared*
+  > ref, replacing it changes the body of the annotation that names it, which
+  > that annotation’s own digest catches. A ref passed through
+  > `derive_provenance(asset_refs=...)` has no naming annotation, so it is
+  > trusted as-is: whether that artifact still exists, or has been superseded,
+  > is not checked. An artifact parent counts toward “the trace’s upstream set
+  > is exactly `was_derived_from`” like any other parent.
 
 ### Module Attributes
 
@@ -8802,7 +8808,7 @@ produce different URLs. The local file paths are byte-stable.
 
 # About this build
 
-This documentation was built on **2026-09-22 14:21 UTC** from commit <a href="https://github.com/thorwhalen/nw/commit/1d6bfd92618331e80d038f3a23027bc6043feda9"><code>1d6bfd9</code></a> on branch <code>main</code>, for **nw 0.0.57** (from <code>pyproject.toml</code>).
+This documentation was built on **2026-09-22 15:05 UTC** from commit <a href="https://github.com/thorwhalen/nw/commit/bc261819f083facdc5323ff381afbd9788c40123"><code>bc26181</code></a> on branch <code>main</code>, for **nw 0.0.58** (from <code>pyproject.toml</code>).
 
 #### NOTE
 Nothing suggests a mismatch: the tree was clean at the commit above, and the documented version is the one on PyPI.
@@ -8811,9 +8817,9 @@ Nothing suggests a mismatch: the tree was clean at the commit above, and the doc
 
 |                     |                                                                                                                                                      |
 |---------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Commit              | <a href="https://github.com/thorwhalen/nw/commit/1d6bfd92618331e80d038f3a23027bc6043feda9"><code>1d6bfd92618331e80d038f3a23027bc6043feda9</code></a> |
+| Commit              | <a href="https://github.com/thorwhalen/nw/commit/bc261819f083facdc5323ff381afbd9788c40123"><code>bc261819f083facdc5323ff381afbd9788c40123</code></a> |
 | Branch              | <code>main</code>                                                                                                                                    |
-| Tags at this commit | <code>0.0.57</code>                                                                                                                                  |
+| Tags at this commit | <code>0.0.58</code>                                                                                                                                  |
 | Working tree        | clean                                                                                                                                                |
 | Remote              | <code>https://github.com/thorwhalen/nw</code>                                                                                                        |
 
@@ -8822,9 +8828,9 @@ Nothing suggests a mismatch: the tree was clean at the commit above, and the doc
 |              |                                                                                            |
 |--------------|--------------------------------------------------------------------------------------------|
 | Repository   | <code>thorwhalen/nw</code>                                                                 |
-| Run          | <a href="https://github.com/thorwhalen/nw/actions/runs/35739354422">35739354422</a>        |
+| Run          | <a href="https://github.com/thorwhalen/nw/actions/runs/35744548402">35744548402</a>        |
 | Ref          | <code>refs/heads/main</code>                                                               |
-| Event commit | <code>7328a2c3548cd980e88f75477ebcdccafa586b74</code> (in the history of the built commit) |
+| Event commit | <code>1735e3029c5b2db35b2d825077d38f260bc90a54</code> (in the history of the built commit) |
 
 ## Tools
 
@@ -8849,13 +8855,13 @@ Nothing suggests a mismatch: the tree was clean at the commit above, and the doc
 
 ## Package on PyPI
 
-Latest release: <a href="https://pypi.org/project/nw/0.0.57/">0.0.57</a>, the same as the documented version.
+Latest release: <a href="https://pypi.org/project/nw/0.0.58/">0.0.58</a>, the same as the documented version.
 
 ## Reproduce
 
 ```bash
 git clone https://github.com/thorwhalen/nw && cd nw
-git checkout 1d6bfd92618331e80d038f3a23027bc6043feda9
+git checkout bc261819f083facdc5323ff381afbd9788c40123
 pip install "epythet==0.2.12"
 epythet quickstart . --ignore tests/ scrap/ examples/
 ```

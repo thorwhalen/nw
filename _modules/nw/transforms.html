@@ -1072,44 +1072,57 @@ data-aria-dark="Switch to auto color mode">
 </span><span data-line="883"><span class="c1"># --- import adapters so the built-in render-strategy Transforms self-register</span>
 </span><span data-line="884"><span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">_adapters</span> <span class="k">as</span> <span class="n">_adapters</span>  <span class="c1"># noqa: E402,F401</span>
 </span><span data-line="885">
-</span><span data-line="886">
-</span><span data-line="887"><span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-</span><span data-line="888">    <span class="s2">"Transform"</span><span class="p">,</span>
-</span><span data-line="889">    <span class="s2">"TransformInputs"</span><span class="p">,</span>
-</span><span data-line="890">    <span class="s2">"TransformResult"</span><span class="p">,</span>
-</span><span data-line="891">    <span class="s2">"BaseTransform"</span><span class="p">,</span>
-</span><span data-line="892">    <span class="s2">"DFLT_IMPL_VERSION"</span><span class="p">,</span>
-</span><span data-line="893">    <span class="s2">"transforms"</span><span class="p">,</span>
-</span><span data-line="894">    <span class="s2">"register_transform"</span><span class="p">,</span>
-</span><span data-line="895">    <span class="s2">"get_transform"</span><span class="p">,</span>
-</span><span data-line="896">    <span class="s2">"list_transforms"</span><span class="p">,</span>
-</span><span data-line="897">    <span class="s2">"transform_catalog"</span><span class="p">,</span>
-</span><span data-line="898">    <span class="s2">"stamp_transform_identity"</span><span class="p">,</span>
-</span><span data-line="899">    <span class="s2">"CacheModeConflict"</span><span class="p">,</span>
-</span><span data-line="900">    <span class="s2">"resolve_cache_mode"</span><span class="p">,</span>
-</span><span data-line="901">    <span class="s2">"cache_key"</span><span class="p">,</span>
-</span><span data-line="902">    <span class="s2">"cached_output"</span><span class="p">,</span>
-</span><span data-line="903">    <span class="c1"># execution secrets — the per-caller credential seam</span>
-</span><span data-line="904">    <span class="s2">"Secrets"</span><span class="p">,</span>
-</span><span data-line="905">    <span class="s2">"FAL_SECRET"</span><span class="p">,</span>
-</span><span data-line="906">    <span class="s2">"as_secrets"</span><span class="p">,</span>
-</span><span data-line="907">    <span class="s2">"redact"</span><span class="p">,</span>
-</span><span data-line="908">    <span class="s2">"redact_exception"</span><span class="p">,</span>
-</span><span data-line="909">    <span class="s2">"using_secrets"</span><span class="p">,</span>
-</span><span data-line="910">    <span class="c1"># fan-out (nw#26)</span>
-</span><span data-line="911">    <span class="s2">"GenerateWhen"</span><span class="p">,</span>
-</span><span data-line="912">    <span class="s2">"DFLT_GENERATE_WHEN"</span><span class="p">,</span>
-</span><span data-line="913">    <span class="s2">"WORK_ITEM_NAMESPACE"</span><span class="p">,</span>
-</span><span data-line="914">    <span class="s2">"WorkItem"</span><span class="p">,</span>
-</span><span data-line="915">    <span class="s2">"work_item_instance_id"</span><span class="p">,</span>
-</span><span data-line="916">    <span class="s2">"FanOutUnit"</span><span class="p">,</span>
-</span><span data-line="917">    <span class="s2">"FanOutPlan"</span><span class="p">,</span>
-</span><span data-line="918">    <span class="s2">"fan_out_plan"</span><span class="p">,</span>
-</span><span data-line="919">    <span class="s2">"UnitStatus"</span><span class="p">,</span>
-</span><span data-line="920">    <span class="s2">"FanOutItemResult"</span><span class="p">,</span>
-</span><span data-line="921">    <span class="s2">"FanOutResult"</span><span class="p">,</span>
-</span><span data-line="922">    <span class="s2">"fan_out_execute"</span><span class="p">,</span>
-</span><span data-line="923"><span class="p">]</span>
+</span><span data-line="886"><span class="c1"># --- artifact-tier lineage: which artifacts a body schema names (nw#55)</span>
+</span><span data-line="887"><span class="kn">from</span><span class="w"> </span><span class="nn">.asset_refs</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>  <span class="c1"># noqa: E402</span>
+</span><span data-line="888">    <span class="n">AssetRefDeclarationError</span><span class="p">,</span>
+</span><span data-line="889">    <span class="n">asset_fields</span><span class="p">,</span>
+</span><span data-line="890">    <span class="n">asset_refs_of</span><span class="p">,</span>
+</span><span data-line="891">    <span class="n">register_asset_refs</span><span class="p">,</span>
+</span><span data-line="892"><span class="p">)</span>
+</span><span data-line="893">
+</span><span data-line="894">
+</span><span data-line="895"><span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+</span><span data-line="896">    <span class="s2">"Transform"</span><span class="p">,</span>
+</span><span data-line="897">    <span class="s2">"TransformInputs"</span><span class="p">,</span>
+</span><span data-line="898">    <span class="s2">"TransformResult"</span><span class="p">,</span>
+</span><span data-line="899">    <span class="s2">"BaseTransform"</span><span class="p">,</span>
+</span><span data-line="900">    <span class="s2">"DFLT_IMPL_VERSION"</span><span class="p">,</span>
+</span><span data-line="901">    <span class="s2">"transforms"</span><span class="p">,</span>
+</span><span data-line="902">    <span class="s2">"register_transform"</span><span class="p">,</span>
+</span><span data-line="903">    <span class="s2">"get_transform"</span><span class="p">,</span>
+</span><span data-line="904">    <span class="s2">"list_transforms"</span><span class="p">,</span>
+</span><span data-line="905">    <span class="s2">"transform_catalog"</span><span class="p">,</span>
+</span><span data-line="906">    <span class="s2">"stamp_transform_identity"</span><span class="p">,</span>
+</span><span data-line="907">    <span class="s2">"CacheModeConflict"</span><span class="p">,</span>
+</span><span data-line="908">    <span class="s2">"resolve_cache_mode"</span><span class="p">,</span>
+</span><span data-line="909">    <span class="s2">"cache_key"</span><span class="p">,</span>
+</span><span data-line="910">    <span class="s2">"cached_output"</span><span class="p">,</span>
+</span><span data-line="911">    <span class="c1"># execution secrets — the per-caller credential seam</span>
+</span><span data-line="912">    <span class="s2">"Secrets"</span><span class="p">,</span>
+</span><span data-line="913">    <span class="s2">"FAL_SECRET"</span><span class="p">,</span>
+</span><span data-line="914">    <span class="s2">"as_secrets"</span><span class="p">,</span>
+</span><span data-line="915">    <span class="s2">"redact"</span><span class="p">,</span>
+</span><span data-line="916">    <span class="s2">"redact_exception"</span><span class="p">,</span>
+</span><span data-line="917">    <span class="s2">"using_secrets"</span><span class="p">,</span>
+</span><span data-line="918">    <span class="c1"># fan-out (nw#26)</span>
+</span><span data-line="919">    <span class="s2">"GenerateWhen"</span><span class="p">,</span>
+</span><span data-line="920">    <span class="s2">"DFLT_GENERATE_WHEN"</span><span class="p">,</span>
+</span><span data-line="921">    <span class="s2">"WORK_ITEM_NAMESPACE"</span><span class="p">,</span>
+</span><span data-line="922">    <span class="s2">"WorkItem"</span><span class="p">,</span>
+</span><span data-line="923">    <span class="s2">"work_item_instance_id"</span><span class="p">,</span>
+</span><span data-line="924">    <span class="s2">"FanOutUnit"</span><span class="p">,</span>
+</span><span data-line="925">    <span class="s2">"FanOutPlan"</span><span class="p">,</span>
+</span><span data-line="926">    <span class="s2">"fan_out_plan"</span><span class="p">,</span>
+</span><span data-line="927">    <span class="s2">"UnitStatus"</span><span class="p">,</span>
+</span><span data-line="928">    <span class="s2">"FanOutItemResult"</span><span class="p">,</span>
+</span><span data-line="929">    <span class="s2">"FanOutResult"</span><span class="p">,</span>
+</span><span data-line="930">    <span class="s2">"fan_out_execute"</span><span class="p">,</span>
+</span><span data-line="931">    <span class="c1"># artifact-tier lineage (nw#55)</span>
+</span><span data-line="932">    <span class="s2">"AssetRefDeclarationError"</span><span class="p">,</span>
+</span><span data-line="933">    <span class="s2">"asset_fields"</span><span class="p">,</span>
+</span><span data-line="934">    <span class="s2">"asset_refs_of"</span><span class="p">,</span>
+</span><span data-line="935">    <span class="s2">"register_asset_refs"</span><span class="p">,</span>
+</span><span data-line="936"><span class="p">]</span>
 </span></pre></div>
         </article><button class="back-to-top" type="button">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -1137,7 +1150,7 @@ data-aria-dark="Switch to auto color mode">
     </div>
   </div>
 </footer>
-      <script src="../../_static/documentation_options.js?v=2bfb35b6"></script>
+      <script src="../../_static/documentation_options.js?v=c3e19674"></script>
       <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
