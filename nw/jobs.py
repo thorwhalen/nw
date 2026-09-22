@@ -458,7 +458,11 @@ def estimate(
     *is* a quote it carries ``caller_estimated_usd`` — what the caller passed,
     reported beside today's number rather than discarded, so a surface can
     show the movement.
+
+    Raises ``ValueError`` on a malformed ``params["units"]``, exactly as
+    :func:`enqueue` does, so the gate never approves what enqueue refuses.
     """
+    _eta_units(params)
     quote = _quote_params(params)
     estimated = _estimated_usd(params, quote=quote)
     has_unknown = estimated is None
@@ -765,12 +769,14 @@ class DurationLearningMiddleware(Middleware):
     Records the render wall-time under the job's ETA-key candidates, so a cold
     specific key backs off to a warmer coarse one. The specific ``learned``
     keys get the whole-job sample. The coarse ``output_kind`` key is **shared
-    across operations** and means *seconds per unit*, so it is written only
-    when the job declared ``params["units"]``, and then with ``elapsed /
-    units``. A job of unknown multiplicity never touches a shared bucket:
-    forgetting ``units`` costs a cold coarse bucket, never a corrupted one
-    (nw#67 — a 4-render job used to write its 4-fold duration into the
-    ``image`` bucket single-image jobs read from). Two deliberate departures
+    across operations** and means *seconds per unit*, so a job that has
+    specific keys writes it only when it declared ``params["units"]``, and
+    then with ``elapsed / units``. Such a job of unknown multiplicity never
+    touches the shared bucket: forgetting ``units`` costs a cold coarse
+    bucket, never a corrupted one (nw#67 — a 4-render job used to write its
+    4-fold duration into the ``image`` bucket single-image jobs read from).
+    A job whose *only* key is the coarse one (no model/operation) keeps
+    learning in it as before — it has nowhere else to learn. Two deliberate departures
     from ``au``'s built-in metrics:
 
     - **Self-timed** (``time.monotonic`` in ``before_compute`` → ``after_compute``)
@@ -827,15 +833,21 @@ class DurationLearningMiddleware(Middleware):
             record = self._index.get(key)
             if not record or record.get("cached"):
                 return  # cache-hit (or unknown) → do NOT learn
-            candidates = record.get("eta_candidates") or []
+            candidates = [tuple(c[:2]) for c in record.get("eta_candidates") or []]
             units = record.get("units")
-            for key, confidence in (tuple(c[:2]) for c in candidates):
-                if confidence == _COARSE:
-                    if units is None:
-                        continue  # unknown multiplicity: never a shared bucket
-                    self._record_sample_locked(key, elapsed / units)
-                else:
+            has_own_key = any(conf != _COARSE for _, conf in candidates)
+            for key, confidence in candidates:
+                if confidence != _COARSE:
                     self._record_sample_locked(key, elapsed)
+                elif units is not None:
+                    self._record_sample_locked(key, elapsed / units)
+                elif not has_own_key:
+                    # The coarse key is this job's only key (no model/operation,
+                    # e.g. an explicit ``output_kind="compute"``): it is the
+                    # job's own history, as it always was.
+                    self._record_sample_locked(key, elapsed)
+                # else: unknown multiplicity and an own key to learn in —
+                # never write the shared per-unit bucket (nw#67).
 
     def on_error(self, key: str, error: Exception) -> None:
         with self._lock:

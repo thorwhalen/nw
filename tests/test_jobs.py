@@ -1350,3 +1350,19 @@ def test_a_running_multi_unit_job_reports_a_scaled_cold_prior(project):
     assert running.predicted_total_s == 4 * jobs.DEFAULT_CONFIG.prior_total_s["image"]
     release.set()
     _poll_until(project, job.job_id, lambda j: j.status in jobs.TERMINAL_STATUSES)
+
+
+def test_a_job_whose_only_key_is_coarse_still_learns(project):
+    """Review of nw#67: an explicit output_kind with no model/operation (muvid's
+    scoring job) has nowhere else to learn, so it keeps writing its own bucket."""
+    cfg = JobsConfig(n_min=1)
+    rt = jobs._runtime(project, cfg)
+    params = {"output_kind": "compute", "hop_s": 1.0}
+    assert jobs._eta_candidates(params, cfg)[0] == [("compute", "learned_coarse")]
+    _run_to_end(project, "score", params, cfg)
+    assert len(jobs._durations_get(rt.durations, "compute")) == 1
+
+
+def test_estimate_refuses_what_enqueue_refuses(project):
+    with pytest.raises(ValueError, match="units"):
+        jobs.estimate(project, "panel.alternates", dict(IMAGE_X4, units=0))
