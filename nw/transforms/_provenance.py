@@ -20,7 +20,7 @@ from uuid import UUID
 from lacing import Provenance, RationalTime
 
 from . import Transform, TransformInputs
-from .asset_refs import asset_refs_of
+from .asset_refs import _ASSET_ID, AssetRefDeclarationError, asset_refs_of
 
 
 def derive_provenance(
@@ -51,7 +51,10 @@ def derive_provenance(
         asset_refs: Extra artifact ``asset_id`` values this output was derived
             from that no input body names — the escape hatch for a Transform
             that consumed an artifact directly. Merged after the declared ones,
-            deduplicated.
+            deduplicated. Each must be a bare 64-hex asset id. Unlike a declared
+            ref, nothing ties one of these to an annotation's body, so freshness
+            trusts it as-is: an asset id names immutable bytes, but nw does not
+            check the artifact still exists or has been superseded.
 
     Returns:
         A :class:`lacing.Provenance` ready to attach to a skeleton annotation,
@@ -65,7 +68,7 @@ def derive_provenance(
     assets: dict[str, None] = {}
     for ann in consumed:
         assets.update(dict.fromkeys(asset_refs_of(ann)))
-    assets.update(dict.fromkeys(asset_refs))
+    assets.update(dict.fromkeys(_checked_asset_refs(asset_refs)))
     return Provenance(
         was_generated_by=f"transform:{transform.name}@{transform.impl_version}",
         was_attributed_to=attributed_to or f"agent:{transform.name}",
@@ -74,3 +77,28 @@ def derive_provenance(
         generated_at_time=RationalTime.now(),
         activity=activity,
     )
+
+
+def _checked_asset_refs(asset_refs: Iterable[str]) -> list[str]:
+    """``asset_refs`` validated as bare 64-hex ids.
+
+    A bare ``str`` is refused rather than iterated character by character, and a
+    UUID string is refused rather than silently becoming an *annotation* parent
+    through lacing's ``UUID | AssetId`` union.
+
+    >>> _checked_asset_refs(["a" * 64])[0][:4]
+    'aaaa'
+    >>> _checked_asset_refs("a" * 64)
+    Traceback (most recent call last):
+    ...
+    TypeError: asset_refs must be an iterable of asset ids, not a single str
+    """
+    if isinstance(asset_refs, str):
+        raise TypeError("asset_refs must be an iterable of asset ids, not a single str")
+    refs = list(asset_refs)
+    for ref in refs:
+        if not isinstance(ref, str) or not _ASSET_ID.match(ref):
+            raise AssetRefDeclarationError(
+                f"asset_refs: {ref!r} is not a bare 64-hex asset id"
+            )
+    return refs

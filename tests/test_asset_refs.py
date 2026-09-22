@@ -78,3 +78,12 @@ def test_nw_declares_its_own_render_result_schema():
 
     rr = _ann(RENDER_RESULT_BODY_SCHEMA_URI, {"shot_id": "s", "strategy": "x", "artifact_id": A})
     assert asset_refs_of(rr) == (A,)
+
+
+def test_explicit_asset_refs_are_validated_too():
+    p1 = _ann(PANEL, {"artifact_id": A})
+    with pytest.raises(TypeError, match="single str"):
+        derive_provenance(T, TransformInputs(primary=(p1,)), asset_refs=A)
+    with pytest.raises(AssetRefDeclarationError):
+        # A UUID string would otherwise become an ANNOTATION parent via lacing's union.
+        derive_provenance(T, TransformInputs(primary=(p1,)), asset_refs=[str(uuid4())])

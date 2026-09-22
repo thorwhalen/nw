@@ -90,10 +90,13 @@ Stated so nobody reads more into the number than is there:
   inputs whose body schema declares its asset fields — nw#55,
   :mod:`nw.transforms.asset_refs`) are recorded in the trace's
   ``upstream_assets`` and never re-checked: an asset id *is* the SHA-256 of
-  its bytes, so it cannot change, only be replaced — and replacing it
-  changes the body of the annotation that names it, which that annotation's
-  own digest catches. An artifact parent counts toward "the trace's upstream
-  set is exactly ``was_derived_from``" like any other parent.
+  its bytes, so it cannot change, only be replaced — and for a *declared*
+  ref, replacing it changes the body of the annotation that names it, which
+  that annotation's own digest catches. A ref passed through
+  ``derive_provenance(asset_refs=...)`` has no naming annotation, so it is
+  trusted as-is: whether that artifact still exists, or has been superseded,
+  is not checked. An artifact parent counts toward "the trace's upstream set
+  is exactly ``was_derived_from``" like any other parent.
 """
 
 from __future__ import annotations

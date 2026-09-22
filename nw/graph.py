@@ -649,7 +649,7 @@ class ProjectGraph:
     # -- verifying traces ----------------------------------------------------
 
     def _verifying_trace_for(
-        self, annotation_id: UUID, parent_ids: Iterable[UUID]
+        self, annotation_id: UUID, parent_ids: Iterable["UUID | str"]
     ) -> Optional[Annotation]:
         """Build the verifying trace for a derived annotation, or ``None``.
 
