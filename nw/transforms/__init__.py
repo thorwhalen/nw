@@ -749,7 +749,10 @@ def cached_output(project_root, tier: str, key: str):
 
 
 def register_transform(
-    name: str, impl: Optional[Transform] = None
+    name: str,
+    impl: Optional[Transform] = None,
+    *,
+    tags: tuple[str, ...] = (),
 ) -> Transform | Callable[[type], type]:
     """Register a Transform under ``name``. Two forms:
 
@@ -771,6 +774,15 @@ def register_transform(
     declared output type, or "the job runs successfully but produces
     nothing retrievable" becomes invisible to every layer that reports
     success (nw#27).
+
+    ``tags`` is passed straight through to :meth:`xdol.Registry.register`
+    (``transforms.keys_with_tag(tag)`` / ``transforms.search(tags=...)``
+    read it back). The field exists so a licence, a capability class, or a
+    cost class has somewhere to live *before* the registry opens to
+    third-party registrants — nw#29 stays closed to third parties for now
+    (see that issue and ``misc/docs/Transform Registry — third-party
+    extension.md``); this is the one piece of that decision worth doing
+    regardless of when, or whether, the registry opens.
     """
 
     def _checked(instance: Transform) -> Transform:
@@ -804,11 +816,11 @@ def register_transform(
     if impl is None:
 
         def _decorator(cls: type) -> type:
-            transforms.register(name, _checked(cls()))
+            transforms.register(name, _checked(cls()), tags=tags)
             return cls
 
         return _decorator
-    return transforms.register(name, _checked(impl))
+    return transforms.register(name, _checked(impl), tags=tags)
 
 
 def get_transform(name: str) -> Transform:
