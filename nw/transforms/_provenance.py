@@ -97,7 +97,7 @@ def _checked_asset_refs(asset_refs: Iterable[str]) -> list[str]:
         raise TypeError("asset_refs must be an iterable of asset ids, not a single str")
     refs = list(asset_refs)
     for ref in refs:
-        if not isinstance(ref, str) or not _ASSET_ID.match(ref):
+        if not isinstance(ref, str) or not _ASSET_ID.fullmatch(ref):
             raise AssetRefDeclarationError(
                 f"asset_refs: {ref!r} is not a bare 64-hex asset id"
             )
