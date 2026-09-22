@@ -95,9 +95,20 @@ Bases: `Middleware`
 
 Keyed, percentile duration learner — a cousin of `au.MetricsMiddleware`.
 
-Records the render wall-time under every ETA-key candidate for the job, so
-a cold specific key backs off to a warmer coarse one. Two deliberate
-departures from `au`’s built-in metrics:
+Records the render wall-time under the job’s ETA-key candidates, so a cold
+specific key backs off to a warmer coarse one. The specific `learned`
+keys get the whole-job sample. The coarse `output_kind` key is \*\*shared
+across operations\*\* and means *seconds per unit*, so a job that has
+specific keys writes it only when it declared `params["units"]`, and
+then with `elapsed / units`. Such a job of unknown multiplicity never
+touches the shared bucket: forgetting `units` costs a cold coarse
+bucket, never a corrupted one (nw#67 — a 4-render job used to write its
+4-fold duration into the `image` bucket single-image jobs read from).
+A job whose *only* key is the coarse one (no model/operation) keeps
+learning in it as before — it has nowhere else to learn. Such a job that
+really covers N units should still declare `units`, or it writes its
+N-fold duration into the shared bucket, exactly as before nw#67. Two deliberate departures
+from `au`’s built-in metrics:
 
 - **Self-timed** (`time.monotonic` in `before_compute` → `after_compute`)
   rather than reading `result.duration`: `ThreadBackend` constructs a
@@ -315,7 +326,11 @@ already exists, that job is returned instead of launching a duplicate.
     object raises there. The dict hashes to the identical
     `plan_hash` (`_plan_for_identity()`) and re-quotes the same
     way, so nothing is lost by serializing it — [`estimate()`](#nw.jobs.estimate),
-    which never writes a record, accepts either.
+    which never writes a record, accepts either. A `"units"` entry
+    (a positive `int`) says how many `output_kind` units the
+    job’s wall-time covers — `4` for four image renders. Only a job
+    that declares it teaches the shared coarse `output_kind` ETA
+    bucket, per unit (nw#67); see [`DurationLearningMiddleware`](#nw.jobs.DurationLearningMiddleware).
   * **on_event** ([`Callable`](https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable)[[[`Any`](https://docs.python.org/3/library/typing.html#typing.Any)], [`None`](https://docs.python.org/3/builtins/constants.html#None)] | [`None`](https://docs.python.org/3/builtins/constants.html#None)) – sink for the render’s lifecycle events (reelee wires this to
     its `agent_log` / SSE tail). Events are stamped with
     `job_id`/`run_id` and mirrored into progress/cost/eta.
@@ -351,7 +366,8 @@ already exists, that job is returned instead of launching a duplicate.
     threads by hand.
   * **config** ([`JobsConfig`](#nw.jobs.JobsConfig)) – tunables (see [`JobsConfig`](#nw.jobs.JobsConfig)).
 * **Raises:**
-  [**KeyError**](https://docs.python.org/3/builtins/exceptions.html#KeyError) – if `kind` is not in `dispatch`.
+  * [**KeyError**](https://docs.python.org/3/builtins/exceptions.html#KeyError) – if `kind` is not in `dispatch`.
+  * [**ValueError**](https://docs.python.org/3/builtins/exceptions.html#ValueError) – if `params["units"]` is present but not a positive `int`.
 * **Return type:**
   [`Job`](#nw.jobs.Job)
 
@@ -384,6 +400,9 @@ provenance nw cannot see; `quote` is then `None` to say so. When there
 reported beside today’s number rather than discarded, so a surface can
 show the movement.
 
+Raises `ValueError` on a malformed `params["units"]`, exactly as
+[`enqueue()`](#nw.jobs.enqueue) does, so the gate never approves what enqueue refuses.
+
 * **Return type:**
   [`dict`](https://docs.python.org/3/builtins/stdtypes.html#dict)
 
@@ -405,7 +424,7 @@ whose missing-key-returns-PENDING gotcha makes membership meaningless).
 * **Return type:**
   [`list`](https://docs.python.org/3/builtins/stdtypes.html#list)[[`Job`](#nw.jobs.Job)]
 
-### nw.jobs.predict_total_s(eta_candidates, output_kind, , durations, expected_cache_hit=False, config=JobsConfig(n_min=3, sample_window_k=20, pct_ceil=99, overrun_factor=1.5, cache_hit_floor_s=0.5, dur_buckets_s=(4.0, 8.0, 12.0), prior_total_s={'image': 12.0, 'video': 90.0, 'audio': 15.0}, default_prior_total_s=30.0, stale_running_s=900.0, heartbeat_interval_s=20.0, heartbeat_stale_s=120.0, approval_threshold_usd=1.0, jobs_dirname='.nw/jobs'))
+### nw.jobs.predict_total_s(eta_candidates, output_kind, , durations, expected_cache_hit=False, units=None, config=JobsConfig(n_min=3, sample_window_k=20, pct_ceil=99, overrun_factor=1.5, cache_hit_floor_s=0.5, dur_buckets_s=(4.0, 8.0, 12.0), prior_total_s={'image': 12.0, 'video': 90.0, 'audio': 15.0}, default_prior_total_s=30.0, stale_running_s=900.0, heartbeat_interval_s=20.0, heartbeat_stale_s=120.0, approval_threshold_usd=1.0, jobs_dirname='.nw/jobs'))
 
 Predict the total render seconds for a job as `(p50, p90, confidence)`.
 
@@ -413,6 +432,10 @@ Walks the ETA-key candidates most-specific-first; the first key with
 `>= n_min` samples wins (median, with a real or synthesized p90). Falls
 back through the coarse key, the output-kind key, then the cold prior. An
 all-cache-hit plan short-circuits to `cache_hit_floor_s` (`"exact"`).
+
+`units` scales the per-unit answers — a `learned_coarse` hit and the
+cold prior — to the job; a specific `learned` key already holds
+whole-job samples and is returned as is. `None` means one.
 
 * **Return type:**
   `_Prediction`

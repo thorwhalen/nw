@@ -2,7 +2,7 @@
 
 # About this build
 
-This documentation was built on **2026-09-22 13:00 UTC** from commit <a href="https://github.com/thorwhalen/nw/commit/b979f1e7ecc6bc49c9d9dce07af16e3b40638797"><code>b979f1e</code></a> on branch <code>main</code>, for **nw 0.0.56** (from <code>pyproject.toml</code>).
+This documentation was built on **2026-09-22 14:21 UTC** from commit <a href="https://github.com/thorwhalen/nw/commit/1d6bfd92618331e80d038f3a23027bc6043feda9"><code>1d6bfd9</code></a> on branch <code>main</code>, for **nw 0.0.57** (from <code>pyproject.toml</code>).
 
 #### NOTE
 Nothing suggests a mismatch: the tree was clean at the commit above, and the documented version is the one on PyPI.
@@ -11,9 +11,9 @@ Nothing suggests a mismatch: the tree was clean at the commit above, and the doc
 
 |                     |                                                                                                                                                      |
 |---------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Commit              | <a href="https://github.com/thorwhalen/nw/commit/b979f1e7ecc6bc49c9d9dce07af16e3b40638797"><code>b979f1e7ecc6bc49c9d9dce07af16e3b40638797</code></a> |
+| Commit              | <a href="https://github.com/thorwhalen/nw/commit/1d6bfd92618331e80d038f3a23027bc6043feda9"><code>1d6bfd92618331e80d038f3a23027bc6043feda9</code></a> |
 | Branch              | <code>main</code>                                                                                                                                    |
-| Tags at this commit | <code>0.0.56</code>                                                                                                                                  |
+| Tags at this commit | <code>0.0.57</code>                                                                                                                                  |
 | Working tree        | clean                                                                                                                                                |
 | Remote              | <code>https://github.com/thorwhalen/nw</code>                                                                                                        |
 
@@ -22,9 +22,9 @@ Nothing suggests a mismatch: the tree was clean at the commit above, and the doc
 |              |                                                                                            |
 |--------------|--------------------------------------------------------------------------------------------|
 | Repository   | <code>thorwhalen/nw</code>                                                                 |
-| Run          | <a href="https://github.com/thorwhalen/nw/actions/runs/35730381724">35730381724</a>        |
+| Run          | <a href="https://github.com/thorwhalen/nw/actions/runs/35739354422">35739354422</a>        |
 | Ref          | <code>refs/heads/main</code>                                                               |
-| Event commit | <code>d4385cf9ffbd5fb5e587dd39b0c7eea47b6b9ad2</code> (in the history of the built commit) |
+| Event commit | <code>7328a2c3548cd980e88f75477ebcdccafa586b74</code> (in the history of the built commit) |
 
 ## Tools
 
@@ -49,13 +49,13 @@ Nothing suggests a mismatch: the tree was clean at the commit above, and the doc
 
 ## Package on PyPI
 
-Latest release: <a href="https://pypi.org/project/nw/0.0.56/">0.0.56</a>, the same as the documented version.
+Latest release: <a href="https://pypi.org/project/nw/0.0.57/">0.0.57</a>, the same as the documented version.
 
 ## Reproduce
 
 ```bash
 git clone https://github.com/thorwhalen/nw && cd nw
-git checkout b979f1e7ecc6bc49c9d9dce07af16e3b40638797
+git checkout 1d6bfd92618331e80d038f3a23027bc6043feda9
 pip install "epythet==0.2.12"
 epythet quickstart . --ignore tests/ scrap/ examples/
 ```

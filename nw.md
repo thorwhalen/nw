@@ -1,4 +1,4 @@
-> built 2026-09-22 13:00 UTC from b979f1e (main) · nw 0.0.56. Details: build_info.json
+> built 2026-09-22 14:21 UTC from 1d6bfd9 (main) · nw 0.0.57. Details: build_info.json
 
 # index.html.md
 
@@ -6224,9 +6224,20 @@ Bases: `Middleware`
 
 Keyed, percentile duration learner — a cousin of `au.MetricsMiddleware`.
 
-Records the render wall-time under every ETA-key candidate for the job, so
-a cold specific key backs off to a warmer coarse one. Two deliberate
-departures from `au`’s built-in metrics:
+Records the render wall-time under the job’s ETA-key candidates, so a cold
+specific key backs off to a warmer coarse one. The specific `learned`
+keys get the whole-job sample. The coarse `output_kind` key is \*\*shared
+across operations\*\* and means *seconds per unit*, so a job that has
+specific keys writes it only when it declared `params["units"]`, and
+then with `elapsed / units`. Such a job of unknown multiplicity never
+touches the shared bucket: forgetting `units` costs a cold coarse
+bucket, never a corrupted one (nw#67 — a 4-render job used to write its
+4-fold duration into the `image` bucket single-image jobs read from).
+A job whose *only* key is the coarse one (no model/operation) keeps
+learning in it as before — it has nowhere else to learn. Such a job that
+really covers N units should still declare `units`, or it writes its
+N-fold duration into the shared bucket, exactly as before nw#67. Two deliberate departures
+from `au`’s built-in metrics:
 
 - **Self-timed** (`time.monotonic` in `before_compute` → `after_compute`)
   rather than reading `result.duration`: `ThreadBackend` constructs a
@@ -6444,7 +6455,11 @@ already exists, that job is returned instead of launching a duplicate.
     object raises there. The dict hashes to the identical
     `plan_hash` (`_plan_for_identity()`) and re-quotes the same
     way, so nothing is lost by serializing it — [`estimate()`](_autosummary/nw.jobs.html.md#nw.jobs.estimate),
-    which never writes a record, accepts either.
+    which never writes a record, accepts either. A `"units"` entry
+    (a positive `int`) says how many `output_kind` units the
+    job’s wall-time covers — `4` for four image renders. Only a job
+    that declares it teaches the shared coarse `output_kind` ETA
+    bucket, per unit (nw#67); see [`DurationLearningMiddleware`](_autosummary/nw.jobs.html.md#nw.jobs.DurationLearningMiddleware).
   * **on_event** ([`Callable`](https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable)[[[`Any`](https://docs.python.org/3/library/typing.html#typing.Any)], [`None`](https://docs.python.org/3/builtins/constants.html#None)] | [`None`](https://docs.python.org/3/builtins/constants.html#None)) – sink for the render’s lifecycle events (reelee wires this to
     its `agent_log` / SSE tail). Events are stamped with
     `job_id`/`run_id` and mirrored into progress/cost/eta.
@@ -6480,7 +6495,8 @@ already exists, that job is returned instead of launching a duplicate.
     threads by hand.
   * **config** ([`JobsConfig`](_autosummary/nw.jobs.html.md#nw.jobs.JobsConfig)) – tunables (see [`JobsConfig`](_autosummary/nw.jobs.html.md#nw.jobs.JobsConfig)).
 * **Raises:**
-  [**KeyError**](https://docs.python.org/3/builtins/exceptions.html#KeyError) – if `kind` is not in `dispatch`.
+  * [**KeyError**](https://docs.python.org/3/builtins/exceptions.html#KeyError) – if `kind` is not in `dispatch`.
+  * [**ValueError**](https://docs.python.org/3/builtins/exceptions.html#ValueError) – if `params["units"]` is present but not a positive `int`.
 * **Return type:**
   [`Job`](_autosummary/nw.jobs.html.md#nw.jobs.Job)
 
@@ -6513,6 +6529,9 @@ provenance nw cannot see; `quote` is then `None` to say so. When there
 reported beside today’s number rather than discarded, so a surface can
 show the movement.
 
+Raises `ValueError` on a malformed `params["units"]`, exactly as
+[`enqueue()`](_autosummary/nw.jobs.html.md#nw.jobs.enqueue) does, so the gate never approves what enqueue refuses.
+
 * **Return type:**
   [`dict`](https://docs.python.org/3/builtins/stdtypes.html#dict)
 
@@ -6534,7 +6553,7 @@ whose missing-key-returns-PENDING gotcha makes membership meaningless).
 * **Return type:**
   [`list`](https://docs.python.org/3/builtins/stdtypes.html#list)[[`Job`](_autosummary/nw.jobs.html.md#nw.jobs.Job)]
 
-### nw.jobs.predict_total_s(eta_candidates, output_kind, , durations, expected_cache_hit=False, config=JobsConfig(n_min=3, sample_window_k=20, pct_ceil=99, overrun_factor=1.5, cache_hit_floor_s=0.5, dur_buckets_s=(4.0, 8.0, 12.0), prior_total_s={'image': 12.0, 'video': 90.0, 'audio': 15.0}, default_prior_total_s=30.0, stale_running_s=900.0, heartbeat_interval_s=20.0, heartbeat_stale_s=120.0, approval_threshold_usd=1.0, jobs_dirname='.nw/jobs'))
+### nw.jobs.predict_total_s(eta_candidates, output_kind, , durations, expected_cache_hit=False, units=None, config=JobsConfig(n_min=3, sample_window_k=20, pct_ceil=99, overrun_factor=1.5, cache_hit_floor_s=0.5, dur_buckets_s=(4.0, 8.0, 12.0), prior_total_s={'image': 12.0, 'video': 90.0, 'audio': 15.0}, default_prior_total_s=30.0, stale_running_s=900.0, heartbeat_interval_s=20.0, heartbeat_stale_s=120.0, approval_threshold_usd=1.0, jobs_dirname='.nw/jobs'))
 
 Predict the total render seconds for a job as `(p50, p90, confidence)`.
 
@@ -6542,6 +6561,10 @@ Walks the ETA-key candidates most-specific-first; the first key with
 `>= n_min` samples wins (median, with a real or synthesized p90). Falls
 back through the coarse key, the output-kind key, then the cold prior. An
 all-cache-hit plan short-circuits to `cache_hit_floor_s` (`"exact"`).
+
+`units` scales the per-unit answers — a `learned_coarse` hit and the
+cold prior — to the job; a specific `learned` key already holds
+whole-job samples and is returned as is. `None` means one.
 
 * **Return type:**
   `_Prediction`
@@ -8779,7 +8802,7 @@ produce different URLs. The local file paths are byte-stable.
 
 # About this build
 
-This documentation was built on **2026-09-22 13:00 UTC** from commit <a href="https://github.com/thorwhalen/nw/commit/b979f1e7ecc6bc49c9d9dce07af16e3b40638797"><code>b979f1e</code></a> on branch <code>main</code>, for **nw 0.0.56** (from <code>pyproject.toml</code>).
+This documentation was built on **2026-09-22 14:21 UTC** from commit <a href="https://github.com/thorwhalen/nw/commit/1d6bfd92618331e80d038f3a23027bc6043feda9"><code>1d6bfd9</code></a> on branch <code>main</code>, for **nw 0.0.57** (from <code>pyproject.toml</code>).
 
 #### NOTE
 Nothing suggests a mismatch: the tree was clean at the commit above, and the documented version is the one on PyPI.
@@ -8788,9 +8811,9 @@ Nothing suggests a mismatch: the tree was clean at the commit above, and the doc
 
 |                     |                                                                                                                                                      |
 |---------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Commit              | <a href="https://github.com/thorwhalen/nw/commit/b979f1e7ecc6bc49c9d9dce07af16e3b40638797"><code>b979f1e7ecc6bc49c9d9dce07af16e3b40638797</code></a> |
+| Commit              | <a href="https://github.com/thorwhalen/nw/commit/1d6bfd92618331e80d038f3a23027bc6043feda9"><code>1d6bfd92618331e80d038f3a23027bc6043feda9</code></a> |
 | Branch              | <code>main</code>                                                                                                                                    |
-| Tags at this commit | <code>0.0.56</code>                                                                                                                                  |
+| Tags at this commit | <code>0.0.57</code>                                                                                                                                  |
 | Working tree        | clean                                                                                                                                                |
 | Remote              | <code>https://github.com/thorwhalen/nw</code>                                                                                                        |
 
@@ -8799,9 +8822,9 @@ Nothing suggests a mismatch: the tree was clean at the commit above, and the doc
 |              |                                                                                            |
 |--------------|--------------------------------------------------------------------------------------------|
 | Repository   | <code>thorwhalen/nw</code>                                                                 |
-| Run          | <a href="https://github.com/thorwhalen/nw/actions/runs/35730381724">35730381724</a>        |
+| Run          | <a href="https://github.com/thorwhalen/nw/actions/runs/35739354422">35739354422</a>        |
 | Ref          | <code>refs/heads/main</code>                                                               |
-| Event commit | <code>d4385cf9ffbd5fb5e587dd39b0c7eea47b6b9ad2</code> (in the history of the built commit) |
+| Event commit | <code>7328a2c3548cd980e88f75477ebcdccafa586b74</code> (in the history of the built commit) |
 
 ## Tools
 
@@ -8826,13 +8849,13 @@ Nothing suggests a mismatch: the tree was clean at the commit above, and the doc
 
 ## Package on PyPI
 
-Latest release: <a href="https://pypi.org/project/nw/0.0.56/">0.0.56</a>, the same as the documented version.
+Latest release: <a href="https://pypi.org/project/nw/0.0.57/">0.0.57</a>, the same as the documented version.
 
 ## Reproduce
 
 ```bash
 git clone https://github.com/thorwhalen/nw && cd nw
-git checkout b979f1e7ecc6bc49c9d9dce07af16e3b40638797
+git checkout 1d6bfd92618331e80d038f3a23027bc6043feda9
 pip install "epythet==0.2.12"
 epythet quickstart . --ignore tests/ scrap/ examples/
 ```
