@@ -21,7 +21,9 @@ Public surface:
 - ``nw.workflow`` — the ``prepare`` → ``plan`` → ``execute`` render split
   (Plan/Execute over rendering; records render-result provenance).
 - ``nw.renderers`` — render strategies.
-- ``nw.genres`` — production genres (the reusable project specialization).
+- ``nw.genres`` — production genres (the reusable project specialization),
+  their project factories, and the ops a host serves on a genre's projects
+  (:class:`GenreOp`, :func:`register_genre_ops`, :func:`genre_ops_catalogue`).
 - ``nw.pricing`` — re-quoting a *persisted* plan at today's rates
   (:func:`current_quote`, :class:`PlanQuote`). Any stored cost figure is an
   as-of-then fact; reporting one as current under-quotes the run once falaw's
@@ -181,6 +183,15 @@ from .genres import (
     can_place_genre_project,
     create_genre_project,
     PLACEMENT_ARG,
+    GENRE_OP_EFFECTS,
+    GENRE_OP_RUNS,
+    GenreOp,
+    UnknownGenreOpError,
+    genre_ops_registry,
+    register_genre_ops,
+    genre_ops,
+    genre_op,
+    genre_ops_catalogue,
 )
 from .schema import (
     SCHEMA_VERSION,
@@ -240,6 +251,15 @@ __all__ = [
     "can_place_genre_project",
     "create_genre_project",
     "PLACEMENT_ARG",
+    "GENRE_OP_EFFECTS",
+    "GENRE_OP_RUNS",
+    "GenreOp",
+    "UnknownGenreOpError",
+    "genre_ops_registry",
+    "register_genre_ops",
+    "genre_ops",
+    "genre_op",
+    "genre_ops_catalogue",
     "Project",
     "ProjectGraph",
     "StoredUnproducedOutput",
