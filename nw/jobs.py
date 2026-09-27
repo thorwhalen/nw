@@ -263,6 +263,13 @@ class Job:
     artifact_ref: str | None = None
     result: dict | None = None
     error: str | None = None
+    error_kind: str | None = None
+    """Why a job did not succeed, for a screen to say so: ``"refused"`` (the op
+    raised :class:`nw.GenreOpRefused` — a deliberate refusal with a message for the
+    person), ``"cancelled"`` (stopped on request, or the op raised
+    :class:`nw.GenreOpCancelled`), ``"crashed"`` (anything else — a bug, or a worker
+    that stopped beating). ``None`` while running and on success. ``error`` keeps the
+    text either way."""
     run_id: str | None = None
     last_event_id: str | None = None
 
@@ -407,6 +414,7 @@ def enqueue(
             "artifact_ref": None,
             "result": None,
             "error": None,
+            "error_kind": None,
             "last_event_id": None,
         }
         _index_set_locked(rt, job_id, record)
@@ -754,6 +762,7 @@ def to_dict(job: Job) -> dict:
         "artifact_ref": job.artifact_ref,
         "result": job.result,
         "error": job.error,
+        "error_kind": job.error_kind,
         "last_event_id": job.last_event_id,
     }
 
@@ -1148,6 +1157,10 @@ def _bind_worker(
                 try:
                     result = call()
                 except BaseException as e:
+                    # Classified HERE, on the live exception: what au persists is
+                    # its text, which cannot say a refusal from a crash.
+                    with rt.lock:
+                        _index_update_locked(rt, job_id, error_kind=error_kind_of(e))
                     # au persists the RENDERED exception text as the job's
                     # error; a provider echoing the key back would put it in
                     # the store. `redact_exception` returns a rebuilt
@@ -1350,7 +1363,13 @@ def _maybe_reap(rt, record, au_result, config) -> ComputationResult:
     )
     rt.au_store[job_id] = reaped
     with rt.lock:
-        _index_update_locked(rt, job_id, finished_at=_now_iso(), error=REAPED_REASON)
+        _index_update_locked(
+            rt,
+            job_id,
+            finished_at=_now_iso(),
+            error=REAPED_REASON,
+            error_kind=ERROR_KIND_CRASHED,
+        )
     return rt.au_store[job_id]
 
 
@@ -1460,6 +1479,7 @@ def _project_job(rt, record, au_result, config) -> Job:
 
     result_payload = None
     error = None
+    error_kind = None
     artifact_ref = record.get("artifact_ref")
     if status == SUCCEEDED:
         if isinstance(au_result.value, Mapping):
@@ -1470,8 +1490,14 @@ def _project_job(rt, record, au_result, config) -> Job:
                 ) or result_payload.get("artifact_id")
     elif status == FAILED:
         error = str(au_result.error) if au_result.error else record.get("error")
+        error_kind = record.get("error_kind") or (
+            error_kind_of(au_result.error)
+            if isinstance(au_result.error, BaseException)
+            else ERROR_KIND_CRASHED
+        )
     elif status == CANCELLED:
         error = None
+        error_kind = ERROR_KIND_CANCELLED
 
     return Job(
         job_id=record["job_id"],
@@ -1501,9 +1527,33 @@ def _project_job(rt, record, au_result, config) -> Job:
         artifact_ref=artifact_ref,
         result=result_payload,
         error=error,
+        error_kind=error_kind,
         run_id=record["job_id"],
         last_event_id=record.get("last_event_id"),
     )
+
+
+#: ``Job.error_kind`` values — see :attr:`Job.error_kind`.
+ERROR_KIND_REFUSED = "refused"
+ERROR_KIND_CANCELLED = "cancelled"
+ERROR_KIND_CRASHED = "crashed"
+
+
+def error_kind_of(error: BaseException) -> str:
+    """``"refused"`` | ``"cancelled"`` | ``"crashed"`` for an exception a job raised.
+
+    >>> from nw.genres import GenreOpRefused, GenreOpCancelled
+    >>> [error_kind_of(e) for e in (GenreOpRefused("no song"),
+    ...                             GenreOpCancelled(), ValueError("bug"))]
+    ['refused', 'cancelled', 'crashed']
+    """
+    from nw.genres import GenreOpCancelled, GenreOpRefused
+
+    if isinstance(error, GenreOpRefused):
+        return ERROR_KIND_REFUSED
+    if isinstance(error, GenreOpCancelled):
+        return ERROR_KIND_CANCELLED
+    return ERROR_KIND_CRASHED
 
 
 def _normalize_status(au_status: ComputationStatus, *, cancel_requested: bool) -> str:

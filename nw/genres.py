@@ -1117,6 +1117,11 @@ class GenreOp:
     raising :class:`GenreOpCancelled`). A deliberate refusal is a
     :class:`GenreOpRefused`.
 
+    ``spends`` says the op MAY spend money (it can reach a paid API). The federation's
+    rule is that an unknown cost forces approval, so a host must route a ``spends`` op
+    through its money approval — or not offer it. ``False`` (the default) is a claim the
+    genre makes: nothing this op calls bills anyone.
+
     >>> def _rename(project, *, title: str, loud: bool = False) -> dict:
     ...     '''Rename the project.'''
     ...     return {"title": title.upper() if loud else title}
@@ -1147,6 +1152,7 @@ class GenreOp:
     runs: str = "now"
     host_params: tuple[str, ...] = ()
     max_upload_bytes: Optional[int] = None
+    spends: bool = False
 
     def __post_init__(self):
         if not isinstance(self.name, str) or not _OP_NAME_PATTERN.match(self.name):
@@ -1172,6 +1178,10 @@ class GenreOp:
         if not self.description:
             object.__setattr__(self, "description", inspect.getdoc(self.fn) or "")
         object.__setattr__(self, "host_params", tuple(self.host_params))
+        if not isinstance(self.spends, bool):
+            raise TypeError(
+                f"genre op {self.name!r}: spends must be a bool, got {self.spends!r}"
+            )
         if self.max_upload_bytes is not None and (
             not isinstance(self.max_upload_bytes, int)
             or isinstance(self.max_upload_bytes, bool)
@@ -1259,6 +1269,7 @@ class GenreOp:
             "params_schema": self.params_schema,
             "host_params": list(self.host_params),
             "max_upload_bytes": self.max_upload_bytes,
+            "spends": self.spends,
         }
 
 
@@ -1322,7 +1333,8 @@ def genre_ops_catalogue(genre_slug: str) -> list:
     """The pure-JSON catalogue of ``genre_slug``'s ops (``[]`` for a genre with none).
 
     One dict per op — ``name``, ``title``, ``description``, ``effect``, ``runs``,
-    ``params_schema``, ``host_params``, ``max_upload_bytes`` — the shape a host exports to a frontend's codegen or an MCP
+    ``params_schema``, ``host_params``, ``max_upload_bytes``, ``spends`` — the shape a
+    host exports to a frontend's codegen or an MCP
     tool builder.
     """
     return [op.to_dict() for op in genre_ops(genre_slug)]

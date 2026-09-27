@@ -14,6 +14,7 @@ import time
 import pytest
 
 from au import ComputationResult, ComputationStatus
+import nw
 from nw import Project
 import nw.jobs as jobs
 from nw.jobs import JobsConfig
@@ -1366,3 +1367,63 @@ def test_a_job_whose_only_key_is_coarse_still_learns(project):
 def test_estimate_refuses_what_enqueue_refuses(project):
     with pytest.raises(ValueError, match="units"):
         jobs.estimate(project, "panel.alternates", dict(IMAGE_X4, units=0))
+
+
+
+# ---------------------------------------------------------------------------
+# error_kind — a refusal is not a crash (a host UI must be able to tell)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "raise_, kind",
+    [
+        (lambda: nw.GenreOpRefused("no song yet — set one first"), "refused"),
+        (lambda: nw.GenreOpCancelled("stopped between cuts"), "cancelled"),
+        (lambda: RuntimeError("kaboom"), "crashed"),
+        (lambda: ValueError("a plain ValueError is a bug"), "crashed"),
+    ],
+)
+def test_failed_job_says_why(project, raise_, kind):
+    def fail(project, params, **kw):
+        raise raise_()
+
+    job = jobs.enqueue(
+        project, "op", {"model": "m", "operation": "image"}, dispatch={"op": fail}
+    )
+    done = _poll_until(
+        project, job.job_id, lambda j: j.status in jobs.TERMINAL_STATUSES
+    )
+    assert done.status == jobs.FAILED
+    assert done.error_kind == kind and done.error  # the text is kept as it was
+    assert jobs.to_dict(done)["error_kind"] == kind
+    # durable: a fresh read of the index, not just this process's live object
+    jobs._reset_runtimes()
+    again = jobs.get_job(project, job.job_id)
+    assert again.error_kind == kind
+    # ...and on the read-only summary a dashboard uses
+    row = next(j for j in jobs.summarize(project.root) if j.job_id == job.job_id)
+    assert row.error_kind == kind
+
+
+def test_error_kind_is_none_on_success_and_cancelled_on_cancel(project):
+    ok = jobs.enqueue(
+        project,
+        "op",
+        {"model": "m", "operation": "image"},
+        dispatch={"op": lambda project, params, **kw: {}},
+    )
+    done = _poll_until(project, ok.job_id, lambda j: j.status in jobs.TERMINAL_STATUSES)
+    assert done.status == jobs.SUCCEEDED and done.error_kind is None
+    release = threading.Event()
+    job = jobs.enqueue(
+        project,
+        "journey.full_auto",
+        VIDEO_PARAMS,
+        dispatch={"journey.full_auto": _blocking_stub(release)},
+    )
+    _poll_until(project, job.job_id, lambda j: j.status == jobs.RUNNING)
+    jobs.cancel_job(project, job.job_id)
+    release.set()
+    final = _poll_until(project, job.job_id, lambda j: j.status == jobs.CANCELLED)
+    assert final.error is None and final.error_kind == "cancelled"
