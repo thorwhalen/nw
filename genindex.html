@@ -541,14 +541,22 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="_autosummary/nw.html#nw.ProjectGraph.genre_envelope">(nw.ProjectGraph method)</a>
 </li>
       </ul></li>
+      <li><a href="_autosummary/nw.html#nw.genre_op">genre_op() (in module nw)</a>
+</li>
+      <li><a href="_autosummary/nw.html#nw.genre_ops">genre_ops() (in module nw)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="_autosummary/nw.html#nw.genre_ops_catalogue">genre_ops_catalogue() (in module nw)</a>
+</li>
       <li><a href="_autosummary/nw.bodies.html#nw.bodies.GenreEnvelopeBodyV1">GenreEnvelopeBodyV1 (class in nw.bodies)</a>
 
       <ul>
         <li><a href="_autosummary/nw.bodies.genre_envelope.html#nw.bodies.genre_envelope.GenreEnvelopeBodyV1">(class in nw.bodies.genre_envelope)</a>
 </li>
       </ul></li>
+      <li><a href="_autosummary/nw.html#nw.GenreOp">GenreOp (class in nw)</a>
+</li>
       <li><a href="_autosummary/nw.genres.html#nw.genres">genres (in module nw)</a>
 </li>
       <li><a href="_autosummary/nw.html#nw.get_genre">get_genre() (in module nw)</a>
@@ -1273,9 +1281,13 @@ data-aria-dark="Switch to auto color mode">
       <li><a href="_autosummary/nw.html#nw.BaseTransform.params_model">params_model (nw.BaseTransform attribute)</a>
 
       <ul>
+        <li><a href="_autosummary/nw.html#nw.GenreOp.params_model">(nw.GenreOp property)</a>
+</li>
         <li><a href="_autosummary/nw.html#nw.Transform.params_model">(nw.Transform attribute)</a>
 </li>
       </ul></li>
+      <li><a href="_autosummary/nw.html#nw.GenreOp.params_schema">params_schema (nw.GenreOp property)</a>
+</li>
       <li><a href="_autosummary/nw.html#nw.parse_ref">parse_ref() (in module nw)</a>
 
       <ul>
@@ -1454,6 +1466,8 @@ data-aria-dark="Switch to auto color mode">
 </li>
       <li><a href="_autosummary/nw.html#nw.register_genre_initializer">register_genre_initializer() (in module nw)</a>
 </li>
+      <li><a href="_autosummary/nw.html#nw.register_genre_ops">register_genre_ops() (in module nw)</a>
+</li>
       <li><a href="_autosummary/nw.html#nw.register_genre_project_factory">register_genre_project_factory() (in module nw)</a>
 </li>
       <li><a href="_autosummary/nw.html#nw.register_genre_resolver">register_genre_resolver() (in module nw)</a>
@@ -1466,14 +1480,14 @@ data-aria-dark="Switch to auto color mode">
       </ul></li>
       <li><a href="_autosummary/nw.html#nw.register_transform">register_transform() (in module nw)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="_autosummary/nw.html#nw.Finding.remedy">remedy (nw.Finding attribute)</a>
 
       <ul>
         <li><a href="_autosummary/nw.validation.html#nw.validation.Finding.remedy">(nw.validation.Finding attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="_autosummary/nw.graph.html#nw.graph.ProjectGraph.remove_annotation">remove_annotation() (nw.graph.ProjectGraph method)</a>
 
       <ul>
@@ -1797,6 +1811,8 @@ data-aria-dark="Switch to auto color mode">
       <ul>
         <li><a href="_autosummary/nw.html#nw.Genre.to_dict">(nw.Genre method)</a>
 </li>
+        <li><a href="_autosummary/nw.html#nw.GenreOp.to_dict">(nw.GenreOp method)</a>
+</li>
         <li><a href="_autosummary/nw.html#nw.PlanQuote.to_dict">(nw.PlanQuote method)</a>
 </li>
         <li><a href="_autosummary/nw.pricing.html#nw.pricing.PlanQuote.to_dict">(nw.pricing.PlanQuote method)</a>
@@ -1839,6 +1855,8 @@ data-aria-dark="Switch to auto color mode">
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="_autosummary/nw.html#nw.FanOutPlan.unknown_call_count">unknown_call_count (nw.FanOutPlan property)</a>
+</li>
+      <li><a href="_autosummary/nw.html#nw.UnknownGenreOpError">UnknownGenreOpError</a>
 </li>
       <li><a href="_autosummary/nw.graph.html#nw.graph.ProjectGraph.unproduced_outputs">unproduced_outputs() (nw.graph.ProjectGraph method)</a>
 
@@ -1918,6 +1936,8 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="_autosummary/nw.validation.html#nw.validation.validate">(in module nw.validation)</a>
 </li>
       </ul></li>
+      <li><a href="_autosummary/nw.html#nw.GenreOp.validate_params">validate_params() (nw.GenreOp method)</a>
+</li>
       <li><a href="_autosummary/nw.html#nw.ValidationError">ValidationError</a>, <a href="_autosummary/nw.validation.html#nw.validation.ValidationError">[1]</a>
 </li>
   </ul></td>
@@ -1993,7 +2013,7 @@ data-aria-dark="Switch to auto color mode">
     </div>
   </div>
 </footer>
-      <script src="_static/documentation_options.js?v=6799126d"></script>
+      <script src="_static/documentation_options.js?v=4d22d5b7"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="_static/clipboard.min.js?v=a7894cd8"></script>

@@ -1,4 +1,4 @@
-> built 2026-09-22 15:38 UTC from 9027ed8 (main) · nw 0.0.59. Details: build_info.json
+> built 2026-09-27 09:51 UTC from 2a71254 (main) · nw 0.0.60. Details: build_info.json
 
 # index.html.md
 
@@ -2907,7 +2907,9 @@ Public surface:
 - `nw.workflow` — the `prepare` → `plan` → `execute` render split
   (Plan/Execute over rendering; records render-result provenance).
 - `nw.renderers` — render strategies.
-- `nw.genres` — production genres (the reusable project specialization).
+- `nw.genres` — production genres (the reusable project specialization),
+  their project factories, and the ops a host serves on a genre’s projects
+  ([`GenreOp`](_autosummary/nw.html.md#nw.GenreOp), [`register_genre_ops()`](_autosummary/nw.html.md#nw.register_genre_ops), [`genre_ops_catalogue()`](_autosummary/nw.html.md#nw.genre_ops_catalogue)).
 - `nw.pricing` — re-quoting a *persisted* plan at today’s rates
   ([`current_quote()`](_autosummary/nw.html.md#nw.current_quote), [`PlanQuote`](_autosummary/nw.html.md#nw.PlanQuote)). Any stored cost figure is an
   as-of-then fact; reporting one as current under-quotes the run once falaw’s
@@ -2934,6 +2936,10 @@ are recorded as linked artifacts), see
 | [`has_genre_project_factory`](_autosummary/nw.html.md#nw.has_genre_project_factory)(slug)                    | True iff a plugged-in project factory is registered for `slug`.                                                                      |
 | [`can_place_genre_project`](_autosummary/nw.html.md#nw.can_place_genre_project)(slug)                      | True iff `slug`'s registered factory accepts host **placement**.                                                                     |
 | [`create_genre_project`](_autosummary/nw.html.md#nw.create_genre_project)(genre, caller, ...[, ...])    | Create + seed a new project for a PLUGGED-IN `genre` in `caller`'s space.                                                            |
+| [`register_genre_ops`](_autosummary/nw.html.md#nw.register_genre_ops)(genre_slug, ops)                | Register the operations a genre offers on its projects; returns them as a tuple.                                                     |
+| [`genre_ops`](_autosummary/nw.html.md#nw.genre_ops)(genre_slug)                              | The ops registered for `genre_slug`, in registration order (`()` if none).                                                           |
+| [`genre_op`](_autosummary/nw.html.md#nw.genre_op)(genre_slug, name)                         | The op `name` of `genre_slug`; [`UnknownGenreOpError`](_autosummary/nw.html.md#nw.UnknownGenreOpError) naming the known.                |
+| [`genre_ops_catalogue`](_autosummary/nw.html.md#nw.genre_ops_catalogue)(genre_slug)                    | The pure-JSON catalogue of `genre_slug`'s ops (`[]` for a genre with none).                                                          |
 | [`annotations_at_tier`](_autosummary/nw.html.md#nw.annotations_at_tier)(project_root, tier)            | Return every annotation at the given tier across all of the project's stores.                                                        |
 | [`apply_to_projects`](_autosummary/nw.html.md#nw.apply_to_projects)(roots, fn, \*[, parallel])       | Apply `fn` to each project at `roots` and collect the results.                                                                       |
 | [`clone_project`](_autosummary/nw.html.md#nw.clone_project)(src_root, dst_root, \*[, ...])       | Clone an nw project to a new root.                                                                                                   |
@@ -3008,6 +3014,7 @@ are recorded as linked artifacts), see
 | [`Gap`](_autosummary/nw.html.md#nw.Gap)(\*\*data)                                      | A gap on the timeline between two shots.                                                                                    |
 | [`Genre`](_autosummary/nw.html.md#nw.Genre)(slug, title[, description, ...])             | A reusable definition of a *production kind* over the nw substrate.                                                         |
 | [`Template`](_autosummary/nw.html.md#nw.Template)(slug, title[, description, params])       | A named preset ("subgenre") *within* a genre — a filled-in default config.                                                  |
+| [`GenreOp`](_autosummary/nw.html.md#nw.GenreOp)(name, fn, title[, description, ...])       | One operation a genre offers on its projects — a row a host builds surfaces from.                                           |
 | [`Project`](_autosummary/nw.html.md#nw.Project)(root, \*[, auto_migrate])                  | A folder-backed nw project.                                                                                                 |
 | [`ProjectGraph`](_autosummary/nw.html.md#nw.ProjectGraph)(project_root)                         | Typed read/write facade over the project's lacing graph store.                                                              |
 | [`StoredUnproducedOutput`](_autosummary/nw.html.md#nw.StoredUnproducedOutput)(annotation_id, body)        |                                                                                                                             |
@@ -3041,6 +3048,7 @@ are recorded as linked artifacts), see
 
 | [`CacheModeConflict`](_autosummary/nw.html.md#nw.CacheModeConflict)       | `use_cache=False` and `force=True` were passed together.                                       |
 |--------------------------------------------------------------------------|------------------------------------------------------------------------------------------------|
+| [`UnknownGenreOpError`](_autosummary/nw.html.md#nw.UnknownGenreOpError)     | `genre_op` was asked for a name the genre does not register.                                   |
 | [`ValidationError`](_autosummary/nw.html.md#nw.ValidationError)(report) | Raised by [`ValidationReport.raise_if_failed()`](_autosummary/nw.html.md#nw.ValidationReport.raise_if_failed). |
 
 ### *class* nw.BaseTransform
@@ -3585,6 +3593,61 @@ A JSON-able catalog entry — the shape apps serve to a frontend / MCP client.
 Templates are emitted with their opaque `params` (not flattened), and
 `intake_kinds`/`cost_profile`/`defaults` ride at the genre level, so a
 consumer needs no app-specific knowledge to render the catalog.
+
+* **Return type:**
+  [`dict`](https://docs.python.org/3/builtins/stdtypes.html#dict)
+
+### *class* nw.GenreOp(name, fn, title, description='', effect='write', runs='now')
+
+Bases: [`object`](https://docs.python.org/3/builtins/functions.html#object)
+
+One operation a genre offers on its projects — a row a host builds surfaces from.
+
+`fn(project, **params) -> dict` does the work; `params` and the result are
+JSON-able. `title` is a short plain-language imperative (“Find where each video
+fits”) — it becomes a button or command title. `description` is model-facing and
+defaults to `fn`’s docstring. `effect` is one of `GENRE_OP_EFFECTS`,
+`runs` one of `GENRE_OP_RUNS`.
+
+Construction validates everything, including that every parameter after the
+project is annotated with a JSON-describable type — a bad op fails where it is
+declared, not in front of a user.
+
+```pycon
+>>> def _rename(project, *, title: str, loud: bool = False) -> dict:
+...     '''Rename the project.'''
+...     return {"title": title.upper() if loud else title}
+>>> op = GenreOp("rename", _rename, title="Rename it")
+>>> op.description, op.effect, op.runs
+('Rename the project.', 'write', 'now')
+>>> sorted(op.params_schema["properties"]), op.params_schema["required"]
+(['loud', 'title'], ['title'])
+>>> op(None, title="x", loud=True)
+{'title': 'X'}
+```
+
+#### *property* params_model
+
+The pydantic model of the op’s parameters (`extra="forbid"`).
+
+#### *property* params_schema *: [dict](https://docs.python.org/3/builtins/stdtypes.html#dict)*
+
+JSON Schema (an object, `additionalProperties: false`) of the parameters.
+
+#### to_dict()
+
+The op’s JSON row: everything but the function.
+
+* **Return type:**
+  [`dict`](https://docs.python.org/3/builtins/stdtypes.html#dict)
+
+#### validate_params(params=None)
+
+`params` checked and coerced against [`params_schema`](_autosummary/nw.html.md#nw.GenreOp.params_schema).
+
+Raises `pydantic.ValidationError` (a [`ValueError`](https://docs.python.org/3/builtins/exceptions.html#ValueError)) on a missing,
+unknown or wrongly typed parameter. Only the parameters the caller passed are
+returned, so the op’s own defaults stay the op’s.
 
 * **Return type:**
   [`dict`](https://docs.python.org/3/builtins/stdtypes.html#dict)
@@ -4537,6 +4600,16 @@ gate in the federation is required to read.
 
 Whether every planned output was produced.
 
+### *exception* nw.UnknownGenreOpError
+
+Bases: [`KeyError`](https://docs.python.org/3/builtins/exceptions.html#KeyError)
+
+`genre_op` was asked for a name the genre does not register.
+
+A [`KeyError`](https://docs.python.org/3/builtins/exceptions.html#KeyError) so a caller that already catches unknown-key lookups keeps
+working; its message names the known ops, because “no such op” with no menu is a
+dead end for a model choosing among them.
+
 ### *class* nw.UnproducedOutputBodyV1(\*\*data)
 
 Bases: `BaseModel`
@@ -5116,6 +5189,31 @@ This is the generic, app-agnostic catalog an HTTP route / MCP tool serves; see
 * **Return type:**
   [`list`](https://docs.python.org/3/builtins/stdtypes.html#list)[[`dict`](https://docs.python.org/3/builtins/stdtypes.html#dict)]
 
+### nw.genre_op(genre_slug, name)
+
+The op `name` of `genre_slug`; [`UnknownGenreOpError`](_autosummary/nw.html.md#nw.UnknownGenreOpError) naming the known.
+
+* **Return type:**
+  [`GenreOp`](_autosummary/nw.html.md#nw.GenreOp)
+
+### nw.genre_ops(genre_slug)
+
+The ops registered for `genre_slug`, in registration order (`()` if none).
+
+* **Return type:**
+  [`tuple`](https://docs.python.org/3/builtins/stdtypes.html#tuple)
+
+### nw.genre_ops_catalogue(genre_slug)
+
+The pure-JSON catalogue of `genre_slug`’s ops (`[]` for a genre with none).
+
+One dict per op — `name`, `title`, `description`, `effect`, `runs`,
+`params_schema` — the shape a host exports to a frontend’s codegen or an MCP
+tool builder.
+
+* **Return type:**
+  [`list`](https://docs.python.org/3/builtins/stdtypes.html#list)
+
 ### nw.get_genre(slug)
 
 Look up a genre by slug; raises [`KeyError`](https://docs.python.org/3/builtins/exceptions.html#KeyError) with the known slugs.
@@ -5577,6 +5675,33 @@ no initializer at all.
 >>> seen["applied"]
 ('_init_demo', None, {'look': 'plain'})
 >>> del genres["_init_demo"]; del genre_initializers["_init_demo"]
+```
+
+### nw.register_genre_ops(genre_slug, ops)
+
+Register the operations a genre offers on its projects; returns them as a tuple.
+
+Called once by the genre’s **owning app**, beside its project factory, so a host can
+serve the genre’s project operations via [`genre_ops()`](_autosummary/nw.html.md#nw.genre_ops) without importing the
+genre’s package. Names must be unique within the genre. Registering the same genre
+twice raises (the registry refuses conflicts, as every nw genre registry does).
+
+* **Return type:**
+  [`tuple`](https://docs.python.org/3/builtins/stdtypes.html#tuple)
+
+```pycon
+>>> def _peek(project) -> dict:
+...     '''Say hello.'''
+...     return {"hello": True}
+>>> _ = register_genre_ops("_ops_demo", [GenreOp("peek", _peek, title="Peek",
+...                                              effect="read")])
+>>> [op.name for op in genre_ops("_ops_demo")]
+['peek']
+>>> genre_op("_ops_demo", "peek")(None)
+{'hello': True}
+>>> genre_ops("_nobody")
+()
+>>> del genre_ops_registry["_ops_demo"]
 ```
 
 ### nw.register_genre_project_factory(slug, factory)
@@ -8808,7 +8933,7 @@ produce different URLs. The local file paths are byte-stable.
 
 # About this build
 
-This documentation was built on **2026-09-22 15:38 UTC** from commit <a href="https://github.com/thorwhalen/nw/commit/9027ed874ad2f30f310c962e29beb7d85767be8c"><code>9027ed8</code></a> on branch <code>main</code>, for **nw 0.0.59** (from <code>pyproject.toml</code>).
+This documentation was built on **2026-09-27 09:51 UTC** from commit <a href="https://github.com/thorwhalen/nw/commit/2a712547fd0f3ec492a2315fc23a3563a355f5f0"><code>2a71254</code></a> on branch <code>main</code>, for **nw 0.0.60** (from <code>pyproject.toml</code>).
 
 #### NOTE
 Nothing suggests a mismatch: the tree was clean at the commit above, and the documented version is the one on PyPI.
@@ -8817,9 +8942,9 @@ Nothing suggests a mismatch: the tree was clean at the commit above, and the doc
 
 |                     |                                                                                                                                                      |
 |---------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Commit              | <a href="https://github.com/thorwhalen/nw/commit/9027ed874ad2f30f310c962e29beb7d85767be8c"><code>9027ed874ad2f30f310c962e29beb7d85767be8c</code></a> |
+| Commit              | <a href="https://github.com/thorwhalen/nw/commit/2a712547fd0f3ec492a2315fc23a3563a355f5f0"><code>2a712547fd0f3ec492a2315fc23a3563a355f5f0</code></a> |
 | Branch              | <code>main</code>                                                                                                                                    |
-| Tags at this commit | <code>0.0.59</code>                                                                                                                                  |
+| Tags at this commit | <code>0.0.60</code>                                                                                                                                  |
 | Working tree        | clean                                                                                                                                                |
 | Remote              | <code>https://github.com/thorwhalen/nw</code>                                                                                                        |
 
@@ -8828,9 +8953,9 @@ Nothing suggests a mismatch: the tree was clean at the commit above, and the doc
 |              |                                                                                            |
 |--------------|--------------------------------------------------------------------------------------------|
 | Repository   | <code>thorwhalen/nw</code>                                                                 |
-| Run          | <a href="https://github.com/thorwhalen/nw/actions/runs/35748402415">35748402415</a>        |
+| Run          | <a href="https://github.com/thorwhalen/nw/actions/runs/36310525731">36310525731</a>        |
 | Ref          | <code>refs/heads/main</code>                                                               |
-| Event commit | <code>349a1738cf25bbeb5f52e170d754eba802badce4</code> (in the history of the built commit) |
+| Event commit | <code>bc0ceed96e66f0fcae650c1c81830e951eb768a8</code> (in the history of the built commit) |
 
 ## Tools
 
@@ -8855,13 +8980,13 @@ Nothing suggests a mismatch: the tree was clean at the commit above, and the doc
 
 ## Package on PyPI
 
-Latest release: <a href="https://pypi.org/project/nw/0.0.59/">0.0.59</a>, the same as the documented version.
+Latest release: <a href="https://pypi.org/project/nw/0.0.60/">0.0.60</a>, the same as the documented version.
 
 ## Reproduce
 
 ```bash
 git clone https://github.com/thorwhalen/nw && cd nw
-git checkout 9027ed874ad2f30f310c962e29beb7d85767be8c
+git checkout 2a712547fd0f3ec492a2315fc23a3563a355f5f0
 pip install "epythet==0.2.12"
 epythet quickstart . --ignore tests/ scrap/ examples/
 ```

@@ -220,6 +220,13 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#nw.Genre.to_dict"><code class="docutils literal notranslate"><span class="pre">Genre.to_dict()</span></code></a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#nw.GenreOp"><code class="docutils literal notranslate"><span class="pre">GenreOp</span></code></a><ul>
+<li><a class="reference internal" href="#nw.GenreOp.params_model"><code class="docutils literal notranslate"><span class="pre">GenreOp.params_model</span></code></a></li>
+<li><a class="reference internal" href="#nw.GenreOp.params_schema"><code class="docutils literal notranslate"><span class="pre">GenreOp.params_schema</span></code></a></li>
+<li><a class="reference internal" href="#nw.GenreOp.to_dict"><code class="docutils literal notranslate"><span class="pre">GenreOp.to_dict()</span></code></a></li>
+<li><a class="reference internal" href="#nw.GenreOp.validate_params"><code class="docutils literal notranslate"><span class="pre">GenreOp.validate_params()</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#nw.PlanQuote"><code class="docutils literal notranslate"><span class="pre">PlanQuote</span></code></a><ul>
 <li><a class="reference internal" href="#nw.PlanQuote.as_of_total_usd"><code class="docutils literal notranslate"><span class="pre">PlanQuote.as_of_total_usd</span></code></a></li>
 <li><a class="reference internal" href="#nw.PlanQuote.basis_changed"><code class="docutils literal notranslate"><span class="pre">PlanQuote.basis_changed</span></code></a></li>
@@ -344,6 +351,7 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#nw.TransformResult.is_complete"><code class="docutils literal notranslate"><span class="pre">TransformResult.is_complete</span></code></a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#nw.UnknownGenreOpError"><code class="docutils literal notranslate"><span class="pre">UnknownGenreOpError</span></code></a></li>
 <li><a class="reference internal" href="#nw.UnproducedOutputBodyV1"><code class="docutils literal notranslate"><span class="pre">UnproducedOutputBodyV1</span></code></a><ul>
 <li><a class="reference internal" href="#nw.UnproducedOutputBodyV1.model_config"><code class="docutils literal notranslate"><span class="pre">UnproducedOutputBodyV1.model_config</span></code></a></li>
 </ul>
@@ -384,6 +392,9 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#nw.fan_out_plan"><code class="docutils literal notranslate"><span class="pre">fan_out_plan()</span></code></a></li>
 <li><a class="reference internal" href="#nw.format_ref"><code class="docutils literal notranslate"><span class="pre">format_ref()</span></code></a></li>
 <li><a class="reference internal" href="#nw.genre_catalog"><code class="docutils literal notranslate"><span class="pre">genre_catalog()</span></code></a></li>
+<li><a class="reference internal" href="#nw.genre_op"><code class="docutils literal notranslate"><span class="pre">genre_op()</span></code></a></li>
+<li><a class="reference internal" href="#nw.genre_ops"><code class="docutils literal notranslate"><span class="pre">genre_ops()</span></code></a></li>
+<li><a class="reference internal" href="#nw.genre_ops_catalogue"><code class="docutils literal notranslate"><span class="pre">genre_ops_catalogue()</span></code></a></li>
 <li><a class="reference internal" href="#nw.get_genre"><code class="docutils literal notranslate"><span class="pre">get_genre()</span></code></a></li>
 <li><a class="reference internal" href="#nw.get_strategy"><code class="docutils literal notranslate"><span class="pre">get_strategy()</span></code></a></li>
 <li><a class="reference internal" href="#nw.get_transform"><code class="docutils literal notranslate"><span class="pre">get_transform()</span></code></a></li>
@@ -413,6 +424,7 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#nw.register_check"><code class="docutils literal notranslate"><span class="pre">register_check()</span></code></a></li>
 <li><a class="reference internal" href="#nw.register_genre"><code class="docutils literal notranslate"><span class="pre">register_genre()</span></code></a></li>
 <li><a class="reference internal" href="#nw.register_genre_initializer"><code class="docutils literal notranslate"><span class="pre">register_genre_initializer()</span></code></a></li>
+<li><a class="reference internal" href="#nw.register_genre_ops"><code class="docutils literal notranslate"><span class="pre">register_genre_ops()</span></code></a></li>
 <li><a class="reference internal" href="#nw.register_genre_project_factory"><code class="docutils literal notranslate"><span class="pre">register_genre_project_factory()</span></code></a></li>
 <li><a class="reference internal" href="#nw.register_genre_resolver"><code class="docutils literal notranslate"><span class="pre">register_genre_resolver()</span></code></a></li>
 <li><a class="reference internal" href="#nw.register_strategy"><code class="docutils literal notranslate"><span class="pre">register_strategy()</span></code></a></li>
@@ -483,7 +495,9 @@ know.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">nw.workflow</span></code> — the <code class="docutils literal notranslate"><span class="pre">prepare</span></code> → <code class="docutils literal notranslate"><span class="pre">plan</span></code> → <code class="docutils literal notranslate"><span class="pre">execute</span></code> render split
 (Plan/Execute over rendering; records render-result provenance).</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">nw.renderers</span></code> — render strategies.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">nw.genres</span></code> — production genres (the reusable project specialization).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nw.genres</span></code> — production genres (the reusable project specialization),
+their project factories, and the ops a host serves on a genre’s projects
+(<a class="reference internal" href="#nw.GenreOp" title="nw.GenreOp"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenreOp</span></code></a>, <a class="reference internal" href="#nw.register_genre_ops" title="nw.register_genre_ops"><code class="xref py py-func docutils literal notranslate"><span class="pre">register_genre_ops()</span></code></a>, <a class="reference internal" href="#nw.genre_ops_catalogue" title="nw.genre_ops_catalogue"><code class="xref py py-func docutils literal notranslate"><span class="pre">genre_ops_catalogue()</span></code></a>).</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">nw.pricing</span></code> — re-quoting a <em>persisted</em> plan at today’s rates
 (<a class="reference internal" href="#nw.current_quote" title="nw.current_quote"><code class="xref py py-func docutils literal notranslate"><span class="pre">current_quote()</span></code></a>, <a class="reference internal" href="#nw.PlanQuote" title="nw.PlanQuote"><code class="xref py py-class docutils literal notranslate"><span class="pre">PlanQuote</span></code></a>). Any stored cost figure is an
 as-of-then fact; reporting one as current under-quotes the run once falaw’s
@@ -537,6 +551,18 @@ are recorded as linked artifacts), see
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#nw.create_genre_project" title="nw.create_genre_project"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_genre_project</span></code></a>(genre, caller, ...[, ...])</p></td>
 <td><p>Create + seed a new project for a PLUGGED-IN <code class="docutils literal notranslate"><span class="pre">genre</span></code> in <code class="docutils literal notranslate"><span class="pre">caller</span></code>'s space.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.register_genre_ops" title="nw.register_genre_ops"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_genre_ops</span></code></a>(genre_slug, ops)</p></td>
+<td><p>Register the operations a genre offers on its projects; returns them as a tuple.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.genre_ops" title="nw.genre_ops"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genre_ops</span></code></a>(genre_slug)</p></td>
+<td><p>The ops registered for <code class="docutils literal notranslate"><span class="pre">genre_slug</span></code>, in registration order (<code class="docutils literal notranslate"><span class="pre">()</span></code> if none).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.genre_op" title="nw.genre_op"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genre_op</span></code></a>(genre_slug, name)</p></td>
+<td><p>The op <code class="docutils literal notranslate"><span class="pre">name</span></code> of <code class="docutils literal notranslate"><span class="pre">genre_slug</span></code>; <a class="reference internal" href="#nw.UnknownGenreOpError" title="nw.UnknownGenreOpError"><code class="xref py py-class docutils literal notranslate"><span class="pre">UnknownGenreOpError</span></code></a> naming the known.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.genre_ops_catalogue" title="nw.genre_ops_catalogue"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genre_ops_catalogue</span></code></a>(genre_slug)</p></td>
+<td><p>The pure-JSON catalogue of <code class="docutils literal notranslate"><span class="pre">genre_slug</span></code>'s ops (<code class="docutils literal notranslate"><span class="pre">[]</span></code> for a genre with none).</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#nw.annotations_at_tier" title="nw.annotations_at_tier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">annotations_at_tier</span></code></a>(project_root, tier)</p></td>
 <td><p>Return every annotation at the given tier across all of the project's stores.</p></td>
@@ -755,88 +781,91 @@ are recorded as linked artifacts), see
 <tr class="row-odd"><td><p><a class="reference internal" href="#nw.Template" title="nw.Template"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Template</span></code></a>(slug, title[, description, params])</p></td>
 <td><p>A named preset (&quot;subgenre&quot;) <em>within</em> a genre — a filled-in default config.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nw.Project" title="nw.Project"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Project</span></code></a>(root, *[, auto_migrate])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.GenreOp" title="nw.GenreOp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GenreOp</span></code></a>(name, fn, title[, description, ...])</p></td>
+<td><p>One operation a genre offers on its projects — a row a host builds surfaces from.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.Project" title="nw.Project"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Project</span></code></a>(root, *[, auto_migrate])</p></td>
 <td><p>A folder-backed nw project.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nw.ProjectGraph" title="nw.ProjectGraph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ProjectGraph</span></code></a>(project_root)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.ProjectGraph" title="nw.ProjectGraph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ProjectGraph</span></code></a>(project_root)</p></td>
 <td><p>Typed read/write facade over the project's lacing graph store.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nw.StoredUnproducedOutput" title="nw.StoredUnproducedOutput"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StoredUnproducedOutput</span></code></a>(annotation_id, body)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.StoredUnproducedOutput" title="nw.StoredUnproducedOutput"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StoredUnproducedOutput</span></code></a>(annotation_id, body)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nw.UnproducedOutputBodyV1" title="nw.UnproducedOutputBodyV1"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UnproducedOutputBodyV1</span></code></a>(**data)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.UnproducedOutputBodyV1" title="nw.UnproducedOutputBodyV1"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UnproducedOutputBodyV1</span></code></a>(**data)</p></td>
 <td><p>Body of an unproduced-output record.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nw.ProjectSpec" title="nw.ProjectSpec"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ProjectSpec</span></code></a>(**data)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.ProjectSpec" title="nw.ProjectSpec"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ProjectSpec</span></code></a>(**data)</p></td>
 <td><p>The top-level project SSOT, persisted as <code class="docutils literal notranslate"><span class="pre">project.json</span></code>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nw.ProjectSummary" title="nw.ProjectSummary"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ProjectSummary</span></code></a>(**data)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.ProjectSummary" title="nw.ProjectSummary"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ProjectSummary</span></code></a>(**data)</p></td>
 <td><p>Typed read view of a project — what <code class="docutils literal notranslate"><span class="pre">muvid</span> <span class="pre">status</span></code> printed, but typed.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nw.ResumptionBrief" title="nw.ResumptionBrief"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ResumptionBrief</span></code></a>(**data)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.ResumptionBrief" title="nw.ResumptionBrief"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ResumptionBrief</span></code></a>(**data)</p></td>
 <td><p>A &quot;where we left off&quot; snapshot, returned by <a class="reference internal" href="#nw.Project.resumption_brief" title="nw.Project.resumption_brief"><code class="xref py py-meth docutils literal notranslate"><span class="pre">nw.Project.resumption_brief()</span></code></a>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nw.SectionSpec" title="nw.SectionSpec"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SectionSpec</span></code></a>(**data)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.SectionSpec" title="nw.SectionSpec"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SectionSpec</span></code></a>(**data)</p></td>
 <td><p>A non-overlapping span of the project's master timeline.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nw.ShotPreparation" title="nw.ShotPreparation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ShotPreparation</span></code></a>(project_root, shot, ...[, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.ShotPreparation" title="nw.ShotPreparation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ShotPreparation</span></code></a>(project_root, shot, ...[, ...])</p></td>
 <td><p>Local-only inputs for rendering a single shot.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nw.ShotReport" title="nw.ShotReport"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ShotReport</span></code></a>(**data)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.ShotReport" title="nw.ShotReport"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ShotReport</span></code></a>(**data)</p></td>
 <td><p>Inspection of one rendered shot.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nw.ShotSpec" title="nw.ShotSpec"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ShotSpec</span></code></a>(**data)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.ShotSpec" title="nw.ShotSpec"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ShotSpec</span></code></a>(**data)</p></td>
 <td><p>A timeline-locked visual unit.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nw.SongInfo" title="nw.SongInfo"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SongInfo</span></code></a>(**data)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.SongInfo" title="nw.SongInfo"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SongInfo</span></code></a>(**data)</p></td>
 <td><p>Metadata for the master audio file.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nw.Strategy" title="nw.Strategy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strategy</span></code></a>(*args, **kwargs)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.Strategy" title="nw.Strategy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Strategy</span></code></a>(*args, **kwargs)</p></td>
 <td><p>Render-strategy contract.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nw.Transform" title="nw.Transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Transform</span></code></a>(*args, **kwargs)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.Transform" title="nw.Transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Transform</span></code></a>(*args, **kwargs)</p></td>
 <td><p>A swappable, costed function from A-annotations to B-annotations.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nw.TransformInputs" title="nw.TransformInputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TransformInputs</span></code></a>(primary[, context])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.TransformInputs" title="nw.TransformInputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TransformInputs</span></code></a>(primary[, context])</p></td>
 <td><p>The annotations a Transform consumes.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nw.TransformResult" title="nw.TransformResult"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TransformResult</span></code></a>(annotations[, artifacts, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.TransformResult" title="nw.TransformResult"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TransformResult</span></code></a>(annotations[, artifacts, ...])</p></td>
 <td><p>The outputs of a Transform's <a class="reference internal" href="#nw.Transform.execute" title="nw.Transform.execute"><code class="xref py py-meth docutils literal notranslate"><span class="pre">execute()</span></code></a>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nw.FailedOutput" title="nw.FailedOutput"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FailedOutput</span></code></a>(skeleton, status[, reason, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.FailedOutput" title="nw.FailedOutput"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FailedOutput</span></code></a>(skeleton, status[, reason, ...])</p></td>
 <td><p>An output annotation that was planned but never produced.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nw.PlanQuote" title="nw.PlanQuote"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PlanQuote</span></code></a>(*, total_usd, status, ...[, reason])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.PlanQuote" title="nw.PlanQuote"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PlanQuote</span></code></a>(*, total_usd, status, ...[, reason])</p></td>
 <td><p>Today's price for a persisted plan, with the stale figure alongside.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nw.WorkItem" title="nw.WorkItem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">WorkItem</span></code></a>(**data)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.WorkItem" title="nw.WorkItem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">WorkItem</span></code></a>(**data)</p></td>
 <td><p>One unit of a fan-out — the PDG-shaped work item (nw#26).</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nw.FanOutUnit" title="nw.FanOutUnit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FanOutUnit</span></code></a>(item, instance_id, plan, skeleton)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.FanOutUnit" title="nw.FanOutUnit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FanOutUnit</span></code></a>(item, instance_id, plan, skeleton)</p></td>
 <td><p>One planned unit: a work item plus its ordinary Transform plan.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nw.FanOutPlan" title="nw.FanOutPlan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FanOutPlan</span></code></a>(transform_name, units)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.FanOutPlan" title="nw.FanOutPlan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FanOutPlan</span></code></a>(transform_name, units)</p></td>
 <td><p>The planned fan-out — pure data, like every plan in this federation.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nw.FanOutItemResult" title="nw.FanOutItemResult"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FanOutItemResult</span></code></a>(item, instance_id, status)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.FanOutItemResult" title="nw.FanOutItemResult"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FanOutItemResult</span></code></a>(item, instance_id, status)</p></td>
 <td><p>One unit's outcome, aligned 1:1 with the plan's units.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nw.FanOutResult" title="nw.FanOutResult"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FanOutResult</span></code></a>(transform_name, items)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.FanOutResult" title="nw.FanOutResult"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FanOutResult</span></code></a>(transform_name, items)</p></td>
 <td><p>A fan-out run: one <a class="reference internal" href="#nw.FanOutItemResult" title="nw.FanOutItemResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">FanOutItemResult</span></code></a> per planned unit, in order.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nw.Secrets" title="nw.Secrets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Secrets</span></code></a>([mapping])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.Secrets" title="nw.Secrets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Secrets</span></code></a>([mapping])</p></td>
 <td><p>A read-only <code class="docutils literal notranslate"><span class="pre">{provider_name:</span> <span class="pre">key}</span></code> mapping that never prints or persists.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nw.Check" title="nw.Check"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Check</span></code></a>(name, summary, run[, requires, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.Check" title="nw.Check"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Check</span></code></a>(name, summary, run[, requires, ...])</p></td>
 <td><p>One validation, and everything a scheduler and a menu need to know.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nw.CheckResult" title="nw.CheckResult"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CheckResult</span></code></a>(name[, findings, skipped, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.CheckResult" title="nw.CheckResult"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CheckResult</span></code></a>(name[, findings, skipped, ...])</p></td>
 <td><p>What one check produced, including the case where it could not run.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nw.Finding" title="nw.Finding"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Finding</span></code></a>(check, severity, message[, where, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.Finding" title="nw.Finding"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Finding</span></code></a>(check, severity, message[, where, ...])</p></td>
 <td><p>One thing a check noticed.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nw.ValidationReport" title="nw.ValidationReport"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ValidationReport</span></code></a>(target[, results, elapsed_s])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.ValidationReport" title="nw.ValidationReport"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ValidationReport</span></code></a>(target[, results, elapsed_s])</p></td>
 <td><p>Everything a <a class="reference internal" href="#nw.validate" title="nw.validate"><code class="xref py py-func docutils literal notranslate"><span class="pre">validate()</span></code></a> run produced.</p></td>
 </tr>
 </tbody>
@@ -849,7 +878,10 @@ are recorded as linked artifacts), see
 <tr class="row-odd"><td><p><a class="reference internal" href="#nw.CacheModeConflict" title="nw.CacheModeConflict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CacheModeConflict</span></code></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">use_cache=False</span></code> and <code class="docutils literal notranslate"><span class="pre">force=True</span></code> were passed together.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#nw.ValidationError" title="nw.ValidationError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ValidationError</span></code></a>(report)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.UnknownGenreOpError" title="nw.UnknownGenreOpError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UnknownGenreOpError</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">genre_op</span></code> was asked for a name the genre does not register.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.ValidationError" title="nw.ValidationError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ValidationError</span></code></a>(report)</p></td>
 <td><p>Raised by <a class="reference internal" href="#nw.ValidationReport.raise_if_failed" title="nw.ValidationReport.raise_if_failed"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ValidationReport.raise_if_failed()</span></code></a>.</p></td>
 </tr>
 </tbody>
@@ -1531,6 +1563,72 @@ one that isn’t ready is a wiring bug worth catching in a test.</p>
 <p>Templates are emitted with their opaque <code class="docutils literal notranslate"><span class="pre">params</span></code> (not flattened), and
 <code class="docutils literal notranslate"><span class="pre">intake_kinds</span></code>/<code class="docutils literal notranslate"><span class="pre">cost_profile</span></code>/<code class="docutils literal notranslate"><span class="pre">defaults</span></code> ride at the genre level, so a
 consumer needs no app-specific knowledge to render the catalog.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.GenreOp">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.</span></span><span class="sig-name descname"><span class="pre">GenreOp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">effect</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'write'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">runs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'now'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/genres.html#GenreOp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.GenreOp" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>One operation a genre offers on its projects — a row a host builds surfaces from.</p>
+<p><code class="docutils literal notranslate"><span class="pre">fn(project,</span> <span class="pre">**params)</span> <span class="pre">-&gt;</span> <span class="pre">dict</span></code> does the work; <code class="docutils literal notranslate"><span class="pre">params</span></code> and the result are
+JSON-able. <code class="docutils literal notranslate"><span class="pre">title</span></code> is a short plain-language imperative (“Find where each video
+fits”) — it becomes a button or command title. <code class="docutils literal notranslate"><span class="pre">description</span></code> is model-facing and
+defaults to <code class="docutils literal notranslate"><span class="pre">fn</span></code>’s docstring. <code class="docutils literal notranslate"><span class="pre">effect</span></code> is one of <code class="xref py py-data docutils literal notranslate"><span class="pre">GENRE_OP_EFFECTS</span></code>,
+<code class="docutils literal notranslate"><span class="pre">runs</span></code> one of <code class="xref py py-data docutils literal notranslate"><span class="pre">GENRE_OP_RUNS</span></code>.</p>
+<p>Construction validates everything, including that every parameter after the
+project is annotated with a JSON-describable type — a bad op fails where it is
+declared, not in front of a user.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="nf">_rename</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">loud</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+</span><span data-line="2"><span class="gp">... </span><span class="w">    </span><span class="sd">'''Rename the project.'''</span>
+</span><span data-line="3"><span class="gp">... </span>    <span class="k">return</span> <span class="p">{</span><span class="s2">"title"</span><span class="p">:</span> <span class="n">title</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="k">if</span> <span class="n">loud</span> <span class="k">else</span> <span class="n">title</span><span class="p">}</span>
+</span><span data-line="4"><span class="gp">&gt;&gt;&gt; </span><span class="n">op</span> <span class="o">=</span> <span class="n">GenreOp</span><span class="p">(</span><span class="s2">"rename"</span><span class="p">,</span> <span class="n">_rename</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">"Rename it"</span><span class="p">)</span>
+</span><span data-line="5"><span class="gp">&gt;&gt;&gt; </span><span class="n">op</span><span class="o">.</span><span class="n">description</span><span class="p">,</span> <span class="n">op</span><span class="o">.</span><span class="n">effect</span><span class="p">,</span> <span class="n">op</span><span class="o">.</span><span class="n">runs</span>
+</span><span data-line="6"><span class="go">('Rename the project.', 'write', 'now')</span>
+</span><span data-line="7"><span class="gp">&gt;&gt;&gt; </span><span class="nb">sorted</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">params_schema</span><span class="p">[</span><span class="s2">"properties"</span><span class="p">]),</span> <span class="n">op</span><span class="o">.</span><span class="n">params_schema</span><span class="p">[</span><span class="s2">"required"</span><span class="p">]</span>
+</span><span data-line="8"><span class="go">(['loud', 'title'], ['title'])</span>
+</span><span data-line="9"><span class="gp">&gt;&gt;&gt; </span><span class="n">op</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">"x"</span><span class="p">,</span> <span class="n">loud</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="10"><span class="go">{'title': 'X'}</span>
+</span></pre></div>
+</div>
+<dl class="field-list simple">
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="nw.GenreOp.params_model">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">params_model</span></span><a class="headerlink" href="#nw.GenreOp.params_model" title="Link to this definition">#</a></dt>
+<dd><p>The pydantic model of the op’s parameters (<code class="docutils literal notranslate"><span class="pre">extra=&quot;forbid&quot;</span></code>).</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="nw.GenreOp.params_schema">
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">params_schema</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a></span><a class="headerlink" href="#nw.GenreOp.params_schema" title="Link to this definition">#</a></dt>
+<dd><p>JSON Schema (an object, <code class="docutils literal notranslate"><span class="pre">additionalProperties:</span> <span class="pre">false</span></code>) of the parameters.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.GenreOp.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/genres.html#GenreOp.to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.GenreOp.to_dict" title="Link to this definition">#</a></dt>
+<dd><p>The op’s JSON row: everything but the function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.GenreOp.validate_params">
+<span class="sig-name descname"><span class="pre">validate_params</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/genres.html#GenreOp.validate_params"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.GenreOp.validate_params" title="Link to this definition">#</a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">params</span></code> checked and coerced against <a class="reference internal" href="#nw.GenreOp.params_schema" title="nw.GenreOp.params_schema"><code class="xref py py-attr docutils literal notranslate"><span class="pre">params_schema</span></code></a>.</p>
+<p>Raises <code class="xref py py-class docutils literal notranslate"><span class="pre">pydantic.ValidationError</span></code> (a <a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#ValueError" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code></a>) on a missing,
+unknown or wrongly typed parameter. Only the parameters the caller passed are
+returned, so the op’s own defaults stay the op’s.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></span></p>
@@ -2692,6 +2790,16 @@ gate in the federation is required to read.</p>
 
 </dd></dl>
 
+<dl class="py exception">
+<dt class="sig sig-object py" id="nw.UnknownGenreOpError">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.</span></span><span class="sig-name descname"><span class="pre">UnknownGenreOpError</span></span><a class="reference internal" href="../_modules/nw/genres.html#UnknownGenreOpError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.UnknownGenreOpError" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#KeyError" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">KeyError</span></code></a></p>
+<p><code class="docutils literal notranslate"><span class="pre">genre_op</span></code> was asked for a name the genre does not register.</p>
+<p>A <a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#KeyError" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">KeyError</span></code></a> so a caller that already catches unknown-key lookups keeps
+working; its message names the known ops, because “no such op” with no menu is a
+dead end for a model choosing among them.</p>
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="nw.UnproducedOutputBodyV1">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.</span></span><span class="sig-name descname"><span class="pre">UnproducedOutputBodyV1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/bodies/unproduced_output.html#UnproducedOutputBodyV1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.UnproducedOutputBodyV1" title="Link to this definition">#</a></dt>
@@ -3361,6 +3469,42 @@ execute time changes nothing.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="nw.genre_op">
+<span class="sig-prename descclassname"><span class="pre">nw.</span></span><span class="sig-name descname"><span class="pre">genre_op</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">genre_slug</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/genres.html#genre_op"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.genre_op" title="Link to this definition">#</a></dt>
+<dd><p>The op <code class="docutils literal notranslate"><span class="pre">name</span></code> of <code class="docutils literal notranslate"><span class="pre">genre_slug</span></code>; <a class="reference internal" href="#nw.UnknownGenreOpError" title="nw.UnknownGenreOpError"><code class="xref py py-class docutils literal notranslate"><span class="pre">UnknownGenreOpError</span></code></a> naming the known.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#nw.GenreOp" title="nw.genres.GenreOp"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenreOp</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.genre_ops">
+<span class="sig-prename descclassname"><span class="pre">nw.</span></span><span class="sig-name descname"><span class="pre">genre_ops</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">genre_slug</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/genres.html#genre_ops"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.genre_ops" title="Link to this definition">#</a></dt>
+<dd><p>The ops registered for <code class="docutils literal notranslate"><span class="pre">genre_slug</span></code>, in registration order (<code class="docutils literal notranslate"><span class="pre">()</span></code> if none).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.genre_ops_catalogue">
+<span class="sig-prename descclassname"><span class="pre">nw.</span></span><span class="sig-name descname"><span class="pre">genre_ops_catalogue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">genre_slug</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/genres.html#genre_ops_catalogue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.genre_ops_catalogue" title="Link to this definition">#</a></dt>
+<dd><p>The pure-JSON catalogue of <code class="docutils literal notranslate"><span class="pre">genre_slug</span></code>’s ops (<code class="docutils literal notranslate"><span class="pre">[]</span></code> for a genre with none).</p>
+<p>One dict per op — <code class="docutils literal notranslate"><span class="pre">name</span></code>, <code class="docutils literal notranslate"><span class="pre">title</span></code>, <code class="docutils literal notranslate"><span class="pre">description</span></code>, <code class="docutils literal notranslate"><span class="pre">effect</span></code>, <code class="docutils literal notranslate"><span class="pre">runs</span></code>,
+<code class="docutils literal notranslate"><span class="pre">params_schema</span></code> — the shape a host exports to a frontend’s codegen or an MCP
+tool builder.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="nw.get_genre">
 <span class="sig-prename descclassname"><span class="pre">nw.</span></span><span class="sig-name descname"><span class="pre">get_genre</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">slug</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/genres.html#get_genre"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.get_genre" title="Link to this definition">#</a></dt>
 <dd><p>Look up a genre by slug; raises <a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#KeyError" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">KeyError</span></code></a> with the known slugs.</p>
@@ -3916,6 +4060,35 @@ no initializer at all.</p>
 </span><span data-line="8"><span class="gp">&gt;&gt;&gt; </span><span class="n">seen</span><span class="p">[</span><span class="s2">"applied"</span><span class="p">]</span>
 </span><span data-line="9"><span class="go">('_init_demo', None, {'look': 'plain'})</span>
 </span><span data-line="10"><span class="gp">&gt;&gt;&gt; </span><span class="k">del</span> <span class="n">genres</span><span class="p">[</span><span class="s2">"_init_demo"</span><span class="p">];</span> <span class="k">del</span> <span class="n">genre_initializers</span><span class="p">[</span><span class="s2">"_init_demo"</span><span class="p">]</span>
+</span></pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.register_genre_ops">
+<span class="sig-prename descclassname"><span class="pre">nw.</span></span><span class="sig-name descname"><span class="pre">register_genre_ops</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">genre_slug</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ops</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/genres.html#register_genre_ops"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.register_genre_ops" title="Link to this definition">#</a></dt>
+<dd><p>Register the operations a genre offers on its projects; returns them as a tuple.</p>
+<p>Called once by the genre’s <strong>owning app</strong>, beside its project factory, so a host can
+serve the genre’s project operations via <a class="reference internal" href="#nw.genre_ops" title="nw.genre_ops"><code class="xref py py-func docutils literal notranslate"><span class="pre">genre_ops()</span></code></a> without importing the
+genre’s package. Names must be unique within the genre. Registering the same genre
+twice raises (the registry refuses conflicts, as every nw genre registry does).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a></span></p>
+</dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="nf">_peek</span><span class="p">(</span><span class="n">project</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+</span><span data-line="2"><span class="gp">... </span><span class="w">    </span><span class="sd">'''Say hello.'''</span>
+</span><span data-line="3"><span class="gp">... </span>    <span class="k">return</span> <span class="p">{</span><span class="s2">"hello"</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+</span><span data-line="4"><span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">register_genre_ops</span><span class="p">(</span><span class="s2">"_ops_demo"</span><span class="p">,</span> <span class="p">[</span><span class="n">GenreOp</span><span class="p">(</span><span class="s2">"peek"</span><span class="p">,</span> <span class="n">_peek</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">"Peek"</span><span class="p">,</span>
+</span><span data-line="5"><span class="gp">... </span>                                             <span class="n">effect</span><span class="o">=</span><span class="s2">"read"</span><span class="p">)])</span>
+</span><span data-line="6"><span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">op</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">op</span> <span class="ow">in</span> <span class="n">genre_ops</span><span class="p">(</span><span class="s2">"_ops_demo"</span><span class="p">)]</span>
+</span><span data-line="7"><span class="go">['peek']</span>
+</span><span data-line="8"><span class="gp">&gt;&gt;&gt; </span><span class="n">genre_op</span><span class="p">(</span><span class="s2">"_ops_demo"</span><span class="p">,</span> <span class="s2">"peek"</span><span class="p">)(</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="9"><span class="go">{'hello': True}</span>
+</span><span data-line="10"><span class="gp">&gt;&gt;&gt; </span><span class="n">genre_ops</span><span class="p">(</span><span class="s2">"_nobody"</span><span class="p">)</span>
+</span><span data-line="11"><span class="go">()</span>
+</span><span data-line="12"><span class="gp">&gt;&gt;&gt; </span><span class="k">del</span> <span class="n">genre_ops_registry</span><span class="p">[</span><span class="s2">"_ops_demo"</span><span class="p">]</span>
 </span></pre></div>
 </div>
 </dd></dl>
@@ -4500,7 +4673,7 @@ addressable across runs.</p>
     </div>
   </div>
 </footer>
-      <script src="../_static/documentation_options.js?v=6799126d"></script>
+      <script src="../_static/documentation_options.js?v=4d22d5b7"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>

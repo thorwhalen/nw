@@ -22,6 +22,10 @@
       has_genre_project_factory
       can_place_genre_project
       create_genre_project
+      register_genre_ops
+      genre_ops
+      genre_op
+      genre_ops_catalogue
       annotations_at_tier
       apply_to_projects
       clone_project
@@ -97,6 +101,7 @@
       Gap
       Genre
       Template
+      GenreOp
       Project
       ProjectGraph
       StoredUnproducedOutput
@@ -131,6 +136,7 @@
    .. autosummary::
    
       CacheModeConflict
+      UnknownGenreOpError
       ValidationError
    
 .. rubric:: Modules
