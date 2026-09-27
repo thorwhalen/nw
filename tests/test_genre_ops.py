@@ -147,6 +147,7 @@ def test_register_lookup_and_catalogue(clean_ops):
         "params_schema",
         "host_params",
         "max_upload_bytes",
+        "spends",
     }
     assert catalogue[1]["runs"] == "job"
 
@@ -233,3 +234,11 @@ def test_refusal_cancellation_and_upload_ceiling():
     for bad in (0, -1, 1.5, True):
         with pytest.raises(ValueError, match="max_upload_bytes"):
             nw.GenreOp("ingest", _ingest, title="Add", max_upload_bytes=bad)
+
+
+def test_spends_is_declared_and_exported():
+    free = nw.GenreOp("status", _status, title="Show")
+    paid = nw.GenreOp("status", _status, title="Show", spends=True)
+    assert free.to_dict()["spends"] is False and paid.to_dict()["spends"] is True
+    with pytest.raises(TypeError, match="spends"):
+        nw.GenreOp("status", _status, title="Show", spends="yes")
