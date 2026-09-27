@@ -43,6 +43,7 @@ schemas + Transforms" stance is in
 from __future__ import annotations
 
 import inspect
+import re
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -950,6 +951,263 @@ def _rollback_project(project, *, within: Optional[Path] = None) -> None:
     shutil.rmtree(root, ignore_errors=True)
 
 
+# ---------------------------------------------------------------------------
+# Genre operations — what a host SERVES on a genre's project, without importing it
+#
+# A project factory lets a host *create* a guest genre's project; an op registry lets
+# it *work on* one. A genre registers its project operations here as plain functions
+# ``(project, **params) -> dict`` (JSON-able in and out), each with a plain-language
+# title, what it does to the project (``effect``) and whether it is slow enough that
+# the host must run it in the background (``runs``). A host reads this registry to
+# build every surface it offers — an HTTP route, a frontend command, an assistant tool —
+# from the one list, instead of re-listing a genre's operations by hand (a list written
+# twice is two implementations; reelee's HTTP<->MCP parity test measured twelve drifts).
+#
+# Deliberately tiny: no base class, no plugin loader, no dispatch. nw owns the
+# *description* of an op and the check that its parameters are JSON; what a refusal
+# looks like on the wire, how a job is queued and who may call what are the host's.
+# ---------------------------------------------------------------------------
+
+#: What an op does to the project. ``destroy`` = it removes (or invalidates) something
+#: the user made or uploaded — a host gates these behind a confirmation.
+GENRE_OP_EFFECTS = ("read", "write", "render", "destroy")
+
+#: How a host should run an op: ``now`` = answer in the request; ``job`` = slow (seconds
+#: to minutes), so run it in the background and let the caller watch it.
+GENRE_OP_RUNS = ("now", "job")
+
+_OP_NAME_PATTERN = re.compile(r"^[a-z][a-z0-9_]*$")
+
+
+class UnknownGenreOpError(KeyError):
+    """``genre_op`` was asked for a name the genre does not register.
+
+    A :class:`KeyError` so a caller that already catches unknown-key lookups keeps
+    working; its message names the known ops, because "no such op" with no menu is a
+    dead end for a model choosing among them.
+    """
+
+    def __str__(self) -> str:  # KeyError's default repr-quotes the whole message
+        return str(self.args[0]) if self.args else ""
+
+
+def _op_params_model(fn: Callable, *, name: str):
+    """The pydantic model of ``fn``'s parameters after the first (the project).
+
+    Refuses — at registration, not at call time — anything a JSON caller could not
+    satisfy: ``*args``/``**kwargs``, a positional-only parameter, a missing annotation,
+    or a type pydantic cannot express as JSON Schema. ``extra="forbid"`` so an unknown
+    parameter is an error rather than silently dropped.
+    """
+    from pydantic import ConfigDict, create_model
+
+    try:
+        sig = inspect.signature(fn, eval_str=True)
+    except (TypeError, ValueError, NameError) as exc:
+        raise TypeError(
+            f"genre op {name!r}: cannot read its signature ({exc})"
+        ) from exc
+    params = list(sig.parameters.values())
+    if not params or params[0].kind not in (
+        inspect.Parameter.POSITIONAL_ONLY,
+        inspect.Parameter.POSITIONAL_OR_KEYWORD,
+    ):
+        raise TypeError(
+            f"genre op {name!r}: fn must take the project as its first positional "
+            "parameter"
+        )
+    fields: dict = {}
+    for p in params[1:]:
+        if p.kind in (inspect.Parameter.VAR_POSITIONAL, inspect.Parameter.VAR_KEYWORD):
+            raise TypeError(
+                f"genre op {name!r}: *{p.name}/**{p.name} cannot be described as JSON "
+                "parameters; declare each parameter"
+            )
+        if p.kind is inspect.Parameter.POSITIONAL_ONLY:
+            raise TypeError(
+                f"genre op {name!r}: parameter {p.name!r} is positional-only; ops are "
+                "called with keyword parameters"
+            )
+        if p.annotation is inspect.Parameter.empty:
+            raise TypeError(
+                f"genre op {name!r}: parameter {p.name!r} has no annotation, so no "
+                "JSON Schema can be derived for it"
+            )
+        default = ... if p.default is inspect.Parameter.empty else p.default
+        fields[p.name] = (p.annotation, default)
+    model_name = "".join(part.title() for part in name.split("_")) + "Params"
+    try:
+        model = create_model(
+            model_name, __config__=ConfigDict(extra="forbid"), **fields
+        )
+        model.model_json_schema()  # a non-JSON type fails here, loudly
+    except Exception as exc:  # pydantic raises several types; all mean "not JSON"
+        raise TypeError(
+            f"genre op {name!r}: its parameters are not JSON-describable ({exc})"
+        ) from exc
+    return model
+
+
+@dataclass(frozen=True)
+class GenreOp:
+    """One operation a genre offers on its projects — a row a host builds surfaces from.
+
+    ``fn(project, **params) -> dict`` does the work; ``params`` and the result are
+    JSON-able. ``title`` is a short plain-language imperative ("Find where each video
+    fits") — it becomes a button or command title. ``description`` is model-facing and
+    defaults to ``fn``'s docstring. ``effect`` is one of :data:`GENRE_OP_EFFECTS`,
+    ``runs`` one of :data:`GENRE_OP_RUNS`.
+
+    Construction validates everything, including that every parameter after the
+    project is annotated with a JSON-describable type — a bad op fails where it is
+    declared, not in front of a user.
+
+    >>> def _rename(project, *, title: str, loud: bool = False) -> dict:
+    ...     '''Rename the project.'''
+    ...     return {"title": title.upper() if loud else title}
+    >>> op = GenreOp("rename", _rename, title="Rename it")
+    >>> op.description, op.effect, op.runs
+    ('Rename the project.', 'write', 'now')
+    >>> sorted(op.params_schema["properties"]), op.params_schema["required"]
+    (['loud', 'title'], ['title'])
+    >>> op(None, title="x", loud=True)
+    {'title': 'X'}
+    """
+
+    name: str
+    fn: Callable[..., dict]
+    title: str
+    description: str = ""
+    effect: str = "write"
+    runs: str = "now"
+
+    def __post_init__(self):
+        if not isinstance(self.name, str) or not _OP_NAME_PATTERN.match(self.name):
+            raise ValueError(
+                f"genre op name {self.name!r} must be snake_case "
+                "(lowercase letters, digits, underscores; starting with a letter)"
+            )
+        if not callable(self.fn):
+            raise TypeError(f"genre op {self.name!r}: fn must be callable")
+        if not isinstance(self.title, str) or not self.title.strip():
+            raise ValueError(
+                f"genre op {self.name!r}: title must be a non-empty string"
+            )
+        if self.effect not in GENRE_OP_EFFECTS:
+            raise ValueError(
+                f"genre op {self.name!r}: effect {self.effect!r} not in "
+                f"{GENRE_OP_EFFECTS}"
+            )
+        if self.runs not in GENRE_OP_RUNS:
+            raise ValueError(
+                f"genre op {self.name!r}: runs {self.runs!r} not in {GENRE_OP_RUNS}"
+            )
+        if not self.description:
+            object.__setattr__(self, "description", inspect.getdoc(self.fn) or "")
+        object.__setattr__(self, "_model", _op_params_model(self.fn, name=self.name))
+
+    @property
+    def params_model(self):
+        """The pydantic model of the op's parameters (``extra="forbid"``)."""
+        return self._model
+
+    @property
+    def params_schema(self) -> dict:
+        """JSON Schema (an object, ``additionalProperties: false``) of the parameters."""
+        return self._model.model_json_schema()
+
+    def validate_params(self, params: Optional[Mapping] = None) -> dict:
+        """``params`` checked and coerced against :attr:`params_schema`.
+
+        Raises :class:`pydantic.ValidationError` (a :class:`ValueError`) on a missing,
+        unknown or wrongly typed parameter. Only the parameters the caller passed are
+        returned, so the op's own defaults stay the op's.
+        """
+        validated = self._model.model_validate(dict(params or {}))
+        return validated.model_dump(exclude_unset=True)
+
+    def __call__(self, project, **params) -> dict:
+        """Validate ``params`` then run the op on ``project``."""
+        return self.fn(project, **self.validate_params(params))
+
+    def to_dict(self) -> dict:
+        """The op's JSON row: everything but the function."""
+        return {
+            "name": self.name,
+            "title": self.title,
+            "description": self.description,
+            "effect": self.effect,
+            "runs": self.runs,
+            "params_schema": self.params_schema,
+        }
+
+
+#: Registry of per-genre operations, keyed by genre slug (the owning app registers).
+genre_ops_registry: Registry = Registry(name="nw.genre_ops", on_conflict="error")
+
+
+def register_genre_ops(genre_slug: str, ops) -> tuple:
+    """Register the operations a genre offers on its projects; returns them as a tuple.
+
+    Called once by the genre's **owning app**, beside its project factory, so a host can
+    serve the genre's project operations via :func:`genre_ops` without importing the
+    genre's package. Names must be unique within the genre. Registering the same genre
+    twice raises (the registry refuses conflicts, as every nw genre registry does).
+
+    >>> def _peek(project) -> dict:
+    ...     '''Say hello.'''
+    ...     return {"hello": True}
+    >>> _ = register_genre_ops("_ops_demo", [GenreOp("peek", _peek, title="Peek",
+    ...                                              effect="read")])
+    >>> [op.name for op in genre_ops("_ops_demo")]
+    ['peek']
+    >>> genre_op("_ops_demo", "peek")(None)
+    {'hello': True}
+    >>> genre_ops("_nobody")
+    ()
+    >>> del genre_ops_registry["_ops_demo"]
+    """
+    _validate_slug(genre_slug, what="genre ops")
+    ops = tuple(ops)
+    for op in ops:
+        if not isinstance(op, GenreOp):
+            raise TypeError(
+                f"register_genre_ops expects GenreOp rows, got {type(op).__name__}"
+            )
+    names = [op.name for op in ops]
+    duplicates = sorted({n for n in names if names.count(n) > 1})
+    if duplicates:
+        raise ValueError(f"genre {genre_slug!r}: duplicate op names {duplicates}")
+    genre_ops_registry.register(genre_slug, ops)
+    return ops
+
+
+def genre_ops(genre_slug: str) -> tuple:
+    """The ops registered for ``genre_slug``, in registration order (``()`` if none)."""
+    return genre_ops_registry[genre_slug] if genre_slug in genre_ops_registry else ()
+
+
+def genre_op(genre_slug: str, name: str) -> GenreOp:
+    """The op ``name`` of ``genre_slug``; :class:`UnknownGenreOpError` naming the known."""
+    for op in genre_ops(genre_slug):
+        if op.name == name:
+            return op
+    known = [op.name for op in genre_ops(genre_slug)]
+    raise UnknownGenreOpError(
+        f"genre {genre_slug!r} has no op {name!r}; known ops: {known}"
+    )
+
+
+def genre_ops_catalogue(genre_slug: str) -> list:
+    """The pure-JSON catalogue of ``genre_slug``'s ops (``[]`` for a genre with none).
+
+    One dict per op — ``name``, ``title``, ``description``, ``effect``, ``runs``,
+    ``params_schema`` — the shape a host exports to a frontend's codegen or an MCP
+    tool builder.
+    """
+    return [op.to_dict() for op in genre_ops(genre_slug)]
+
+
 __all__ = [
     "GENRE_STATUSES",
     "Genre",
@@ -977,4 +1235,13 @@ __all__ = [
     "can_place_genre_project",
     "create_genre_project",
     "PLACEMENT_ARG",
+    "GENRE_OP_EFFECTS",
+    "GENRE_OP_RUNS",
+    "GenreOp",
+    "UnknownGenreOpError",
+    "genre_ops_registry",
+    "register_genre_ops",
+    "genre_ops",
+    "genre_op",
+    "genre_ops_catalogue",
 ]
