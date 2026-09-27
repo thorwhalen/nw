@@ -9,6 +9,7 @@ nw.jobs
    .. autosummary::
    
       UNREADABLE_PLAN_REASON
+      ERROR_KIND_REFUSED
    
    .. rubric:: Functions
 
@@ -16,6 +17,7 @@ nw.jobs
    
       cancel_job
       enqueue
+      error_kind_of
       estimate
       get_job
       list_jobs

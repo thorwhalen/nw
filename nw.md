@@ -1,4 +1,4 @@
-> built 2026-09-27 10:30 UTC from ae2465f (main) · nw 0.0.61. Details: build_info.json
+> built 2026-09-27 11:23 UTC from 49602f1 (main) · nw 0.0.62. Details: build_info.json
 
 # index.html.md
 
@@ -3599,7 +3599,7 @@ consumer needs no app-specific knowledge to render the catalog.
 * **Return type:**
   [`dict`](https://docs.python.org/3/builtins/stdtypes.html#dict)
 
-### *class* nw.GenreOp(name, fn, title, description='', effect='write', runs='now', host_params=(), max_upload_bytes=None)
+### *class* nw.GenreOp(name, fn, title, description='', effect='write', runs='now', host_params=(), max_upload_bytes=None, spends=False)
 
 Bases: [`object`](https://docs.python.org/3/builtins/functions.html#object)
 
@@ -3629,6 +3629,11 @@ Two host parameters have agreed meanings: an upload’s `path` (with
 the op ever runs) and `CANCEL_PARAM` (a zero-argument callable the op polls,
 raising [`GenreOpCancelled`](_autosummary/nw.html.md#nw.GenreOpCancelled)). A deliberate refusal is a
 [`GenreOpRefused`](_autosummary/nw.html.md#nw.GenreOpRefused).
+
+`spends` says the op MAY spend money (it can reach a paid API). The federation’s
+rule is that an unknown cost forces approval, so a host must route a `spends` op
+through its money approval — or not offer it. `False` (the default) is a claim the
+genre makes: nothing this op calls bills anyone.
 
 ```pycon
 >>> def _rename(project, *, title: str, loud: bool = False) -> dict:
@@ -5272,7 +5277,8 @@ The ops registered for `genre_slug`, in registration order (`()` if none).
 The pure-JSON catalogue of `genre_slug`’s ops (`[]` for a genre with none).
 
 One dict per op — `name`, `title`, `description`, `effect`, `runs`,
-`params_schema`, `host_params`, `max_upload_bytes` — the shape a host exports to a frontend’s codegen or an MCP
+`params_schema`, `host_params`, `max_upload_bytes`, `spends` — the shape a
+host exports to a frontend’s codegen or an MCP
 tool builder.
 
 * **Return type:**
@@ -6389,14 +6395,16 @@ the top of this module — no magic numbers below.
 
 ### Module Attributes
 
-| [`UNREADABLE_PLAN_REASON`](_autosummary/nw.jobs.html.md#nw.jobs.UNREADABLE_PLAN_REASON)   | Why a quote came back unknown when the plan itself was unreadable.   |
-|---------------------------------------------------------------------------|----------------------------------------------------------------------|
+| [`UNREADABLE_PLAN_REASON`](_autosummary/nw.jobs.html.md#nw.jobs.UNREADABLE_PLAN_REASON)   | Why a quote came back unknown when the plan itself was unreadable.                             |
+|---------------------------------------------------------------------------|------------------------------------------------------------------------------------------------|
+| [`ERROR_KIND_REFUSED`](_autosummary/nw.jobs.html.md#nw.jobs.ERROR_KIND_REFUSED)       | `Job.error_kind` values — see [`Job.error_kind`](_autosummary/nw.jobs.html.md#nw.jobs.Job.error_kind). |
 
 ### Functions
 
 | [`cancel_job`](_autosummary/nw.jobs.html.md#nw.jobs.cancel_job)(project, job_id, \*[, config])         | Request cancellation.                                                                                       |
 |----------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------|
 | [`enqueue`](_autosummary/nw.jobs.html.md#nw.jobs.enqueue)(project, kind, params, \*[, ...])         | Enqueue a billable render as a background job.                                                              |
+| [`error_kind_of`](_autosummary/nw.jobs.html.md#nw.jobs.error_kind_of)(error)                              | `"refused"` | `"cancelled"` | `"crashed"` for an exception a job raised.                                    |
 | [`estimate`](_autosummary/nw.jobs.html.md#nw.jobs.estimate)(project, kind, params, \*[, config])     | Dry-run cost gate **without enqueueing**.                                                                   |
 | [`get_job`](_autosummary/nw.jobs.html.md#nw.jobs.get_job)(project, job_id, \*[, config])            | One job (projecting the au status + mirrored index metadata).                                               |
 | [`list_jobs`](_autosummary/nw.jobs.html.md#nw.jobs.list_jobs)(project, \*[, status, limit, config])   | Jobs for this project, **newest first**, optionally filtered by status.                                     |
@@ -6468,11 +6476,27 @@ Called when computation fails.
 * **Return type:**
   [`None`](https://docs.python.org/3/builtins/constants.html#None)
 
-### *class* nw.jobs.Job(job_id, kind, label, status, idempotency_key, params=<factory>, created_at=None, started_at=None, finished_at=None, queue_wait_s=None, elapsed_s=None, progress=<factory>, predicted_total_s=None, remaining_s=None, eta_ts=None, eta_s=None, pct=None, confidence=None, label_hint=None, eta_key=None, cost=<factory>, cached=False, worker_silent_s=None, worker_responsive=None, artifact_ref=None, result=None, error=None, run_id=None, last_event_id=None)
+### nw.jobs.ERROR_KIND_REFUSED *= 'refused'*
+
+`Job.error_kind` values — see [`Job.error_kind`](_autosummary/nw.jobs.html.md#nw.jobs.Job.error_kind).
+
+### *class* nw.jobs.Job(job_id, kind, label, status, idempotency_key, params=<factory>, created_at=None, started_at=None, finished_at=None, queue_wait_s=None, elapsed_s=None, progress=<factory>, predicted_total_s=None, remaining_s=None, eta_ts=None, eta_s=None, pct=None, confidence=None, label_hint=None, eta_key=None, cost=<factory>, cached=False, worker_silent_s=None, worker_responsive=None, artifact_ref=None, result=None, error=None, error_kind=None, run_id=None, last_event_id=None)
 
 Bases: [`object`](https://docs.python.org/3/builtins/functions.html#object)
 
 Projected, JSON-serializable view of one job (see [`to_dict()`](_autosummary/nw.jobs.html.md#nw.jobs.to_dict)).
+
+#### error_kind *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
+
+`"refused"` (the op
+raised [`nw.GenreOpRefused`](_autosummary/nw.html.md#nw.GenreOpRefused) — a deliberate refusal with a message for the
+person), `"cancelled"` (stopped on request, or the op raised
+[`nw.GenreOpCancelled`](_autosummary/nw.html.md#nw.GenreOpCancelled)), `"crashed"` (anything else — a bug, or a worker
+that stopped beating). `None` while running and on success. `error` keeps the
+text either way.
+
+* **Type:**
+  Why a job did not succeed, for a screen to say so
 
 #### worker_responsive *: [bool](https://docs.python.org/3/builtins/functions.html#bool) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
 
@@ -6694,6 +6718,20 @@ already exists, that job is returned instead of launching a duplicate.
   * [**ValueError**](https://docs.python.org/3/builtins/exceptions.html#ValueError) – if `params["units"]` is present but not a positive `int`.
 * **Return type:**
   [`Job`](_autosummary/nw.jobs.html.md#nw.jobs.Job)
+
+### nw.jobs.error_kind_of(error)
+
+`"refused"` | `"cancelled"` | `"crashed"` for an exception a job raised.
+
+* **Return type:**
+  [`str`](https://docs.python.org/3/builtins/stdtypes.html#str)
+
+```pycon
+>>> from nw.genres import GenreOpRefused, GenreOpCancelled
+>>> [error_kind_of(e) for e in (GenreOpRefused("no song"),
+...                             GenreOpCancelled(), ValueError("bug"))]
+['refused', 'cancelled', 'crashed']
+```
 
 ### nw.jobs.estimate(project, kind, params, , config=JobsConfig(n_min=3, sample_window_k=20, pct_ceil=99, overrun_factor=1.5, cache_hit_floor_s=0.5, dur_buckets_s=(4.0, 8.0, 12.0), prior_total_s={'image': 12.0, 'video': 90.0, 'audio': 15.0}, default_prior_total_s=30.0, stale_running_s=900.0, heartbeat_interval_s=20.0, heartbeat_stale_s=120.0, approval_threshold_usd=1.0, jobs_dirname='.nw/jobs'))
 
@@ -8997,7 +9035,7 @@ produce different URLs. The local file paths are byte-stable.
 
 # About this build
 
-This documentation was built on **2026-09-27 10:30 UTC** from commit <a href="https://github.com/thorwhalen/nw/commit/ae2465f5bf0706c9fbe21309c1eb20372f576d22"><code>ae2465f</code></a> on branch <code>main</code>, for **nw 0.0.61** (from <code>pyproject.toml</code>).
+This documentation was built on **2026-09-27 11:23 UTC** from commit <a href="https://github.com/thorwhalen/nw/commit/49602f1e4d7ee5ae9e524aa6ca772bf861267db1"><code>49602f1</code></a> on branch <code>main</code>, for **nw 0.0.62** (from <code>pyproject.toml</code>).
 
 #### NOTE
 Nothing suggests a mismatch: the tree was clean at the commit above, and the documented version is the one on PyPI.
@@ -9006,9 +9044,9 @@ Nothing suggests a mismatch: the tree was clean at the commit above, and the doc
 
 |                     |                                                                                                                                                      |
 |---------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Commit              | <a href="https://github.com/thorwhalen/nw/commit/ae2465f5bf0706c9fbe21309c1eb20372f576d22"><code>ae2465f5bf0706c9fbe21309c1eb20372f576d22</code></a> |
+| Commit              | <a href="https://github.com/thorwhalen/nw/commit/49602f1e4d7ee5ae9e524aa6ca772bf861267db1"><code>49602f1e4d7ee5ae9e524aa6ca772bf861267db1</code></a> |
 | Branch              | <code>main</code>                                                                                                                                    |
-| Tags at this commit | <code>0.0.61</code>                                                                                                                                  |
+| Tags at this commit | <code>0.0.62</code>                                                                                                                                  |
 | Working tree        | clean                                                                                                                                                |
 | Remote              | <code>https://github.com/thorwhalen/nw</code>                                                                                                        |
 
@@ -9017,9 +9055,9 @@ Nothing suggests a mismatch: the tree was clean at the commit above, and the doc
 |              |                                                                                            |
 |--------------|--------------------------------------------------------------------------------------------|
 | Repository   | <code>thorwhalen/nw</code>                                                                 |
-| Run          | <a href="https://github.com/thorwhalen/nw/actions/runs/36312588548">36312588548</a>        |
+| Run          | <a href="https://github.com/thorwhalen/nw/actions/runs/36315416405">36315416405</a>        |
 | Ref          | <code>refs/heads/main</code>                                                               |
-| Event commit | <code>242b294583876f46a04e888de6053a06f5b72319</code> (in the history of the built commit) |
+| Event commit | <code>b5855d210c358c30758e5137d4de829382bc59eb</code> (in the history of the built commit) |
 
 ## Tools
 
@@ -9044,13 +9082,13 @@ Nothing suggests a mismatch: the tree was clean at the commit above, and the doc
 
 ## Package on PyPI
 
-Latest release: <a href="https://pypi.org/project/nw/0.0.61/">0.0.61</a>, the same as the documented version.
+Latest release: <a href="https://pypi.org/project/nw/0.0.62/">0.0.62</a>, the same as the documented version.
 
 ## Reproduce
 
 ```bash
 git clone https://github.com/thorwhalen/nw && cd nw
-git checkout ae2465f5bf0706c9fbe21309c1eb20372f576d22
+git checkout 49602f1e4d7ee5ae9e524aa6ca772bf861267db1
 pip install "epythet==0.2.12"
 epythet quickstart . --ignore tests/ scrap/ examples/
 ```

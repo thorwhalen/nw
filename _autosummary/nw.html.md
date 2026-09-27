@@ -715,7 +715,7 @@ consumer needs no app-specific knowledge to render the catalog.
 * **Return type:**
   [`dict`](https://docs.python.org/3/builtins/stdtypes.html#dict)
 
-### *class* nw.GenreOp(name, fn, title, description='', effect='write', runs='now', host_params=(), max_upload_bytes=None)
+### *class* nw.GenreOp(name, fn, title, description='', effect='write', runs='now', host_params=(), max_upload_bytes=None, spends=False)
 
 Bases: [`object`](https://docs.python.org/3/builtins/functions.html#object)
 
@@ -745,6 +745,11 @@ Two host parameters have agreed meanings: an upload’s `path` (with
 the op ever runs) and `CANCEL_PARAM` (a zero-argument callable the op polls,
 raising [`GenreOpCancelled`](#nw.GenreOpCancelled)). A deliberate refusal is a
 [`GenreOpRefused`](#nw.GenreOpRefused).
+
+`spends` says the op MAY spend money (it can reach a paid API). The federation’s
+rule is that an unknown cost forces approval, so a host must route a `spends` op
+through its money approval — or not offer it. `False` (the default) is a claim the
+genre makes: nothing this op calls bills anyone.
 
 ```pycon
 >>> def _rename(project, *, title: str, loud: bool = False) -> dict:
@@ -2388,7 +2393,8 @@ The ops registered for `genre_slug`, in registration order (`()` if none).
 The pure-JSON catalogue of `genre_slug`’s ops (`[]` for a genre with none).
 
 One dict per op — `name`, `title`, `description`, `effect`, `runs`,
-`params_schema`, `host_params`, `max_upload_bytes` — the shape a host exports to a frontend’s codegen or an MCP
+`params_schema`, `host_params`, `max_upload_bytes`, `spends` — the shape a
+host exports to a frontend’s codegen or an MCP
 tool builder.
 
 * **Return type:**
