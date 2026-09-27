@@ -146,6 +146,7 @@ def test_register_lookup_and_catalogue(clean_ops):
         "runs",
         "params_schema",
         "host_params",
+        "max_upload_bytes",
     }
     assert catalogue[1]["runs"] == "job"
 
@@ -206,3 +207,29 @@ def test_host_params_are_checked_at_construction_and_at_run():
         op.run("P", {}, host={"path": "/tmp/up", "filename": "x"})
     plain = nw.GenreOp("status", _status, title="Show")
     assert plain.host_params == () and plain.to_dict()["host_params"] == []
+
+
+def test_refusal_cancellation_and_upload_ceiling():
+    assert issubclass(nw.GenreOpRefused, ValueError)
+    assert not issubclass(nw.GenreOpCancelled, ValueError)
+    assert nw.CANCEL_PARAM == "should_cancel"
+
+    def _render(project, *, edit_id: str, should_cancel=None) -> dict:
+        if should_cancel is not None and should_cancel():
+            raise nw.GenreOpCancelled("stopped")
+        return {"edit_id": edit_id}
+
+    op = nw.GenreOp("render", _render, title="Make it", host_params=(nw.CANCEL_PARAM,))
+    assert set(op.params_schema["properties"]) == {"edit_id"}
+    assert op.run("P", {"edit_id": "e"}) == {"edit_id": "e"}
+    with pytest.raises(nw.GenreOpCancelled):
+        op.run("P", {"edit_id": "e"}, host={"should_cancel": lambda: True})
+
+    up = nw.GenreOp(
+        "ingest", _ingest, title="Add", host_params=("path",), max_upload_bytes=10
+    )
+    assert up.to_dict()["max_upload_bytes"] == 10
+    assert op.to_dict()["max_upload_bytes"] is None
+    for bad in (0, -1, 1.5, True):
+        with pytest.raises(ValueError, match="max_upload_bytes"):
+            nw.GenreOp("ingest", _ingest, title="Add", max_upload_bytes=bad)

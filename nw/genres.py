@@ -979,6 +979,32 @@ GENRE_OP_RUNS = ("now", "job")
 _OP_NAME_PATTERN = re.compile(r"^[a-z][a-z0-9_]*$")
 
 
+class GenreOpRefused(ValueError):
+    """An op DELIBERATELY declined — no song yet, an unknown clip, an edit that does not
+    hold. The base a genre derives its refusal type from (muvid's ``FootageError``).
+
+    A host maps exactly this to a client-facing refusal (reelee: ``422``); any other
+    exception out of an op — a plain ``ValueError`` included — is a bug, reported as
+    one (``500`` with the traceback logged). A ``ValueError`` so code already catching
+    that keeps working.
+    """
+
+
+class GenreOpCancelled(Exception):
+    """An op stopped because the host asked it to (its ``should_cancel`` returned True).
+
+    Not a refusal and not a failure: a host that cancelled a job records it as
+    cancelled. Raised by the op, between steps, when it was given a
+    :data:`CANCEL_PARAM` host parameter that says stop.
+    """
+
+
+#: The host-parameter name for cancellation: an op that lists it in ``host_params``
+#: receives a zero-argument callable, polls it between steps, and raises
+#: :class:`GenreOpCancelled` when it returns True.
+CANCEL_PARAM = "should_cancel"
+
+
 class UnknownGenreOpError(KeyError):
     """``genre_op`` was asked for a name the genre does not register.
 
@@ -1085,6 +1111,12 @@ class GenreOp:
     which ops take an upload. This is the boundary that stops a generic op route from
     letting a client name a file on the server.
 
+    Two host parameters have agreed meanings: an upload's ``path`` (with
+    ``max_upload_bytes``, the op's own ceiling the host enforces WHILE streaming, before
+    the op ever runs) and :data:`CANCEL_PARAM` (a zero-argument callable the op polls,
+    raising :class:`GenreOpCancelled`). A deliberate refusal is a
+    :class:`GenreOpRefused`.
+
     >>> def _rename(project, *, title: str, loud: bool = False) -> dict:
     ...     '''Rename the project.'''
     ...     return {"title": title.upper() if loud else title}
@@ -1114,6 +1146,7 @@ class GenreOp:
     effect: str = "write"
     runs: str = "now"
     host_params: tuple[str, ...] = ()
+    max_upload_bytes: Optional[int] = None
 
     def __post_init__(self):
         if not isinstance(self.name, str) or not _OP_NAME_PATTERN.match(self.name):
@@ -1139,6 +1172,15 @@ class GenreOp:
         if not self.description:
             object.__setattr__(self, "description", inspect.getdoc(self.fn) or "")
         object.__setattr__(self, "host_params", tuple(self.host_params))
+        if self.max_upload_bytes is not None and (
+            not isinstance(self.max_upload_bytes, int)
+            or isinstance(self.max_upload_bytes, bool)
+            or self.max_upload_bytes <= 0
+        ):
+            raise ValueError(
+                f"genre op {self.name!r}: max_upload_bytes must be a positive int "
+                f"or None, got {self.max_upload_bytes!r}"
+            )
         object.__setattr__(
             self,
             "_model",
@@ -1180,6 +1222,9 @@ class GenreOp:
         host did not supply. A client parameter that is missing, unknown (a host
         parameter included) or mistyped raises :class:`pydantic.ValidationError`.
         """
+        client = self.validate_params(
+            params
+        )  # the client's mistakes are reported first
         host = dict(host or {})
         undeclared = sorted(set(host) - set(self.host_params))
         if undeclared:
@@ -1193,7 +1238,7 @@ class GenreOp:
                 f"genre op {self.name!r} needs host parameter(s) {missing} "
                 "(the host supplies these — an upload's path, say)"
             )
-        return self.fn(project, **self.validate_params(params), **host)
+        return self.fn(project, **client, **host)
 
     def _required_host_params(self) -> list:
         sig = inspect.signature(self.fn)
@@ -1213,6 +1258,7 @@ class GenreOp:
             "runs": self.runs,
             "params_schema": self.params_schema,
             "host_params": list(self.host_params),
+            "max_upload_bytes": self.max_upload_bytes,
         }
 
 
@@ -1276,7 +1322,7 @@ def genre_ops_catalogue(genre_slug: str) -> list:
     """The pure-JSON catalogue of ``genre_slug``'s ops (``[]`` for a genre with none).
 
     One dict per op — ``name``, ``title``, ``description``, ``effect``, ``runs``,
-    ``params_schema``, ``host_params`` — the shape a host exports to a frontend's codegen or an MCP
+    ``params_schema``, ``host_params``, ``max_upload_bytes`` — the shape a host exports to a frontend's codegen or an MCP
     tool builder.
     """
     return [op.to_dict() for op in genre_ops(genre_slug)]
@@ -1313,6 +1359,9 @@ __all__ = [
     "GENRE_OP_RUNS",
     "GenreOp",
     "UnknownGenreOpError",
+    "GenreOpRefused",
+    "GenreOpCancelled",
+    "CANCEL_PARAM",
     "genre_ops_registry",
     "register_genre_ops",
     "genre_ops",
