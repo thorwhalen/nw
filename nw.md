@@ -1,4 +1,4 @@
-> built 2026-09-27 09:51 UTC from 2a71254 (main) · nw 0.0.60. Details: build_info.json
+> built 2026-09-27 10:30 UTC from ae2465f (main) · nw 0.0.61. Details: build_info.json
 
 # index.html.md
 
@@ -3049,6 +3049,8 @@ are recorded as linked artifacts), see
 | [`CacheModeConflict`](_autosummary/nw.html.md#nw.CacheModeConflict)       | `use_cache=False` and `force=True` were passed together.                                       |
 |--------------------------------------------------------------------------|------------------------------------------------------------------------------------------------|
 | [`UnknownGenreOpError`](_autosummary/nw.html.md#nw.UnknownGenreOpError)     | `genre_op` was asked for a name the genre does not register.                                   |
+| [`GenreOpRefused`](_autosummary/nw.html.md#nw.GenreOpRefused)          | An op DELIBERATELY declined — no song yet, an unknown clip, an edit that does not hold.        |
+| [`GenreOpCancelled`](_autosummary/nw.html.md#nw.GenreOpCancelled)        | An op stopped because the host asked it to (its `should_cancel` returned True).                |
 | [`ValidationError`](_autosummary/nw.html.md#nw.ValidationError)(report) | Raised by [`ValidationReport.raise_if_failed()`](_autosummary/nw.html.md#nw.ValidationReport.raise_if_failed). |
 
 ### *class* nw.BaseTransform
@@ -3597,7 +3599,7 @@ consumer needs no app-specific knowledge to render the catalog.
 * **Return type:**
   [`dict`](https://docs.python.org/3/builtins/stdtypes.html#dict)
 
-### *class* nw.GenreOp(name, fn, title, description='', effect='write', runs='now')
+### *class* nw.GenreOp(name, fn, title, description='', effect='write', runs='now', host_params=(), max_upload_bytes=None)
 
 Bases: [`object`](https://docs.python.org/3/builtins/functions.html#object)
 
@@ -3613,6 +3615,21 @@ Construction validates everything, including that every parameter after the
 project is annotated with a JSON-describable type — a bad op fails where it is
 declared, not in front of a user.
 
+`host_params` names parameters the HOST supplies, never a client: a streamed
+upload’s temporary `path`, its original `filename`. They are left out of
+[`params_schema`](_autosummary/nw.html.md#nw.GenreOp.params_schema) (so a client that sends one fails validation — the schema is
+`additionalProperties: false`), they must be keyword parameters of `fn`, and
+[`run()`](_autosummary/nw.html.md#nw.GenreOp.run) passes them through from its `host` argument without validating them
+— the host produced them. A host reads `host_params` in [`to_dict()`](_autosummary/nw.html.md#nw.GenreOp.to_dict) to know
+which ops take an upload. This is the boundary that stops a generic op route from
+letting a client name a file on the server.
+
+Two host parameters have agreed meanings: an upload’s `path` (with
+`max_upload_bytes`, the op’s own ceiling the host enforces WHILE streaming, before
+the op ever runs) and `CANCEL_PARAM` (a zero-argument callable the op polls,
+raising [`GenreOpCancelled`](_autosummary/nw.html.md#nw.GenreOpCancelled)). A deliberate refusal is a
+[`GenreOpRefused`](_autosummary/nw.html.md#nw.GenreOpRefused).
+
 ```pycon
 >>> def _rename(project, *, title: str, loud: bool = False) -> dict:
 ...     '''Rename the project.'''
@@ -3622,8 +3639,20 @@ declared, not in front of a user.
 ('Rename the project.', 'write', 'now')
 >>> sorted(op.params_schema["properties"]), op.params_schema["required"]
 (['loud', 'title'], ['title'])
->>> op(None, title="x", loud=True)
+>>> op.run(None, {"title": "x", "loud": True})
 {'title': 'X'}
+```
+
+An op taking an upload, whose `path` only the host may give:
+
+```pycon
+>>> def _ingest(project, *, path: str, name: str = "") -> dict:
+...     return {"path": path, "name": name}
+>>> up = GenreOp("ingest", _ingest, title="Add a file", host_params=("path",))
+>>> list(up.params_schema["properties"]), up.to_dict()["host_params"]
+(['name'], ['path'])
+>>> up.run(None, {"name": "a"}, host={"path": "/tmp/upload"})
+{'path': '/tmp/upload', 'name': 'a'}
 ```
 
 #### *property* params_model
@@ -3633,6 +3662,19 @@ The pydantic model of the op’s parameters (`extra="forbid"`).
 #### *property* params_schema *: [dict](https://docs.python.org/3/builtins/stdtypes.html#dict)*
 
 JSON Schema (an object, `additionalProperties: false`) of the parameters.
+
+#### run(project, params=None, , host=None)
+
+Run the op on `project`: `params` (the CLIENT’s, validated against
+[`params_schema`](_autosummary/nw.html.md#nw.GenreOp.params_schema)) plus `host` (the host’s, passed through as given).
+
+`host` may carry only the op’s declared `host_params`; anything else is
+a host bug and raises [`TypeError`](https://docs.python.org/3/builtins/exceptions.html#TypeError), as does a required host parameter the
+host did not supply. A client parameter that is missing, unknown (a host
+parameter included) or mistyped raises `pydantic.ValidationError`.
+
+* **Return type:**
+  [`dict`](https://docs.python.org/3/builtins/stdtypes.html#dict)
 
 #### to_dict()
 
@@ -3651,6 +3693,28 @@ returned, so the op’s own defaults stay the op’s.
 
 * **Return type:**
   [`dict`](https://docs.python.org/3/builtins/stdtypes.html#dict)
+
+### *exception* nw.GenreOpCancelled
+
+Bases: [`Exception`](https://docs.python.org/3/builtins/exceptions.html#Exception)
+
+An op stopped because the host asked it to (its `should_cancel` returned True).
+
+Not a refusal and not a failure: a host that cancelled a job records it as
+cancelled. Raised by the op, between steps, when it was given a
+`CANCEL_PARAM` host parameter that says stop.
+
+### *exception* nw.GenreOpRefused
+
+Bases: [`ValueError`](https://docs.python.org/3/builtins/exceptions.html#ValueError)
+
+An op DELIBERATELY declined — no song yet, an unknown clip, an edit that does not
+hold. The base a genre derives its refusal type from (muvid’s `FootageError`).
+
+A host maps exactly this to a client-facing refusal (reelee: `422`); any other
+exception out of an op — a plain `ValueError` included — is a bug, reported as
+one (`500` with the traceback logged). A `ValueError` so code already catching
+that keeps working.
 
 ### *class* nw.PlanQuote(, total_usd, status, as_of_total_usd, repriced, reason='')
 
@@ -5208,7 +5272,7 @@ The ops registered for `genre_slug`, in registration order (`()` if none).
 The pure-JSON catalogue of `genre_slug`’s ops (`[]` for a genre with none).
 
 One dict per op — `name`, `title`, `description`, `effect`, `runs`,
-`params_schema` — the shape a host exports to a frontend’s codegen or an MCP
+`params_schema`, `host_params`, `max_upload_bytes` — the shape a host exports to a frontend’s codegen or an MCP
 tool builder.
 
 * **Return type:**
@@ -5697,7 +5761,7 @@ twice raises (the registry refuses conflicts, as every nw genre registry does).
 ...                                              effect="read")])
 >>> [op.name for op in genre_ops("_ops_demo")]
 ['peek']
->>> genre_op("_ops_demo", "peek")(None)
+>>> genre_op("_ops_demo", "peek").run(None)
 {'hello': True}
 >>> genre_ops("_nobody")
 ()
@@ -8933,7 +8997,7 @@ produce different URLs. The local file paths are byte-stable.
 
 # About this build
 
-This documentation was built on **2026-09-27 09:51 UTC** from commit <a href="https://github.com/thorwhalen/nw/commit/2a712547fd0f3ec492a2315fc23a3563a355f5f0"><code>2a71254</code></a> on branch <code>main</code>, for **nw 0.0.60** (from <code>pyproject.toml</code>).
+This documentation was built on **2026-09-27 10:30 UTC** from commit <a href="https://github.com/thorwhalen/nw/commit/ae2465f5bf0706c9fbe21309c1eb20372f576d22"><code>ae2465f</code></a> on branch <code>main</code>, for **nw 0.0.61** (from <code>pyproject.toml</code>).
 
 #### NOTE
 Nothing suggests a mismatch: the tree was clean at the commit above, and the documented version is the one on PyPI.
@@ -8942,9 +9006,9 @@ Nothing suggests a mismatch: the tree was clean at the commit above, and the doc
 
 |                     |                                                                                                                                                      |
 |---------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Commit              | <a href="https://github.com/thorwhalen/nw/commit/2a712547fd0f3ec492a2315fc23a3563a355f5f0"><code>2a712547fd0f3ec492a2315fc23a3563a355f5f0</code></a> |
+| Commit              | <a href="https://github.com/thorwhalen/nw/commit/ae2465f5bf0706c9fbe21309c1eb20372f576d22"><code>ae2465f5bf0706c9fbe21309c1eb20372f576d22</code></a> |
 | Branch              | <code>main</code>                                                                                                                                    |
-| Tags at this commit | <code>0.0.60</code>                                                                                                                                  |
+| Tags at this commit | <code>0.0.61</code>                                                                                                                                  |
 | Working tree        | clean                                                                                                                                                |
 | Remote              | <code>https://github.com/thorwhalen/nw</code>                                                                                                        |
 
@@ -8953,9 +9017,9 @@ Nothing suggests a mismatch: the tree was clean at the commit above, and the doc
 |              |                                                                                            |
 |--------------|--------------------------------------------------------------------------------------------|
 | Repository   | <code>thorwhalen/nw</code>                                                                 |
-| Run          | <a href="https://github.com/thorwhalen/nw/actions/runs/36310525731">36310525731</a>        |
+| Run          | <a href="https://github.com/thorwhalen/nw/actions/runs/36312588548">36312588548</a>        |
 | Ref          | <code>refs/heads/main</code>                                                               |
-| Event commit | <code>bc0ceed96e66f0fcae650c1c81830e951eb768a8</code> (in the history of the built commit) |
+| Event commit | <code>242b294583876f46a04e888de6053a06f5b72319</code> (in the history of the built commit) |
 
 ## Tools
 
@@ -8980,13 +9044,13 @@ Nothing suggests a mismatch: the tree was clean at the commit above, and the doc
 
 ## Package on PyPI
 
-Latest release: <a href="https://pypi.org/project/nw/0.0.60/">0.0.60</a>, the same as the documented version.
+Latest release: <a href="https://pypi.org/project/nw/0.0.61/">0.0.61</a>, the same as the documented version.
 
 ## Reproduce
 
 ```bash
 git clone https://github.com/thorwhalen/nw && cd nw
-git checkout 2a712547fd0f3ec492a2315fc23a3563a355f5f0
+git checkout ae2465f5bf0706c9fbe21309c1eb20372f576d22
 pip install "epythet==0.2.12"
 epythet quickstart . --ignore tests/ scrap/ examples/
 ```

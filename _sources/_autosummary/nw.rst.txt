@@ -137,6 +137,8 @@
    
       CacheModeConflict
       UnknownGenreOpError
+      GenreOpRefused
+      GenreOpCancelled
       ValidationError
    
 .. rubric:: Modules

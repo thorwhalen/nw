@@ -223,10 +223,13 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#nw.GenreOp"><code class="docutils literal notranslate"><span class="pre">GenreOp</span></code></a><ul>
 <li><a class="reference internal" href="#nw.GenreOp.params_model"><code class="docutils literal notranslate"><span class="pre">GenreOp.params_model</span></code></a></li>
 <li><a class="reference internal" href="#nw.GenreOp.params_schema"><code class="docutils literal notranslate"><span class="pre">GenreOp.params_schema</span></code></a></li>
+<li><a class="reference internal" href="#nw.GenreOp.run"><code class="docutils literal notranslate"><span class="pre">GenreOp.run()</span></code></a></li>
 <li><a class="reference internal" href="#nw.GenreOp.to_dict"><code class="docutils literal notranslate"><span class="pre">GenreOp.to_dict()</span></code></a></li>
 <li><a class="reference internal" href="#nw.GenreOp.validate_params"><code class="docutils literal notranslate"><span class="pre">GenreOp.validate_params()</span></code></a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#nw.GenreOpCancelled"><code class="docutils literal notranslate"><span class="pre">GenreOpCancelled</span></code></a></li>
+<li><a class="reference internal" href="#nw.GenreOpRefused"><code class="docutils literal notranslate"><span class="pre">GenreOpRefused</span></code></a></li>
 <li><a class="reference internal" href="#nw.PlanQuote"><code class="docutils literal notranslate"><span class="pre">PlanQuote</span></code></a><ul>
 <li><a class="reference internal" href="#nw.PlanQuote.as_of_total_usd"><code class="docutils literal notranslate"><span class="pre">PlanQuote.as_of_total_usd</span></code></a></li>
 <li><a class="reference internal" href="#nw.PlanQuote.basis_changed"><code class="docutils literal notranslate"><span class="pre">PlanQuote.basis_changed</span></code></a></li>
@@ -880,6 +883,12 @@ are recorded as linked artifacts), see
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#nw.UnknownGenreOpError" title="nw.UnknownGenreOpError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UnknownGenreOpError</span></code></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">genre_op</span></code> was asked for a name the genre does not register.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.GenreOpRefused" title="nw.GenreOpRefused"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GenreOpRefused</span></code></a></p></td>
+<td><p>An op DELIBERATELY declined — no song yet, an unknown clip, an edit that does not hold.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.GenreOpCancelled" title="nw.GenreOpCancelled"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GenreOpCancelled</span></code></a></p></td>
+<td><p>An op stopped because the host asked it to (its <code class="docutils literal notranslate"><span class="pre">should_cancel</span></code> returned True).</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#nw.ValidationError" title="nw.ValidationError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ValidationError</span></code></a>(report)</p></td>
 <td><p>Raised by <a class="reference internal" href="#nw.ValidationReport.raise_if_failed" title="nw.ValidationReport.raise_if_failed"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ValidationReport.raise_if_failed()</span></code></a>.</p></td>
@@ -1574,7 +1583,7 @@ consumer needs no app-specific knowledge to render the catalog.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="nw.GenreOp">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.</span></span><span class="sig-name descname"><span class="pre">GenreOp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">effect</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'write'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">runs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'now'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/genres.html#GenreOp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.GenreOp" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.</span></span><span class="sig-name descname"><span class="pre">GenreOp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">effect</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'write'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">runs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'now'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">host_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_upload_bytes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/genres.html#GenreOp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.GenreOp" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>One operation a genre offers on its projects — a row a host builds surfaces from.</p>
 <p><code class="docutils literal notranslate"><span class="pre">fn(project,</span> <span class="pre">**params)</span> <span class="pre">-&gt;</span> <span class="pre">dict</span></code> does the work; <code class="docutils literal notranslate"><span class="pre">params</span></code> and the result are
@@ -1585,6 +1594,19 @@ defaults to <code class="docutils literal notranslate"><span class="pre">fn</spa
 <p>Construction validates everything, including that every parameter after the
 project is annotated with a JSON-describable type — a bad op fails where it is
 declared, not in front of a user.</p>
+<p><code class="docutils literal notranslate"><span class="pre">host_params</span></code> names parameters the HOST supplies, never a client: a streamed
+upload’s temporary <code class="docutils literal notranslate"><span class="pre">path</span></code>, its original <code class="docutils literal notranslate"><span class="pre">filename</span></code>. They are left out of
+<a class="reference internal" href="#nw.GenreOp.params_schema" title="nw.GenreOp.params_schema"><code class="xref py py-attr docutils literal notranslate"><span class="pre">params_schema</span></code></a> (so a client that sends one fails validation — the schema is
+<code class="docutils literal notranslate"><span class="pre">additionalProperties:</span> <span class="pre">false</span></code>), they must be keyword parameters of <code class="docutils literal notranslate"><span class="pre">fn</span></code>, and
+<a class="reference internal" href="#nw.GenreOp.run" title="nw.GenreOp.run"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run()</span></code></a> passes them through from its <code class="docutils literal notranslate"><span class="pre">host</span></code> argument without validating them
+— the host produced them. A host reads <code class="docutils literal notranslate"><span class="pre">host_params</span></code> in <a class="reference internal" href="#nw.GenreOp.to_dict" title="nw.GenreOp.to_dict"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_dict()</span></code></a> to know
+which ops take an upload. This is the boundary that stops a generic op route from
+letting a client name a file on the server.</p>
+<p>Two host parameters have agreed meanings: an upload’s <code class="docutils literal notranslate"><span class="pre">path</span></code> (with
+<code class="docutils literal notranslate"><span class="pre">max_upload_bytes</span></code>, the op’s own ceiling the host enforces WHILE streaming, before
+the op ever runs) and <code class="xref py py-data docutils literal notranslate"><span class="pre">CANCEL_PARAM</span></code> (a zero-argument callable the op polls,
+raising <a class="reference internal" href="#nw.GenreOpCancelled" title="nw.GenreOpCancelled"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenreOpCancelled</span></code></a>). A deliberate refusal is a
+<a class="reference internal" href="#nw.GenreOpRefused" title="nw.GenreOpRefused"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenreOpRefused</span></code></a>.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="nf">_rename</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">loud</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 </span><span data-line="2"><span class="gp">... </span><span class="w">    </span><span class="sd">'''Rename the project.'''</span>
 </span><span data-line="3"><span class="gp">... </span>    <span class="k">return</span> <span class="p">{</span><span class="s2">"title"</span><span class="p">:</span> <span class="n">title</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="k">if</span> <span class="n">loud</span> <span class="k">else</span> <span class="n">title</span><span class="p">}</span>
@@ -1593,8 +1615,18 @@ declared, not in front of a user.</p>
 </span><span data-line="6"><span class="go">('Rename the project.', 'write', 'now')</span>
 </span><span data-line="7"><span class="gp">&gt;&gt;&gt; </span><span class="nb">sorted</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">params_schema</span><span class="p">[</span><span class="s2">"properties"</span><span class="p">]),</span> <span class="n">op</span><span class="o">.</span><span class="n">params_schema</span><span class="p">[</span><span class="s2">"required"</span><span class="p">]</span>
 </span><span data-line="8"><span class="go">(['loud', 'title'], ['title'])</span>
-</span><span data-line="9"><span class="gp">&gt;&gt;&gt; </span><span class="n">op</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">"x"</span><span class="p">,</span> <span class="n">loud</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="9"><span class="gp">&gt;&gt;&gt; </span><span class="n">op</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="p">{</span><span class="s2">"title"</span><span class="p">:</span> <span class="s2">"x"</span><span class="p">,</span> <span class="s2">"loud"</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
 </span><span data-line="10"><span class="go">{'title': 'X'}</span>
+</span></pre></div>
+</div>
+<p>An op taking an upload, whose <code class="docutils literal notranslate"><span class="pre">path</span></code> only the host may give:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span><span class="w"> </span><span class="nf">_ingest</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">""</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+</span><span data-line="2"><span class="gp">... </span>    <span class="k">return</span> <span class="p">{</span><span class="s2">"path"</span><span class="p">:</span> <span class="n">path</span><span class="p">,</span> <span class="s2">"name"</span><span class="p">:</span> <span class="n">name</span><span class="p">}</span>
+</span><span data-line="3"><span class="gp">&gt;&gt;&gt; </span><span class="n">up</span> <span class="o">=</span> <span class="n">GenreOp</span><span class="p">(</span><span class="s2">"ingest"</span><span class="p">,</span> <span class="n">_ingest</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">"Add a file"</span><span class="p">,</span> <span class="n">host_params</span><span class="o">=</span><span class="p">(</span><span class="s2">"path"</span><span class="p">,))</span>
+</span><span data-line="4"><span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">up</span><span class="o">.</span><span class="n">params_schema</span><span class="p">[</span><span class="s2">"properties"</span><span class="p">]),</span> <span class="n">up</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()[</span><span class="s2">"host_params"</span><span class="p">]</span>
+</span><span data-line="5"><span class="go">(['name'], ['path'])</span>
+</span><span data-line="6"><span class="gp">&gt;&gt;&gt; </span><span class="n">up</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="p">{</span><span class="s2">"name"</span><span class="p">:</span> <span class="s2">"a"</span><span class="p">},</span> <span class="n">host</span><span class="o">=</span><span class="p">{</span><span class="s2">"path"</span><span class="p">:</span> <span class="s2">"/tmp/upload"</span><span class="p">})</span>
+</span><span data-line="7"><span class="go">{'path': '/tmp/upload', 'name': 'a'}</span>
 </span></pre></div>
 </div>
 <dl class="field-list simple">
@@ -1609,6 +1641,22 @@ declared, not in front of a user.</p>
 <dt class="sig sig-object py" id="nw.GenreOp.params_schema">
 <span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">params_schema</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a></span><a class="headerlink" href="#nw.GenreOp.params_schema" title="Link to this definition">#</a></dt>
 <dd><p>JSON Schema (an object, <code class="docutils literal notranslate"><span class="pre">additionalProperties:</span> <span class="pre">false</span></code>) of the parameters.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.GenreOp.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">host</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/genres.html#GenreOp.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.GenreOp.run" title="Link to this definition">#</a></dt>
+<dd><p>Run the op on <code class="docutils literal notranslate"><span class="pre">project</span></code>: <code class="docutils literal notranslate"><span class="pre">params</span></code> (the CLIENT’s, validated against
+<a class="reference internal" href="#nw.GenreOp.params_schema" title="nw.GenreOp.params_schema"><code class="xref py py-attr docutils literal notranslate"><span class="pre">params_schema</span></code></a>) plus <code class="docutils literal notranslate"><span class="pre">host</span></code> (the host’s, passed through as given).</p>
+<p><code class="docutils literal notranslate"><span class="pre">host</span></code> may carry only the op’s declared <code class="xref py py-attr docutils literal notranslate"><span class="pre">host_params</span></code>; anything else is
+a host bug and raises <a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#TypeError" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeError</span></code></a>, as does a required host parameter the
+host did not supply. A client parameter that is missing, unknown (a host
+parameter included) or mistyped raises <code class="xref py py-class docutils literal notranslate"><span class="pre">pydantic.ValidationError</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></span></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -1636,6 +1684,28 @@ returned, so the op’s own defaults stay the op’s.</p>
 </dl>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="nw.GenreOpCancelled">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.</span></span><span class="sig-name descname"><span class="pre">GenreOpCancelled</span></span><a class="reference internal" href="../_modules/nw/genres.html#GenreOpCancelled"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.GenreOpCancelled" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#Exception" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<p>An op stopped because the host asked it to (its <code class="docutils literal notranslate"><span class="pre">should_cancel</span></code> returned True).</p>
+<p>Not a refusal and not a failure: a host that cancelled a job records it as
+cancelled. Raised by the op, between steps, when it was given a
+<code class="xref py py-data docutils literal notranslate"><span class="pre">CANCEL_PARAM</span></code> host parameter that says stop.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="nw.GenreOpRefused">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.</span></span><span class="sig-name descname"><span class="pre">GenreOpRefused</span></span><a class="reference internal" href="../_modules/nw/genres.html#GenreOpRefused"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.GenreOpRefused" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#ValueError" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValueError</span></code></a></p>
+<p>An op DELIBERATELY declined — no song yet, an unknown clip, an edit that does not
+hold. The base a genre derives its refusal type from (muvid’s <code class="docutils literal notranslate"><span class="pre">FootageError</span></code>).</p>
+<p>A host maps exactly this to a client-facing refusal (reelee: <code class="docutils literal notranslate"><span class="pre">422</span></code>); any other
+exception out of an op — a plain <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> included — is a bug, reported as
+one (<code class="docutils literal notranslate"><span class="pre">500</span></code> with the traceback logged). A <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> so code already catching
+that keeps working.</p>
 </dd></dl>
 
 <dl class="py class">
@@ -3495,7 +3565,7 @@ execute time changes nothing.</p>
 <span class="sig-prename descclassname"><span class="pre">nw.</span></span><span class="sig-name descname"><span class="pre">genre_ops_catalogue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">genre_slug</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/genres.html#genre_ops_catalogue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.genre_ops_catalogue" title="Link to this definition">#</a></dt>
 <dd><p>The pure-JSON catalogue of <code class="docutils literal notranslate"><span class="pre">genre_slug</span></code>’s ops (<code class="docutils literal notranslate"><span class="pre">[]</span></code> for a genre with none).</p>
 <p>One dict per op — <code class="docutils literal notranslate"><span class="pre">name</span></code>, <code class="docutils literal notranslate"><span class="pre">title</span></code>, <code class="docutils literal notranslate"><span class="pre">description</span></code>, <code class="docutils literal notranslate"><span class="pre">effect</span></code>, <code class="docutils literal notranslate"><span class="pre">runs</span></code>,
-<code class="docutils literal notranslate"><span class="pre">params_schema</span></code> — the shape a host exports to a frontend’s codegen or an MCP
+<code class="docutils literal notranslate"><span class="pre">params_schema</span></code>, <code class="docutils literal notranslate"><span class="pre">host_params</span></code>, <code class="docutils literal notranslate"><span class="pre">max_upload_bytes</span></code> — the shape a host exports to a frontend’s codegen or an MCP
 tool builder.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -4084,7 +4154,7 @@ twice raises (the registry refuses conflicts, as every nw genre registry does).<
 </span><span data-line="5"><span class="gp">... </span>                                             <span class="n">effect</span><span class="o">=</span><span class="s2">"read"</span><span class="p">)])</span>
 </span><span data-line="6"><span class="gp">&gt;&gt;&gt; </span><span class="p">[</span><span class="n">op</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">op</span> <span class="ow">in</span> <span class="n">genre_ops</span><span class="p">(</span><span class="s2">"_ops_demo"</span><span class="p">)]</span>
 </span><span data-line="7"><span class="go">['peek']</span>
-</span><span data-line="8"><span class="gp">&gt;&gt;&gt; </span><span class="n">genre_op</span><span class="p">(</span><span class="s2">"_ops_demo"</span><span class="p">,</span> <span class="s2">"peek"</span><span class="p">)(</span><span class="kc">None</span><span class="p">)</span>
+</span><span data-line="8"><span class="gp">&gt;&gt;&gt; </span><span class="n">genre_op</span><span class="p">(</span><span class="s2">"_ops_demo"</span><span class="p">,</span> <span class="s2">"peek"</span><span class="p">)</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
 </span><span data-line="9"><span class="go">{'hello': True}</span>
 </span><span data-line="10"><span class="gp">&gt;&gt;&gt; </span><span class="n">genre_ops</span><span class="p">(</span><span class="s2">"_nobody"</span><span class="p">)</span>
 </span><span data-line="11"><span class="go">()</span>
@@ -4673,7 +4743,7 @@ addressable across runs.</p>
     </div>
   </div>
 </footer>
-      <script src="../_static/documentation_options.js?v=4d22d5b7"></script>
+      <script src="../_static/documentation_options.js?v=e95a51ae"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
