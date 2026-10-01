@@ -44,6 +44,6 @@ written by any earlier version of this schema load unchanged — this is
 an **additive** enrichment of v1, not a new version, and needs no
 lacing migration.
 
-#### model_config *: [ClassVar](https://docs.python.org/3/library/typing.html#typing.ClassVar)[ConfigDict]* *= {'extra': 'forbid', 'frozen': True}*
+#### model_config *: ClassVar[ConfigDict]* *= {'extra': 'forbid', 'frozen': True}*
 
 Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].

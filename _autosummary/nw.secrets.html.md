@@ -19,7 +19,7 @@ Secrets are keyed by **provider name** (`"fal"`, `"elevenlabs"`, …): nw
 owns [`FAL_SECRET`](#nw.secrets.FAL_SECRET), an app owns the names of the providers it calls.
 
 **Why a type, not a dict.** A [`Secrets`](#nw.secrets.Secrets) is a read-only
-[`Mapping`](https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping) whose `repr`/`str` redact every value,
+`Mapping` whose `repr`/`str` redact every value,
 that refuses to be pickled, and that is deliberately *not* a `dict` — so
 `json.dumps` (and pydantic) of anything that accidentally holds one raises
 instead of writing the key. Absent values are dropped at construction, so a
@@ -76,7 +76,7 @@ TypeError: Object of type Secrets is not JSON serializable
 
 ### *exception* nw.secrets.RedactedError(message, , original_type)
 
-Bases: [`RuntimeError`](https://docs.python.org/3/builtins/exceptions.html#RuntimeError)
+Bases: `RuntimeError`
 
 An exception re-raised in place of one whose rendered text quoted a secret
 and whose type could not be rebuilt with the scrubbed text.
@@ -87,7 +87,7 @@ rendering. The typed fallback of [`redact_exception()`](#nw.secrets.redact_excep
 
 ### *class* nw.secrets.Secrets(mapping=None, , \*\*named)
 
-Bases: [`Mapping`](https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping)[[`str`](https://docs.python.org/3/builtins/stdtypes.html#str), [`str`](https://docs.python.org/3/builtins/stdtypes.html#str)]
+Bases: `Mapping`[`str`, `str`]
 
 A read-only `{provider_name: key}` mapping that never prints or persists.
 
@@ -116,7 +116,7 @@ formats its `secrets` should `as_secrets` first (or the caller should
 hand it a [`Secrets`](#nw.secrets.Secrets)), because a plain `dict` prints its values.
 
 * **Return type:**
-  [`Optional`](https://docs.python.org/3/library/typing.html#typing.Optional)[[`Secrets`](#nw.secrets.Secrets)]
+  `Optional`[[`Secrets`](#nw.secrets.Secrets)]
 
 ```pycon
 >>> as_secrets(None) is None
@@ -136,7 +136,7 @@ message, a failure reason — while holding the values that must not land
 there. Cheap, exact-substring, and a no-op with no secrets.
 
 * **Return type:**
-  [`str`](https://docs.python.org/3/builtins/stdtypes.html#str)
+  `str`
 
 ```pycon
 >>> redact("boom: key sk-1 rejected", {"fal": "sk-1"})
@@ -162,7 +162,7 @@ Applied where nw lets an exception escape toward a store it does not own
 it does (a fan-out unit’s `reason`).
 
 * **Return type:**
-  [`BaseException`](https://docs.python.org/3/builtins/exceptions.html#BaseException)
+  `BaseException`
 
 ### nw.secrets.using_secrets(secrets)
 
@@ -176,4 +176,4 @@ Transform that declared it. With no fal secret this is a `nullcontext`,
 so the `with` shape stays uniform.
 
 * **Return type:**
-  [`AbstractContextManager`](https://docs.python.org/3/library/contextlib.html#contextlib.AbstractContextManager)[[`Any`](https://docs.python.org/3/library/typing.html#typing.Any)]
+  `AbstractContextManager`[`Any`]

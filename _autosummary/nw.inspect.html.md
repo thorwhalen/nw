@@ -37,7 +37,7 @@ Bases: `BaseModel`
 
 Inspection of the project-level final composed video.
 
-#### model_config *: [ClassVar](https://docs.python.org/3/library/typing.html#typing.ClassVar)[ConfigDict]* *= {'frozen': True}*
+#### model_config *: ClassVar[ConfigDict]* *= {'frozen': True}*
 
 Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
 
@@ -51,7 +51,7 @@ A short freeze (≤ 0.25s) is usually a model artifact; a long one (≥ 1s)
 is almost always a bug — Hailuo Pro returning a too-short clip + a tpad
 fallback that froze the last frame, etc.
 
-#### model_config *: [ClassVar](https://docs.python.org/3/library/typing.html#typing.ClassVar)[ConfigDict]* *= {}*
+#### model_config *: ClassVar[ConfigDict]* *= {}*
 
 Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
 
@@ -61,7 +61,7 @@ Bases: `BaseModel`
 
 A gap on the timeline between two shots.
 
-#### model_config *: [ClassVar](https://docs.python.org/3/library/typing.html#typing.ClassVar)[ConfigDict]* *= {'frozen': True}*
+#### model_config *: ClassVar[ConfigDict]* *= {'frozen': True}*
 
 Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
 
@@ -71,11 +71,11 @@ Bases: `BaseModel`
 
 Inspection of one rendered shot.
 
-#### *property* has_long_freeze *: [bool](https://docs.python.org/3/builtins/functions.html#bool)*
+#### *property* has_long_freeze *: bool*
 
 Any freeze ≥ 1.0s is suspicious. Anything ≥ 0.5s is worth flagging.
 
-#### model_config *: [ClassVar](https://docs.python.org/3/library/typing.html#typing.ClassVar)[ConfigDict]* *= {'frozen': True}*
+#### model_config *: ClassVar[ConfigDict]* *= {'frozen': True}*
 
 Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
 
@@ -92,11 +92,11 @@ Inspect `shots/<shot_id>/output.mp4` and return a typed report.
 
 * **Parameters:**
   * **project** ([`Project`](nw.project.html.md#nw.project.Project)) – The [`nw.Project`](nw.html.md#nw.Project).
-  * **shot_id** ([`str`](https://docs.python.org/3/builtins/stdtypes.html#str)) – The shot id.
-  * **freeze_sample_fps** ([`float`](https://docs.python.org/3/builtins/functions.html#float)) – How many frames per second to extract for the
+  * **shot_id** (`str`) – The shot id.
+  * **freeze_sample_fps** (`float`) – How many frames per second to extract for the
     freeze detector (default 4 fps; a freeze must hold across at
     least two consecutive samples to count).
-  * **duration_tolerance_s** ([`float`](https://docs.python.org/3/builtins/functions.html#float)) – Acceptable difference between actual and
+  * **duration_tolerance_s** (`float`) – Acceptable difference between actual and
     target duration before flagging.
 * **Return type:**
   [`ShotReport`](#nw.inspect.ShotReport)

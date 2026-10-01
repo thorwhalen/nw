@@ -56,7 +56,7 @@ each annotation once under either backend.
 
 ### nw.graph_backend.GraphBackend
 
-alias of [`str`](https://docs.python.org/3/builtins/stdtypes.html#str)
+alias of `str`
 
 ### nw.graph_backend.iter_scope_stores(scope_paths, , asset_id, env=None)
 
@@ -69,18 +69,18 @@ enumerates exactly the same scope set under both backends, so each
 annotation is yielded once either way.
 
 * **Parameters:**
-  * **scope_paths** ([`Mapping`](https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping)[[`str`](https://docs.python.org/3/builtins/stdtypes.html#str), [`Path`](https://docs.python.org/3/library/pathlib.html#pathlib.Path)]) – `{scope_name: legacy_sqlite_path}` — only paths that
+  * **scope_paths** (`Mapping`[`str`, `Path`]) – `{scope_name: legacy_sqlite_path}` — only paths that
     *exist* on disk are visited in SQLite mode; in Postgres mode every
     listed scope is visited (existence is a DB question, not a file
     one).
-  * **asset_id** ([`str`](https://docs.python.org/3/builtins/stdtypes.html#str)) – The project’s `project_asset_id` (Postgres tenant anchor).
-  * **env** ([`Mapping`](https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping)[[`str`](https://docs.python.org/3/builtins/stdtypes.html#str), [`str`](https://docs.python.org/3/builtins/stdtypes.html#str)] | [`None`](https://docs.python.org/3/builtins/constants.html#None)) – Environment mapping. Defaults to `os.environ`.
+  * **asset_id** (`str`) – The project’s `project_asset_id` (Postgres tenant anchor).
+  * **env** (`Mapping`[`str`, `str`] | `None`) – Environment mapping. Defaults to `os.environ`.
 * **Yields:**
   A single iterator that produces each scope’s open store in turn. Each
   store is closed before the next is opened, so callers must consume
   annotations eagerly per store (which the walk does).
 * **Return type:**
-  [*Iterator*](https://docs.python.org/3/library/typing.html#typing.Iterator)[[*Iterator*](https://docs.python.org/3/library/typing.html#typing.Iterator)[*IntervalAnnotationStore*]]
+  *Iterator*[*Iterator*[*IntervalAnnotationStore*]]
 
 ### nw.graph_backend.open_graph_store(db_path, , asset_id, scope=None, rate=None, env=None)
 
@@ -92,15 +92,15 @@ lives in SQLite mode) plus the project’s `asset_id` (the tenant anchor in
 Postgres mode).
 
 * **Parameters:**
-  * **db_path** ([`Path`](https://docs.python.org/3/library/pathlib.html#pathlib.Path) | [`str`](https://docs.python.org/3/builtins/stdtypes.html#str)) – The per-scope SQLite path (used directly in SQLite mode; in
+  * **db_path** (`Path` | `str`) – The per-scope SQLite path (used directly in SQLite mode; in
     Postgres mode only its filename is used to derive the scope).
-  * **asset_id** ([`str`](https://docs.python.org/3/builtins/stdtypes.html#str)) – The project’s stable `project_asset_id` — the Postgres
+  * **asset_id** (`str`) – The project’s stable `project_asset_id` — the Postgres
     tenant anchor. Ignored in SQLite mode.
-  * **scope** ([`Optional`](https://docs.python.org/3/library/typing.html#typing.Optional)[[`str`](https://docs.python.org/3/builtins/stdtypes.html#str)]) – The logical scope name (`"graph"` / `"storyboard"` /
+  * **scope** (`Optional`[`str`]) – The logical scope name (`"graph"` / `"storyboard"` /
     `"alignment"` / …). Defaults to deriving it from `db_path`.
-  * **rate** ([`Optional`](https://docs.python.org/3/library/typing.html#typing.Optional)[[`int`](https://docs.python.org/3/builtins/functions.html#int)]) – Project-wide rate for the Postgres store. Defaults to lacing’s
+  * **rate** (`Optional`[`int`]) – Project-wide rate for the Postgres store. Defaults to lacing’s
     `DEFAULT_RATE`. Ignored in SQLite mode.
-  * **env** ([`Mapping`](https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping)[[`str`](https://docs.python.org/3/builtins/stdtypes.html#str), [`str`](https://docs.python.org/3/builtins/stdtypes.html#str)] | [`None`](https://docs.python.org/3/builtins/constants.html#None)) – Environment mapping. Defaults to `os.environ`.
+  * **env** (`Mapping`[`str`, `str`] | `None`) – Environment mapping. Defaults to `os.environ`.
 * **Return type:**
   `IntervalAnnotationStore`
 * **Returns:**
@@ -117,7 +117,7 @@ Map a legacy per-scope SQLite filename to its scope name.
 to the file’s stem so a new store kind gets a stable scope automatically.
 
 * **Return type:**
-  [`str`](https://docs.python.org/3/builtins/stdtypes.html#str)
+  `str`
 
 ### nw.graph_backend.selected_backend(env=None)
 
@@ -127,8 +127,8 @@ Pure and side-effect-free. Any unrecognized / empty value resolves to
 `"sqlite"` — the safe default that never changes a local run.
 
 * **Parameters:**
-  **env** ([`Mapping`](https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping)[[`str`](https://docs.python.org/3/builtins/stdtypes.html#str), [`str`](https://docs.python.org/3/builtins/stdtypes.html#str)] | [`None`](https://docs.python.org/3/builtins/constants.html#None)) – Environment mapping to read. Defaults to `os.environ`.
+  **env** (`Mapping`[`str`, `str`] | `None`) – Environment mapping to read. Defaults to `os.environ`.
 * **Return type:**
-  [`str`](https://docs.python.org/3/builtins/stdtypes.html#str)
+  `str`
 * **Returns:**
   `"sqlite"` or `"postgres"`.

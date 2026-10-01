@@ -319,7 +319,7 @@ which is how this reaches an MCP tool surface without a forty-item enum.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="nw.validation.Check">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.validation.</span></span><span class="sig-name descname"><span class="pre">Check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">summary</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">requires</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parallel_safe</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cost</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cheap'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">example_requests</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">requires_binaries</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/validation.html#Check"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.validation.Check" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>One validation, and everything a scheduler and a menu need to know.</p>
 <dl class="field-list simple">
 </dl>
@@ -388,7 +388,7 @@ makes the check <em>skip with a reason</em>, never silently pass.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="nw.validation.CheckResult">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.validation.</span></span><span class="sig-name descname"><span class="pre">CheckResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">findings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skipped</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elapsed_s</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">produced</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/validation.html#CheckResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.validation.CheckResult" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>What one check produced, including the case where it could not run.</p>
 <p><code class="docutils literal notranslate"><span class="pre">skipped</span></code> and <code class="docutils literal notranslate"><span class="pre">error</span></code> are kept distinct from “found nothing”, because
 conflating them is how a validation suite comes to report all-clear on a
@@ -397,7 +397,7 @@ machine where half of it never ran. A missing binary is not a pass.</p>
 </dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="nw.validation.CheckResult.ok">
-<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">ok</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><a class="headerlink" href="#nw.validation.CheckResult.ok" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">ok</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></span><a class="headerlink" href="#nw.validation.CheckResult.ok" title="Link to this definition">#</a></dt>
 <dd><p>Ran, and found nothing at or above <code class="xref py py-data docutils literal notranslate"><span class="pre">FAILING_SEVERITY</span></code>.</p>
 </dd></dl>
 
@@ -406,7 +406,7 @@ machine where half of it never ran. A missing binary is not a pass.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="nw.validation.Finding">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.validation.</span></span><span class="sig-name descname"><span class="pre">Finding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">check</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">severity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">where</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remedy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">evidence</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/validation.html#Finding"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.validation.Finding" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>One thing a check noticed.</p>
 <p>A finding is never a bare boolean. Whoever reads it — a human deciding
 whether to publish, or a model deciding what to fix — needs to know <em>where</em>
@@ -460,7 +460,7 @@ frame’s path, the numbers behind the verdict.</p>
 <dl class="py exception">
 <dt class="sig sig-object py" id="nw.validation.ValidationError">
 <span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.validation.</span></span><span class="sig-name descname"><span class="pre">ValidationError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">report</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/validation.html#ValidationError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.validation.ValidationError" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#AssertionError" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">AssertionError</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">AssertionError</span></code></p>
 <p>Raised by <a class="reference internal" href="#nw.validation.ValidationReport.raise_if_failed" title="nw.validation.ValidationReport.raise_if_failed"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ValidationReport.raise_if_failed()</span></code></a>.</p>
 <dl class="field-list simple">
 </dl>
@@ -469,7 +469,7 @@ frame’s path, the numbers behind the verdict.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="nw.validation.ValidationReport">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.validation.</span></span><span class="sig-name descname"><span class="pre">ValidationReport</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">results</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elapsed_s</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/validation.html#ValidationReport"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.validation.ValidationReport" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Everything a <a class="reference internal" href="#nw.validation.validate" title="nw.validation.validate"><code class="xref py py-func docutils literal notranslate"><span class="pre">validate()</span></code></a> run produced.</p>
 <dl class="field-list simple">
 </dl>
@@ -493,7 +493,7 @@ frame’s path, the numbers behind the verdict.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="nw.validation.ValidationReport.ok">
-<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">ok</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><a class="headerlink" href="#nw.validation.ValidationReport.ok" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">ok</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></span><a class="headerlink" href="#nw.validation.ValidationReport.ok" title="Link to this definition">#</a></dt>
 <dd><p>No failing findings <strong>and</strong> nothing that failed to run.</p>
 <p>A check that errored is not a pass. Callers gating a publish on this
 get the conservative answer without having to remember to ask for it.</p>
@@ -516,7 +516,7 @@ get the conservative answer without having to remember to ask for it.</p>
 <dd><p>A few lines a human can read without unpacking the object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span></p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -536,7 +536,7 @@ loudly rather than quietly changing what “validated” means.</p>
 <dd><p>Every registered check, name-ordered — what a user chooses from.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a>[<a class="reference internal" href="#nw.validation.Check" title="nw.validation.Check"><code class="xref py py-class docutils literal notranslate"><span class="pre">Check</span></code></a>, <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#Ellipsis" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code></a>]</span></p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<a class="reference internal" href="#nw.validation.Check" title="nw.validation.Check"><code class="xref py py-class docutils literal notranslate"><span class="pre">Check</span></code></a>, <code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code>]</span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -550,11 +550,11 @@ so the waves are the schedule: run each in turn, in parallel within it.
 A check that is not <code class="docutils literal notranslate"><span class="pre">parallel_safe</span></code> gets a wave to itself.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – on a dependency cycle, or a requirement that is not
+<dd class="field-odd"><p><strong>ValueError</strong> – on a dependency cycle, or a requirement that is not
     registered — both at plan time, before anything has been spent.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a>[<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.14)"><em>tuple</em></a>[<a class="reference internal" href="#nw.validation.Check" title="nw.validation.Check"><em>Check</em></a>, …], …]</p>
+<dd class="field-even"><p><em>tuple</em>[<em>tuple</em>[<a class="reference internal" href="#nw.validation.Check" title="nw.validation.Check"><em>Check</em></a>, …], …]</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -564,7 +564,7 @@ A check that is not <code class="docutils literal notranslate"><span class="pre"
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a>[<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a>[<a class="reference internal" href="#nw.validation.Check" title="nw.validation.Check"><code class="xref py py-class docutils literal notranslate"><span class="pre">Check</span></code></a>, <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#Ellipsis" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code></a>], <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#Ellipsis" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code></a>]</span></p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<a class="reference internal" href="#nw.validation.Check" title="nw.validation.Check"><code class="xref py py-class docutils literal notranslate"><span class="pre">Check</span></code></a>, <code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code>], <code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code>]</span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -595,7 +595,7 @@ problem. Raises <code class="docutils literal notranslate"><span class="pre">Key
 is the failure this whole module exists to prevent.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a>[<a class="reference internal" href="#nw.validation.Check" title="nw.validation.Check"><code class="xref py py-class docutils literal notranslate"><span class="pre">Check</span></code></a>, <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#Ellipsis" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code></a>]</span></p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<a class="reference internal" href="#nw.validation.Check" title="nw.validation.Check"><code class="xref py py-class docutils literal notranslate"><span class="pre">Check</span></code></a>, <code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code>]</span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -610,7 +610,7 @@ that a human or a model then confirms. <code class="docutils literal notranslate
 suggested: money is asked for by name.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a>[<a class="reference internal" href="#nw.validation.Check" title="nw.validation.Check"><code class="xref py py-class docutils literal notranslate"><span class="pre">Check</span></code></a>, <a class="reference external" href="https://docs.python.org/3/builtins/constants.html#Ellipsis" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code></a>]</span></p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<a class="reference internal" href="#nw.validation.Check" title="nw.validation.Check"><code class="xref py py-class docutils literal notranslate"><span class="pre">Check</span></code></a>, <code class="xref py py-data docutils literal notranslate"><span class="pre">...</span></code>]</span></p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -627,14 +627,14 @@ suggested: money is asked for by name.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>target</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></a></span>) – whatever the checks understand — a path to a rendered file, a
+<li><p><strong>target</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code></span>) – whatever the checks understand — a path to a rendered file, a
 <code class="docutils literal notranslate"><span class="pre">Project</span></code>, a <code class="docutils literal notranslate"><span class="pre">(video,</span> <span class="pre">annotations)</span></code> pair. This module does not
 care; it is the checks that agree with their caller.</p></li>
-<li><p><strong>checks</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code></a>[<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference internal" href="#nw.validation.Check" title="nw.validation.Check"><code class="xref py py-class docutils literal notranslate"><span class="pre">Check</span></code></a>]</span>) – names or <a class="reference internal" href="#nw.validation.Check" title="nw.validation.Check"><code class="xref py py-class docutils literal notranslate"><span class="pre">Check</span></code></a> objects. Requirements are pulled in
+<li><p><strong>checks</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> | <a class="reference internal" href="#nw.validation.Check" title="nw.validation.Check"><code class="xref py py-class docutils literal notranslate"><span class="pre">Check</span></code></a>]</span>) – names or <a class="reference internal" href="#nw.validation.Check" title="nw.validation.Check"><code class="xref py py-class docutils literal notranslate"><span class="pre">Check</span></code></a> objects. Requirements are pulled in
 automatically. Empty means empty: validation is placed, never
 assumed.</p></li>
-<li><p><strong>max_workers</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></span>) – concurrency within a wave.</p></li>
-<li><p><strong>on_error</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code></a>[<code class="docutils literal notranslate"><span class="pre">'report'</span></code>, <code class="docutils literal notranslate"><span class="pre">'raise'</span></code>]</span>) – <code class="docutils literal notranslate"><span class="pre">&quot;report&quot;</span></code> records a raising check as an errored
+<li><p><strong>max_workers</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – concurrency within a wave.</p></li>
+<li><p><strong>on_error</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'report'</span></code>, <code class="docutils literal notranslate"><span class="pre">'raise'</span></code>]</span>) – <code class="docutils literal notranslate"><span class="pre">&quot;report&quot;</span></code> records a raising check as an errored
 <a class="reference internal" href="#nw.validation.CheckResult" title="nw.validation.CheckResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">CheckResult</span></code></a> and carries on, so one broken plugin cannot
 hide the findings of the other nine. <code class="docutils literal notranslate"><span class="pre">&quot;raise&quot;</span></code> is for developing
 a check.</p></li>
@@ -698,7 +698,7 @@ has not said the work is good.</p>
     </div>
   </div>
 </footer>
-      <script src="../_static/documentation_options.js?v=dea2dbc4"></script>
+      <script src="../_static/documentation_options.js?v=7ada5fdd"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>

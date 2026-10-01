@@ -42,6 +42,6 @@ Body of the (singleton) genre-envelope annotation.
 Field-for-field the `nw.genres.resolve_genre()` envelope, so the
 persisted record and the creation-time contract can never drift apart.
 
-#### model_config *: [ClassVar](https://docs.python.org/3/library/typing.html#typing.ClassVar)[ConfigDict]* *= {'extra': 'forbid', 'frozen': True}*
+#### model_config *: ClassVar[ConfigDict]* *= {'extra': 'forbid', 'frozen': True}*
 
 Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].

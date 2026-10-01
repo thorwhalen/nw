@@ -75,18 +75,18 @@ Build a Plan that generates a seed image for each panel that lacks one.
 
 * **Parameters:**
   * **storyboard** (`Storyboard`) – The `artful.Storyboard`.
-  * **quality** ([`str`](https://docs.python.org/3/builtins/stdtypes.html#str)) – image-gen quality tier.
-  * **image_size** ([`str`](https://docs.python.org/3/builtins/stdtypes.html#str)) – “landscape_16_9” by default; respects the storyboard’s
+  * **quality** (`str`) – image-gen quality tier.
+  * **image_size** (`str`) – “landscape_16_9” by default; respects the storyboard’s
     aspect when it can be mapped to a falaw size, otherwise uses
     this default.
-  * **model_id** ([`Optional`](https://docs.python.org/3/library/typing.html#typing.Optional)[[`str`](https://docs.python.org/3/builtins/stdtypes.html#str)]) – Override the image-gen model. Defaults to whatever
+  * **model_id** (`Optional`[`str`]) – Override the image-gen model. Defaults to whatever
     `falaw.pick_model(category="image", quality_tier=quality)`
     picks (e.g. flux/dev at balanced).
-  * **only_missing** ([`bool`](https://docs.python.org/3/builtins/functions.html#bool)) – When True (default), skip panels that already have a
+  * **only_missing** (`bool`) – When True (default), skip panels that already have a
     `role="seed"` image. When False, plan one call per panel
     regardless.
 * **Return type:**
-  [`tuple`](https://docs.python.org/3/builtins/stdtypes.html#tuple)[`Plan`, [`list`](https://docs.python.org/3/builtins/stdtypes.html#list)[[`str`](https://docs.python.org/3/builtins/stdtypes.html#str)]]
+  `tuple`[`Plan`, `list`[`str`]]
 * **Returns:**
   `(plan, panel_ids)` — the Plan, and the panel ids in the same
   order as the Plan’s calls (so [`execute_render_panel_images()`](#nw.storyboard.execute_render_panel_images)
@@ -102,7 +102,7 @@ asset_id matches whatever a downstream consumer would compute via
 song isn’t available yet.
 
 * **Return type:**
-  [`str`](https://docs.python.org/3/builtins/stdtypes.html#str)
+  `str`
 
 ### nw.storyboard.save_storyboard(project, storyboard, , panel_intervals, was_attributed_to='user:nw', was_generated_by='agent:nw.storyboard')
 
@@ -113,14 +113,14 @@ save is idempotent — re-running with edited panels replaces them rather
 than accumulating duplicates.
 
 * **Return type:**
-  [`None`](https://docs.python.org/3/builtins/constants.html#None)
+  `None`
 
 ### nw.storyboard.storyboard_db_path(project)
 
 Return the path to the project’s storyboard SQLite store.
 
 * **Return type:**
-  [`Path`](https://docs.python.org/3/library/pathlib.html#pathlib.Path)
+  `Path`
 
 ### nw.storyboard.storyboard_from_shots(project, , title=None, style=None)
 
@@ -135,4 +135,4 @@ Returns `(storyboard, panel_intervals)` so the caller can feed both
 into [`save_storyboard()`](#nw.storyboard.save_storyboard).
 
 * **Return type:**
-  [`tuple`](https://docs.python.org/3/builtins/stdtypes.html#tuple)[`Storyboard`, [`dict`](https://docs.python.org/3/builtins/stdtypes.html#dict)[[`str`](https://docs.python.org/3/builtins/stdtypes.html#str), `TimeInterval`]]
+  `tuple`[`Storyboard`, `dict`[`str`, `TimeInterval`]]

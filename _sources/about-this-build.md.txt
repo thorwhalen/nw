@@ -5,7 +5,7 @@ orphan: true
 
 # About this build
 
-This documentation was built on **2026-09-27 11:23 UTC** from commit <a href="https://github.com/thorwhalen/nw/commit/49602f1e4d7ee5ae9e524aa6ca772bf861267db1"><code>49602f1</code></a> on branch <code>main</code>, for **nw 0.0.62** (from <code>pyproject.toml</code>).
+This documentation was built on **2026-10-01 08:41 UTC** from commit <a href="https://github.com/thorwhalen/nw/commit/95a7af28c8e53e9428f9432e2f1729fd49baadc0"><code>95a7af2</code></a> on branch <code>main</code>, for **nw 0.0.63** (from <code>pyproject.toml</code>).
 
 :::{note}
 Nothing suggests a mismatch: the tree was clean at the commit above, and the documented version is the one on PyPI.
@@ -15,9 +15,9 @@ Nothing suggests a mismatch: the tree was clean at the commit above, and the doc
 
 | | |
 |---|---|
-| Commit | <a href="https://github.com/thorwhalen/nw/commit/49602f1e4d7ee5ae9e524aa6ca772bf861267db1"><code>49602f1e4d7ee5ae9e524aa6ca772bf861267db1</code></a> |
+| Commit | <a href="https://github.com/thorwhalen/nw/commit/95a7af28c8e53e9428f9432e2f1729fd49baadc0"><code>95a7af28c8e53e9428f9432e2f1729fd49baadc0</code></a> |
 | Branch | <code>main</code> |
-| Tags at this commit | <code>0.0.62</code> |
+| Tags at this commit | <code>0.0.63</code> |
 | Working tree | clean |
 | Remote | <code>https://github.com/thorwhalen/nw</code> |
 
@@ -26,9 +26,9 @@ Nothing suggests a mismatch: the tree was clean at the commit above, and the doc
 | | |
 |---|---|
 | Repository | <code>thorwhalen/nw</code> |
-| Run | <a href="https://github.com/thorwhalen/nw/actions/runs/36315416405">36315416405</a> |
+| Run | <a href="https://github.com/thorwhalen/nw/actions/runs/36837639336">36837639336</a> |
 | Ref | <code>refs/heads/main</code> |
-| Event commit | <code>b5855d210c358c30758e5137d4de829382bc59eb</code> (in the history of the built commit) |
+| Event commit | <code>4f063d87336ef7067ac9ad3244e523ed5c98b880</code> (in the history of the built commit) |
 
 ## Tools
 
@@ -53,13 +53,13 @@ Nothing suggests a mismatch: the tree was clean at the commit above, and the doc
 
 ## Package on PyPI
 
-Latest release: <a href="https://pypi.org/project/nw/0.0.62/">0.0.62</a>, the same as the documented version.
+Latest release: <a href="https://pypi.org/project/nw/0.0.63/">0.0.63</a>, the same as the documented version.
 
 ## Reproduce
 
 ```bash
 git clone https://github.com/thorwhalen/nw && cd nw
-git checkout 49602f1e4d7ee5ae9e524aa6ca772bf861267db1
+git checkout 95a7af28c8e53e9428f9432e2f1729fd49baadc0
 pip install "epythet==0.2.12"
 epythet quickstart . --ignore tests/ scrap/ examples/
 ```

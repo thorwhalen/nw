@@ -20,6 +20,6 @@ model_overrides keys understood:
 
 ### *class* nw.renderers.lipsync.LipsyncStrategy
 
-Bases: [`object`](https://docs.python.org/3/builtins/functions.html#object)
+Bases: `object`
 
 `render_strategy="lipsync"`.

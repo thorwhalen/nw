@@ -51,7 +51,7 @@ written by any earlier version of this schema load unchanged — this is
 an **additive** enrichment of v1, not a new version, and needs no
 lacing migration.
 
-#### model_config *: [ClassVar](https://docs.python.org/3/library/typing.html#typing.ClassVar)[ConfigDict]* *= {'extra': 'forbid', 'frozen': True}*
+#### model_config *: ClassVar[ConfigDict]* *= {'extra': 'forbid', 'frozen': True}*
 
 Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
 
@@ -66,7 +66,7 @@ Body of a decision annotation.
 need a schema-versioned table per kind. If a kind earns a richer schema
 later, it can graduate into its own body URI without disturbing this one.
 
-#### model_config *: [ClassVar](https://docs.python.org/3/library/typing.html#typing.ClassVar)[ConfigDict]* *= {'extra': 'forbid', 'frozen': True}*
+#### model_config *: ClassVar[ConfigDict]* *= {'extra': 'forbid', 'frozen': True}*
 
 Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
 
@@ -76,7 +76,7 @@ Bases: `BaseModel`
 
 Body of an environment-ref annotation.
 
-#### model_config *: [ClassVar](https://docs.python.org/3/library/typing.html#typing.ClassVar)[ConfigDict]* *= {'extra': 'forbid', 'frozen': True}*
+#### model_config *: ClassVar[ConfigDict]* *= {'extra': 'forbid', 'frozen': True}*
 
 Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
 
@@ -89,7 +89,7 @@ Body of the (singleton) genre-envelope annotation.
 Field-for-field the `nw.genres.resolve_genre()` envelope, so the
 persisted record and the creation-time contract can never drift apart.
 
-#### model_config *: [ClassVar](https://docs.python.org/3/library/typing.html#typing.ClassVar)[ConfigDict]* *= {'extra': 'forbid', 'frozen': True}*
+#### model_config *: ClassVar[ConfigDict]* *= {'extra': 'forbid', 'frozen': True}*
 
 Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
 
@@ -99,7 +99,7 @@ Bases: `BaseModel`
 
 Body of a render-result annotation.
 
-#### model_config *: [ClassVar](https://docs.python.org/3/library/typing.html#typing.ClassVar)[ConfigDict]* *= {'extra': 'forbid', 'frozen': True}*
+#### model_config *: ClassVar[ConfigDict]* *= {'extra': 'forbid', 'frozen': True}*
 
 Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
 
@@ -109,7 +109,7 @@ Bases: `BaseModel`
 
 Body of a section annotation.
 
-#### model_config *: [ClassVar](https://docs.python.org/3/library/typing.html#typing.ClassVar)[ConfigDict]* *= {'extra': 'forbid', 'frozen': True}*
+#### model_config *: ClassVar[ConfigDict]* *= {'extra': 'forbid', 'frozen': True}*
 
 Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
 
@@ -119,7 +119,7 @@ Bases: `BaseModel`
 
 Body of a shot annotation.
 
-#### model_config *: [ClassVar](https://docs.python.org/3/library/typing.html#typing.ClassVar)[ConfigDict]* *= {'extra': 'forbid', 'frozen': True}*
+#### model_config *: ClassVar[ConfigDict]* *= {'extra': 'forbid', 'frozen': True}*
 
 Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
 
@@ -135,7 +135,7 @@ unproduced cases: `"failed"` (the call itself failed) or `"blocked"`
 for the `call_index` fallback identity (see the module docstring); it
 is not itself a sufficient key.
 
-#### model_config *: [ClassVar](https://docs.python.org/3/library/typing.html#typing.ClassVar)[ConfigDict]* *= {'extra': 'forbid', 'frozen': True}*
+#### model_config *: ClassVar[ConfigDict]* *= {'extra': 'forbid', 'frozen': True}*
 
 Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
 
@@ -145,7 +145,7 @@ Bases: `BaseModel`
 
 One `(upstream annotation, its value digest)` pair.
 
-#### model_config *: [ClassVar](https://docs.python.org/3/library/typing.html#typing.ClassVar)[ConfigDict]* *= {'extra': 'forbid', 'frozen': True}*
+#### model_config *: ClassVar[ConfigDict]* *= {'extra': 'forbid', 'frozen': True}*
 
 Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
 
@@ -162,7 +162,7 @@ under an older scheme is not comparable, so [`nw.freshness`](nw.freshness.html.m
 the mismatch as *unverifiable* (therefore stale) instead of comparing
 digests that mean different things.
 
-#### model_config *: [ClassVar](https://docs.python.org/3/library/typing.html#typing.ClassVar)[ConfigDict]* *= {'extra': 'forbid', 'frozen': True}*
+#### model_config *: ClassVar[ConfigDict]* *= {'extra': 'forbid', 'frozen': True}*
 
 Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
 
@@ -171,11 +171,11 @@ Configuration for the model, should be a dictionary conforming to [`ConfigDict`]
 Build the trace annotation for one derived annotation, or `None`.
 
 * **Parameters:**
-  * **for_annotation_id** ([`UUID`](https://docs.python.org/3/library/uuid.html#uuid.UUID)) – Id of the annotation being described.
-  * **parent_ids** ([`Iterable`](https://docs.python.org/3/library/typing.html#typing.Iterable)[[`UUID`](https://docs.python.org/3/library/uuid.html#uuid.UUID) | [`str`](https://docs.python.org/3/builtins/stdtypes.html#str)]) – Its `provenance.was_derived_from` — annotation ids
+  * **for_annotation_id** (`UUID`) – Id of the annotation being described.
+  * **parent_ids** (`Iterable`[`UUID` | `str`]) – Its `provenance.was_derived_from` — annotation ids
     (`UUID`) and artifact asset ids (64-hex `str`, nw#55).
     Duplicates are collapsed, order preserved.
-  * **upstream** ([`Sequence`](https://docs.python.org/3/library/typing.html#typing.Sequence)[`Annotation`]) – The resolved parent annotations. \*\*Must cover every
+  * **upstream** (`Sequence`[`Annotation`]) – The resolved parent annotations. \*\*Must cover every
     annotation id in 
 
     ```
@@ -185,9 +185,9 @@ Build the trace annotation for one derived annotation, or `None`.
     parent_ids\`\`\*\* — a trace that omits a parent
     would let that parent change unnoticed. Asset ids need no
     resolving: they are recorded as they are.
-  * **asset_id** ([`str`](https://docs.python.org/3/builtins/stdtypes.html#str)) – The project’s asset id, for the sentinel reference.
+  * **asset_id** (`str`) – The project’s asset id, for the sentinel reference.
 * **Return type:**
-  [`Optional`](https://docs.python.org/3/library/typing.html#typing.Optional)[`Annotation`]
+  `Optional`[`Annotation`]
 * **Returns:**
   The trace annotation, or `None` when there is nothing to verify
   (no parents) or the trace would be incomplete (a parent could not be

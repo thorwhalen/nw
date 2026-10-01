@@ -50,7 +50,7 @@ a `CharacterRef` from the graph body and
 **silently erased** by the next `update_spec` — which is what used to
 happen to `reference_image_urls`. Add a field to one, add it to both.
 
-#### model_config *: [ClassVar](https://docs.python.org/3/library/typing.html#typing.ClassVar)[ConfigDict]* *= {'extra': 'ignore'}*
+#### model_config *: ClassVar[ConfigDict]* *= {'extra': 'ignore'}*
 
 Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
 
@@ -60,7 +60,7 @@ Bases: `BaseModel`
 
 One entry of a project’s decision log, flattened for display.
 
-#### model_config *: [ClassVar](https://docs.python.org/3/library/typing.html#typing.ClassVar)[ConfigDict]* *= {'extra': 'ignore'}*
+#### model_config *: ClassVar[ConfigDict]* *= {'extra': 'ignore'}*
 
 Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
 
@@ -75,7 +75,7 @@ same load-bearing reason as [`CharacterRef`](#nw.schema.CharacterRef) — see th
 `reference_image_urls` (the lookbook the FE curates for a *location*)
 was erased by every `update_spec` until this mirror was completed.
 
-#### model_config *: [ClassVar](https://docs.python.org/3/library/typing.html#typing.ClassVar)[ConfigDict]* *= {'extra': 'ignore'}*
+#### model_config *: ClassVar[ConfigDict]* *= {'extra': 'ignore'}*
 
 Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
 
@@ -89,7 +89,7 @@ Field names and order are chosen to round-trip identically with muvid’s
 ProjectSpec for `schema_version=1`, so the_bells_v\* fixtures (and any
 other muvid-shaped project) load and re-save without churn.
 
-#### model_config *: [ClassVar](https://docs.python.org/3/library/typing.html#typing.ClassVar)[ConfigDict]* *= {'extra': 'ignore'}*
+#### model_config *: ClassVar[ConfigDict]* *= {'extra': 'ignore'}*
 
 Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
 
@@ -104,11 +104,11 @@ most often wants: title, root, song path, counts of characters / shots /
 sections / output, plus a coarse “stages_done” list naming the lifecycle
 stages that have been reached.
 
-#### model_config *: [ClassVar](https://docs.python.org/3/library/typing.html#typing.ClassVar)[ConfigDict]* *= {'extra': 'ignore'}*
+#### model_config *: ClassVar[ConfigDict]* *= {'extra': 'ignore'}*
 
 Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
 
-#### *property* stages_done *: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)]*
+#### *property* stages_done *: list[str]*
 
 Coarse stage list — what’s been reached, in lifecycle order.
 
@@ -151,7 +151,7 @@ measure\*\*, because a confidently wrong number is worse than no number:
 `caveats` carries those qualifications as data — so a consumer
 renders them next to the numbers instead of rediscovering them.
 
-#### model_config *: [ClassVar](https://docs.python.org/3/library/typing.html#typing.ClassVar)[ConfigDict]* *= {'extra': 'ignore'}*
+#### model_config *: ClassVar[ConfigDict]* *= {'extra': 'ignore'}*
 
 Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
 
@@ -165,7 +165,7 @@ A non-overlapping span of the project’s master timeline.
 …) so different apps (music-video, explainer, podcast-clip) can use
 their own taxonomy.
 
-#### model_config *: [ClassVar](https://docs.python.org/3/library/typing.html#typing.ClassVar)[ConfigDict]* *= {'extra': 'ignore'}*
+#### model_config *: ClassVar[ConfigDict]* *= {'extra': 'ignore'}*
 
 Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
 
@@ -180,7 +180,7 @@ rather than a closed Literal, so apps can register their own strategies
 via [`nw.renderers.register_strategy()`](nw.renderers.md#nw.renderers.register_strategy) (Phase 1b.3) without modifying
 the schema.
 
-#### model_config *: [ClassVar](https://docs.python.org/3/library/typing.html#typing.ClassVar)[ConfigDict]* *= {'extra': 'ignore'}*
+#### model_config *: ClassVar[ConfigDict]* *= {'extra': 'ignore'}*
 
 Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
 
@@ -192,6 +192,6 @@ Metadata for the master audio file.
 
 Compatible with muvid’s SongInfo by field name and type.
 
-#### model_config *: [ClassVar](https://docs.python.org/3/library/typing.html#typing.ClassVar)[ConfigDict]* *= {'extra': 'ignore'}*
+#### model_config *: ClassVar[ConfigDict]* *= {'extra': 'ignore'}*
 
 Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].

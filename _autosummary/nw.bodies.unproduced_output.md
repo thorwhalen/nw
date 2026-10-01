@@ -112,6 +112,6 @@ unproduced cases: `"failed"` (the call itself failed) or `"blocked"`
 for the `call_index` fallback identity (see the module docstring); it
 is not itself a sufficient key.
 
-#### model_config *: [ClassVar](https://docs.python.org/3/library/typing.html#typing.ClassVar)[ConfigDict]* *= {'extra': 'forbid', 'frozen': True}*
+#### model_config *: ClassVar[ConfigDict]* *= {'extra': 'forbid', 'frozen': True}*
 
 Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].

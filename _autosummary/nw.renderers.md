@@ -61,7 +61,7 @@ Built-in strategies (registered at import):
 
 ### *class* nw.renderers.Strategy(\*args, \*\*kwargs)
 
-Bases: [`Protocol`](https://docs.python.org/3/library/typing.html#typing.Protocol)
+Bases: `Protocol`
 
 Render-strategy contract.
 
@@ -92,7 +92,7 @@ Look up a strategy by name; raises if unknown.
 Return all registered strategy names (sorted).
 
 * **Return type:**
-  [`list`](https://docs.python.org/3/builtins/stdtypes.html#list)[[`str`](https://docs.python.org/3/builtins/stdtypes.html#str)]
+  `list`[`str`]
 
 ### nw.renderers.register_strategy(name, impl)
 

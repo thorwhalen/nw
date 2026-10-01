@@ -15,6 +15,6 @@ model_overrides keys understood:
 
 ### *class* nw.renderers.text_to_video.TextToVideoStrategy
 
-Bases: [`object`](https://docs.python.org/3/builtins/functions.html#object)
+Bases: `object`
 
 `render_strategy="text_to_video"`.

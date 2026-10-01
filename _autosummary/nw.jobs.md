@@ -130,21 +130,21 @@ reaper uses (a RUNNING au record whose key is not in `_start` and whose
 Called after computation completes.
 
 * **Return type:**
-  [`None`](https://docs.python.org/3/builtins/constants.html#None)
+  `None`
 
 #### before_compute(func, args, kwargs, key)
 
 Called before computation starts.
 
 * **Return type:**
-  [`None`](https://docs.python.org/3/builtins/constants.html#None)
+  `None`
 
 #### on_error(key, error)
 
 Called when computation fails.
 
 * **Return type:**
-  [`None`](https://docs.python.org/3/builtins/constants.html#None)
+  `None`
 
 ### nw.jobs.ERROR_KIND_REFUSED *= 'refused'*
 
@@ -152,11 +152,11 @@ Called when computation fails.
 
 ### *class* nw.jobs.Job(job_id, kind, label, status, idempotency_key, params=<factory>, created_at=None, started_at=None, finished_at=None, queue_wait_s=None, elapsed_s=None, progress=<factory>, predicted_total_s=None, remaining_s=None, eta_ts=None, eta_s=None, pct=None, confidence=None, label_hint=None, eta_key=None, cost=<factory>, cached=False, worker_silent_s=None, worker_responsive=None, artifact_ref=None, result=None, error=None, error_kind=None, run_id=None, last_event_id=None)
 
-Bases: [`object`](https://docs.python.org/3/builtins/functions.html#object)
+Bases: `object`
 
 Projected, JSON-serializable view of one job (see [`to_dict()`](#nw.jobs.to_dict)).
 
-#### error_kind *: [str](https://docs.python.org/3/builtins/stdtypes.html#str) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
+#### error_kind *: str | None* *= None*
 
 `"refused"` (the op
 raised [`nw.GenreOpRefused`](nw.md#nw.GenreOpRefused) — a deliberate refusal with a message for the
@@ -168,7 +168,7 @@ text either way.
 * **Type:**
   Why a job did not succeed, for a screen to say so
 
-#### worker_responsive *: [bool](https://docs.python.org/3/builtins/functions.html#bool) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
+#### worker_responsive *: bool | None* *= None*
 
 Whether the worker is provably still alive, **by the reaper’s own rule**.
 
@@ -180,7 +180,7 @@ insisting a job is fine while the server is failing it.
 `None` means *unknowable*, not *dead*: a job that is not running, or one
 that never beat. `False` is a positive claim that contact has been lost.
 
-#### worker_silent_s *: [float](https://docs.python.org/3/builtins/functions.html#float) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
+#### worker_silent_s *: float | None* *= None*
 
 Seconds since this job’s worker last stamped a heartbeat.
 
@@ -191,9 +191,9 @@ the healthiest one.
 
 ### *class* nw.jobs.JobCost(estimated_usd=None, actual_usd=None, cache_hit_savings_usd=None, actual_is_lower_bound=None)
 
-Bases: [`object`](https://docs.python.org/3/builtins/functions.html#object)
+Bases: `object`
 
-#### actual_is_lower_bound *: [bool](https://docs.python.org/3/builtins/functions.html#bool) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
+#### actual_is_lower_bound *: bool | None* *= None*
 
 True when the run reported `has_unknown_costs` — some call that
 actually billed had no price, so `actual_usd` UNDER-states the spend.
@@ -209,7 +209,7 @@ exists to make impossible.
 a job that died before finishing. `None` is not `False`: absence of the
 flag is not a claim that the total is exact.
 
-#### estimated_usd *: [float](https://docs.python.org/3/builtins/functions.html#float) | [None](https://docs.python.org/3/builtins/constants.html#None)* *= None*
+#### estimated_usd *: float | None* *= None*
 
 Predicted spend, re-quoted at today’s rates when a plan was supplied.
 
@@ -220,33 +220,33 @@ when it was written and falaw’s rate tables have moved since (nw#74).
 
 ### *class* nw.jobs.JobProgress(stage_index=None, stage_count=None, current_transform=None, fraction=None)
 
-Bases: [`object`](https://docs.python.org/3/builtins/functions.html#object)
+Bases: `object`
 
 ### *class* nw.jobs.JobsConfig(n_min=3, sample_window_k=20, pct_ceil=99, overrun_factor=1.5, cache_hit_floor_s=0.5, dur_buckets_s=(4.0, 8.0, 12.0), prior_total_s=<factory>, default_prior_total_s=30.0, stale_running_s=900.0, heartbeat_interval_s=20.0, heartbeat_stale_s=120.0, approval_threshold_usd=1.0, jobs_dirname='.nw/jobs')
 
-Bases: [`object`](https://docs.python.org/3/builtins/functions.html#object)
+Bases: `object`
 
 Tunables for the job manager. All keyword-configurable; sensible defaults.
 
 ETA knobs (`n_min` … `prior_total_s`) mirror the design report §5.7.
 
-#### approval_threshold_usd *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 1.0*
+#### approval_threshold_usd *: float* *= 1.0*
 
 Estimated cost at/above which a render requires explicit approval.
 
-#### cache_hit_floor_s *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 0.5*
+#### cache_hit_floor_s *: float* *= 0.5*
 
 Predicted total for an all-cache-hit plan (`confidence="exact"`).
 
-#### default_prior_total_s *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 30.0*
+#### default_prior_total_s *: float* *= 30.0*
 
 Prior when even the output kind is unknown.
 
-#### dur_buckets_s *: [tuple](https://docs.python.org/3/builtins/stdtypes.html#tuple)[[float](https://docs.python.org/3/builtins/functions.html#float), ...]* *= (4.0, 8.0, 12.0)*
+#### dur_buckets_s *: tuple[float, ...]* *= (4.0, 8.0, 12.0)*
 
 Upper edges of the output-duration buckets for `per_second` models.
 
-#### heartbeat_interval_s *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 20.0*
+#### heartbeat_interval_s *: float* *= 20.0*
 
 How often a running worker stamps `heartbeat_at` on its index record.
 
@@ -254,7 +254,7 @@ Liveness has to be a fact in the **shared store**, not in one process’s
 memory, or a second API replica cannot tell a live job from a dead one.
 Cheap: one small atomic file write per job per interval.
 
-#### heartbeat_stale_s *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 120.0*
+#### heartbeat_stale_s *: float* *= 120.0*
 
 A heartbeat younger than this proves the worker is alive **anywhere**.
 
@@ -263,31 +263,31 @@ thread, and a render holding the GIL in a C extension can delay it well
 past one interval. The asymmetry is deliberate — a late beat costs a
 slower reap, while an eager one destroys a live job’s record.
 
-#### jobs_dirname *: [str](https://docs.python.org/3/builtins/stdtypes.html#str)* *= '.nw/jobs'*
+#### jobs_dirname *: str* *= '.nw/jobs'*
 
 Sub-path under `project.root` for the job stores (nw’s `.nw/` convention).
 
-#### n_min *: [int](https://docs.python.org/3/builtins/functions.html#int)* *= 3*
+#### n_min *: int* *= 3*
 
 Minimum samples for a key before its prediction is `"learned"` (not prior).
 
-#### overrun_factor *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 1.5*
+#### overrun_factor *: float* *= 1.5*
 
 Synthesize `p90 = p50 * overrun_factor` when a real p90 isn’t available.
 
-#### pct_ceil *: [int](https://docs.python.org/3/builtins/functions.html#int)* *= 99*
+#### pct_ceil *: int* *= 99*
 
 Never *compute* 100% — only the → succeeded transition sets 100.
 
-#### prior_total_s *: [Mapping](https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping)[[str](https://docs.python.org/3/builtins/stdtypes.html#str), [float](https://docs.python.org/3/builtins/functions.html#float)]*
+#### prior_total_s *: Mapping[str, float]*
 
 Cold-start priors by output kind (drives the honest “estimating…” label).
 
-#### sample_window_k *: [int](https://docs.python.org/3/builtins/functions.html#int)* *= 20*
+#### sample_window_k *: int* *= 20*
 
 Keep only the most-recent K duration samples per key (robust to drift).
 
-#### stale_running_s *: [float](https://docs.python.org/3/builtins/functions.html#float)* *= 900.0*
+#### stale_running_s *: float* *= 900.0*
 
 A RUNNING record older than this with no live worker is reaped as
 `FAILED("worker died — resumable")` (kills the stuck-toast bug).
@@ -320,7 +320,7 @@ not. Cancelling is a request about the future, and there is no future left
 to change.
 
 * **Return type:**
-  [`Job`](#nw.jobs.Job) | [`None`](https://docs.python.org/3/builtins/constants.html#None)
+  [`Job`](#nw.jobs.Job) | `None`
 
 ### nw.jobs.enqueue(project, kind, params, , on_event=None, dispatch=None, backend=None, idempotency_key=None, label=None, capture_context=None, secrets=None, config=JobsConfig(n_min=3, sample_window_k=20, pct_ceil=99, overrun_factor=1.5, cache_hit_floor_s=0.5, dur_buckets_s=(4.0, 8.0, 12.0), prior_total_s={'image': 12.0, 'video': 90.0, 'audio': 15.0}, default_prior_total_s=30.0, stale_running_s=900.0, heartbeat_interval_s=20.0, heartbeat_stale_s=120.0, approval_threshold_usd=1.0, jobs_dirname='.nw/jobs'))
 
@@ -335,9 +335,9 @@ already exists, that job is returned instead of launching a duplicate.
 
 * **Parameters:**
   * **project** – the `nw.Project` the render operates on.
-  * **kind** ([`str`](https://docs.python.org/3/builtins/stdtypes.html#str)) – dispatch key selecting the render callable (e.g.
+  * **kind** (`str`) – dispatch key selecting the render callable (e.g.
     `"journey.full_auto"`, `"panel.animate"`).
-  * **params** ([`dict`](https://docs.python.org/3/builtins/stdtypes.html#dict)) – render parameters (also the ETA-key + default-idempotency
+  * **params** (`dict`) – render parameters (also the ETA-key + default-idempotency
     basis). A `"plan"` entry must be a **\`\`falaw.plan_to_dict\`\`
     dict, not a live** `falaw.Plan`: the whole `params`
     mapping is JSON-serialized into the job index, so a `Plan`
@@ -349,19 +349,19 @@ already exists, that job is returned instead of launching a duplicate.
     job’s wall-time covers — `4` for four image renders. Only a job
     that declares it teaches the shared coarse `output_kind` ETA
     bucket, per unit (nw#67); see [`DurationLearningMiddleware`](#nw.jobs.DurationLearningMiddleware).
-  * **on_event** ([`Callable`](https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable)[[[`Any`](https://docs.python.org/3/library/typing.html#typing.Any)], [`None`](https://docs.python.org/3/builtins/constants.html#None)] | [`None`](https://docs.python.org/3/builtins/constants.html#None)) – sink for the render’s lifecycle events (reelee wires this to
+  * **on_event** (`Callable`[[`Any`], `None`] | `None`) – sink for the render’s lifecycle events (reelee wires this to
     its `agent_log` / SSE tail). Events are stamped with
     `job_id`/`run_id` and mirrored into progress/cost/eta.
-  * **dispatch** ([`Mapping`](https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping)[[`str`](https://docs.python.org/3/builtins/stdtypes.html#str), [`Callable`](https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable)] | [`None`](https://docs.python.org/3/builtins/constants.html#None)) – `{kind: callable}` table. Each callable is invoked as
+  * **dispatch** (`Mapping`[`str`, `Callable`] | `None`) – `{kind: callable}` table. Each callable is invoked as
     `callable(project, params, *, job_id, on_event, should_cancel)`
     (only the kwargs it declares are passed) and should return a
     JSON-serializable result payload.
-  * **backend** (`ComputationBackend` | [`None`](https://docs.python.org/3/builtins/constants.html#None)) – advanced override; default is the managed `ThreadBackend`
+  * **backend** (`ComputationBackend` | `None`) – advanced override; default is the managed `ThreadBackend`
     (which carries the duration-learning middleware + liveness map).
-  * **idempotency_key** ([`str`](https://docs.python.org/3/builtins/stdtypes.html#str) | [`None`](https://docs.python.org/3/builtins/constants.html#None)) – dedup handle; default derived from `falaw.plan_hash`
+  * **idempotency_key** (`str` | `None`) – dedup handle; default derived from `falaw.plan_hash`
     of `params["plan"]` when present, else a stable hash of params.
-  * **label** ([`str`](https://docs.python.org/3/builtins/stdtypes.html#str) | [`None`](https://docs.python.org/3/builtins/constants.html#None)) – human tray label; default derived from `kind`/`params`.
-  * **capture_context** ([`Callable`](https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable)[[], [`AbstractContextManager`](https://docs.python.org/3/library/contextlib.html#contextlib.AbstractContextManager)[[`Any`](https://docs.python.org/3/library/typing.html#typing.Any)]] | [`None`](https://docs.python.org/3/builtins/constants.html#None)) – optional caller-supplied context hook. Called **now**
+  * **label** (`str` | `None`) – human tray label; default derived from `kind`/`params`.
+  * **capture_context** (`Callable`[[], `AbstractContextManager`[`Any`]] | `None`) – optional caller-supplied context hook. Called **now**
     (on the request thread) to snapshot any request-scoped state the
     caller needs re-established inside the worker, returning a context
     manager entered around the render on the worker thread. `nw.jobs`
@@ -370,7 +370,7 @@ already exists, that job is returned instead of launching a duplicate.
     importing them — e.g. reelee’s BYO vision (aix) + ElevenLabs keys,
     which otherwise fall back to owner/env in a background job because
     `ThreadBackend` does not copy `ContextVars` into the worker.
-  * **secrets** ([`Mapping`](https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping)[[`str`](https://docs.python.org/3/builtins/stdtypes.html#str), [`str`](https://docs.python.org/3/builtins/stdtypes.html#str)] | [`None`](https://docs.python.org/3/builtins/constants.html#None)) – the caller’s per-call credentials ([`nw.Secrets`](nw.md#nw.Secrets); any
+  * **secrets** (`Mapping`[`str`, `str`] | `None`) – the caller’s per-call credentials ([`nw.Secrets`](nw.md#nw.Secrets); any
     mapping is coerced), for a render that spends a bring-your-own
     key. Held **in memory only**: never written to the job index
     (`params` is — never put a key there), never logged, and it
@@ -384,8 +384,8 @@ already exists, that job is returned instead of launching a duplicate.
     threads by hand.
   * **config** ([`JobsConfig`](#nw.jobs.JobsConfig)) – tunables (see [`JobsConfig`](#nw.jobs.JobsConfig)).
 * **Raises:**
-  * [**KeyError**](https://docs.python.org/3/builtins/exceptions.html#KeyError) – if `kind` is not in `dispatch`.
-  * [**ValueError**](https://docs.python.org/3/builtins/exceptions.html#ValueError) – if `params["units"]` is present but not a positive `int`.
+  * **KeyError** – if `kind` is not in `dispatch`.
+  * **ValueError** – if `params["units"]` is present but not a positive `int`.
 * **Return type:**
   [`Job`](#nw.jobs.Job)
 
@@ -394,7 +394,7 @@ already exists, that job is returned instead of launching a duplicate.
 `"refused"` | `"cancelled"` | `"crashed"` for an exception a job raised.
 
 * **Return type:**
-  [`str`](https://docs.python.org/3/builtins/stdtypes.html#str)
+  `str`
 
 ```pycon
 >>> from nw.genres import GenreOpRefused, GenreOpCancelled
@@ -436,7 +436,7 @@ Raises `ValueError` on a malformed `params["units"]`, exactly as
 [`enqueue()`](#nw.jobs.enqueue) does, so the gate never approves what enqueue refuses.
 
 * **Return type:**
-  [`dict`](https://docs.python.org/3/builtins/stdtypes.html#dict)
+  `dict`
 
 ### nw.jobs.get_job(project, job_id, , config=JobsConfig(n_min=3, sample_window_k=20, pct_ceil=99, overrun_factor=1.5, cache_hit_floor_s=0.5, dur_buckets_s=(4.0, 8.0, 12.0), prior_total_s={'image': 12.0, 'video': 90.0, 'audio': 15.0}, default_prior_total_s=30.0, stale_running_s=900.0, heartbeat_interval_s=20.0, heartbeat_stale_s=120.0, approval_threshold_usd=1.0, jobs_dirname='.nw/jobs'))
 
@@ -444,7 +444,7 @@ One job (projecting the au status + mirrored index metadata). `None` if
 unknown. Reaps a stale-RUNNING record on read.
 
 * **Return type:**
-  [`Job`](#nw.jobs.Job) | [`None`](https://docs.python.org/3/builtins/constants.html#None)
+  [`Job`](#nw.jobs.Job) | `None`
 
 ### nw.jobs.list_jobs(project, , status=None, limit=50, config=JobsConfig(n_min=3, sample_window_k=20, pct_ceil=99, overrun_factor=1.5, cache_hit_floor_s=0.5, dur_buckets_s=(4.0, 8.0, 12.0), prior_total_s={'image': 12.0, 'video': 90.0, 'audio': 15.0}, default_prior_total_s=30.0, stale_running_s=900.0, heartbeat_interval_s=20.0, heartbeat_stale_s=120.0, approval_threshold_usd=1.0, jobs_dirname='.nw/jobs'))
 
@@ -454,7 +454,7 @@ Backed by the per-project active-jobs index (not by scanning the au store,
 whose missing-key-returns-PENDING gotcha makes membership meaningless).
 
 * **Return type:**
-  [`list`](https://docs.python.org/3/builtins/stdtypes.html#list)[[`Job`](#nw.jobs.Job)]
+  `list`[[`Job`](#nw.jobs.Job)]
 
 ### nw.jobs.predict_total_s(eta_candidates, output_kind, , durations, expected_cache_hit=False, units=None, config=JobsConfig(n_min=3, sample_window_k=20, pct_ceil=99, overrun_factor=1.5, cache_hit_floor_s=0.5, dur_buckets_s=(4.0, 8.0, 12.0), prior_total_s={'image': 12.0, 'video': 90.0, 'audio': 15.0}, default_prior_total_s=30.0, stale_running_s=900.0, heartbeat_interval_s=20.0, heartbeat_stale_s=120.0, approval_threshold_usd=1.0, jobs_dirname='.nw/jobs'))
 
@@ -511,11 +511,11 @@ key, so membership lives in the index while *outcome* lives in the store,
 and trusting the index’s copy reports finished jobs as queued.
 
 * **Return type:**
-  [`list`](https://docs.python.org/3/builtins/stdtypes.html#list)[[`Job`](#nw.jobs.Job)]
+  `list`[[`Job`](#nw.jobs.Job)]
 
 ### nw.jobs.to_dict(job)
 
 Serialize a [`Job`](#nw.jobs.Job) to the JSON contract (design report §7.4).
 
 * **Return type:**
-  [`dict`](https://docs.python.org/3/builtins/stdtypes.html#dict)
+  `dict`

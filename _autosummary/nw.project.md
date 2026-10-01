@@ -28,7 +28,7 @@ It does NOT do rendering — that’s [`nw.workflow`](nw.workflow.md#module-nw.w
 
 ### *class* nw.project.CharacterImage(path, , from_ref=False, from_selected=False, is_anchor=False)
 
-Bases: [`object`](https://docs.python.org/3/builtins/functions.html#object)
+Bases: `object`
 
 One image associated with a character.
 
@@ -42,7 +42,7 @@ Returned by [`Project.list_character_images()`](#nw.project.Project.list_charact
 
 ### *class* nw.project.Project(root, , auto_migrate=True)
 
-Bases: [`object`](https://docs.python.org/3/builtins/functions.html#object)
+Bases: `object`
 
 A folder-backed nw project.
 
@@ -66,12 +66,12 @@ way to lose them.
 Create a new project on disk and return the [`Project`](#nw.project.Project) facade.
 
 * **Parameters:**
-  * **root** ([`str`](https://docs.python.org/3/builtins/stdtypes.html#str) | [`Path`](https://docs.python.org/3/library/pathlib.html#pathlib.Path)) – Folder to create. Must not exist (or pass `force=True` to
+  * **root** (`str` | `Path`) – Folder to create. Must not exist (or pass `force=True` to
     overwrite an empty folder).
-  * **title** ([`str`](https://docs.python.org/3/builtins/stdtypes.html#str)) – Optional human-readable title; defaults to the folder name.
-  * **song** (`Union`[[`str`](https://docs.python.org/3/builtins/stdtypes.html#str), [`Path`](https://docs.python.org/3/library/pathlib.html#pathlib.Path), [`None`](https://docs.python.org/3/builtins/constants.html#None)]) – Optional path to a master audio file. When given, the file
+  * **title** (`str`) – Optional human-readable title; defaults to the folder name.
+  * **song** (`Union`[`str`, `Path`, `None`]) – Optional path to a master audio file. When given, the file
     is *copied* into `<root>/song/` and registered in the spec.
-  * **force** ([`bool`](https://docs.python.org/3/builtins/functions.html#bool)) – When True, accept an existing folder if it’s empty (no
+  * **force** (`bool`) – When True, accept an existing folder if it’s empty (no
     `project.json`); refuse if a project already exists there.
 * **Return type:**
   [`Project`](#nw.project.Project)
@@ -85,7 +85,7 @@ Marks the file the card’s `reference_image_path` points at as
 `is_anchor=True`.
 
 * **Return type:**
-  [`list`](https://docs.python.org/3/builtins/stdtypes.html#list)[[`CharacterImage`](#nw.project.CharacterImage)]
+  `list`[[`CharacterImage`](#nw.project.CharacterImage)]
 
 #### log_decision(kind, \*\*payload)
 
@@ -101,7 +101,7 @@ Both surfaces stay in sync:
 - `.nw/decisions.jsonl` continues as a tail-grep-able audit trail.
 
 * **Return type:**
-  [`None`](https://docs.python.org/3/builtins/constants.html#None)
+  `None`
 
 #### read_spec()
 
@@ -135,7 +135,7 @@ for a project with no recorded genre (created before nw#32, or not
 through the genre machinery).
 
 * **Return type:**
-  [`Optional`](https://docs.python.org/3/library/typing.html#typing.Optional)[[`dict`](https://docs.python.org/3/builtins/stdtypes.html#dict)]
+  `Optional`[`dict`]
 
 #### resumption_brief(, recent=10)
 
@@ -152,7 +152,7 @@ two of them are upper bounds, and the brief says so in
 docstring.
 
 * **Parameters:**
-  **recent** ([`int`](https://docs.python.org/3/builtins/functions.html#int)) – How many decision-log entries to include, most recent last.
+  **recent** (`int`) – How many decision-log entries to include, most recent last.
 * **Return type:**
   [`ResumptionBrief`](nw.schema.md#nw.schema.ResumptionBrief)
 
@@ -165,7 +165,7 @@ character’s folder, since cross-character anchoring is almost always
 a mistake.
 
 * **Return type:**
-  [`dict`](https://docs.python.org/3/builtins/stdtypes.html#dict)[[`str`](https://docs.python.org/3/builtins/stdtypes.html#str), [`Any`](https://docs.python.org/3/library/typing.html#typing.Any)]
+  `dict`[`str`, `Any`]
 
 #### set_global_style(style)
 
@@ -223,7 +223,7 @@ yet. When failure isolation lands, this should sum over the *produced*
 branches only — and this method is the one place that changes.
 
 * **Return type:**
-  [`float`](https://docs.python.org/3/builtins/functions.html#float)
+  `float`
 
 #### update_spec(\*\*changes)
 
@@ -242,4 +242,4 @@ shots, characters, environments) through the graph and persists the
 rest as project.json metadata.
 
 * **Return type:**
-  [`None`](https://docs.python.org/3/builtins/constants.html#None)
+  `None`

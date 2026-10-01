@@ -120,7 +120,7 @@ Stated so nobody reads more into the number than is there:
 
 ### *class* nw.freshness.FreshnessVerdict(annotation, is_stale, reason, upstream_id=None)
 
-Bases: [`object`](https://docs.python.org/3/builtins/functions.html#object)
+Bases: `object`
 
 Why one reachable annotation was judged stale (or not).
 
@@ -129,7 +129,7 @@ Emitted by [`stale_verdicts()`](#nw.freshness.stale_verdicts). `reason` is one o
 when a single parent did, so “why is this stale?” has an answer that does
 not require re-deriving the walk by hand.
 
-### nw.freshness.STALE_REASONS *: [tuple](https://docs.python.org/3/builtins/stdtypes.html#tuple)[[str](https://docs.python.org/3/builtins/stdtypes.html#str), ...]* *= ('generated-at-unknown', 'no-trace', 'digest-scheme-changed', 'trace-parents-differ', 'trace-unreadable', 'upstream-missing', 'upstream-stale', 'upstream-changed', 'provenance-cycle')*
+### nw.freshness.STALE_REASONS *: tuple[str, ...]* *= ('generated-at-unknown', 'no-trace', 'digest-scheme-changed', 'trace-parents-differ', 'trace-unreadable', 'upstream-missing', 'upstream-stale', 'upstream-changed', 'provenance-cycle')*
 
 Every reason that resolves to *stale*. `REASON_FRESH` is the only
 verdict that does not, which is the invariant that keeps “unverifiable means
@@ -145,7 +145,7 @@ freshness indicator or a “regenerate everything stale” verb should sit
 on instead of re-deriving its own definition of the word.
 
 * **Return type:**
-  [`list`](https://docs.python.org/3/builtins/stdtypes.html#list)[`Annotation`]
+  `list`[`Annotation`]
 
 ### nw.freshness.stale_after(project_root, changed_id)
 
@@ -168,7 +168,7 @@ are no longer synonyms. Use [`stale_verdicts()`](#nw.freshness.stale_verdicts) w
 *reason* a given annotation is in (or out of) this set.
 
 * **Return type:**
-  [`list`](https://docs.python.org/3/builtins/stdtypes.html#list)[`Annotation`]
+  `list`[`Annotation`]
 
 ### nw.freshness.stale_verdicts(project_root, changed_id)
 
@@ -185,7 +185,7 @@ same walk with the fresh verdicts dropped;
 `changed_id` — the whole-project snapshot.
 
 * **Return type:**
-  [`list`](https://docs.python.org/3/builtins/stdtypes.html#list)[[`FreshnessVerdict`](#nw.freshness.FreshnessVerdict)]
+  `list`[[`FreshnessVerdict`](#nw.freshness.FreshnessVerdict)]
 
 ### nw.freshness.stale_verdicts_all(project_root)
 
@@ -216,4 +216,4 @@ weaker snapshot with this one is making a behavior change on pre-trace
 projects, not installing a pure wrapper.
 
 * **Return type:**
-  [`list`](https://docs.python.org/3/builtins/stdtypes.html#list)[[`FreshnessVerdict`](#nw.freshness.FreshnessVerdict)]
+  `list`[[`FreshnessVerdict`](#nw.freshness.FreshnessVerdict)]
