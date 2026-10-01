@@ -22,7 +22,9 @@ Public surface:
   Storyboard with the new ``role="seed"`` PanelImages attached.
 
 The artful package is the storyboard *data layer*; nw.storyboard wires it
-into a folder-backed nw project.
+into a folder-backed nw project. ``artful`` is an optional dependency (the
+``nw[storyboard]`` extra, nw#96): this module is the only one that needs it, and
+``import nw`` does not load it.
 """
 
 from __future__ import annotations
@@ -31,16 +33,23 @@ import hashlib
 from pathlib import Path
 from typing import Optional
 
-from artful import (
-    PanelBody,
-    PanelImage,
-    Storyboard,
-    load_storyboard,
-    new_panel_id,
-    panel_intervals_from_panels as _panel_intervals_from_panels,
-    save_storyboard as _save_storyboard,
-)
-from artful.exports import to_html, to_markdown, from_markdown  # re-exported
+try:
+    from artful import (
+        PanelBody,
+        PanelImage,
+        Storyboard,
+        load_storyboard,
+        new_panel_id,
+        panel_intervals_from_panels as _panel_intervals_from_panels,
+        save_storyboard as _save_storyboard,
+    )
+    from artful.exports import to_html, to_markdown, from_markdown  # re-exported
+except ModuleNotFoundError as _e:  # artful is an extra since nw#96
+    from ._extras import is_missing, missing_extra
+
+    if not is_missing(_e, "artful"):
+        raise
+    raise missing_extra("nw.storyboard", extra="storyboard", package="artful") from _e
 from falaw import Plan, execute_plan_isolated, plan_generate_image
 from lacing import (
     Artifact,

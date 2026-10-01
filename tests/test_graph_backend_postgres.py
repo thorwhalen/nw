@@ -185,6 +185,7 @@ def test_two_projects_one_db_are_isolated(tmp_path, pg_env):
 def test_storyboard_on_postgres(tmp_path, pg_env):
     """The storyboard scope round-trips on Postgres and stays distinct from the
     graph scope (same project, different tenant project_id)."""
+    pytest.importorskip("artful", reason="needs the nw[storyboard] extra")
     from nw import open_storyboard
     from nw.storyboard import save_storyboard, storyboard_from_shots
 

@@ -56,7 +56,10 @@ dependencies = [
     # through that property, and it is an AttributeError on anything older.
     "lacing>=0.0.39",
     "xdol>=0.1.11",
-    "artful>=0.0.2",
+    # The job facade (`nw.jobs`) is written in `au`. Required because the host
+    # contract uses it (reelee and muvid enqueue through it) and `au` installs
+    # nothing of its own; imported lazily because its package import is not
+    # free (nw#96).
     "au>=0.1.1",
     "dol",
 ]
@@ -67,7 +70,13 @@ Repository = "https://github.com/thorwhalen/nw"
 Documentation = "https://thorwhalen.github.io/nw"
 
 [project.optional-dependencies]
+# Feature extras (nw#96): a dependency only one feature needs is not one every
+# caller installs. See "misc/docs/What nw is — a substrate, not an aggregator.md".
+storyboard = [
+    "artful>=0.0.2",
+]
 dev = [
+    "nw[storyboard]",
     "pytest>=7.0",
     "pytest-cov>=4.0",
     "ruff>=0.1.0",

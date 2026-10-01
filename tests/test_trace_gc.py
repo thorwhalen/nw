@@ -20,6 +20,8 @@ from __future__ import annotations
 
 from uuid import UUID, uuid4
 
+import pytest
+
 import nw
 from lacing import (
     Annotation,
@@ -39,7 +41,6 @@ from nw.bodies import (
 )
 from nw.graph_backend import SCOPE_STORYBOARD, open_graph_store
 from nw.schema import SectionSpec, ShotSpec
-from nw.storyboard import storyboard_db_path
 
 
 DERIVED_SCHEMA = "annot://schema/render-result/v1"
@@ -185,6 +186,7 @@ def test_write_spec_reconciliation_collects_traces_of_dropped_entities(tmp_path)
 
 
 def _storyboard_project(tmp_path) -> nw.Project:
+    pytest.importorskip("artful", reason="needs the nw[storyboard] extra")
     proj = nw.Project.init(tmp_path / "p")
     proj.upsert_section(SectionSpec(id="v", start_s=0.0, end_s=8.0))
     proj.upsert_shot(
@@ -212,7 +214,7 @@ def test_storyboard_save_wipe_collects_traces_of_wiped_panels(tmp_path):
     # A trace naming a panel, co-located in the storyboard store — as a
     # trace-writing producer of panels would leave it.
     store = open_graph_store(
-        storyboard_db_path(proj),
+        nw.storyboard_db_path(proj),
         asset_id=nw.project_asset_id(proj),
         scope=SCOPE_STORYBOARD,
     )

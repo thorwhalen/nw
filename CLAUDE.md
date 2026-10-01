@@ -88,6 +88,10 @@ it. Layering: `lacing → nw → falaw.Plan → backends` — nothing above
   deleting the root it was handed — inside the *host's* tree — would turn a
   guest's off-by-one into the loss of a whole per-caller projects directory.
 
+## Dependencies: a substrate, not an aggregator (nw#96)
+
+Required = what the contract is written in (`lacing`, `falaw`, `pydantic`, `dol`, `xdol`) plus `au`, which backs `nw.jobs` and installs nothing. A dependency only one feature needs is an **extra** named after the feature (`artful` → `nw[storyboard]`), and the feature's module raises an `ImportError` naming it. `import nw` loads the contract only: a feature module whose import is not free goes in `_LAZY_SUBMODULES` / `_LAZY_ATTRS` in `nw/__init__.py`, never in an eager `from . import`. Pinned by `tests/test_import_footprint.py` (the required set is exact). Record: `misc/docs/What nw is — a substrate, not an aggregator.md`.
+
 ## Validation (`nw/validation.py`, checks in `nw/checks.py`)
 
 A registry-based menu of checks over *finished* work, with `requires`
