@@ -9,8 +9,10 @@ from pathlib import Path
 
 import pytest
 
-import nw
-from nw.schema import SectionSpec, ShotSpec, SongInfo
+pytest.importorskip("artful", reason="needs the nw[storyboard] extra")
+
+import nw  # noqa: E402
+from nw.schema import SectionSpec, ShotSpec, SongInfo  # noqa: E402
 
 
 @pytest.fixture(autouse=True)
