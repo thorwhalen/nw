@@ -88,6 +88,8 @@ it. Layering: `lacing → nw → falaw.Plan → backends` — nothing above
   deleting the root it was handed — inside the *host's* tree — would turn a
   guest's off-by-one into the loss of a whole per-caller projects directory.
 
+**Host media catalog** (`nw/media_catalog.py`, nw#92) — the one writer that makes a genre project's media retrievable from the host (`GET /api/artifacts/{id}/bytes`): blob at `blobs/<sha256>` first, row at `catalog/<sha256>.json` second, id = content hash, hardlinked (a cross-device copy only when paid for), never a `file://` url, refused when the host reads from an object store. The row shape is the host's (`extra="forbid"`), carried as the declared wire contract `CatalogRow` and checked against the host's own model in a subprocess when reelee is importable. braidio and muvid call it; the shared cross-genre store that replaces the per-project `blobs/` is nw#95 (design open).
+
 ## Dependencies: a substrate, not an aggregator (nw#96)
 
 Required = what the contract is written in (`lacing`, `falaw`, `pydantic`, `dol`, `xdol`) plus `au`, which backs `nw.jobs` and installs nothing. A dependency only one feature needs is an **extra** named after the feature (`artful` → `nw[storyboard]`), and the feature's module raises an `ImportError` naming it. `import nw` loads the contract only: a feature module whose import is not free goes in `_LAZY_SUBMODULES` / `_LAZY_ATTRS` in `nw/__init__.py`, never in an eager `from . import`. Pinned by `tests/test_import_footprint.py` (the required set is exact). Record: `misc/docs/What nw is — a substrate, not an aggregator.md`.
