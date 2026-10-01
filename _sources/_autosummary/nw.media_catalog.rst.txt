@@ -1,0 +1,40 @@
+nw.media\_catalog
+=================
+
+.. automodule:: nw.media_catalog
+
+   
+   .. rubric:: Module Attributes
+
+   .. autosummary::
+   
+      DELIVERY_CATALOG_SUBPATH
+      CATALOG_KINDS
+      BYTES_ROUTE
+      BACKEND_ENV_KEY
+      catalog_row
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      assert_local_backend
+      catalog_row
+      hash_file
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      CatalogReport
+      CatalogRow
+      HostArtifactCatalog
+   
+   .. rubric:: Exceptions
+
+   .. autosummary::
+   
+      CatalogBackendMismatch
+      CorruptBlob
+      CrossDeviceCatalog
+   

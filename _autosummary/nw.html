@@ -86,6 +86,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="nw.graph.html">nw.graph</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nw.graph_backend.html">nw.graph_backend</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nw.jobs.html">nw.jobs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.media_catalog.html">nw.media_catalog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nw.migrate.html">nw.migrate</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nw.pricing.html">nw.pricing</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nw.project.html">nw.project</a></li>
@@ -4527,34 +4528,37 @@ addressable across runs.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="nw.jobs.html#module-nw.jobs" title="nw.jobs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">jobs</span></code></a></p></td>
 <td><p>nw.jobs — a project-scoped async <strong>job</strong> facade over <code class="docutils literal notranslate"><span class="pre">au</span></code>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="nw.migrate.html#module-nw.migrate" title="nw.migrate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">migrate</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="nw.media_catalog.html#module-nw.media_catalog" title="nw.media_catalog"><code class="xref py py-obj docutils literal notranslate"><span class="pre">media_catalog</span></code></a></p></td>
+<td><p>Make a genre project's media <em>retrievable</em> from its host — the host's artifact catalog.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="nw.migrate.html#module-nw.migrate" title="nw.migrate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">migrate</span></code></a></p></td>
 <td><p>Idempotent migration: project.json (sections/shots/refs) → lacing graph.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="nw.pricing.html#module-nw.pricing" title="nw.pricing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pricing</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="nw.pricing.html#module-nw.pricing" title="nw.pricing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pricing</span></code></a></p></td>
 <td><p>Re-quoting a persisted plan at today's rates (nw#74).</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="nw.project.html#module-nw.project" title="nw.project"><code class="xref py py-obj docutils literal notranslate"><span class="pre">project</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="nw.project.html#module-nw.project" title="nw.project"><code class="xref py py-obj docutils literal notranslate"><span class="pre">project</span></code></a></p></td>
 <td><p>Project facade: a folder on disk → typed reads, typed writes, typed summary.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="nw.renderers.html#module-nw.renderers" title="nw.renderers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">renderers</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="nw.renderers.html#module-nw.renderers" title="nw.renderers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">renderers</span></code></a></p></td>
 <td><p>Render strategies — pluggable, plan-producing, <strong>shot-typed</strong>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="nw.schema.html#module-nw.schema" title="nw.schema"><code class="xref py py-obj docutils literal notranslate"><span class="pre">schema</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="nw.schema.html#module-nw.schema" title="nw.schema"><code class="xref py py-obj docutils literal notranslate"><span class="pre">schema</span></code></a></p></td>
 <td><p>Schema for an nw project — narrative-workflow SSOT data shapes.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="nw.script_segmentation.html#module-nw.script_segmentation" title="nw.script_segmentation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">script_segmentation</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="nw.script_segmentation.html#module-nw.script_segmentation" title="nw.script_segmentation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">script_segmentation</span></code></a></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">nw.script_segmentation</span></code> — narrow LLM-backed helper that converts a free-form script into a list of storyboard-panel proposals.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="nw.secrets.html#module-nw.secrets" title="nw.secrets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">secrets</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="nw.secrets.html#module-nw.secrets" title="nw.secrets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">secrets</span></code></a></p></td>
 <td><p>Execution secrets — credentials that reach <code class="docutils literal notranslate"><span class="pre">execute</span></code> and nothing else.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="nw.transforms.html#nw.transforms" title="nw.transforms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transforms</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="nw.transforms.html#nw.transforms" title="nw.transforms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transforms</span></code></a></p></td>
 <td><p>A typed dict-backed plugin registry.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="nw.validation.html#module-nw.validation" title="nw.validation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validation</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="nw.validation.html#module-nw.validation" title="nw.validation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validation</span></code></a></p></td>
 <td><p>Pluggable validation of finished work — the seam, not the checks.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="nw.workflow.html#module-nw.workflow" title="nw.workflow"><code class="xref py py-obj docutils literal notranslate"><span class="pre">workflow</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="nw.workflow.html#module-nw.workflow" title="nw.workflow"><code class="xref py py-obj docutils literal notranslate"><span class="pre">workflow</span></code></a></p></td>
 <td><p>Workflow: prepare → plan → execute, for a <strong>video shot</strong>.</p></td>
 </tr>
 </tbody>
@@ -4602,7 +4606,7 @@ addressable across runs.</p>
     </div>
   </div>
 </footer>
-      <script src="../_static/documentation_options.js?v=b153cf10"></script>
+      <script src="../_static/documentation_options.js?v=152b4b09"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>

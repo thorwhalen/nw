@@ -150,6 +150,7 @@
    graph
    graph_backend
    jobs
+   media_catalog
    migrate
    pricing
    project

@@ -25,6 +25,7 @@
 - [nw.graph](nw.graph.html.md): The project annotation graph — read/write helpers + reelee-style traversals.
 - [nw.graph_backend](nw.graph_backend.html.md): Config-driven backend selection for nw’s annotation graph stores.
 - [nw.jobs](nw.jobs.html.md): nw.jobs — a project-scoped async &#42;&#42;job&#42;&#42; facade over &#96;au&#96;.
+- [nw.media_catalog](nw.media_catalog.html.md): Make a genre project’s media &#42;retrievable&#42; from its host — the host’s artifact catalog.
 - [nw.migrate](nw.migrate.html.md): Idempotent migration: project.json (sections/shots/refs) → lacing graph.
 - [nw.pricing](nw.pricing.html.md): Re-quoting a persisted plan at today’s rates (nw#74).
 - [nw.project](nw.project.html.md): Project facade: a folder on disk → typed reads, typed writes, typed summary.

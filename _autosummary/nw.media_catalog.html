@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en" data-accent-color="grass" data-content_root="../">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>nw.media_catalog - nw</title><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="nw.migrate" href="nw.migrate.html" /><link rel="prev" title="nw.jobs" href="nw.jobs.html" /><script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d88b86f9" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=2ceb65ce" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    
+  <meta property="og:type" content="website"/><meta property="og:title" content="nw.media_catalog"/>
+    <meta name="twitter:card" content="summary"/>
+  
+<link rel="alternate" type="text/markdown" href="nw.media_catalog.html.md">
+<link rel="describedby" href="../llms.txt" type="text/markdown">
+</head>
+<body><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand" href="../index.html">
+      
+      
+      <strong>nw</strong>
+    </a>
+    <div class="sy-head-nav" id="head-nav">
+      <nav class="sy-head-links"></nav>
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form><div class="sy-head-socials">
+  <a href="https://github.com/thorwhalen/nw" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div></div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="head-nav" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2"></span>
+          <span class="hamburger_3"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+        <div class="globaltoc" data-expand-depth="0"><ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="nw.html">nw</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="nw.freshness.html">nw.freshness</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.inspect.html">nw.inspect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.checks.html">nw.checks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.bodies.html">nw.bodies</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.character_ref.html">nw.bodies.character_ref</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.decision.html">nw.bodies.decision</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.environment_ref.html">nw.bodies.environment_ref</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.genre_envelope.html">nw.bodies.genre_envelope</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.render_result.html">nw.bodies.render_result</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.section.html">nw.bodies.section</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.shot.html">nw.bodies.shot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.unproduced_output.html">nw.bodies.unproduced_output</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.bodies.verifying_trace.html">nw.bodies.verifying_trace</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="nw.delivery.html">nw.delivery</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.experiment.html">nw.experiment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.genres.html">nw.genres</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.graph.html">nw.graph</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.graph_backend.html">nw.graph_backend</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.jobs.html">nw.jobs</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">nw.media_catalog</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.migrate.html">nw.migrate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.pricing.html">nw.pricing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.project.html">nw.project</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.renderers.html">nw.renderers</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="nw.renderers.composite_lipsync.html">nw.renderers.composite_lipsync</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.renderers.image_to_video.html">nw.renderers.image_to_video</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.renderers.lipsync.html">nw.renderers.lipsync</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.renderers.still.html">nw.renderers.still</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nw.renderers.text_to_video.html">nw.renderers.text_to_video</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="nw.schema.html">nw.schema</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.script_segmentation.html">nw.script_segmentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.secrets.html">nw.secrets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.transforms.html">nw.transforms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.validation.html">nw.validation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.workflow.html">nw.workflow</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../ai-agents.html">For AI agents</a></li>
+</ul>
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-lucide close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
+<li><a class="reference internal" href="#nw.media_catalog.BACKEND_ENV_KEY"><code class="docutils literal notranslate"><span class="pre">BACKEND_ENV_KEY</span></code></a></li>
+<li><a class="reference internal" href="#nw.media_catalog.BYTES_ROUTE"><code class="docutils literal notranslate"><span class="pre">BYTES_ROUTE</span></code></a></li>
+<li><a class="reference internal" href="#nw.media_catalog.CATALOG_KINDS"><code class="docutils literal notranslate"><span class="pre">CATALOG_KINDS</span></code></a></li>
+<li><a class="reference internal" href="#nw.media_catalog.CatalogBackendMismatch"><code class="docutils literal notranslate"><span class="pre">CatalogBackendMismatch</span></code></a></li>
+<li><a class="reference internal" href="#nw.media_catalog.CatalogReport"><code class="docutils literal notranslate"><span class="pre">CatalogReport</span></code></a><ul>
+<li><a class="reference internal" href="#nw.media_catalog.CatalogReport.unregistered"><code class="docutils literal notranslate"><span class="pre">CatalogReport.unregistered</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#nw.media_catalog.CatalogRow"><code class="docutils literal notranslate"><span class="pre">CatalogRow</span></code></a><ul>
+<li><a class="reference internal" href="#nw.media_catalog.CatalogRow.FIELDS"><code class="docutils literal notranslate"><span class="pre">CatalogRow.FIELDS</span></code></a></li>
+<li><a class="reference internal" href="#nw.media_catalog.CatalogRow.PROVENANCE_FIELDS"><code class="docutils literal notranslate"><span class="pre">CatalogRow.PROVENANCE_FIELDS</span></code></a></li>
+<li><a class="reference internal" href="#nw.media_catalog.CatalogRow.build"><code class="docutils literal notranslate"><span class="pre">CatalogRow.build()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#nw.media_catalog.CorruptBlob"><code class="docutils literal notranslate"><span class="pre">CorruptBlob</span></code></a></li>
+<li><a class="reference internal" href="#nw.media_catalog.CrossDeviceCatalog"><code class="docutils literal notranslate"><span class="pre">CrossDeviceCatalog</span></code></a></li>
+<li><a class="reference internal" href="#nw.media_catalog.DELIVERY_CATALOG_SUBPATH"><code class="docutils literal notranslate"><span class="pre">DELIVERY_CATALOG_SUBPATH</span></code></a></li>
+<li><a class="reference internal" href="#nw.media_catalog.HostArtifactCatalog"><code class="docutils literal notranslate"><span class="pre">HostArtifactCatalog</span></code></a><ul>
+<li><a class="reference internal" href="#nw.media_catalog.HostArtifactCatalog.blob_path"><code class="docutils literal notranslate"><span class="pre">HostArtifactCatalog.blob_path()</span></code></a></li>
+<li><a class="reference internal" href="#nw.media_catalog.HostArtifactCatalog.has"><code class="docutils literal notranslate"><span class="pre">HostArtifactCatalog.has()</span></code></a></li>
+<li><a class="reference internal" href="#nw.media_catalog.HostArtifactCatalog.iter_rows"><code class="docutils literal notranslate"><span class="pre">HostArtifactCatalog.iter_rows()</span></code></a></li>
+<li><a class="reference internal" href="#nw.media_catalog.HostArtifactCatalog.register"><code class="docutils literal notranslate"><span class="pre">HostArtifactCatalog.register()</span></code></a></li>
+<li><a class="reference internal" href="#nw.media_catalog.HostArtifactCatalog.registered_ids"><code class="docutils literal notranslate"><span class="pre">HostArtifactCatalog.registered_ids()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#nw.media_catalog.assert_local_backend"><code class="docutils literal notranslate"><span class="pre">assert_local_backend()</span></code></a></li>
+<li><a class="reference internal" href="#nw.media_catalog.catalog_row"><code class="docutils literal notranslate"><span class="pre">catalog_row()</span></code></a></li>
+<li><a class="reference internal" href="#nw.media_catalog.hash_file"><code class="docutils literal notranslate"><span class="pre">hash_file()</span></code></a></li>
+</ul>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+<div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-lucide menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../index.html"><span itemprop="name">nw</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../api.html"><span itemprop="name">API reference</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="2" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="nw.html"><span itemprop="name">nw</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="3" />
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">nw.media_catalog</strong>
+        <meta itemprop="position" content="4" />
+      </li></ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-lucide outdent"></i>
+      </button>
+    </div>
+  </div>
+</div><div class="flex flex-col break-words justify-between">
+      <div class="relative min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+  <article class="yue dark-code" role="main">
+          <section id="module-nw.media_catalog">
+<span id="nw-media-catalog"></span><h1>nw.media_catalog<a class="headerlink" href="#module-nw.media_catalog" title="Link to this heading">#</a></h1>
+<p>Make a genre project’s media <em>retrievable</em> from its host — the host’s artifact catalog.</p>
+<p>A still, a recording or a render that lands in a genre’s project is a file on disk,
+recorded in the graph by its content-addressed id. The host serves media through
+<code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/api/artifacts/{id}/bytes</span></code>, which answers only for ids registered in the
+project’s catalog. Until something registers it, asking for an id the graph holds
+answers <strong>404</strong>: a project that looks complete in every census and delivers nothing.</p>
+<p>This module is that registration, written once (nw#92). braidio’s importer and
+muvid’s hosted productions each carried a copy of it; two copies of a wire contract
+whose row shape belongs to the host is how they drift. nw is where every genre
+already meets the host (project factories, genre ops, <a class="reference internal" href="nw.delivery.html#module-nw.delivery" title="nw.delivery"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nw.delivery</span></code></a>), so the
+writer lives here and the genres call it.</p>
+<p>Two writes make an id resolvable, and the order between them is the whole
+correctness argument:</p>
+<ol class="arabic simple">
+<li><p>the <strong>blob</strong> lands at <code class="docutils literal notranslate"><span class="pre">blobs/&lt;sha256&gt;</span></code> — the filename <em>is</em> the digest;</p></li>
+<li><p>the <strong>row</strong> lands at <code class="docutils literal notranslate"><span class="pre">catalog/&lt;sha256&gt;.json</span></code>, second and only once the blob is
+there, because the host’s route reads the row first: a row with no blob behind
+it is not a 404, it is a 500 from inside a stream that already promised a 200.</p></li>
+</ol>
+<p>Three decisions that are the point rather than detail:</p>
+<ul class="simple">
+<li><p><strong>The id IS the content hash</strong> (SHA-256 of the bytes, 64 lowercase hex). The graph
+already recorded <code class="docutils literal notranslate"><span class="pre">artifact_id=&lt;sha256&gt;</span></code> in every body that names the file, so
+registering under any other id yields a populated catalog and a project that still
+404s on every id it holds. It is the digest lacing computes (pinned by a test).</p></li>
+<li><p><strong>Blobs are HARDLINKED, never copied.</strong> The media is already inside the project; a
+copy would double a 300 MB production on the server’s disk. The link is safe, not
+merely cheap, <em>because</em> the name is the digest: a shared inode can only ever be
+rewritten with identical bytes. A destination that cannot link <strong>refuses</strong>
+(<a class="reference internal" href="#nw.media_catalog.CrossDeviceCatalog" title="nw.media_catalog.CrossDeviceCatalog"><code class="xref py py-class docutils literal notranslate"><span class="pre">CrossDeviceCatalog</span></code></a>) instead of quietly copying gigabytes, unless the
+caller asks to pay for the copy (<code class="docutils literal notranslate"><span class="pre">allow_cross_device_copy=True</span></code>).</p></li>
+<li><p>**A row’s <code class="docutils literal notranslate"><span class="pre">url</span></code> is never a <code class="docutils literal notranslate"><span class="pre">file://</span></code> path.** It is the host’s own bytes route.
+A row registered by hand with a <code class="docutils literal notranslate"><span class="pre">file://</span></code> url once reached an <code class="docutils literal notranslate"><span class="pre">&lt;img</span> <span class="pre">src&gt;</span></code> and
+put the owner’s home directory into a page’s DOM: a local path in a served record
+is a disclosure, and it is also wrong — the consumer is not on this machine.</p></li>
+</ul>
+<p><strong>Writing another package’s record shape.</strong> The layout is lacing’s
+(<code class="docutils literal notranslate"><span class="pre">ArtifactStore.from_directory</span></code>: a <code class="docutils literal notranslate"><span class="pre">catalog/</span></code> of JSON documents beside a
+<code class="docutils literal notranslate"><span class="pre">blobs/</span></code> of content-addressed files), but the row <em>shape</em> belongs to the host
+that reads it, and the host validates with <code class="docutils literal notranslate"><span class="pre">extra=&quot;forbid&quot;</span></code>. nw cannot import the
+host (the dependency runs the other way), so the shape is carried here as a declared
+<strong>wire contract</strong> — <a class="reference internal" href="#nw.media_catalog.CatalogRow" title="nw.media_catalog.CatalogRow"><code class="xref py py-class docutils literal notranslate"><span class="pre">CatalogRow</span></code></a> — and <code class="docutils literal notranslate"><span class="pre">tests/test_media_catalog.py</span></code>
+validates rows through the host’s own model whenever the host is importable.</p>
+<p><strong>One refusal guards the whole module</strong>: <a class="reference internal" href="#nw.media_catalog.assert_local_backend" title="nw.media_catalog.assert_local_backend"><code class="xref py py-func docutils literal notranslate"><span class="pre">assert_local_backend()</span></code></a>. Rows written
+next to a project whose host reads its artifacts from an object store would make
+every id 404 while the write reported success — the defect this module exists to
+remove, reintroduced one layer up. <a class="reference internal" href="#nw.media_catalog.HostArtifactCatalog" title="nw.media_catalog.HostArtifactCatalog"><code class="xref py py-class docutils literal notranslate"><span class="pre">HostArtifactCatalog</span></code></a> checks it on every
+registration unless told the caller already has.</p>
+<p><strong>What comes next</strong> is nw#95: one content-addressed store shared by every genre and
+the host, replacing each project’s private <code class="docutils literal notranslate"><span class="pre">blobs/</span></code>. Its design is open; when it
+lands it changes where <a class="reference internal" href="#nw.media_catalog.HostArtifactCatalog" title="nw.media_catalog.HostArtifactCatalog"><code class="xref py py-class docutils literal notranslate"><span class="pre">HostArtifactCatalog</span></code></a> writes, not who calls it.</p>
+<p class="rubric">Module Attributes</p>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.media_catalog.DELIVERY_CATALOG_SUBPATH" title="nw.media_catalog.DELIVERY_CATALOG_SUBPATH"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DELIVERY_CATALOG_SUBPATH</span></code></a></p></td>
+<td><p>Where the host keeps a project's artifact store, relative to the project root: lacing's layout, the host's directory name.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.media_catalog.CATALOG_KINDS" title="nw.media_catalog.CATALOG_KINDS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CATALOG_KINDS</span></code></a></p></td>
+<td><p>a row whose <code class="docutils literal notranslate"><span class="pre">kind</span></code> the host's <code class="docutils literal notranslate"><span class="pre">Literal</span></code> does not name fails validation at read time, which turns one unservable file into a broken catalog.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.media_catalog.BYTES_ROUTE" title="nw.media_catalog.BYTES_ROUTE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BYTES_ROUTE</span></code></a></p></td>
+<td><p>The route the host serves a registered artifact from.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.media_catalog.BACKEND_ENV_KEY" title="nw.media_catalog.BACKEND_ENV_KEY"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BACKEND_ENV_KEY</span></code></a></p></td>
+<td><p>The host's backend switch.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.media_catalog.catalog_row" title="nw.media_catalog.catalog_row"><code class="xref py py-obj docutils literal notranslate"><span class="pre">catalog_row</span></code></a>(artifact_id, *, kind, generated_at)</p></td>
+<td><p>The function spelling of <a class="reference internal" href="#nw.media_catalog.CatalogRow.build" title="nw.media_catalog.CatalogRow.build"><code class="xref py py-meth docutils literal notranslate"><span class="pre">CatalogRow.build()</span></code></a>.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="rubric">Functions</p>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.media_catalog.assert_local_backend" title="nw.media_catalog.assert_local_backend"><code class="xref py py-obj docutils literal notranslate"><span class="pre">assert_local_backend</span></code></a>([env, remedy])</p></td>
+<td><p>Refuse to register into a filesystem the host will not read.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.media_catalog.catalog_row" title="nw.media_catalog.catalog_row"><code class="xref py py-obj docutils literal notranslate"><span class="pre">catalog_row</span></code></a>(artifact_id, *, kind, generated_at)</p></td>
+<td><p>The function spelling of <a class="reference internal" href="#nw.media_catalog.CatalogRow.build" title="nw.media_catalog.CatalogRow.build"><code class="xref py py-meth docutils literal notranslate"><span class="pre">CatalogRow.build()</span></code></a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.media_catalog.hash_file" title="nw.media_catalog.hash_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hash_file</span></code></a>(path, *[, chunk_size])</p></td>
+<td><p>SHA-256 of a file's bytes, read in chunks — the catalog id of that file.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="rubric">Classes</p>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.media_catalog.CatalogReport" title="nw.media_catalog.CatalogReport"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CatalogReport</span></code></a>([rows_written, ...])</p></td>
+<td><p>What registering a batch of media did, and what the catalog could not hold.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.media_catalog.CatalogRow" title="nw.media_catalog.CatalogRow"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CatalogRow</span></code></a>()</p></td>
+<td><p>The host's artifact record, as JSON — a wire contract, not a model.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.media_catalog.HostArtifactCatalog" title="nw.media_catalog.HostArtifactCatalog"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HostArtifactCatalog</span></code></a>(project_root, *[, ...])</p></td>
+<td><p>The artifact catalog of the project at <code class="docutils literal notranslate"><span class="pre">project_root</span></code>, in the host's layout.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="rubric">Exceptions</p>
+<div class="table-wrapper autosummary longtable docutils container">
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.media_catalog.CatalogBackendMismatch" title="nw.media_catalog.CatalogBackendMismatch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CatalogBackendMismatch</span></code></a></p></td>
+<td><p>The host reads its artifacts from somewhere other than the project's blobs.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#nw.media_catalog.CorruptBlob" title="nw.media_catalog.CorruptBlob"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CorruptBlob</span></code></a></p></td>
+<td><p>A blob already stored under a digest does not hold the bytes it names.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.media_catalog.CrossDeviceCatalog" title="nw.media_catalog.CrossDeviceCatalog"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CrossDeviceCatalog</span></code></a></p></td>
+<td><p>The project's blob store cannot hardlink the media (another filesystem).</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py data">
+<dt class="sig sig-object py" id="nw.media_catalog.BACKEND_ENV_KEY">
+<span class="sig-prename descclassname"><span class="pre">nw.media_catalog.</span></span><span class="sig-name descname"><span class="pre">BACKEND_ENV_KEY</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'REELEE_ARTIFACT_BACKEND'</span></span><a class="headerlink" href="#nw.media_catalog.BACKEND_ENV_KEY" title="Link to this definition">#</a></dt>
+<dd><p>The host’s backend switch. Read, never written. The host treats every value
+other than these as its local backend (an unrecognised value falls back to the
+filesystem), so only these are refused — refusing more would block a write the
+host would in fact read.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="nw.media_catalog.BYTES_ROUTE">
+<span class="sig-prename descclassname"><span class="pre">nw.media_catalog.</span></span><span class="sig-name descname"><span class="pre">BYTES_ROUTE</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'/api/artifacts/{artifact_id}/bytes'</span></span><a class="headerlink" href="#nw.media_catalog.BYTES_ROUTE" title="Link to this definition">#</a></dt>
+<dd><p>The route the host serves a registered artifact from. A row’s <code class="docutils literal notranslate"><span class="pre">url</span></code> is this,
+never a local path.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="nw.media_catalog.CATALOG_KINDS">
+<span class="sig-prename descclassname"><span class="pre">nw.media_catalog.</span></span><span class="sig-name descname"><span class="pre">CATALOG_KINDS</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">frozenset</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">frozenset({'audio',</span> <span class="pre">'image',</span> <span class="pre">'json',</span> <span class="pre">'video'})</span></span><a class="headerlink" href="#nw.media_catalog.CATALOG_KINDS" title="Link to this definition">#</a></dt>
+<dd><p>a row
+whose <code class="docutils literal notranslate"><span class="pre">kind</span></code> the host’s <code class="docutils literal notranslate"><span class="pre">Literal</span></code> does not name fails validation at read time,
+which turns one unservable file into a broken catalog. A <code class="docutils literal notranslate"><span class="pre">text</span></code> artifact (an
+<code class="docutils literal notranslate"><span class="pre">.srt</span></code> sidecar) has no home here; it is reported unregistered, never coerced.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Content categories the host’s catalog can hold. Deliberately not extended</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="nw.media_catalog.CatalogBackendMismatch">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.media_catalog.</span></span><span class="sig-name descname"><span class="pre">CatalogBackendMismatch</span></span><a class="reference internal" href="../_modules/nw/media_catalog.html#CatalogBackendMismatch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.media_catalog.CatalogBackendMismatch" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">RuntimeError</span></code></p>
+<p>The host reads its artifacts from somewhere other than the project’s blobs.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.media_catalog.CatalogReport">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.media_catalog.</span></span><span class="sig-name descname"><span class="pre">CatalogReport</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rows_written</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rows_unchanged</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blobs_linked</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blobs_present</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blobs_copied</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bytes_copied</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cross_device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unregistered</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/media_catalog.html#CatalogReport"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.media_catalog.CatalogReport" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>What registering a batch of media did, and what the catalog could not hold.</p>
+<dl class="field-list simple">
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.media_catalog.CatalogReport.unregistered">
+<span class="sig-name descname"><span class="pre">unregistered</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#nw.media_catalog.CatalogReport.unregistered" title="Link to this definition">#</a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">(path,</span> <span class="pre">reason)</span></code> for a file the catalog cannot hold — today only a kind
+outside <a class="reference internal" href="#nw.media_catalog.CATALOG_KINDS" title="nw.media_catalog.CATALOG_KINDS"><code class="xref py py-data docutils literal notranslate"><span class="pre">CATALOG_KINDS</span></code></a>. Reported, never silently dropped: an
+unregistered artifact is one a caller will ask for and not get.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.media_catalog.CatalogRow">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.media_catalog.</span></span><span class="sig-name descname"><span class="pre">CatalogRow</span></span><a class="reference internal" href="../_modules/nw/media_catalog.html#CatalogRow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.media_catalog.CatalogRow" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The host’s artifact record, as JSON — a wire contract, not a model.</p>
+<p>Deliberately not a pydantic model: this is <em>the host’s</em> schema, and nw has no
+business owning a second authority for it. It is a dict-builder with every
+field spelled out, so a failure to load on the host’s side shows up as a diff
+against these lists rather than as an absence.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.media_catalog.CatalogRow.FIELDS">
+<span class="sig-name descname"><span class="pre">FIELDS</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('id',</span> <span class="pre">'kind',</span> <span class="pre">'url',</span> <span class="pre">'width',</span> <span class="pre">'height',</span> <span class="pre">'duration_seconds',</span> <span class="pre">'cost_usd',</span> <span class="pre">'provenance',</span> <span class="pre">'content_hash')</span></span><a class="headerlink" href="#nw.media_catalog.CatalogRow.FIELDS" title="Link to this definition">#</a></dt>
+<dd><p>Every key a row EMITS, in the host’s own order.</p>
+<p>An omission is safe and an addition is fatal, which is the opposite of how it
+first reads. Every field the host declares is optional except <code class="docutils literal notranslate"><span class="pre">id</span></code>,
+<code class="docutils literal notranslate"><span class="pre">kind</span></code>, <code class="docutils literal notranslate"><span class="pre">url</span></code> and <code class="docutils literal notranslate"><span class="pre">provenance.generated_at</span></code>, so a key left out takes its
+default — while a key the host does not know fails validation for the
+<strong>whole catalog</strong>, because the host’s index validates every row. One unknown
+key does not cost one artifact; it costs all of them. So: emit the minimum,
+and only fields that have been in the host’s model long enough to be
+everywhere.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="nw.media_catalog.CatalogRow.PROVENANCE_FIELDS">
+<span class="sig-name descname"><span class="pre">PROVENANCE_FIELDS</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('source',</span> <span class="pre">'model',</span> <span class="pre">'request_id',</span> <span class="pre">'prompt',</span> <span class="pre">'generated_at',</span> <span class="pre">'triggered_by')</span></span><a class="headerlink" href="#nw.media_catalog.CatalogRow.PROVENANCE_FIELDS" title="Link to this definition">#</a></dt>
+<dd><p>it is
+the newest field in the host’s model (2026-09-19) and emitting it would make
+every row unreadable by an older host, whole catalog at a time. The cost is a
+download named after its id instead of a friendly name. Put it back once every
+host this writes for is reliably newer than that date.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The provenance keys a row emits. <code class="docutils literal notranslate"><span class="pre">filename</span></code> is deliberately ABSENT</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.media_catalog.CatalogRow.build">
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">artifact_id</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">generated_at</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration_s</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">note</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/media_catalog.html#CatalogRow.build"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.media_catalog.CatalogRow.build" title="Link to this definition">#</a></dt>
+<dd><p>One record, ready to serialize.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></span></p>
+</dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="n">row</span> <span class="o">=</span> <span class="n">CatalogRow</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="s2">"ab"</span> <span class="o">*</span> <span class="mi">32</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">"image"</span><span class="p">,</span>
+</span><span data-line="2"><span class="gp">... </span>    <span class="n">generated_at</span><span class="o">=</span><span class="s2">"2026-09-20T00:00:00Z"</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">800</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">600</span><span class="p">)</span>
+</span><span data-line="3"><span class="gp">&gt;&gt;&gt; </span><span class="n">row</span><span class="p">[</span><span class="s2">"id"</span><span class="p">]</span> <span class="o">==</span> <span class="n">row</span><span class="p">[</span><span class="s2">"content_hash"</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"ab"</span> <span class="o">*</span> <span class="mi">32</span>
+</span><span data-line="4"><span class="go">True</span>
+</span><span data-line="5"><span class="gp">&gt;&gt;&gt; </span><span class="n">row</span><span class="p">[</span><span class="s2">"url"</span><span class="p">]</span>
+</span><span data-line="6"><span class="go">'/api/artifacts/abababababababababababababababababababababababababababababababab/bytes'</span>
+</span><span data-line="7"><span class="gp">&gt;&gt;&gt; </span><span class="nb">sorted</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="o">==</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">CatalogRow</span><span class="o">.</span><span class="n">FIELDS</span><span class="p">)</span>
+</span><span data-line="8"><span class="go">True</span>
+</span></pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="nw.media_catalog.CorruptBlob">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.media_catalog.</span></span><span class="sig-name descname"><span class="pre">CorruptBlob</span></span><a class="reference internal" href="../_modules/nw/media_catalog.html#CorruptBlob"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.media_catalog.CorruptBlob" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">RuntimeError</span></code></p>
+<p>A blob already stored under a digest does not hold the bytes it names.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="nw.media_catalog.CrossDeviceCatalog">
+<span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.media_catalog.</span></span><span class="sig-name descname"><span class="pre">CrossDeviceCatalog</span></span><a class="reference internal" href="../_modules/nw/media_catalog.html#CrossDeviceCatalog"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.media_catalog.CrossDeviceCatalog" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">OSError</span></code></p>
+<p>The project’s blob store cannot hardlink the media (another filesystem).</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="nw.media_catalog.DELIVERY_CATALOG_SUBPATH">
+<span class="sig-prename descclassname"><span class="pre">nw.media_catalog.</span></span><span class="sig-name descname"><span class="pre">DELIVERY_CATALOG_SUBPATH</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('.reelee',</span> <span class="pre">'artifacts')</span></span><a class="headerlink" href="#nw.media_catalog.DELIVERY_CATALOG_SUBPATH" title="Link to this definition">#</a></dt>
+<dd><p>Where the host keeps a project’s artifact store, relative to the project root:
+lacing’s layout, the host’s directory name.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="nw.media_catalog.HostArtifactCatalog">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.media_catalog.</span></span><span class="sig-name descname"><span class="pre">HostArtifactCatalog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_root</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_cross_device_copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_backend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subpath</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('.reelee',</span> <span class="pre">'artifacts')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/media_catalog.html#HostArtifactCatalog"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.media_catalog.HostArtifactCatalog" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The artifact catalog of the project at <code class="docutils literal notranslate"><span class="pre">project_root</span></code>, in the host’s layout.</p>
+<p><code class="docutils literal notranslate"><span class="pre">allow_cross_device_copy</span></code> pays for a copy where a hardlink is impossible
+(refused by default). <code class="docutils literal notranslate"><span class="pre">check_backend=False</span></code> is for a caller that already
+called <a class="reference internal" href="#nw.media_catalog.assert_local_backend" title="nw.media_catalog.assert_local_backend"><code class="xref py py-func docutils literal notranslate"><span class="pre">assert_local_backend()</span></code></a> once for a whole batch. <code class="docutils literal notranslate"><span class="pre">subpath</span></code> is
+where the host keeps the store inside a project.</p>
+<p>A reader asks <a class="reference internal" href="#nw.media_catalog.HostArtifactCatalog.blob_path" title="nw.media_catalog.HostArtifactCatalog.blob_path"><code class="xref py py-meth docutils literal notranslate"><span class="pre">blob_path()</span></code></a> for an artifact’s bytes rather than joining
+onto <code class="xref py py-attr docutils literal notranslate"><span class="pre">blobs_dir</span></code> itself: the per-project <code class="docutils literal notranslate"><span class="pre">blobs/</span></code> directory is today’s
+store, not a promise (nw#95 designs a shared one).</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span><span class="o">,</span><span class="w"> </span><span class="nn">pathlib</span>
+</span><span data-line="2"><span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">d</span><span class="p">:</span>
+</span><span data-line="3"><span class="gp">... </span>    <span class="n">media</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="s2">"song.wav"</span><span class="p">);</span> <span class="n">_</span> <span class="o">=</span> <span class="n">media</span><span class="o">.</span><span class="n">write_bytes</span><span class="p">(</span><span class="sa">b</span><span class="s2">"RIFF"</span><span class="p">)</span>
+</span><span data-line="4"><span class="gp">... </span>    <span class="n">cat</span> <span class="o">=</span> <span class="n">HostArtifactCatalog</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+</span><span data-line="5"><span class="gp">... </span>    <span class="n">aid</span> <span class="o">=</span> <span class="n">cat</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">media</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">"audio"</span><span class="p">)</span>
+</span><span data-line="6"><span class="gp">... </span>    <span class="n">cat</span><span class="o">.</span><span class="n">has</span><span class="p">(</span><span class="n">aid</span><span class="p">),</span> <span class="n">aid</span> <span class="ow">in</span> <span class="n">cat</span><span class="o">.</span><span class="n">registered_ids</span><span class="p">(),</span> <span class="n">cat</span><span class="o">.</span><span class="n">blob_path</span><span class="p">(</span><span class="n">aid</span><span class="p">)</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">aid</span>
+</span><span data-line="7"><span class="go">(True, True, True)</span>
+</span></pre></div>
+</div>
+<dl class="field-list simple">
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.media_catalog.HostArtifactCatalog.blob_path">
+<span class="sig-name descname"><span class="pre">blob_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">artifact_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/media_catalog.html#HostArtifactCatalog.blob_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.media_catalog.HostArtifactCatalog.blob_path" title="Link to this definition">#</a></dt>
+<dd><p>Where <code class="docutils literal notranslate"><span class="pre">artifact_id</span></code>’s bytes are, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if they are not stored.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.media_catalog.HostArtifactCatalog.has">
+<span class="sig-name descname"><span class="pre">has</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">artifact_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/media_catalog.html#HostArtifactCatalog.has"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.media_catalog.HostArtifactCatalog.has" title="Link to this definition">#</a></dt>
+<dd><p>Whether <code class="docutils literal notranslate"><span class="pre">artifact_id</span></code> resolves: its row AND its blob are both there.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.media_catalog.HostArtifactCatalog.iter_rows">
+<span class="sig-name descname"><span class="pre">iter_rows</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/media_catalog.html#HostArtifactCatalog.iter_rows"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.media_catalog.HostArtifactCatalog.iter_rows" title="Link to this definition">#</a></dt>
+<dd><p>Every row, parsed, in id order. For tests and diagnostics.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterator</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.media_catalog.HostArtifactCatalog.register">
+<span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">artifact_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">generated_at</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration_s</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">note</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">report</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/media_catalog.html#HostArtifactCatalog.register"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.media_catalog.HostArtifactCatalog.register" title="Link to this definition">#</a></dt>
+<dd><p>Register <code class="docutils literal notranslate"><span class="pre">path</span></code> (a file inside the project); return its id, or <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">None</span></code> only for a <code class="docutils literal notranslate"><span class="pre">kind</span></code> the catalog cannot hold, which <code class="docutils literal notranslate"><span class="pre">report</span></code> (when
+given) records; the caller keeps the file without an id rather than
+inventing one. Pass <code class="docutils literal notranslate"><span class="pre">artifact_id</span></code> when the file is already hashed (a
+300 MB clip is not worth reading twice): its <em>shape</em> is checked, because the
+host validates the same shape and a row written under anything else is
+accepted here and refused there; its value is trusted. <code class="docutils literal notranslate"><span class="pre">generated_at</span></code> is
+when the artifact was first registered (default: now) and never moves once
+a row exists; re-registering an unchanged artifact does not rewrite its row.</p>
+<p>The file must resolve inside the project. A hardlink shares an inode, so
+linking a file that lives elsewhere (directly, or through a symlink) would
+let a rewrite out there change the bytes under a digest that names them.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.media_catalog.HostArtifactCatalog.registered_ids">
+<span class="sig-name descname"><span class="pre">registered_ids</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/media_catalog.html#HostArtifactCatalog.registered_ids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.media_catalog.HostArtifactCatalog.registered_ids" title="Link to this definition">#</a></dt>
+<dd><p>Every artifact id this catalog currently has a row for.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">frozenset</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.media_catalog.assert_local_backend">
+<span class="sig-prename descclassname"><span class="pre">nw.media_catalog.</span></span><span class="sig-name descname"><span class="pre">assert_local_backend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">remedy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'skip</span> <span class="pre">registration</span> <span class="pre">deliberately'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/media_catalog.html#assert_local_backend"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.media_catalog.assert_local_backend" title="Link to this definition">#</a></dt>
+<dd><p>Refuse to register into a filesystem the host will not read.</p>
+<p>Everything else here fails loudly — a missing blob raises, an unlinkable
+destination raises, an unholdable kind is reported. Writing a correct
+<code class="docutils literal notranslate"><span class="pre">catalog/</span></code> and <code class="docutils literal notranslate"><span class="pre">blobs/</span></code> next to a project whose host resolves artifacts out
+of an object store would instead report complete success and leave every id
+404ing. A caller that wants the graph without the catalog skips registration
+explicitly; it does not get it by accident. <code class="docutils literal notranslate"><span class="pre">remedy</span></code> lets a caller name its
+own way of doing that in the message (an importer’s opt-out flag, say).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="n">assert_local_backend</span><span class="p">({})</span>
+</span><span data-line="2"><span class="gp">&gt;&gt;&gt; </span><span class="n">assert_local_backend</span><span class="p">({</span><span class="s2">"REELEE_ARTIFACT_BACKEND"</span><span class="p">:</span> <span class="s2">"fs"</span><span class="p">})</span>
+</span><span data-line="3"><span class="gp">&gt;&gt;&gt; </span><span class="n">assert_local_backend</span><span class="p">({</span><span class="s2">"REELEE_ARTIFACT_BACKEND"</span><span class="p">:</span> <span class="s2">"local"</span><span class="p">})</span>  <span class="c1"># host reads fs</span>
+</span><span data-line="4"><span class="gp">&gt;&gt;&gt; </span><span class="n">assert_local_backend</span><span class="p">({</span><span class="s2">"REELEE_ARTIFACT_BACKEND"</span><span class="p">:</span> <span class="s2">"aws"</span><span class="p">})</span>
+</span><span data-line="5"><span class="gt">Traceback (most recent call last):</span>
+</span><span data-line="6"><span class="w">    </span><span class="o">...</span>
+</span><span data-line="7"><span class="gr">nw.media_catalog.CatalogBackendMismatch</span>: <span class="n">...</span>
+</span></pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.media_catalog.catalog_row">
+<span class="sig-prename descclassname"><span class="pre">nw.media_catalog.</span></span><span class="sig-name descname"><span class="pre">catalog_row</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">artifact_id</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">generated_at</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration_s</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">note</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nw.media_catalog.catalog_row" title="Link to this definition">#</a></dt>
+<dd><p>The function spelling of <a class="reference internal" href="#nw.media_catalog.CatalogRow.build" title="nw.media_catalog.CatalogRow.build"><code class="xref py py-meth docutils literal notranslate"><span class="pre">CatalogRow.build()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="nw.media_catalog.hash_file">
+<span class="sig-prename descclassname"><span class="pre">nw.media_catalog.</span></span><span class="sig-name descname"><span class="pre">hash_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1048576</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/media_catalog.html#hash_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.media_catalog.hash_file" title="Link to this definition">#</a></dt>
+<dd><p>SHA-256 of a file’s bytes, read in chunks — the catalog id of that file.</p>
+<p>The same digest lacing computes for an <code class="docutils literal notranslate"><span class="pre">asset_id</span></code> (pinned by a test), kept
+here so the writer can be reasoned about without the graph layer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span></p>
+</dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span><span class="o">,</span><span class="w"> </span><span class="nn">pathlib</span>
+</span><span data-line="2"><span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">d</span><span class="p">:</span>
+</span><span data-line="3"><span class="gp">... </span>    <span class="n">p</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="s2">"x"</span><span class="p">);</span> <span class="n">_</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">write_bytes</span><span class="p">(</span><span class="sa">b</span><span class="s2">"abc"</span><span class="p">)</span>
+</span><span data-line="4"><span class="gp">... </span>    <span class="n">hash_file</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+</span><span data-line="5"><span class="go">'ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad'</span>
+</span></pre></div>
+</div>
+</dd></dl>
+
+</section>
+
+        </article><button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
+    <a href="nw.jobs.html">
+      <i class="i-lucide chevron-left"></i>
+      <div class="page-info">
+        <span>Previous</span><div class="title">nw.jobs</div></div>
+    </a>
+  </div><div class="navigation-next">
+    <a href="nw.migrate.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">nw.migrate</div>
+      </div>
+      <i class="i-lucide chevron-right"></i>
+    </a>
+  </div></div></div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright">
+  <p>
+    Made with
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
+      <div class="sy-foot-socials">
+  <a href="https://github.com/thorwhalen/nw" aria-label="GitHub">
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
+  </a></div>
+    </div>
+  </div>
+</footer>
+      <script src="../_static/documentation_options.js?v=152b4b09"></script>
+      <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=fd10adb8"></script>
+      <script src="../_static/shibuya.js?v=50760d75"></script></body>
+</html>
