@@ -133,7 +133,7 @@ The asset_id used as the project’s graph anchor.
 For projects with a song registered in project.json, this is the SHA-256
 of the song bytes. Otherwise a stable fallback derived from the title.
 
-Mirrors [`nw.storyboard.project_asset_id()`](nw.storyboard.md#nw.storyboard.project_asset_id) so the project graph and
+Mirrors `nw.storyboard.project_asset_id()` so the project graph and
 the storyboard share an asset_id.
 
 * **Return type:**

@@ -1,4 +1,4 @@
-> built 2026-10-01 08:41 UTC from 95a7af2 (main) · nw 0.0.63. Details: build_info.json
+> built 2026-10-01 08:46 UTC from 067c197 (main) · nw 0.0.64. Details: build_info.json
 
 # index.html.md
 
@@ -405,6 +405,8 @@ rather than two.
 `nw.storyboard` bridges [`artful`](https://pypi.org/project/artful) storyboards
 into an `nw.Project` — one panel per shot, seed-image generation planned as a
 `falaw.Plan`, then executed:
+
+`artful` is optional, so install the extra first: `pip install 'nw[storyboard]'`. Without it the rest of nw works unchanged, and a project someone else storyboarded is still readable; only the storyboard functions raise, with an `ImportError` naming the extra.
 
 ```python
 sb, intervals = nw.storyboard_from_shots(proj)
@@ -2914,6 +2916,17 @@ Public surface:
   ([`current_quote()`](_autosummary/nw.html.md#nw.current_quote), [`PlanQuote`](_autosummary/nw.html.md#nw.PlanQuote)). Any stored cost figure is an
   as-of-then fact; reporting one as current under-quotes the run once falaw’s
   rate tables move, so read it back through here (nw#74).
+- `nw.jobs` — durable async render jobs over `au`. Loaded on first touch.
+- `nw.storyboard` — the storyboard bridge to `artful` (`open_storyboard`,
+  `save_storyboard`, `storyboard_from_shots`, …). Needs the
+  `nw[storyboard]` extra; loaded on first touch.
+
+nw is a substrate, not an aggregator (nw#96): `import nw` loads the contract
+— lacing’s graph, falaw’s plans, and the surfaces written in them — and a
+feature with a dependency of its own loads when it is first used. The names
+are still `nw.jobs`, `nw.open_storyboard` and `from nw import …`; only
+the moment of import moved. See
+`misc/docs/What nw is — a substrate, not an aggregator.md`.
 
 On rendering provenance and partial re-render (why choices, not just content,
 are recorded as linked artifacts), see
@@ -2921,82 +2934,75 @@ are recorded as linked artifacts), see
 
 ### Functions
 
-| [`parse_ref`](_autosummary/nw.html.md#nw.parse_ref)(text)                                    | The ordinal in a spoken reference, or `None` if it isn't one.                                                                 |
-|-----------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------|
-| [`format_ref`](_autosummary/nw.html.md#nw.format_ref)(n)                                      | The one spelling we print.                                                                                                    |
-| [`genre_catalog`](_autosummary/nw.html.md#nw.genre_catalog)()                                    | Every registered genre as a JSON-able catalog entry (sorted by slug).                                                         |
-| [`describe_genre`](_autosummary/nw.html.md#nw.describe_genre)(slug)                               | One genre's catalog entry (raises `KeyError` if the slug is unknown).                                                         |
-| [`recommend_genre`](_autosummary/nw.html.md#nw.recommend_genre)(kind)                              | The slug of the genre whose `intake_kinds` contains `kind` (first in slug order), or `None` when `kind` is falsy / unmatched. |
-| [`resolve_defaults`](_autosummary/nw.html.md#nw.resolve_defaults)(genre[, template])                | Resolve a genre (+ optional template) to the params for a new project.                                                        |
-| [`register_genre_resolver`](_autosummary/nw.html.md#nw.register_genre_resolver)(slug, resolver)            | Register a resolver for a genre slug; returns it for inline use.                                                              |
-| [`resolve_genre`](_autosummary/nw.html.md#nw.resolve_genre)(genre[, template])                   | Resolve a genre (+ optional template) to the standard creation envelope.                                                      |
-| [`register_genre_initializer`](_autosummary/nw.html.md#nw.register_genre_initializer)(slug, initializer)      | Register an initializer for a genre slug; returns it for inline use.                                                          |
-| [`initialize_genre`](_autosummary/nw.html.md#nw.initialize_genre)(genre, project, \*[, ...])        | Seed a freshly-created `project` for `genre` (+ optional `template`).                                                         |
-| [`register_genre_project_factory`](_autosummary/nw.html.md#nw.register_genre_project_factory)(slug, factory)      | Register a project factory for a genre slug; returns it for inline use.                                                       |
-| [`has_genre_project_factory`](_autosummary/nw.html.md#nw.has_genre_project_factory)(slug)                    | True iff a plugged-in project factory is registered for `slug`.                                                               |
-| [`can_place_genre_project`](_autosummary/nw.html.md#nw.can_place_genre_project)(slug)                      | True iff `slug`'s registered factory accepts host **placement**.                                                              |
-| [`create_genre_project`](_autosummary/nw.html.md#nw.create_genre_project)(genre, caller, ...[, ...])    | Create + seed a new project for a PLUGGED-IN `genre` in `caller`'s space.                                                     |
-| [`register_genre_ops`](_autosummary/nw.html.md#nw.register_genre_ops)(genre_slug, ops)                | Register the operations a genre offers on its projects; returns them as a tuple.                                              |
-| [`genre_ops`](_autosummary/nw.html.md#nw.genre_ops)(genre_slug)                              | The ops registered for `genre_slug`, in registration order (`()` if none).                                                    |
-| [`genre_op`](_autosummary/nw.html.md#nw.genre_op)(genre_slug, name)                         | The op `name` of `genre_slug`; [`UnknownGenreOpError`](_autosummary/nw.html.md#nw.UnknownGenreOpError) naming the known.         |
-| [`genre_ops_catalogue`](_autosummary/nw.html.md#nw.genre_ops_catalogue)(genre_slug)                    | The pure-JSON catalogue of `genre_slug`'s ops (`[]` for a genre with none).                                                   |
-| [`annotations_at_tier`](_autosummary/nw.html.md#nw.annotations_at_tier)(project_root, tier)            | Return every annotation at the given tier across all of the project's stores.                                                 |
-| [`apply_to_projects`](_autosummary/nw.html.md#nw.apply_to_projects)(roots, fn, \*[, parallel])       | Apply `fn` to each project at `roots` and collect the results.                                                                |
-| [`clone_project`](_autosummary/nw.html.md#nw.clone_project)(src_root, dst_root, \*[, ...])       | Clone an nw project to a new root.                                                                                            |
-| [`backfill_traces`](_autosummary/nw.html.md#nw.backfill_traces)(project_root, \*[, execute])       | Bless a pre-trace project so the verifying-trace rule can read it (nw#58).                                                    |
-| [`collect_orphan_traces`](_autosummary/nw.html.md#nw.collect_orphan_traces)(project_root)                | Drop verifying traces whose target annotation no longer exists.                                                               |
-| [`compose_report`](_autosummary/nw.html.md#nw.compose_report)(project, \*[, ...])                 | Per-shot reports + final-compose inspection in one call.                                                                      |
-| [`derived_from`](_autosummary/nw.html.md#nw.derived_from)(project_root, annotation_id)          | Return the annotations this one was directly derived from.                                                                    |
-| [`descendants_of`](_autosummary/nw.html.md#nw.descendants_of)(project_root, ancestor_id)          | Return every annotation whose provenance chain leads back to `ancestor_id`.                                                   |
-| [`execute_render`](_autosummary/nw.html.md#nw.execute_render)(prep, plan, \*[, on_event, ...])    | Execute a Plan, materialize the result as `shot_dir/output.mp4`.                                                              |
-| [`execute_render_panel_images`](_autosummary/nw.html.md#nw.execute_render_panel_images)(project, ...[, ...])   | Execute `plan`, download each artifact, attach a PanelImage.                                                                  |
-| [`get_genre`](_autosummary/nw.html.md#nw.get_genre)(slug)                                    | Look up a genre by slug; raises `KeyError` with the known slugs.                                                              |
-| [`get_strategy`](_autosummary/nw.html.md#nw.get_strategy)(name)                                 | Look up a strategy by name; raises if unknown.                                                                                |
-| [`get_transform`](_autosummary/nw.html.md#nw.get_transform)(name)                                | Look up a Transform instance by name; raises with the known names.                                                            |
-| [`is_migrated`](_autosummary/nw.html.md#nw.is_migrated)(project_root)                          | True iff this project has been migrated to the lacing graph.                                                                  |
-| [`iter_all_annotations`](_autosummary/nw.html.md#nw.iter_all_annotations)(project_root)                 | Walk every annotation in every store under a project (any backend).                                                           |
-| [`list_genres`](_autosummary/nw.html.md#nw.list_genres)()                                      | Return all registered genre slugs (sorted).                                                                                   |
-| [`list_strategies`](_autosummary/nw.html.md#nw.list_strategies)()                                  | Return all registered strategy names (sorted).                                                                                |
-| [`list_transforms`](_autosummary/nw.html.md#nw.list_transforms)()                                  | Return all registered Transform names (sorted).                                                                               |
-| [`migrate_to_graph`](_autosummary/nw.html.md#nw.migrate_to_graph)(project_root, \*[, backup, ...])  | Migrate `project_root`'s project.json into the lacing graph.                                                                  |
-| [`open_project_stores`](_autosummary/nw.html.md#nw.open_project_stores)(project_root)                  | Yield an iterator of open stores, one per scope, honouring the backend.                                                       |
-| [`open_storyboard`](_autosummary/nw.html.md#nw.open_storyboard)(project)                           | Load the project's storyboard.                                                                                                |
-| [`plan_render_panel_images`](_autosummary/nw.html.md#nw.plan_render_panel_images)(storyboard, \*[, ...])    | Build a Plan that generates a seed image for each panel that lacks one.                                                       |
-| [`plan_render_shot`](_autosummary/nw.html.md#nw.plan_render_shot)(prep, \*[, quality, ...])         | Build a `falaw.Plan` for rendering a prepared shot.                                                                           |
-| [`cost_records`](_autosummary/nw.html.md#nw.cost_records)(plan)                                 | The JSON-able per-call cost rows nw persists in a decision payload.                                                           |
-| [`current_quote`](_autosummary/nw.html.md#nw.current_quote)(plan, \*[, pricers])                 | Re-quote `plan` at today's rates and report the result honestly.                                                              |
-| [`plan_from_cost_records`](_autosummary/nw.html.md#nw.plan_from_cost_records)(records)                    | Rebuild a re-quotable `falaw.Plan` from [`cost_records()`](_autosummary/nw.html.md#nw.cost_records) rows.                 |
-| [`quote_from_cost_records`](_autosummary/nw.html.md#nw.quote_from_cost_records)(records, \*[, pricers])    | Today's price for the calls stored in a decision payload.                                                                     |
-| [`quote_render_decision`](_autosummary/nw.html.md#nw.quote_render_decision)(payload, \*[, pricers])      | Today's price for a `render_shot` decision payload.                                                                           |
-| [`unquotable`](_autosummary/nw.html.md#nw.unquotable)(reason)                                 | A quote for something that could not be re-quoted at all.                                                                     |
-| [`prepare_shot`](_autosummary/nw.html.md#nw.prepare_shot)(project, shot_id, \*[, upload])       | Resolve all local inputs for rendering a shot.                                                                                |
-| [`project_asset_id`](_autosummary/nw.html.md#nw.project_asset_id)(project)                          | The asset_id used for storyboard panel references.                                                                            |
-| [`register_genre`](_autosummary/nw.html.md#nw.register_genre)(genre)                              | Register a [`Genre`](_autosummary/nw.html.md#nw.Genre) under its `slug`; returns it for inline use.                |
-| [`register_strategy`](_autosummary/nw.html.md#nw.register_strategy)(name, impl)                      | Register a strategy.                                                                                                          |
-| [`register_transform`](_autosummary/nw.html.md#nw.register_transform)(name[, impl, tags])             | Register a Transform under `name`.                                                                                            |
-| [`transform_catalog`](_autosummary/nw.html.md#nw.transform_catalog)()                                | Every registered Transform as a JSON-able capability entry (sorted by name).                                                  |
-| [`stamp_transform_identity`](_autosummary/nw.html.md#nw.stamp_transform_identity)(plan, transform)          | Fold `transform.impl_version` into every call's cache identity.                                                               |
-| [`work_item_instance_id`](_autosummary/nw.html.md#nw.work_item_instance_id)(transform_name, ...)         | The instance id of one fan-out unit: UUIDv5 of `(transform_name, mapping_key)`.                                               |
-| [`fan_out_plan`](_autosummary/nw.html.md#nw.fan_out_plan)(transform, project, items, \*, ...)   | Plan one Transform across `items` — each unit an ordinary `plan()` call.                                                      |
-| [`fan_out_execute`](_autosummary/nw.html.md#nw.fan_out_execute)(transform, project, fan_out, \*)   | Execute a planned fan-out, one ordinary `transform.execute` per unit.                                                         |
-| [`as_secrets`](_autosummary/nw.html.md#nw.as_secrets)(secrets)                                | Coerce a caller-supplied mapping to [`Secrets`](_autosummary/nw.html.md#nw.Secrets); empty → `None`.                 |
-| [`redact`](_autosummary/nw.html.md#nw.redact)(text, secrets)                              | `text` with every secret value replaced by `<redacted:name>`.                                                                 |
-| [`redact_exception`](_autosummary/nw.html.md#nw.redact_exception)(error, secrets)                   | The exception to re-raise so that nothing it *renders* carries a secret.                                                      |
-| [`using_secrets`](_autosummary/nw.html.md#nw.using_secrets)(secrets)                             | Bind the secrets nw itself knows how to use, for the duration of a block.                                                     |
-| [`save_storyboard`](_autosummary/nw.html.md#nw.save_storyboard)(project, storyboard, \*, ...)      | Persist a Storyboard into the project's SqliteStore.                                                                          |
-| [`shot_report`](_autosummary/nw.html.md#nw.shot_report)(project, shot_id, \*[, ...])           | Inspect `shots/<shot_id>/output.mp4` and return a typed report.                                                               |
-| [`menu`](_autosummary/nw.html.md#nw.menu)(\*[, cost])                                   | Every registered check, name-ordered — what a user chooses from.                                                              |
-| [`plan_checks`](_autosummary/nw.html.md#nw.plan_checks)(selection)                             | Order the selection into waves that may each run concurrently.                                                                |
-| [`register_check`](_autosummary/nw.html.md#nw.register_check)([check])                            | Add a check to the menu, as a call or as a decorator.                                                                         |
-| [`suggest`](_autosummary/nw.html.md#nw.suggest)(request, \*[, include_paid])               | Checks whose `example_requests` look like what the user just asked for.                                                       |
-| [`validate`](_autosummary/nw.html.md#nw.validate)(target, \*[, checks, max_workers, ...])   | Run `checks` against `target` and report.                                                                                     |
-| [`all_stale`](_autosummary/nw.html.md#nw.all_stale)(project_root)                            | Every annotation that is currently stale, regardless of cause.                                                                |
-| [`stale_after`](_autosummary/nw.html.md#nw.stale_after)(project_root, changed_id)              | Return every annotation that `changed_id` actually invalidated.                                                               |
-| [`stale_verdicts`](_autosummary/nw.html.md#nw.stale_verdicts)(project_root, changed_id)           | Classify every annotation downstream of `changed_id`.                                                                         |
-| [`stale_verdicts_all`](_autosummary/nw.html.md#nw.stale_verdicts_all)(project_root)                   | Classify every derived annotation in the project — the snapshot form.                                                         |
-| [`storyboard_db_path`](_autosummary/nw.html.md#nw.storyboard_db_path)(project)                        | Return the path to the project's storyboard SQLite store.                                                                     |
-| [`storyboard_from_shots`](_autosummary/nw.html.md#nw.storyboard_from_shots)(project, \*[, title, style]) | Build a one-panel-per-shot draft Storyboard from a project's shots.                                                           |
-| [`summarize_all`](_autosummary/nw.html.md#nw.summarize_all)(roots)                               | Convenience: return a [`ProjectSummary`](_autosummary/nw.html.md#nw.ProjectSummary) for each project.                       |
+| [`parse_ref`](_autosummary/nw.html.md#nw.parse_ref)(text)                                   | The ordinal in a spoken reference, or `None` if it isn't one.                                                                 |
+|----------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------|
+| [`format_ref`](_autosummary/nw.html.md#nw.format_ref)(n)                                     | The one spelling we print.                                                                                                    |
+| [`genre_catalog`](_autosummary/nw.html.md#nw.genre_catalog)()                                   | Every registered genre as a JSON-able catalog entry (sorted by slug).                                                         |
+| [`describe_genre`](_autosummary/nw.html.md#nw.describe_genre)(slug)                              | One genre's catalog entry (raises `KeyError` if the slug is unknown).                                                         |
+| [`recommend_genre`](_autosummary/nw.html.md#nw.recommend_genre)(kind)                             | The slug of the genre whose `intake_kinds` contains `kind` (first in slug order), or `None` when `kind` is falsy / unmatched. |
+| [`resolve_defaults`](_autosummary/nw.html.md#nw.resolve_defaults)(genre[, template])               | Resolve a genre (+ optional template) to the params for a new project.                                                        |
+| [`register_genre_resolver`](_autosummary/nw.html.md#nw.register_genre_resolver)(slug, resolver)           | Register a resolver for a genre slug; returns it for inline use.                                                              |
+| [`resolve_genre`](_autosummary/nw.html.md#nw.resolve_genre)(genre[, template])                  | Resolve a genre (+ optional template) to the standard creation envelope.                                                      |
+| [`register_genre_initializer`](_autosummary/nw.html.md#nw.register_genre_initializer)(slug, initializer)     | Register an initializer for a genre slug; returns it for inline use.                                                          |
+| [`initialize_genre`](_autosummary/nw.html.md#nw.initialize_genre)(genre, project, \*[, ...])       | Seed a freshly-created `project` for `genre` (+ optional `template`).                                                         |
+| [`register_genre_project_factory`](_autosummary/nw.html.md#nw.register_genre_project_factory)(slug, factory)     | Register a project factory for a genre slug; returns it for inline use.                                                       |
+| [`has_genre_project_factory`](_autosummary/nw.html.md#nw.has_genre_project_factory)(slug)                   | True iff a plugged-in project factory is registered for `slug`.                                                               |
+| [`can_place_genre_project`](_autosummary/nw.html.md#nw.can_place_genre_project)(slug)                     | True iff `slug`'s registered factory accepts host **placement**.                                                              |
+| [`create_genre_project`](_autosummary/nw.html.md#nw.create_genre_project)(genre, caller, ...[, ...])   | Create + seed a new project for a PLUGGED-IN `genre` in `caller`'s space.                                                     |
+| [`register_genre_ops`](_autosummary/nw.html.md#nw.register_genre_ops)(genre_slug, ops)               | Register the operations a genre offers on its projects; returns them as a tuple.                                              |
+| [`genre_ops`](_autosummary/nw.html.md#nw.genre_ops)(genre_slug)                             | The ops registered for `genre_slug`, in registration order (`()` if none).                                                    |
+| [`genre_op`](_autosummary/nw.html.md#nw.genre_op)(genre_slug, name)                        | The op `name` of `genre_slug`; [`UnknownGenreOpError`](_autosummary/nw.html.md#nw.UnknownGenreOpError) naming the known.         |
+| [`genre_ops_catalogue`](_autosummary/nw.html.md#nw.genre_ops_catalogue)(genre_slug)                   | The pure-JSON catalogue of `genre_slug`'s ops (`[]` for a genre with none).                                                   |
+| [`annotations_at_tier`](_autosummary/nw.html.md#nw.annotations_at_tier)(project_root, tier)           | Return every annotation at the given tier across all of the project's stores.                                                 |
+| [`apply_to_projects`](_autosummary/nw.html.md#nw.apply_to_projects)(roots, fn, \*[, parallel])      | Apply `fn` to each project at `roots` and collect the results.                                                                |
+| [`clone_project`](_autosummary/nw.html.md#nw.clone_project)(src_root, dst_root, \*[, ...])      | Clone an nw project to a new root.                                                                                            |
+| [`backfill_traces`](_autosummary/nw.html.md#nw.backfill_traces)(project_root, \*[, execute])      | Bless a pre-trace project so the verifying-trace rule can read it (nw#58).                                                    |
+| [`collect_orphan_traces`](_autosummary/nw.html.md#nw.collect_orphan_traces)(project_root)               | Drop verifying traces whose target annotation no longer exists.                                                               |
+| [`compose_report`](_autosummary/nw.html.md#nw.compose_report)(project, \*[, ...])                | Per-shot reports + final-compose inspection in one call.                                                                      |
+| [`derived_from`](_autosummary/nw.html.md#nw.derived_from)(project_root, annotation_id)         | Return the annotations this one was directly derived from.                                                                    |
+| [`descendants_of`](_autosummary/nw.html.md#nw.descendants_of)(project_root, ancestor_id)         | Return every annotation whose provenance chain leads back to `ancestor_id`.                                                   |
+| [`execute_render`](_autosummary/nw.html.md#nw.execute_render)(prep, plan, \*[, on_event, ...])   | Execute a Plan, materialize the result as `shot_dir/output.mp4`.                                                              |
+| [`get_genre`](_autosummary/nw.html.md#nw.get_genre)(slug)                                   | Look up a genre by slug; raises `KeyError` with the known slugs.                                                              |
+| [`get_strategy`](_autosummary/nw.html.md#nw.get_strategy)(name)                                | Look up a strategy by name; raises if unknown.                                                                                |
+| [`get_transform`](_autosummary/nw.html.md#nw.get_transform)(name)                               | Look up a Transform instance by name; raises with the known names.                                                            |
+| [`is_migrated`](_autosummary/nw.html.md#nw.is_migrated)(project_root)                         | True iff this project has been migrated to the lacing graph.                                                                  |
+| [`iter_all_annotations`](_autosummary/nw.html.md#nw.iter_all_annotations)(project_root)                | Walk every annotation in every store under a project (any backend).                                                           |
+| [`list_genres`](_autosummary/nw.html.md#nw.list_genres)()                                     | Return all registered genre slugs (sorted).                                                                                   |
+| [`list_strategies`](_autosummary/nw.html.md#nw.list_strategies)()                                 | Return all registered strategy names (sorted).                                                                                |
+| [`list_transforms`](_autosummary/nw.html.md#nw.list_transforms)()                                 | Return all registered Transform names (sorted).                                                                               |
+| [`migrate_to_graph`](_autosummary/nw.html.md#nw.migrate_to_graph)(project_root, \*[, backup, ...]) | Migrate `project_root`'s project.json into the lacing graph.                                                                  |
+| [`open_project_stores`](_autosummary/nw.html.md#nw.open_project_stores)(project_root)                 | Yield an iterator of open stores, one per scope, honouring the backend.                                                       |
+| [`plan_render_shot`](_autosummary/nw.html.md#nw.plan_render_shot)(prep, \*[, quality, ...])        | Build a `falaw.Plan` for rendering a prepared shot.                                                                           |
+| [`cost_records`](_autosummary/nw.html.md#nw.cost_records)(plan)                                | The JSON-able per-call cost rows nw persists in a decision payload.                                                           |
+| [`current_quote`](_autosummary/nw.html.md#nw.current_quote)(plan, \*[, pricers])                | Re-quote `plan` at today's rates and report the result honestly.                                                              |
+| [`plan_from_cost_records`](_autosummary/nw.html.md#nw.plan_from_cost_records)(records)                   | Rebuild a re-quotable `falaw.Plan` from [`cost_records()`](_autosummary/nw.html.md#nw.cost_records) rows.                 |
+| [`quote_from_cost_records`](_autosummary/nw.html.md#nw.quote_from_cost_records)(records, \*[, pricers])   | Today's price for the calls stored in a decision payload.                                                                     |
+| [`quote_render_decision`](_autosummary/nw.html.md#nw.quote_render_decision)(payload, \*[, pricers])     | Today's price for a `render_shot` decision payload.                                                                           |
+| [`unquotable`](_autosummary/nw.html.md#nw.unquotable)(reason)                                | A quote for something that could not be re-quoted at all.                                                                     |
+| [`prepare_shot`](_autosummary/nw.html.md#nw.prepare_shot)(project, shot_id, \*[, upload])      | Resolve all local inputs for rendering a shot.                                                                                |
+| [`register_genre`](_autosummary/nw.html.md#nw.register_genre)(genre)                             | Register a [`Genre`](_autosummary/nw.html.md#nw.Genre) under its `slug`; returns it for inline use.                |
+| [`register_strategy`](_autosummary/nw.html.md#nw.register_strategy)(name, impl)                     | Register a strategy.                                                                                                          |
+| [`register_transform`](_autosummary/nw.html.md#nw.register_transform)(name[, impl, tags])            | Register a Transform under `name`.                                                                                            |
+| [`transform_catalog`](_autosummary/nw.html.md#nw.transform_catalog)()                               | Every registered Transform as a JSON-able capability entry (sorted by name).                                                  |
+| [`stamp_transform_identity`](_autosummary/nw.html.md#nw.stamp_transform_identity)(plan, transform)         | Fold `transform.impl_version` into every call's cache identity.                                                               |
+| [`work_item_instance_id`](_autosummary/nw.html.md#nw.work_item_instance_id)(transform_name, ...)        | The instance id of one fan-out unit: UUIDv5 of `(transform_name, mapping_key)`.                                               |
+| [`fan_out_plan`](_autosummary/nw.html.md#nw.fan_out_plan)(transform, project, items, \*, ...)  | Plan one Transform across `items` — each unit an ordinary `plan()` call.                                                      |
+| [`fan_out_execute`](_autosummary/nw.html.md#nw.fan_out_execute)(transform, project, fan_out, \*)  | Execute a planned fan-out, one ordinary `transform.execute` per unit.                                                         |
+| [`as_secrets`](_autosummary/nw.html.md#nw.as_secrets)(secrets)                               | Coerce a caller-supplied mapping to [`Secrets`](_autosummary/nw.html.md#nw.Secrets); empty → `None`.                 |
+| [`redact`](_autosummary/nw.html.md#nw.redact)(text, secrets)                             | `text` with every secret value replaced by `<redacted:name>`.                                                                 |
+| [`redact_exception`](_autosummary/nw.html.md#nw.redact_exception)(error, secrets)                  | The exception to re-raise so that nothing it *renders* carries a secret.                                                      |
+| [`using_secrets`](_autosummary/nw.html.md#nw.using_secrets)(secrets)                            | Bind the secrets nw itself knows how to use, for the duration of a block.                                                     |
+| [`shot_report`](_autosummary/nw.html.md#nw.shot_report)(project, shot_id, \*[, ...])          | Inspect `shots/<shot_id>/output.mp4` and return a typed report.                                                               |
+| [`menu`](_autosummary/nw.html.md#nw.menu)(\*[, cost])                                  | Every registered check, name-ordered — what a user chooses from.                                                              |
+| [`plan_checks`](_autosummary/nw.html.md#nw.plan_checks)(selection)                            | Order the selection into waves that may each run concurrently.                                                                |
+| [`register_check`](_autosummary/nw.html.md#nw.register_check)([check])                           | Add a check to the menu, as a call or as a decorator.                                                                         |
+| [`suggest`](_autosummary/nw.html.md#nw.suggest)(request, \*[, include_paid])              | Checks whose `example_requests` look like what the user just asked for.                                                       |
+| [`validate`](_autosummary/nw.html.md#nw.validate)(target, \*[, checks, max_workers, ...])  | Run `checks` against `target` and report.                                                                                     |
+| [`all_stale`](_autosummary/nw.html.md#nw.all_stale)(project_root)                           | Every annotation that is currently stale, regardless of cause.                                                                |
+| [`stale_after`](_autosummary/nw.html.md#nw.stale_after)(project_root, changed_id)             | Return every annotation that `changed_id` actually invalidated.                                                               |
+| [`stale_verdicts`](_autosummary/nw.html.md#nw.stale_verdicts)(project_root, changed_id)          | Classify every annotation downstream of `changed_id`.                                                                         |
+| [`stale_verdicts_all`](_autosummary/nw.html.md#nw.stale_verdicts_all)(project_root)                  | Classify every derived annotation in the project — the snapshot form.                                                         |
+| [`summarize_all`](_autosummary/nw.html.md#nw.summarize_all)(roots)                              | Convenience: return a [`ProjectSummary`](_autosummary/nw.html.md#nw.ProjectSummary) for each project.                       |
 
 ### Classes
 
@@ -5130,31 +5136,6 @@ cost without any uploads, and need to be replaced with real URLs (call
 * **Returns:**
   Path to `shot_dir/output.mp4` (trimmed/padded to `prep.duration_s`).
 
-### nw.execute_render_panel_images(project, storyboard, plan, panel_ids, , on_event=None, use_cache=True, on_failure='halt')
-
-Execute `plan`, download each artifact, attach a PanelImage.
-
-Returns a NEW `Storyboard` (input `storyboard` is unchanged) with
-the materialized seed images attached as `role="seed"` PanelImages.
-
-Files land under `<project_root>/storyboard/<panel_id>.png`. The
-PanelImage record stores both the project-relative path and the
-artifact_id (content hash via lacing.Artifact), so downstream consumers
-can prefer one or the other.
-
-`on_failure` is nw#25’s policy, and this is the function the issue names
-as **nw’s real fan-out shape** — one `generate_image` per panel. Under
-`"isolate"` a panel whose call failed is simply left without a seed image;
-every panel that rendered keeps its own, instead of one content-filtered
-panel discarding the whole batch. `"halt"` is the default and unchanged.
-
-Panels are matched to outcomes **by index into the plan**, never by position
-in a shortened artifact list — the latter attaches panel 48’s image to panel
-47 the moment one call drops out.
-
-* **Return type:**
-  `Storyboard`
-
 ### nw.fan_out_execute(transform, project, fan_out, , use_cache=True, force=False, on_failure='isolate', secrets=None)
 
 Execute a planned fan-out, one ordinary `transform.execute` per unit.
@@ -5429,13 +5410,6 @@ annotations before advancing.
 * **Return type:**
   `Iterator`[`Iterator`[`IntervalAnnotationStore`]]
 
-### nw.open_storyboard(project)
-
-Load the project’s storyboard. Returns an empty one if not present.
-
-* **Return type:**
-  `Storyboard`
-
 ### nw.parse_ref(text)
 
 The ordinal in a spoken reference, or `None` if it isn’t one.
@@ -5504,29 +5478,6 @@ frozen number.
 * **Return type:**
   `Plan`
 
-### nw.plan_render_panel_images(storyboard, , quality='balanced', image_size='landscape_16_9', model_id=None, only_missing=True)
-
-Build a Plan that generates a seed image for each panel that lacks one.
-
-* **Parameters:**
-  * **storyboard** (`Storyboard`) – The `artful.Storyboard`.
-  * **quality** (`str`) – image-gen quality tier.
-  * **image_size** (`str`) – “landscape_16_9” by default; respects the storyboard’s
-    aspect when it can be mapped to a falaw size, otherwise uses
-    this default.
-  * **model_id** (`Optional`[`str`]) – Override the image-gen model. Defaults to whatever
-    `falaw.pick_model(category="image", quality_tier=quality)`
-    picks (e.g. flux/dev at balanced).
-  * **only_missing** (`bool`) – When True (default), skip panels that already have a
-    `role="seed"` image. When False, plan one call per panel
-    regardless.
-* **Return type:**
-  `tuple`[`Plan`, `list`[`str`]]
-* **Returns:**
-  `(plan, panel_ids)` — the Plan, and the panel ids in the same
-  order as the Plan’s calls (so [`execute_render_panel_images()`](_autosummary/nw.html.md#nw.execute_render_panel_images)
-  knows which panel each artifact belongs to).
-
 ### nw.plan_render_shot(prep, , quality='balanced', model_overrides=None)
 
 Build a `falaw.Plan` for rendering a prepared shot.
@@ -5571,18 +5522,6 @@ produce different URLs. The local file paths are byte-stable.
 * **Returns:**
   A [`ShotPreparation`](_autosummary/nw.html.md#nw.ShotPreparation) with local paths (and URLs if `upload`)
   ready to plan.
-
-### nw.project_asset_id(project)
-
-The asset_id used for storyboard panel references.
-
-Uses the SHA-256 of the project’s song bytes when available, so the
-asset_id matches whatever a downstream consumer would compute via
-`lacing.hash_file()`. Falls back to a stable derived id when the
-song isn’t available yet.
-
-* **Return type:**
-  `str`
 
 ### nw.quote_from_cost_records(records, \*, pricers={'llm_rates': Pricer(quote=<function \_quote_from_llm_rates>, table='falaw/data/llm_rates.json', version=<functools._lru_cache_wrapper object>), 'model_catalogue': Pricer(quote = <function \_quote_from_catalogue>, table='falaw/data/models.json', version=<functools._lru_cache_wrapper object>)})
 
@@ -5906,17 +5845,6 @@ interprets params, it doesn’t get to invent template slugs).
 >>> del genres["_rg_demo"]
 ```
 
-### nw.save_storyboard(project, storyboard, , panel_intervals, was_attributed_to='user:nw', was_generated_by='agent:nw.storyboard')
-
-Persist a Storyboard into the project’s SqliteStore.
-
-Wipes the existing storyboard panels (under the default tier) so the
-save is idempotent — re-running with edited panels replaces them rather
-than accumulating duplicates.
-
-* **Return type:**
-  `None`
-
 ### nw.shot_report(project, shot_id, , freeze_sample_fps=4.0, duration_tolerance_s=0.1)
 
 Inspect `shots/<shot_id>/output.mp4` and return a typed report.
@@ -6031,28 +5959,6 @@ value.
 
 * **Return type:**
   `Plan`
-
-### nw.storyboard_db_path(project)
-
-Return the path to the project’s storyboard SQLite store.
-
-* **Return type:**
-  `Path`
-
-### nw.storyboard_from_shots(project, , title=None, style=None)
-
-Build a one-panel-per-shot draft Storyboard from a project’s shots.
-
-Each panel’s caption defaults to the shot’s description, framing and
-camera carry over, and the panel’s `shot_id` points back at the shot.
-No images are attached yet — use [`plan_render_panel_images()`](_autosummary/nw.html.md#nw.plan_render_panel_images) to
-generate them.
-
-Returns `(storyboard, panel_intervals)` so the caller can feed both
-into [`save_storyboard()`](_autosummary/nw.html.md#nw.save_storyboard).
-
-* **Return type:**
-  `tuple`[`Storyboard`, `dict`[`str`, `TimeInterval`]]
 
 ### nw.suggest(request, , include_paid=False)
 
@@ -6212,7 +6118,6 @@ True
 | [`schema`](_autosummary/nw.schema.html.md#module-nw.schema)                           | Schema for an nw project — narrative-workflow SSOT data shapes.                                                                 |
 | [`script_segmentation`](_autosummary/nw.script_segmentation.html.md#module-nw.script_segmentation) | `nw.script_segmentation` — narrow LLM-backed helper that converts a free-form script into a list of storyboard-panel proposals. |
 | [`secrets`](_autosummary/nw.secrets.html.md#module-nw.secrets)                         | Execution secrets — credentials that reach `execute` and nothing else.                                                          |
-| [`storyboard`](_autosummary/nw.storyboard.html.md#module-nw.storyboard)                   | Storyboard ↔ Project bridge.                                                                                                    |
 | [`transforms`](_autosummary/nw.transforms.html.md#nw.transforms)                          | A typed dict-backed plugin registry.                                                                                            |
 | [`validation`](_autosummary/nw.validation.html.md#module-nw.validation)                   | Pluggable validation of finished work — the seam, not the checks.                                                               |
 | [`workflow`](_autosummary/nw.workflow.html.md#module-nw.workflow)                       | Workflow: prepare → plan → execute, for a **video shot**.                                                                       |
@@ -6988,7 +6893,7 @@ The asset_id used as the project’s graph anchor.
 For projects with a song registered in project.json, this is the SHA-256
 of the song bytes. Otherwise a stable fallback derived from the title.
 
-Mirrors [`nw.storyboard.project_asset_id()`](_autosummary/nw.storyboard.html.md#nw.storyboard.project_asset_id) so the project graph and
+Mirrors `nw.storyboard.project_asset_id()` so the project graph and
 the storyboard share an asset_id.
 
 * **Return type:**
@@ -8318,148 +8223,6 @@ so the `with` shape stays uniform.
   `AbstractContextManager`[`Any`]
 
 
-# _autosummary/nw.storyboard.html.md
-
-# nw.storyboard
-
-Storyboard ↔ Project bridge.
-
-A storyboard lives at `<project_root>/storyboard.annot.sqlite` (a lacing
-`SqliteStore`). Each panel is an `annot://schema/storyboard-panel/v1`
-`lacing.Annotation`; the storyboard’s own asset_id is the project’s
-song hash, so panels share an interval space with the project’s shots and
-alignment.
-
-Public surface:
-
-- `open_storyboard(project)()` — load the project’s storyboard, or return
-  an empty one if none exists yet.
-- `save_storyboard(project, sb, *, panel_intervals)()` — persist panels
-  into the project’s lacing store.
-- `storyboard_from_shots(project)()` — convenience: build a Storyboard
-  with one panel per shot, intervals matching the shots.
-- `plan_render_panel_images(sb, *, quality, model_overrides)()` — a
-  Plan with one `generate_image` call per panel that doesn’t yet have a
-  `role="seed"` image. Pure data; cost-aware.
-- `execute_render_panel_images(project, sb, plan)()` — execute the Plan,
-  download images into `storyboard/` under the project, return an updated
-  Storyboard with the new `role="seed"` PanelImages attached.
-
-The artful package is the storyboard *data layer*; nw.storyboard wires it
-into a folder-backed nw project.
-
-### Functions
-
-| [`execute_render_panel_images`](_autosummary/nw.storyboard.html.md#nw.storyboard.execute_render_panel_images)(project, ...[, ...])   | Execute `plan`, download each artifact, attach a PanelImage.            |
-|-----------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------|
-| [`open_storyboard`](_autosummary/nw.storyboard.html.md#nw.storyboard.open_storyboard)(project)                           | Load the project's storyboard.                                          |
-| [`plan_render_panel_images`](_autosummary/nw.storyboard.html.md#nw.storyboard.plan_render_panel_images)(storyboard, \*[, ...])    | Build a Plan that generates a seed image for each panel that lacks one. |
-| [`project_asset_id`](_autosummary/nw.storyboard.html.md#nw.storyboard.project_asset_id)(project)                          | The asset_id used for storyboard panel references.                      |
-| [`save_storyboard`](_autosummary/nw.storyboard.html.md#nw.storyboard.save_storyboard)(project, storyboard, \*, ...)      | Persist a Storyboard into the project's SqliteStore.                    |
-| [`storyboard_db_path`](_autosummary/nw.storyboard.html.md#nw.storyboard.storyboard_db_path)(project)                        | Return the path to the project's storyboard SQLite store.               |
-| [`storyboard_from_shots`](_autosummary/nw.storyboard.html.md#nw.storyboard.storyboard_from_shots)(project, \*[, title, style]) | Build a one-panel-per-shot draft Storyboard from a project's shots.     |
-
-### nw.storyboard.execute_render_panel_images(project, storyboard, plan, panel_ids, , on_event=None, use_cache=True, on_failure='halt')
-
-Execute `plan`, download each artifact, attach a PanelImage.
-
-Returns a NEW `Storyboard` (input `storyboard` is unchanged) with
-the materialized seed images attached as `role="seed"` PanelImages.
-
-Files land under `<project_root>/storyboard/<panel_id>.png`. The
-PanelImage record stores both the project-relative path and the
-artifact_id (content hash via lacing.Artifact), so downstream consumers
-can prefer one or the other.
-
-`on_failure` is nw#25’s policy, and this is the function the issue names
-as **nw’s real fan-out shape** — one `generate_image` per panel. Under
-`"isolate"` a panel whose call failed is simply left without a seed image;
-every panel that rendered keeps its own, instead of one content-filtered
-panel discarding the whole batch. `"halt"` is the default and unchanged.
-
-Panels are matched to outcomes **by index into the plan**, never by position
-in a shortened artifact list — the latter attaches panel 48’s image to panel
-47 the moment one call drops out.
-
-* **Return type:**
-  `Storyboard`
-
-### nw.storyboard.open_storyboard(project)
-
-Load the project’s storyboard. Returns an empty one if not present.
-
-* **Return type:**
-  `Storyboard`
-
-### nw.storyboard.plan_render_panel_images(storyboard, , quality='balanced', image_size='landscape_16_9', model_id=None, only_missing=True)
-
-Build a Plan that generates a seed image for each panel that lacks one.
-
-* **Parameters:**
-  * **storyboard** (`Storyboard`) – The `artful.Storyboard`.
-  * **quality** (`str`) – image-gen quality tier.
-  * **image_size** (`str`) – “landscape_16_9” by default; respects the storyboard’s
-    aspect when it can be mapped to a falaw size, otherwise uses
-    this default.
-  * **model_id** (`Optional`[`str`]) – Override the image-gen model. Defaults to whatever
-    `falaw.pick_model(category="image", quality_tier=quality)`
-    picks (e.g. flux/dev at balanced).
-  * **only_missing** (`bool`) – When True (default), skip panels that already have a
-    `role="seed"` image. When False, plan one call per panel
-    regardless.
-* **Return type:**
-  `tuple`[`Plan`, `list`[`str`]]
-* **Returns:**
-  `(plan, panel_ids)` — the Plan, and the panel ids in the same
-  order as the Plan’s calls (so [`execute_render_panel_images()`](_autosummary/nw.storyboard.html.md#nw.storyboard.execute_render_panel_images)
-  knows which panel each artifact belongs to).
-
-### nw.storyboard.project_asset_id(project)
-
-The asset_id used for storyboard panel references.
-
-Uses the SHA-256 of the project’s song bytes when available, so the
-asset_id matches whatever a downstream consumer would compute via
-`lacing.hash_file()`. Falls back to a stable derived id when the
-song isn’t available yet.
-
-* **Return type:**
-  `str`
-
-### nw.storyboard.save_storyboard(project, storyboard, , panel_intervals, was_attributed_to='user:nw', was_generated_by='agent:nw.storyboard')
-
-Persist a Storyboard into the project’s SqliteStore.
-
-Wipes the existing storyboard panels (under the default tier) so the
-save is idempotent — re-running with edited panels replaces them rather
-than accumulating duplicates.
-
-* **Return type:**
-  `None`
-
-### nw.storyboard.storyboard_db_path(project)
-
-Return the path to the project’s storyboard SQLite store.
-
-* **Return type:**
-  `Path`
-
-### nw.storyboard.storyboard_from_shots(project, , title=None, style=None)
-
-Build a one-panel-per-shot draft Storyboard from a project’s shots.
-
-Each panel’s caption defaults to the shot’s description, framing and
-camera carry over, and the panel’s `shot_id` points back at the shot.
-No images are attached yet — use [`plan_render_panel_images()`](_autosummary/nw.storyboard.html.md#nw.storyboard.plan_render_panel_images) to
-generate them.
-
-Returns `(storyboard, panel_intervals)` so the caller can feed both
-into [`save_storyboard()`](_autosummary/nw.storyboard.html.md#nw.storyboard.save_storyboard).
-
-* **Return type:**
-  `tuple`[`Storyboard`, `dict`[`str`, `TimeInterval`]]
-
-
 # _autosummary/nw.transforms.html.md
 
 # nw.transforms
@@ -9035,7 +8798,7 @@ produce different URLs. The local file paths are byte-stable.
 
 # About this build
 
-This documentation was built on **2026-10-01 08:41 UTC** from commit <a href="https://github.com/thorwhalen/nw/commit/95a7af28c8e53e9428f9432e2f1729fd49baadc0"><code>95a7af2</code></a> on branch <code>main</code>, for **nw 0.0.63** (from <code>pyproject.toml</code>).
+This documentation was built on **2026-10-01 08:46 UTC** from commit <a href="https://github.com/thorwhalen/nw/commit/067c1973064e54c1be6f94ea4b8f25e805e62b49"><code>067c197</code></a> on branch <code>main</code>, for **nw 0.0.64** (from <code>pyproject.toml</code>).
 
 #### NOTE
 Nothing suggests a mismatch: the tree was clean at the commit above, and the documented version is the one on PyPI.
@@ -9044,9 +8807,9 @@ Nothing suggests a mismatch: the tree was clean at the commit above, and the doc
 
 |                     |                                                                                                                                                      |
 |---------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Commit              | <a href="https://github.com/thorwhalen/nw/commit/95a7af28c8e53e9428f9432e2f1729fd49baadc0"><code>95a7af28c8e53e9428f9432e2f1729fd49baadc0</code></a> |
+| Commit              | <a href="https://github.com/thorwhalen/nw/commit/067c1973064e54c1be6f94ea4b8f25e805e62b49"><code>067c1973064e54c1be6f94ea4b8f25e805e62b49</code></a> |
 | Branch              | <code>main</code>                                                                                                                                    |
-| Tags at this commit | <code>0.0.63</code>                                                                                                                                  |
+| Tags at this commit | <code>0.0.64</code>                                                                                                                                  |
 | Working tree        | clean                                                                                                                                                |
 | Remote              | <code>https://github.com/thorwhalen/nw</code>                                                                                                        |
 
@@ -9055,9 +8818,9 @@ Nothing suggests a mismatch: the tree was clean at the commit above, and the doc
 |              |                                                                                            |
 |--------------|--------------------------------------------------------------------------------------------|
 | Repository   | <code>thorwhalen/nw</code>                                                                 |
-| Run          | <a href="https://github.com/thorwhalen/nw/actions/runs/36837639336">36837639336</a>        |
+| Run          | <a href="https://github.com/thorwhalen/nw/actions/runs/36838052255">36838052255</a>        |
 | Ref          | <code>refs/heads/main</code>                                                               |
-| Event commit | <code>4f063d87336ef7067ac9ad3244e523ed5c98b880</code> (in the history of the built commit) |
+| Event commit | <code>1873f6315b56bea2be88939b09721a3e3ec4b3eb</code> (in the history of the built commit) |
 
 ## Tools
 
@@ -9082,13 +8845,13 @@ Nothing suggests a mismatch: the tree was clean at the commit above, and the doc
 
 ## Package on PyPI
 
-Latest release: <a href="https://pypi.org/project/nw/0.0.63/">0.0.63</a>, the same as the documented version.
+Latest release: <a href="https://pypi.org/project/nw/0.0.64/">0.0.64</a>, the same as the documented version.
 
 ## Reproduce
 
 ```bash
 git clone https://github.com/thorwhalen/nw && cd nw
-git checkout 95a7af28c8e53e9428f9432e2f1729fd49baadc0
+git checkout 067c1973064e54c1be6f94ea4b8f25e805e62b49
 pip install "epythet==0.2.12"
 epythet quickstart . --ignore tests/ scrap/ examples/
 ```

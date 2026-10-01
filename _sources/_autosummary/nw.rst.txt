@@ -35,7 +35,6 @@
       derived_from
       descendants_of
       execute_render
-      execute_render_panel_images
       get_genre
       get_strategy
       get_transform
@@ -46,8 +45,6 @@
       list_transforms
       migrate_to_graph
       open_project_stores
-      open_storyboard
-      plan_render_panel_images
       plan_render_shot
       cost_records
       current_quote
@@ -56,7 +53,6 @@
       quote_render_decision
       unquotable
       prepare_shot
-      project_asset_id
       register_genre
       register_strategy
       register_transform
@@ -69,7 +65,6 @@
       redact
       redact_exception
       using_secrets
-      save_storyboard
       shot_report
       menu
       plan_checks
@@ -80,8 +75,6 @@
       stale_after
       stale_verdicts
       stale_verdicts_all
-      storyboard_db_path
-      storyboard_from_shots
       summarize_all
    
    .. rubric:: Classes

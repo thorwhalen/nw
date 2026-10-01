@@ -402,6 +402,8 @@ rather than two.
 into an `nw.Project` — one panel per shot, seed-image generation planned as a
 `falaw.Plan`, then executed:
 
+`artful` is optional, so install the extra first: `pip install 'nw[storyboard]'`. Without it the rest of nw works unchanged, and a project someone else storyboarded is still readable; only the storyboard functions raise, with an `ImportError` naming the extra.
+
 ```python
 sb, intervals = nw.storyboard_from_shots(proj)
 plan, panel_ids = nw.plan_render_panel_images(sb, quality="balanced")

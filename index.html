@@ -100,7 +100,6 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="_autosummary/nw.schema.html">nw.schema</a></li>
 <li class="toctree-l3"><a class="reference internal" href="_autosummary/nw.script_segmentation.html">nw.script_segmentation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="_autosummary/nw.secrets.html">nw.secrets</a></li>
-<li class="toctree-l3"><a class="reference internal" href="_autosummary/nw.storyboard.html">nw.storyboard</a></li>
 <li class="toctree-l3"><a class="reference internal" href="_autosummary/nw.transforms.html">nw.transforms</a></li>
 <li class="toctree-l3"><a class="reference internal" href="_autosummary/nw.validation.html">nw.validation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="_autosummary/nw.workflow.html">nw.workflow</a></li>
@@ -588,6 +587,7 @@ rather than two.</p>
 <p><code class="docutils literal notranslate"><span class="pre">nw.storyboard</span></code> bridges <a class="reference external" href="https://pypi.org/project/artful"><code class="docutils literal notranslate"><span class="pre">artful</span></code></a> storyboards
 into an <code class="docutils literal notranslate"><span class="pre">nw.Project</span></code> — one panel per shot, seed-image generation planned as a
 <code class="docutils literal notranslate"><span class="pre">falaw.Plan</span></code>, then executed:</p>
+<p><code class="docutils literal notranslate"><span class="pre">artful</span></code> is optional, so install the extra first: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">'nw[storyboard]'</span></code>. Without it the rest of nw works unchanged, and a project someone else storyboarded is still readable; only the storyboard functions raise, with an <code class="docutils literal notranslate"><span class="pre">ImportError</span></code> naming the extra.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="n">sb</span><span class="p">,</span> <span class="n">intervals</span> <span class="o">=</span> <span class="n">nw</span><span class="o">.</span><span class="n">storyboard_from_shots</span><span class="p">(</span><span class="n">proj</span><span class="p">)</span>
 </span><span data-line="2"><span class="n">plan</span><span class="p">,</span> <span class="n">panel_ids</span> <span class="o">=</span> <span class="n">nw</span><span class="o">.</span><span class="n">plan_render_panel_images</span><span class="p">(</span><span class="n">sb</span><span class="p">,</span> <span class="n">quality</span><span class="o">=</span><span class="s2">"balanced"</span><span class="p">)</span>
 </span><span data-line="3"><span class="n">sb</span> <span class="o">=</span> <span class="n">nw</span><span class="o">.</span><span class="n">execute_render_panel_images</span><span class="p">(</span><span class="n">proj</span><span class="p">,</span> <span class="n">sb</span><span class="p">,</span> <span class="n">plan</span><span class="p">,</span> <span class="n">panel_ids</span><span class="p">)</span>
@@ -861,7 +861,7 @@ succeed (<a class="reference external" href="https://github.com/thorwhalen/nw/is
 </section>
 </section>
 
-<p class="epythet-provenance" style="font-size:.8em;opacity:.65;margin-top:2.5em;text-align:right">built 2026-10-01 08:41 UTC from <a href="https://github.com/thorwhalen/nw/commit/95a7af28c8e53e9428f9432e2f1729fd49baadc0">95a7af2</a> (main) · nw 0.0.63 · <a href="about-this-build.html">about this build</a></p>
+<p class="epythet-provenance" style="font-size:.8em;opacity:.65;margin-top:2.5em;text-align:right">built 2026-10-01 08:46 UTC from <a href="https://github.com/thorwhalen/nw/commit/067c1973064e54c1be6f94ea4b8f25e805e62b49">067c197</a> (main) · nw 0.0.64 · <a href="about-this-build.html">about this build</a></p>
         </article><button class="back-to-top" type="button">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
     <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
@@ -896,7 +896,7 @@ succeed (<a class="reference external" href="https://github.com/thorwhalen/nw/is
     </div>
   </div>
 </footer>
-      <script src="_static/documentation_options.js?v=7ada5fdd"></script>
+      <script src="_static/documentation_options.js?v=b153cf10"></script>
       <script src="_static/doctools.js?v=fd6eb6e6"></script>
       <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="_static/clipboard.min.js?v=a7894cd8"></script>
