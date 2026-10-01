@@ -293,6 +293,8 @@ exactly as reelee's `panel_to_clip.fal.default` does. That is the seam working
 as designed, and it is the evidence for the "keep the engine render-kind-agnostic"
 stance below.
 
+nw's own suite now carries that evidence too, so it no longer rests on prose about another repository: `tests/test_app_render_kinds.py` declares a turn → narration → episode chain entirely in the test (its own body schemas, its own `turn_to_narration` Transform registered through `register_transform`) and pins that a re-narration with identical bytes invalidates nothing, a re-narration with new bytes invalidates the episode and not the sibling turn, and an identical request is served from the falaw cache (nw#9, tasks 2 and 3).
+
 The node model braidio actually ships (names are **braidio's**, which is what
 this table is for — an earlier draft named a `render-config/v1` and a
 `clip-extraction/v1` that were never built):
@@ -322,6 +324,8 @@ field on its body and does its own compare-and-skip — via a local
 nw#9 ("a small shared `cache_key` helper for non-fal Transforms") still open,
 and it is now a concrete cross-package smell rather than a nice-to-have. Tracked
 separately; not resolved by this document.
+
+*Update:* resolved by nw#54. `nw.transforms.cache_key` / `cached_output` are the shared helper, and braidio adopted them (its `mixing._cache` import is gone).
 
 **Design stance (unchanged, now with evidence):** keep the render-provenance
 engine **render-kind-agnostic** in `nw.transforms`, and let each app (a music
