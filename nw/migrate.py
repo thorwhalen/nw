@@ -178,26 +178,14 @@ def project_asset_id(project_root: Path) -> str:
     of the song bytes. Otherwise a stable fallback derived from the title.
 
     Mirrors :func:`nw.storyboard.project_asset_id` so the project graph and
-    the storyboard share an asset_id.
+    the storyboard share an asset_id. The rule itself is
+    :func:`nw.storage.asset_id_of`, shared with non-folder storages.
     """
+    from .storage import asset_id_of
+
     project_json = Path(project_root) / "project.json"
-    title = ""
-    song_path: Optional[Path] = None
-    if project_json.exists():
-        spec = json.loads(project_json.read_text())
-        title = spec.get("title") or ""
-        song = spec.get("song")
-        if isinstance(song, dict) and song.get("audio_path"):
-            sp = Path(song["audio_path"])
-            song_path = sp if sp.is_absolute() else Path(project_root) / sp
-    if song_path is not None and song_path.exists():
-        from lacing import hash_file
-
-        return hash_file(song_path)
-    import hashlib
-
-    seed = f"nw:project:{Path(project_root).resolve()}:{title}".encode()
-    return hashlib.sha256(seed).hexdigest()
+    spec = json.loads(project_json.read_text()) if project_json.exists() else None
+    return asset_id_of(project_root, spec)
 
 
 # ---------------------------------------------------------------------------

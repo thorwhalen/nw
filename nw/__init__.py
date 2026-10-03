@@ -85,6 +85,13 @@ from .pricing import (
     unquotable,
 )
 from .project import CharacterImage, Project
+from .storage import (
+    FolderStorage,
+    MappingStorage,
+    ProjectStorage,
+    as_project_storage,
+    register_project_storage,
+)
 from .graph import (
     ProjectGraph,
     StoredUnproducedOutput,
@@ -266,6 +273,11 @@ __all__ = [
     "genre_ops_catalogue",
     "Project",
     "ProjectGraph",
+    "ProjectStorage",
+    "FolderStorage",
+    "MappingStorage",
+    "as_project_storage",
+    "register_project_storage",
     "StoredUnproducedOutput",
     "UNPRODUCED_OUTPUT_BODY_SCHEMA_URI",
     "UnproducedOutputBodyV1",

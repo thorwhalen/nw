@@ -114,6 +114,7 @@ from .bodies.verifying_trace import (
     VerifyingTraceBodyV1,
 )
 from .graph import iter_all_annotations
+from .storage import ProjectLike
 
 
 # --- verdict reasons ---------------------------------------------------------
@@ -163,7 +164,7 @@ class FreshnessVerdict:
 
 
 def stale_verdicts(
-    project_root: str | Path, changed_id: UUID
+    project_root: "ProjectLike", changed_id: UUID
 ) -> list[FreshnessVerdict]:
     """Classify every annotation downstream of ``changed_id``.
 
@@ -183,7 +184,7 @@ def stale_verdicts(
     return _verdicts_for(annotations, scope=reachable, recursion_scope=reachable)
 
 
-def stale_verdicts_all(project_root: str | Path) -> list[FreshnessVerdict]:
+def stale_verdicts_all(project_root: "ProjectLike") -> list[FreshnessVerdict]:
     """Classify every derived annotation in the project — the snapshot form.
 
     The question a freshness *indicator* asks: "what is stale in this
@@ -215,7 +216,7 @@ def stale_verdicts_all(project_root: str | Path) -> list[FreshnessVerdict]:
     return _verdicts_for(annotations, scope=derived, recursion_scope=derived)
 
 
-def all_stale(project_root: str | Path) -> list[Annotation]:
+def all_stale(project_root: "ProjectLike") -> list[Annotation]:
     """Every annotation that is currently stale, regardless of cause.
 
     :func:`stale_verdicts_all` with the fresh verdicts dropped — the
@@ -342,7 +343,7 @@ def _verdicts_for(
     return [resolve(ann.id) for ann in ordered]
 
 
-def stale_after(project_root: str | Path, changed_id: UUID) -> list[Annotation]:
+def stale_after(project_root: "ProjectLike", changed_id: UUID) -> list[Annotation]:
     """Return every annotation that ``changed_id`` actually invalidated.
 
     The freshness operation. ``changed_id``'s descendants are walked and each

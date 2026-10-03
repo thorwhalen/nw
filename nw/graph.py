@@ -64,23 +64,14 @@ from .bodies import (
     UnproducedOutputBodyV1,
     build_verifying_trace,
 )
-from .graph_backend import (
-    SCOPE_ALIGNMENT,
-    SCOPE_GRAPH,
-    SCOPE_STORYBOARD,
-    iter_scope_stores,
-)
 from .migrate import (
-    _PROJECT_GRAPH_DB_NAME,
     _TIER_CHARACTER_REF,
     _TIER_DECISION,
     _TIER_ENVIRONMENT_REF,
     _TIER_SECTION,
     _TIER_SHOT,
-    open_project_graph,
-    open_project_graph_readonly,
-    project_asset_id,
 )
+from .storage import FolderStorage, ProjectLike, as_project_storage
 
 
 _logger = logging.getLogger("nw.graph")
@@ -143,15 +134,16 @@ class ProjectGraph:
     file-locked).
     """
 
-    def __init__(self, project_root: str | Path) -> None:
-        self.project_root = Path(project_root).resolve()
-        self.asset_id = project_asset_id(self.project_root)
+    def __init__(self, project: ProjectLike) -> None:
+        self.storage = as_project_storage(project)
+        self.project_root = self.storage.root
+        self.asset_id = self.storage.asset_id
 
     # -- lifecycle -----------------------------------------------------------
 
     @contextmanager
     def _open(self) -> Iterator[IntervalAnnotationStore]:
-        store = open_project_graph(self.project_root)
+        store = self.storage.open_graph()
         try:
             yield store
         finally:
@@ -190,7 +182,7 @@ class ProjectGraph:
         from lacing.store.sqlite import SchemaMismatchError
 
         try:
-            store = open_project_graph_readonly(self.project_root)
+            store = self.storage.open_graph_readonly()
         except FileNotFoundError:
             yield None
             return
@@ -682,7 +674,7 @@ class ProjectGraph:
         """
         wanted = set(ids)
         found: list[Annotation] = []
-        for ann in iter_all_annotations(self.project_root):
+        for ann in iter_all_annotations(self.storage):
             if ann.id in wanted:
                 found.append(ann)
                 wanted.discard(ann.id)
@@ -697,18 +689,8 @@ class ProjectGraph:
 
 
 def _scope_paths(project_root: str | Path) -> dict[str, Path]:
-    """The ``{scope_name: legacy_sqlite_path}`` map for a project's stores.
-
-    The legacy per-scope SQLite layout (graph + storyboard + alignment). The
-    backend seam (:mod:`nw.graph_backend`) uses the scope names to address the
-    same stores in Postgres mode.
-    """
-    p = Path(project_root)
-    return {
-        SCOPE_GRAPH: p / _PROJECT_GRAPH_DB_NAME,
-        SCOPE_STORYBOARD: p / "storyboard.annot.sqlite",
-        SCOPE_ALIGNMENT: p / "lyrics" / "alignment.annot",
-    }
+    """The ``{scope_name: legacy_sqlite_path}`` map of a folder-stored project."""
+    return FolderStorage(project_root).scope_paths()
 
 
 def all_project_stores(project_root: str | Path) -> list[Path]:
@@ -724,7 +706,7 @@ def all_project_stores(project_root: str | Path) -> list[Path]:
 
 @contextmanager
 def open_project_stores(
-    project_root: str | Path,
+    project_root: ProjectLike,
 ) -> Iterator[Iterator[IntervalAnnotationStore]]:
     """Yield an iterator of open stores, one per scope, honouring the backend.
 
@@ -735,20 +717,23 @@ def open_project_stores(
 
     Each store is closed before the next opens, so consume each store's
     annotations before advancing.
+
+    ``project_root`` may also be a :class:`nw.storage.ProjectStorage` (or a
+    path one of its registered resolvers recognises), in which case its own
+    scopes are walked.
     """
-    asset_id = project_asset_id(Path(project_root))
-    with iter_scope_stores(_scope_paths(project_root), asset_id=asset_id) as stores:
+    with as_project_storage(project_root).open_stores() as stores:
         yield stores
 
 
-def iter_all_annotations(project_root: str | Path) -> Iterator[Annotation]:
+def iter_all_annotations(project_root: ProjectLike) -> Iterator[Annotation]:
     """Walk every annotation in every store under a project (any backend)."""
     with open_project_stores(project_root) as stores:
         for store in stores:
             yield from store.all()
 
 
-def descendants_of(project_root: str | Path, ancestor_id: UUID) -> list[Annotation]:
+def descendants_of(project_root: ProjectLike, ancestor_id: UUID) -> list[Annotation]:
     """Return every annotation whose provenance chain leads back to ``ancestor_id``.
 
     Walks ``provenance.was_derived_from`` *transitively* across all of the
@@ -787,7 +772,7 @@ def descendants_of(project_root: str | Path, ancestor_id: UUID) -> list[Annotati
     )
 
 
-def derived_from(project_root: str | Path, annotation_id: UUID) -> list[Annotation]:
+def derived_from(project_root: ProjectLike, annotation_id: UUID) -> list[Annotation]:
     """Return the annotations this one was directly derived from.
 
     Walks ``provenance.was_derived_from`` *one hop only* across all of the
@@ -801,7 +786,7 @@ def derived_from(project_root: str | Path, annotation_id: UUID) -> list[Annotati
     return [by_id[i] for i in target.provenance.was_derived_from if i in by_id]
 
 
-def annotations_at_tier(project_root: str | Path, tier: str) -> list[Annotation]:
+def annotations_at_tier(project_root: ProjectLike, tier: str) -> list[Annotation]:
     """Return every annotation at the given tier across all of the project's stores.
 
     Useful for reelee views that lens on a single annotation kind:
@@ -871,7 +856,7 @@ def remove_annotations_with_traces(
     return removed
 
 
-def collect_orphan_traces(project_root: str | Path) -> list[UUID]:
+def collect_orphan_traces(project_root: ProjectLike) -> list[UUID]:
     """Drop verifying traces whose target annotation no longer exists.
 
     The backstop for deletion paths that do not (or cannot) go through
@@ -904,7 +889,7 @@ def collect_orphan_traces(project_root: str | Path) -> list[UUID]:
     return removed
 
 
-def backfill_traces(project_root: str | Path, *, execute: bool = False) -> dict:
+def backfill_traces(project_root: ProjectLike, *, execute: bool = False) -> dict:
     """Bless a pre-trace project so the verifying-trace rule can read it (nw#58).
 
     On a project whose annotations predate nw#24's trace-writing, the
@@ -975,7 +960,7 @@ def backfill_traces(project_root: str | Path, *, execute: bool = False) -> dict:
     graph = ProjectGraph(project_root)
     annotations: list[Annotation] = []
     stores_found = 0
-    with open_project_stores(graph.project_root) as stores:
+    with open_project_stores(graph.storage) as stores:
         for store in stores:
             stores_found += 1
             annotations.extend(store.all())
