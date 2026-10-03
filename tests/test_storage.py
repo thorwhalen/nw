@@ -75,7 +75,9 @@ def test_mapping_storage_project_writes_nothing_of_nws_into_its_folder(tmp_path)
     storage = _mapping_storage(tmp_path)
 
     proj = nw.Project.init(tmp_path, title="t", storage=storage)
-    proj.graph.upsert_section(SectionBodyV1(section_id="a", label="A"), interval=_iv(0, 1))
+    proj.graph.upsert_section(
+        SectionBodyV1(section_id="a", label="A"), interval=_iv(0, 1)
+    )
 
     assert sorted(p.name for p in tmp_path.iterdir()) == ["an.toml"]
     assert storage.docs["project.json"]["title"] == "t"
@@ -85,11 +87,17 @@ def test_mapping_storage_project_writes_nothing_of_nws_into_its_folder(tmp_path)
 def test_freshness_follows_the_storage(tmp_path):
     storage = _mapping_storage(tmp_path)
     proj = nw.Project.init(tmp_path, storage=storage)
-    sec = proj.graph.upsert_section(SectionBodyV1(section_id="a", label="A"), interval=_iv(0, 1))
+    sec = proj.graph.upsert_section(
+        SectionBodyV1(section_id="a", label="A"), interval=_iv(0, 1)
+    )
     child = _derived(proj, sec)
 
-    assert [v.annotation.id for v in nw.stale_verdicts(storage, sec) if v.is_stale] == []
-    proj.graph.upsert_section(SectionBodyV1(section_id="a", label="edited"), interval=_iv(0, 1))
+    assert [
+        v.annotation.id for v in nw.stale_verdicts(storage, sec) if v.is_stale
+    ] == []
+    proj.graph.upsert_section(
+        SectionBodyV1(section_id="a", label="edited"), interval=_iv(0, 1)
+    )
     assert [a.id for a in nw.stale_after(storage, sec)] == [child.id]
     assert [a.id for a in nw.stale_after(proj, sec)] == [child.id]
 
@@ -131,7 +139,9 @@ def test_readonly_open_of_an_empty_mapping_storage_is_no_graph_yet(tmp_path):
 
 
 def test_init_folders_are_the_storages(tmp_path):
-    nw.Project.init(tmp_path / "a", storage=_mapping_storage(tmp_path / "a", init_folders=("out",)))
+    nw.Project.init(
+        tmp_path / "a", storage=_mapping_storage(tmp_path / "a", init_folders=("out",))
+    )
     assert sorted(p.name for p in (tmp_path / "a").iterdir()) == ["out"]
 
 

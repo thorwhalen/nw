@@ -28,7 +28,6 @@ from pathlib import Path
 from typing import Any, Iterable, Optional
 
 
-
 def _now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
 
@@ -879,7 +878,6 @@ class Project:
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
-
 
 
 # -- entity refs: the one mapping between the spec types and the graph bodies --
