@@ -94,7 +94,7 @@ it. Layering: `lacing → nw → falaw.Plan → backends` — nothing above
 
 ## Dependencies: a substrate, not an aggregator (nw#96)
 
-Required = what the contract is written in (`lacing`, `falaw`, `pydantic`, `dol`, `xdol`) plus `au`, which backs `nw.jobs` and installs nothing. A dependency only one feature needs is an **extra** named after the feature (`artful` → `nw[storyboard]`), and the feature's module raises an `ImportError` naming it. `import nw` loads the contract only: a feature module whose import is not free goes in `_LAZY_SUBMODULES` / `_LAZY_ATTRS` in `nw/__init__.py`, never in an eager `from . import`. Pinned by `tests/test_import_footprint.py` (the required set is exact). Record: `misc/docs/What nw is — a substrate, not an aggregator.md`.
+Required = what the contract is written in (`lacing`, `falaw`, `pydantic`, `dol`, `xdol`) plus `au`, which backs `nw.jobs` and installs nothing. A dependency only one feature needs is an **extra** named after the feature (`artful` → `nw[storyboard]`); executing plans against fal.ai is `nw[fal]` (→ `falaw[fal]`, which carries `fal-client`), while building and pricing them needs nothing extra, and `import nw` loads neither `fal_client` nor `httpx`, and the feature's module raises an `ImportError` naming it. `import nw` loads the contract only: a feature module whose import is not free goes in `_LAZY_SUBMODULES` / `_LAZY_ATTRS` in `nw/__init__.py`, never in an eager `from . import`. Pinned by `tests/test_import_footprint.py` (the required set is exact). Record: `misc/docs/What nw is — a substrate, not an aggregator.md`.
 
 ## Validation (`nw/validation.py`, checks in `nw/checks.py`)
 

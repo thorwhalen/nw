@@ -67,7 +67,7 @@ def test_import_nw_does_not_load_feature_dependencies():
         """
         import sys
         import nw
-        heavy = ("artful", "au", "fastapi", "flask", "nw.jobs", "nw.storyboard")
+        heavy = ("artful", "au", "fal_client", "fastapi", "flask", "httpx", "nw.jobs", "nw.storyboard")
         print(sorted(m for m in heavy if sys.modules.get(m) is not None))
         """
     )
