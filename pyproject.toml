@@ -78,8 +78,13 @@ Documentation = "https://thorwhalen.github.io/nw"
 storyboard = [
     "artful>=0.0.2",
 ]
+# Executing plans (real fal.ai calls) needs the fal.ai client; building and
+# pricing them does not (falaw#72: fal-client is the falaw[fal] extra).
+fal = [
+    "falaw[fal]>=0.0.49",
+]
 dev = [
-    "nw[storyboard]",
+    "nw[storyboard,fal]",
     "pytest>=7.0",
     "pytest-cov>=4.0",
     "ruff>=0.1.0",
