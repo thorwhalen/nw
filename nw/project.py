@@ -27,8 +27,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable, Optional
 
-from dol import Files, mk_dirs_if_missing, wrap_kvs
-
 
 def _now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
@@ -74,6 +72,7 @@ from .graph import (
     remove_annotations_with_traces,
 )
 from .bodies import GENRE_ENVELOPE_TIER, UNPRODUCED_OUTPUT_TIER, VERIFYING_TRACE_TIER
+from .storage import FolderStorage, ProjectStorage, as_project_storage
 from .migrate import (
     _TIER_CHARACTER_REF,
     _TIER_DECISION,
@@ -172,22 +171,40 @@ class Project:
     :meth:`Project.init` to bootstrap a new project on disk.
     """
 
-    def __init__(self, root: str | Path, *, auto_migrate: bool = True) -> None:
-        self.root = Path(root).resolve()
+    def __init__(
+        self,
+        root: str | Path,
+        *,
+        storage: Optional[ProjectStorage] = None,
+        auto_migrate: bool = True,
+    ) -> None:
+        """Open the project at ``root``.
+
+        ``storage`` says where its documents and annotation stores live
+        (:mod:`nw.storage`). ``None`` resolves ``root``: a genre's registered
+        resolver if one recognises the folder, else nw's own folder layout.
+        """
+        self.storage = storage if storage is not None else as_project_storage(root)
+        self.root = self.storage.root
         if not self.root.exists():
             raise FileNotFoundError(f"Project root does not exist: {self.root}")
-        if not self.project_file.exists():
+        if _PROJECT_FILE_NAME not in self.storage.docs:
             raise FileNotFoundError(
-                f"No {_PROJECT_FILE_NAME} at {self.root} — "
+                f"No {_PROJECT_FILE_NAME} in {self.storage!r} — "
                 "use Project.init() to bootstrap a new project."
             )
         # Auto-migrate pre-graph projects to the graph-backed format.
-        # Idempotent — runs once per project, no-op afterward.
-        if auto_migrate and not is_migrated(self.root):
+        # Idempotent — runs once per project, no-op afterward. Only nw's own
+        # folder layout has a pre-graph past to migrate from.
+        if (
+            auto_migrate
+            and getattr(self.storage, "migrates_legacy", False)
+            and not is_migrated(self.root)
+        ):
             migrate_to_graph(self.root)
-        self.graph = ProjectGraph(self.root)
-        # Single storage seam for the project's JSON documents (see _json_docs).
-        self._docs = _json_docs(self.root)
+        self.graph = ProjectGraph(self.storage)
+        # Single storage seam for the project's JSON documents (nw.storage).
+        self._docs = self.storage.docs
 
     # -- bootstrap ---------------------------------------------------------
 
@@ -199,6 +216,7 @@ class Project:
         title: str = "",
         song: Optional[str | Path] = None,
         force: bool = False,
+        storage: Optional[ProjectStorage] = None,
     ) -> "Project":
         """Create a new project on disk and return the :class:`Project` facade.
 
@@ -210,15 +228,23 @@ class Project:
                 is *copied* into ``<root>/song/`` and registered in the spec.
             force: When True, accept an existing folder if it's empty (no
                 ``project.json``); refuse if a project already exists there.
+            storage: Where the project's documents and annotation stores
+                live (:mod:`nw.storage`). ``None`` is nw's own folder layout.
+                A non-folder storage may share ``root`` with the app that owns
+                it, so its folder only has to be free of an nw project.
         """
         root = Path(root).resolve()
+        if storage is None:
+            storage = FolderStorage(root)
+        docs = storage.docs
+        owns_folder = isinstance(storage, FolderStorage)
 
         if root.exists():
-            if (root / _PROJECT_FILE_NAME).exists() and not force:
+            if _PROJECT_FILE_NAME in docs and not force:
                 raise FileExistsError(
                     f"A project already exists at {root}. Pass force=True to overwrite."
                 )
-            if any(root.iterdir()) and not force:
+            if owns_folder and any(root.iterdir()) and not force:
                 raise FileExistsError(
                     f"{root} is not empty. Pass force=True to use it anyway."
                 )
@@ -228,35 +254,25 @@ class Project:
         # Conventional subfolders. Empty is fine — they're created lazily
         # by the setters too, but creating them up front makes the layout
         # discoverable.
-        for sub in (
-            "characters",
-            "environments",
-            "shots",
-            "output",
-            "lyrics",
-            "script",
-            "song",
-            ".nw",
-        ):
-            (root / sub).mkdir(exist_ok=True)
+        for sub in storage.init_folders:
+            (root / sub).mkdir(parents=True, exist_ok=True)
 
         spec = ProjectSpec(
             schema_version=SCHEMA_VERSION,
             title=title or root.name,
         )
-        _write_spec(root, spec)
+        docs[_PROJECT_FILE_NAME] = json.loads(spec.model_dump_json())
 
         # New projects are graph-native from the start; mark migrated so the
         # auto-migrator skips them. The graph store is created lazily on first
         # write.
-        docs = _json_docs(root)
         if ".nw/migrated_to_graph" not in docs:
             docs[".nw/migrated_to_graph"] = {
                 "migrated_at": _now_iso(),
                 "counts": {"native": 1},
             }
 
-        proj = cls(root)
+        proj = cls(root, storage=storage)
         if song is not None:
             proj.set_song(song)
         return proj
@@ -710,7 +726,7 @@ class Project:
         """Append one record to the ``.nw/decisions.jsonl`` audit stream.
 
         This is the one persistence path that is *not* routed through the
-        :func:`_json_docs` key-value store: an append-only, tail-grep-able log
+        :attr:`ProjectStorage.docs <nw.storage.ProjectStorage>` key-value store: an append-only, tail-grep-able log
         is a stream, not a document, and modelling it as a ``MutableMapping``
         would force a read-modify-write per line. It is a secondary surface —
         the lacing graph (``decision`` tier) is the store-backed SSOT — so the
@@ -862,33 +878,6 @@ class Project:
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
-
-
-def _json_docs(root: str | Path):
-    """The storage facade for a project's JSON documents.
-
-    A ``dol`` ``MutableMapping`` keyed by project-relative POSIX path
-    (``"project.json"``, ``"characters/<name>/card.json"``,
-    ``"environments/<name>/card.json"``, ``"shots/<id>/shot.json"``, the
-    ``".nw/migrated_to_graph"`` sentinel). Values are Python objects; on disk
-    they are ``indent=2`` JSON, preserving the historical layout so existing
-    projects and any external readers keep working. Parent directories are
-    created on write; a missing key raises ``KeyError``.
-
-    This is the single seam through which project state is persisted — no
-    business-method touches ``open``/``write_text`` directly (the append-only
-    ``decisions.jsonl`` audit stream is the one documented exception; see
-    :meth:`Project._append_decision_log`).
-    """
-    return wrap_kvs(
-        mk_dirs_if_missing(Files(str(root))),
-        data_of_obj=lambda obj: json.dumps(obj, indent=2).encode("utf-8"),
-        obj_of_data=lambda data: json.loads(data),
-    )
-
-
-def _write_spec(root: Path, spec: ProjectSpec) -> None:
-    _json_docs(root)[_PROJECT_FILE_NAME] = json.loads(spec.model_dump_json())
 
 
 # -- entity refs: the one mapping between the spec types and the graph bodies --
