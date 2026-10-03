@@ -101,6 +101,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="nw.schema.html">nw.schema</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nw.script_segmentation.html">nw.script_segmentation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nw.secrets.html">nw.secrets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.storage.html">nw.storage</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nw.transforms.html">nw.transforms</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nw.validation.html">nw.validation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nw.workflow.html">nw.workflow</a></li>
@@ -130,6 +131,7 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#nw.graph.ProjectGraph.set_genre_envelope"><code class="docutils literal notranslate"><span class="pre">ProjectGraph.set_genre_envelope()</span></code></a></li>
 <li><a class="reference internal" href="#nw.graph.ProjectGraph.unproduced_outputs"><code class="docutils literal notranslate"><span class="pre">ProjectGraph.unproduced_outputs()</span></code></a></li>
 <li><a class="reference internal" href="#nw.graph.ProjectGraph.upsert_character_ref"><code class="docutils literal notranslate"><span class="pre">ProjectGraph.upsert_character_ref()</span></code></a></li>
+<li><a class="reference internal" href="#nw.graph.ProjectGraph.upsert_entity"><code class="docutils literal notranslate"><span class="pre">ProjectGraph.upsert_entity()</span></code></a></li>
 <li><a class="reference internal" href="#nw.graph.ProjectGraph.upsert_environment_ref"><code class="docutils literal notranslate"><span class="pre">ProjectGraph.upsert_environment_ref()</span></code></a></li>
 <li><a class="reference internal" href="#nw.graph.ProjectGraph.upsert_section"><code class="docutils literal notranslate"><span class="pre">ProjectGraph.upsert_section()</span></code></a></li>
 <li><a class="reference internal" href="#nw.graph.ProjectGraph.upsert_shot"><code class="docutils literal notranslate"><span class="pre">ProjectGraph.upsert_shot()</span></code></a></li>
@@ -251,7 +253,7 @@ written (see <a class="reference internal" href="#nw.graph.ProjectGraph.add_anno
 <div class="table-wrapper autosummary longtable docutils container">
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#nw.graph.ProjectGraph" title="nw.graph.ProjectGraph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ProjectGraph</span></code></a>(project_root)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#nw.graph.ProjectGraph" title="nw.graph.ProjectGraph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ProjectGraph</span></code></a>(project)</p></td>
 <td><p>Typed read/write facade over the project's lacing graph store.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#nw.graph.StoredCharacterRef" title="nw.graph.StoredCharacterRef"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StoredCharacterRef</span></code></a>(annotation_id, body)</p></td>
@@ -277,8 +279,8 @@ written (see <a class="reference internal" href="#nw.graph.ProjectGraph.add_anno
 </div>
 <dl class="py class">
 <dt class="sig sig-object py" id="nw.graph.ProjectGraph">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.graph.</span></span><span class="sig-name descname"><span class="pre">ProjectGraph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_root</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/graph.html#ProjectGraph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.graph.ProjectGraph" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.graph.</span></span><span class="sig-name descname"><span class="pre">ProjectGraph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/graph.html#ProjectGraph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.graph.ProjectGraph" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Typed read/write facade over the project’s lacing graph store.</p>
 <p>Use <code class="xref py py-meth docutils literal notranslate"><span class="pre">Project.graph()</span></code> to get one rather than constructing directly.
 Each method opens-and-closes the underlying store so concurrent
@@ -318,7 +320,7 @@ unproduced-output record in place** — it reads as a live blocker
 after reload even though this write produced the thing it described.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -350,7 +352,7 @@ docstring’s “reason never carries raw exception text”. When
 <code class="docutils literal notranslate"><span class="pre">reason</span></code> becomes a fixed sentence naming <code class="docutils literal notranslate"><span class="pre">error</span></code>’s type.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code></span></p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code></a></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -361,7 +363,7 @@ docstring’s “reason never carries raw exception text”. When
 <dd><p>Append a decision; never replaces an existing one (the log is append-only).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code></span></p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code></a></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -375,7 +377,7 @@ it through <a class="reference internal" href="nw.html#nw.Project.resolved_genre
 plain-dict envelope shape <code class="xref py py-func docutils literal notranslate"><span class="pre">nw.genres.resolve_genre()</span></code> produces.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="nw.bodies.genre_envelope.html#nw.bodies.genre_envelope.GenreEnvelopeBodyV1" title="nw.bodies.genre_envelope.GenreEnvelopeBodyV1"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenreEnvelopeBodyV1</span></code></a>]</span></p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference internal" href="nw.bodies.genre_envelope.html#nw.bodies.genre_envelope.GenreEnvelopeBodyV1" title="nw.bodies.genre_envelope.GenreEnvelopeBodyV1"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenreEnvelopeBodyV1</span></code></a>]</span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -396,7 +398,7 @@ scopes (storyboard, alignment) are removed by their own facades;
 <a class="reference internal" href="#nw.graph.collect_orphan_traces" title="nw.graph.collect_orphan_traces"><code class="xref py py-func docutils literal notranslate"><span class="pre">collect_orphan_traces()</span></code></a> is the project-wide backstop.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span></p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Whether <code class="docutils literal notranslate"><span class="pre">annotation_id</span></code> itself was present (its traces are
@@ -415,7 +417,7 @@ annotation id is stable across replacements, like every entity
 upsert. A no-op write (same envelope) writes nothing.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code></span></p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code></a></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -431,7 +433,7 @@ returns is exactly “still missing”, survives a reload, and is not a
 cache of any in-memory <code class="docutils literal notranslate"><span class="pre">TransformResult</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<a class="reference internal" href="#nw.graph.StoredUnproducedOutput" title="nw.graph.StoredUnproducedOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">StoredUnproducedOutput</span></code></a>]</span></p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference internal" href="#nw.graph.StoredUnproducedOutput" title="nw.graph.StoredUnproducedOutput"><code class="xref py py-class docutils literal notranslate"><span class="pre">StoredUnproducedOutput</span></code></a>]</span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -443,7 +445,26 @@ cache of any in-memory <code class="docutils literal notranslate"><span class="p
 <p>The id is <em>stable</em> across edits — see <code class="xref py py-func docutils literal notranslate"><span class="pre">_upsert()</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code></span></p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="nw.graph.ProjectGraph.upsert_entity">
+<span class="sig-name descname"><span class="pre">upsert_entity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">tier</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">body_schema_uri</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">body</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">TimeInterval(RationalTime(0,</span> <span class="pre">24000),</span> <span class="pre">RationalTime(0,</span> <span class="pre">24000))</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">identity_key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">was_attributed_to</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'user:nw'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/graph.html#ProjectGraph.upsert_entity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.graph.ProjectGraph.upsert_entity" title="Link to this definition">#</a></dt>
+<dd><p>Insert-or-update one <em>authored</em> entity of a genre’s own kind; return its id.</p>
+<p>The general form of <a class="reference internal" href="#nw.graph.ProjectGraph.upsert_section" title="nw.graph.ProjectGraph.upsert_section"><code class="xref py py-meth docutils literal notranslate"><span class="pre">upsert_section()</span></code></a> and its siblings, for a genre
+whose authored inputs are not nw’s built-in tiers (a cut-out scene
+document, a footage clip). <code class="docutils literal notranslate"><span class="pre">identity_key</span></code> names the body field that
+identifies the entity; <code class="docutils literal notranslate"><span class="pre">None</span></code> makes the tier itself the identity (one
+entity per project). The id survives every edit, so annotations derived
+from the entity go stale when its value changes (<a class="reference internal" href="nw.freshness.html#module-nw.freshness" title="nw.freshness"><code class="xref py py-mod docutils literal notranslate"><span class="pre">nw.freshness</span></code></a>)
+instead of being orphaned; an edit that changes nothing writes nothing.
+<code class="docutils literal notranslate"><span class="pre">body</span></code> is a dict or a pydantic model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code></a></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -455,7 +476,7 @@ cache of any in-memory <code class="docutils literal notranslate"><span class="p
 <p>The id is <em>stable</em> across edits — see <code class="xref py py-func docutils literal notranslate"><span class="pre">_upsert()</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code></span></p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code></a></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -467,7 +488,7 @@ cache of any in-memory <code class="docutils literal notranslate"><span class="p
 <p>The id is <em>stable</em> across edits — see <code class="xref py py-func docutils literal notranslate"><span class="pre">_upsert()</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code></span></p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code></a></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -479,7 +500,7 @@ cache of any in-memory <code class="docutils literal notranslate"><span class="p
 <p>The id is <em>stable</em> across edits — see <code class="xref py py-func docutils literal notranslate"><span class="pre">_upsert()</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code></span></p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code></a></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -489,7 +510,7 @@ cache of any in-memory <code class="docutils literal notranslate"><span class="p
 <dl class="py class">
 <dt class="sig sig-object py" id="nw.graph.StoredCharacterRef">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.graph.</span></span><span class="sig-name descname"><span class="pre">StoredCharacterRef</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">annotation_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">body</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/graph.html#StoredCharacterRef"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.graph.StoredCharacterRef" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <dl class="field-list simple">
 </dl>
 </dd></dl>
@@ -497,7 +518,7 @@ cache of any in-memory <code class="docutils literal notranslate"><span class="p
 <dl class="py class">
 <dt class="sig sig-object py" id="nw.graph.StoredDecision">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.graph.</span></span><span class="sig-name descname"><span class="pre">StoredDecision</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">annotation_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">body</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/graph.html#StoredDecision"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.graph.StoredDecision" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <dl class="field-list simple">
 </dl>
 </dd></dl>
@@ -505,7 +526,7 @@ cache of any in-memory <code class="docutils literal notranslate"><span class="p
 <dl class="py class">
 <dt class="sig sig-object py" id="nw.graph.StoredEnvironmentRef">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.graph.</span></span><span class="sig-name descname"><span class="pre">StoredEnvironmentRef</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">annotation_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">body</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/graph.html#StoredEnvironmentRef"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.graph.StoredEnvironmentRef" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <dl class="field-list simple">
 </dl>
 </dd></dl>
@@ -513,7 +534,7 @@ cache of any in-memory <code class="docutils literal notranslate"><span class="p
 <dl class="py class">
 <dt class="sig sig-object py" id="nw.graph.StoredSection">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.graph.</span></span><span class="sig-name descname"><span class="pre">StoredSection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">annotation_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">body</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/graph.html#StoredSection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.graph.StoredSection" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <dl class="field-list simple">
 </dl>
 </dd></dl>
@@ -521,7 +542,7 @@ cache of any in-memory <code class="docutils literal notranslate"><span class="p
 <dl class="py class">
 <dt class="sig sig-object py" id="nw.graph.StoredShot">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.graph.</span></span><span class="sig-name descname"><span class="pre">StoredShot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">annotation_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">body</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/graph.html#StoredShot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.graph.StoredShot" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <dl class="field-list simple">
 </dl>
 </dd></dl>
@@ -529,7 +550,7 @@ cache of any in-memory <code class="docutils literal notranslate"><span class="p
 <dl class="py class">
 <dt class="sig sig-object py" id="nw.graph.StoredUnproducedOutput">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.graph.</span></span><span class="sig-name descname"><span class="pre">StoredUnproducedOutput</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">annotation_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">body</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/graph.html#StoredUnproducedOutput"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.graph.StoredUnproducedOutput" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <dl class="field-list simple">
 </dl>
 </dd></dl>
@@ -544,7 +565,7 @@ honours the backend seam) rather than opening these paths directly, so it
 keeps working when the backend is Postgres.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>]</span></p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></a>]</span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -565,7 +586,7 @@ to answer a question about one tier. Measured on 2000 annotations with
 size because one is O(all rows) and the other O(matching).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code>]</span></p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code>]</span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -634,7 +655,7 @@ catch per root in a tree loop so one damaged project is recorded, not
 silently averaged away.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></span></p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -655,7 +676,7 @@ left in place: it may be an orphan, but deleting what we cannot identify
 is worse than carrying it.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code>]</span></p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code></a>]</span></p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The ids of the trace annotations removed, in store order.</p>
@@ -671,7 +692,7 @@ is worse than carrying it.</p>
 project’s stores.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code>]</span></p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code>]</span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -690,7 +711,7 @@ returned in set-iteration (hash-derived) order, which leaked into every
 consumer’s output (nw#39).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code>]</span></p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code>]</span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -701,7 +722,7 @@ consumer’s output (nw#39).</p>
 <dd><p>Walk every annotation in every store under a project (any backend).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterator</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code>]</span></p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterator" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterator</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code>]</span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -716,9 +737,12 @@ under Postgres it visits each scope’s tenant in the shared DB. Use it for
 both reads (walk <code class="docutils literal notranslate"><span class="pre">.all()</span></code>) and writes (<code class="docutils literal notranslate"><span class="pre">.remove</span></code> / <code class="docutils literal notranslate"><span class="pre">.add</span></code>).</p>
 <p>Each store is closed before the next opens, so consume each store’s
 annotations before advancing.</p>
+<p><code class="docutils literal notranslate"><span class="pre">project_root</span></code> may also be a <a class="reference internal" href="nw.storage.html#nw.storage.ProjectStorage" title="nw.storage.ProjectStorage"><code class="xref py py-class docutils literal notranslate"><span class="pre">nw.storage.ProjectStorage</span></code></a> (or a
+path one of its registered resolvers recognises), in which case its own
+scopes are walked.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterator</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Iterator</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">IntervalAnnotationStore</span></code>]]</span></p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterator" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterator</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterator" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterator</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">IntervalAnnotationStore</span></code>]]</span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -736,13 +760,13 @@ inert row per deletion, forever (nw#36).</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>store</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">IntervalAnnotationStore</span></code></span>) – An <strong>open</strong> store — the caller owns its lifecycle.</p></li>
-<li><p><strong>annotation_ids</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code>]</span>) – Ids to remove. Missing ids are ignored.</p></li>
-<li><p><strong>annotations</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code>]]</span>) – The store’s annotations, if the caller already
+<li><p><strong>annotation_ids</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterable</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code></a>]</span>) – Ids to remove. Missing ids are ignored.</p></li>
+<li><p><strong>annotations</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Annotation</span></code>]]</span>) – The store’s annotations, if the caller already
 materialized <code class="docutils literal notranslate"><span class="pre">list(store.all())</span></code> — avoids a second scan.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">set</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code>]</span></p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#set" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">set</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUID</span></code></a>]</span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>The subset of <code class="docutils literal notranslate"><span class="pre">annotation_ids</span></code> that was actually present. Trace
@@ -793,7 +817,7 @@ removals are not reported: they are bookkeeping, not content.</p>
     </div>
   </div>
 </footer>
-      <script src="../_static/documentation_options.js?v=152b4b09"></script>
+      <script src="../_static/documentation_options.js?v=22d3c163"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>

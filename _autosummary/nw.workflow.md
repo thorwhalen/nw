@@ -68,7 +68,7 @@ This split is what enables:
 
 ### *class* nw.workflow.ShotPreparation(project_root, shot, shot_dir, audio_slice_path, audio_slice_url='', character_anchor_paths=<factory>, character_anchor_urls=<factory>, environment_anchor_path=None, environment_anchor_url='', lyric_lines=<factory>, storyboard_prompt='', global_style='')
 
-Bases: `object`
+Bases: [`object`](https://docs.python.org/3/builtins/functions.html#object)
 
 Local-only inputs for rendering a single shot.
 
@@ -80,37 +80,37 @@ key derived from them is honest.
 Multiple downstream consumers (the planner, an inspection report, a UI
 preview) can read this without re-doing the audio extraction.
 
-#### audio_slice_path *: Path*
+#### audio_slice_path *: [Path](https://docs.python.org/3/library/pathlib.html#pathlib.Path)*
 
 Local path to the song’s audio over [shot.start_s, shot.end_s].
 
-#### audio_slice_url *: str*
+#### audio_slice_url *: [str](https://docs.python.org/3/builtins/stdtypes.html#str)*
 
 fal-storage URL of the audio slice (set by [`prepare_shot()`](#nw.workflow.prepare_shot) when
 a fal API key is available; empty otherwise — strategies that need URLs
 will raise descriptively).
 
-#### character_anchor_paths *: dict[str, Path]*
+#### character_anchor_paths *: [dict](https://docs.python.org/3/builtins/stdtypes.html#dict)[[str](https://docs.python.org/3/builtins/stdtypes.html#str), [Path](https://docs.python.org/3/library/pathlib.html#pathlib.Path)]*
 
 Per-character path to the curated anchor image.
 
-#### character_anchor_urls *: dict[str, str]*
+#### character_anchor_urls *: [dict](https://docs.python.org/3/builtins/stdtypes.html#dict)[[str](https://docs.python.org/3/builtins/stdtypes.html#str), [str](https://docs.python.org/3/builtins/stdtypes.html#str)]*
 
 Per-character fal-storage URL of the anchor image.
 
-#### environment_anchor_path *: Path | None*
+#### environment_anchor_path *: [Path](https://docs.python.org/3/library/pathlib.html#pathlib.Path) | [None](https://docs.python.org/3/builtins/constants.html#None)*
 
 Path to the environment establishing image, or None.
 
-#### environment_anchor_url *: str*
+#### environment_anchor_url *: [str](https://docs.python.org/3/builtins/stdtypes.html#str)*
 
 fal-storage URL of the environment image; empty if no env image.
 
-#### lyric_lines *: list[dict]*
+#### lyric_lines *: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[dict](https://docs.python.org/3/builtins/stdtypes.html#dict)]*
 
 List of `{"text", "start_s", "end_s", "line_index", "section"}` dicts.
 
-#### storyboard_prompt *: str*
+#### storyboard_prompt *: [str](https://docs.python.org/3/builtins/stdtypes.html#str)*
 
 shot description + framing + camera + characters +
 environment + style + lyric lines (when present).
@@ -131,15 +131,15 @@ cost without any uploads, and need to be replaced with real URLs (call
   * **prep** ([`ShotPreparation`](#nw.workflow.ShotPreparation)) – The [`ShotPreparation`](#nw.workflow.ShotPreparation) the Plan was built for.
   * **plan** (`Plan`) – A `falaw.Plan` (typically from [`plan_render_shot()`](#nw.workflow.plan_render_shot)).
   * **on_event** – Optional event subscriber forwarded to the falaw call layer.
-  * **use_cache** (`bool`) – When True (default), routes via `cached_call_fal` so
+  * **use_cache** ([`bool`](https://docs.python.org/3/builtins/functions.html#bool)) – When True (default), routes via `cached_call_fal` so
     cache hits skip the network.
-  * **project** (`Optional`[[`Project`](nw.project.md#nw.project.Project)]) – Optional `Project`. When given, a render-decision
+  * **project** ([`Optional`](https://docs.python.org/3/library/typing.html#typing.Optional)[[`Project`](nw.project.md#nw.project.Project)]) – Optional `Project`. When given, a render-decision
     annotation is appended to the project graph after execution
     with `was_derived_from = (shot_annotation_id,)`, so reelee’s
     freshness queries (`descendants_of` / `stale_after`) walk
     from the shot to its render output.
 * **Return type:**
-  `Path`
+  [`Path`](https://docs.python.org/3/library/pathlib.html#pathlib.Path)
 * **Returns:**
   Path to `shot_dir/output.mp4` (trimmed/padded to `prep.duration_s`).
 
@@ -151,8 +151,8 @@ Dispatches on `prep.shot.render_strategy` via [`nw.renderers`](nw.renderers.md#m
 
 * **Parameters:**
   * **prep** ([`ShotPreparation`](#nw.workflow.ShotPreparation)) – A [`ShotPreparation`](#nw.workflow.ShotPreparation) from [`prepare_shot()`](#nw.workflow.prepare_shot).
-  * **quality** (`str`) – Default quality tier passed to the strategy.
-  * **model_overrides** (`Optional`[`dict`[`str`, `str`]]) – Optional mapping of strategy-step → model_id, e.g.
+  * **quality** ([`str`](https://docs.python.org/3/builtins/stdtypes.html#str)) – Default quality tier passed to the strategy.
+  * **model_overrides** ([`Optional`](https://docs.python.org/3/library/typing.html#typing.Optional)[[`dict`](https://docs.python.org/3/builtins/stdtypes.html#dict)[[`str`](https://docs.python.org/3/builtins/stdtypes.html#str), [`str`](https://docs.python.org/3/builtins/stdtypes.html#str)]]) – Optional mapping of strategy-step → model_id, e.g.
     `{"avatar": "fal-ai/bytedance/omnihuman/v1.5"}` to bypass the
     default avatar model. The keys understood by each strategy are
     documented on the strategy itself.
@@ -178,8 +178,8 @@ produce different URLs. The local file paths are byte-stable.
 
 * **Parameters:**
   * **project** ([`Project`](nw.project.md#nw.project.Project)) – An [`nw.Project`](nw.md#nw.Project) instance.
-  * **shot_id** (`str`) – The shot’s id, as in `project.read_spec().shots[*].id`.
-  * **upload** (`bool`) – When True (default), upload local files to fal-storage and
+  * **shot_id** ([`str`](https://docs.python.org/3/builtins/stdtypes.html#str)) – The shot’s id, as in `project.read_spec().shots[*].id`.
+  * **upload** ([`bool`](https://docs.python.org/3/builtins/functions.html#bool)) – When True (default), upload local files to fal-storage and
     populate the `*_url` fields. When False, only the local paths
     are populated.
 * **Return type:**

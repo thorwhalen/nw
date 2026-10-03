@@ -101,6 +101,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="nw.schema.html">nw.schema</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nw.script_segmentation.html">nw.script_segmentation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nw.secrets.html">nw.secrets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.storage.html">nw.storage</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nw.transforms.html">nw.transforms</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nw.validation.html">nw.validation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nw.workflow.html">nw.workflow</a></li>
@@ -328,7 +329,7 @@ never a local path.</p>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="nw.media_catalog.CATALOG_KINDS">
-<span class="sig-prename descclassname"><span class="pre">nw.media_catalog.</span></span><span class="sig-name descname"><span class="pre">CATALOG_KINDS</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">frozenset</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">frozenset({'audio',</span> <span class="pre">'image',</span> <span class="pre">'json',</span> <span class="pre">'video'})</span></span><a class="headerlink" href="#nw.media_catalog.CATALOG_KINDS" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">nw.media_catalog.</span></span><span class="sig-name descname"><span class="pre">CATALOG_KINDS</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#frozenset" title="(in Python v3.14)"><span class="pre">frozenset</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">frozenset({'audio',</span> <span class="pre">'image',</span> <span class="pre">'json',</span> <span class="pre">'video'})</span></span><a class="headerlink" href="#nw.media_catalog.CATALOG_KINDS" title="Link to this definition">#</a></dt>
 <dd><p>a row
 whose <code class="docutils literal notranslate"><span class="pre">kind</span></code> the host’s <code class="docutils literal notranslate"><span class="pre">Literal</span></code> does not name fails validation at read time,
 which turns one unservable file into a broken catalog. A <code class="docutils literal notranslate"><span class="pre">text</span></code> artifact (an
@@ -343,20 +344,20 @@ which turns one unservable file into a broken catalog. A <code class="docutils l
 <dl class="py exception">
 <dt class="sig sig-object py" id="nw.media_catalog.CatalogBackendMismatch">
 <span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.media_catalog.</span></span><span class="sig-name descname"><span class="pre">CatalogBackendMismatch</span></span><a class="reference internal" href="../_modules/nw/media_catalog.html#CatalogBackendMismatch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.media_catalog.CatalogBackendMismatch" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">RuntimeError</span></code></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#RuntimeError" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">RuntimeError</span></code></a></p>
 <p>The host reads its artifacts from somewhere other than the project’s blobs.</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="nw.media_catalog.CatalogReport">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.media_catalog.</span></span><span class="sig-name descname"><span class="pre">CatalogReport</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rows_written</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rows_unchanged</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blobs_linked</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blobs_present</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blobs_copied</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bytes_copied</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cross_device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unregistered</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/media_catalog.html#CatalogReport"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.media_catalog.CatalogReport" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>What registering a batch of media did, and what the catalog could not hold.</p>
 <dl class="field-list simple">
 </dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nw.media_catalog.CatalogReport.unregistered">
-<span class="sig-name descname"><span class="pre">unregistered</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#nw.media_catalog.CatalogReport.unregistered" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">unregistered</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#nw.media_catalog.CatalogReport.unregistered" title="Link to this definition">#</a></dt>
 <dd><p><code class="docutils literal notranslate"><span class="pre">(path,</span> <span class="pre">reason)</span></code> for a file the catalog cannot hold — today only a kind
 outside <a class="reference internal" href="#nw.media_catalog.CATALOG_KINDS" title="nw.media_catalog.CATALOG_KINDS"><code class="xref py py-data docutils literal notranslate"><span class="pre">CATALOG_KINDS</span></code></a>. Reported, never silently dropped: an
 unregistered artifact is one a caller will ask for and not get.</p>
@@ -367,7 +368,7 @@ unregistered artifact is one a caller will ask for and not get.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="nw.media_catalog.CatalogRow">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.media_catalog.</span></span><span class="sig-name descname"><span class="pre">CatalogRow</span></span><a class="reference internal" href="../_modules/nw/media_catalog.html#CatalogRow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.media_catalog.CatalogRow" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>The host’s artifact record, as JSON — a wire contract, not a model.</p>
 <p>Deliberately not a pydantic model: this is <em>the host’s</em> schema, and nw has no
 business owning a second authority for it. It is a dict-builder with every
@@ -375,7 +376,7 @@ field spelled out, so a failure to load on the host’s side shows up as a diff
 against these lists rather than as an absence.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nw.media_catalog.CatalogRow.FIELDS">
-<span class="sig-name descname"><span class="pre">FIELDS</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('id',</span> <span class="pre">'kind',</span> <span class="pre">'url',</span> <span class="pre">'width',</span> <span class="pre">'height',</span> <span class="pre">'duration_seconds',</span> <span class="pre">'cost_usd',</span> <span class="pre">'provenance',</span> <span class="pre">'content_hash')</span></span><a class="headerlink" href="#nw.media_catalog.CatalogRow.FIELDS" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">FIELDS</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('id',</span> <span class="pre">'kind',</span> <span class="pre">'url',</span> <span class="pre">'width',</span> <span class="pre">'height',</span> <span class="pre">'duration_seconds',</span> <span class="pre">'cost_usd',</span> <span class="pre">'provenance',</span> <span class="pre">'content_hash')</span></span><a class="headerlink" href="#nw.media_catalog.CatalogRow.FIELDS" title="Link to this definition">#</a></dt>
 <dd><p>Every key a row EMITS, in the host’s own order.</p>
 <p>An omission is safe and an addition is fatal, which is the opposite of how it
 first reads. Every field the host declares is optional except <code class="docutils literal notranslate"><span class="pre">id</span></code>,
@@ -389,7 +390,7 @@ everywhere.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nw.media_catalog.CatalogRow.PROVENANCE_FIELDS">
-<span class="sig-name descname"><span class="pre">PROVENANCE_FIELDS</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('source',</span> <span class="pre">'model',</span> <span class="pre">'request_id',</span> <span class="pre">'prompt',</span> <span class="pre">'generated_at',</span> <span class="pre">'triggered_by')</span></span><a class="headerlink" href="#nw.media_catalog.CatalogRow.PROVENANCE_FIELDS" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">PROVENANCE_FIELDS</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('source',</span> <span class="pre">'model',</span> <span class="pre">'request_id',</span> <span class="pre">'prompt',</span> <span class="pre">'generated_at',</span> <span class="pre">'triggered_by')</span></span><a class="headerlink" href="#nw.media_catalog.CatalogRow.PROVENANCE_FIELDS" title="Link to this definition">#</a></dt>
 <dd><p>it is
 the newest field in the host’s model (2026-09-19) and emitting it would make
 every row unreadable by an older host, whole catalog at a time. The cost is a
@@ -408,7 +409,7 @@ host this writes for is reliably newer than that date.</p>
 <dd><p>One record, ready to serialize.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></span></p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></span></p>
 </dd>
 </dl>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="n">row</span> <span class="o">=</span> <span class="n">CatalogRow</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="s2">"ab"</span> <span class="o">*</span> <span class="mi">32</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">"image"</span><span class="p">,</span>
@@ -428,20 +429,20 @@ host this writes for is reliably newer than that date.</p>
 <dl class="py exception">
 <dt class="sig sig-object py" id="nw.media_catalog.CorruptBlob">
 <span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.media_catalog.</span></span><span class="sig-name descname"><span class="pre">CorruptBlob</span></span><a class="reference internal" href="../_modules/nw/media_catalog.html#CorruptBlob"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.media_catalog.CorruptBlob" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">RuntimeError</span></code></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#RuntimeError" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">RuntimeError</span></code></a></p>
 <p>A blob already stored under a digest does not hold the bytes it names.</p>
 </dd></dl>
 
 <dl class="py exception">
 <dt class="sig sig-object py" id="nw.media_catalog.CrossDeviceCatalog">
 <span class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.media_catalog.</span></span><span class="sig-name descname"><span class="pre">CrossDeviceCatalog</span></span><a class="reference internal" href="../_modules/nw/media_catalog.html#CrossDeviceCatalog"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.media_catalog.CrossDeviceCatalog" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">OSError</span></code></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/exceptions.html#OSError" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">OSError</span></code></a></p>
 <p>The project’s blob store cannot hardlink the media (another filesystem).</p>
 </dd></dl>
 
 <dl class="py data">
 <dt class="sig sig-object py" id="nw.media_catalog.DELIVERY_CATALOG_SUBPATH">
-<span class="sig-prename descclassname"><span class="pre">nw.media_catalog.</span></span><span class="sig-name descname"><span class="pre">DELIVERY_CATALOG_SUBPATH</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('.reelee',</span> <span class="pre">'artifacts')</span></span><a class="headerlink" href="#nw.media_catalog.DELIVERY_CATALOG_SUBPATH" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">nw.media_catalog.</span></span><span class="sig-name descname"><span class="pre">DELIVERY_CATALOG_SUBPATH</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('.reelee',</span> <span class="pre">'artifacts')</span></span><a class="headerlink" href="#nw.media_catalog.DELIVERY_CATALOG_SUBPATH" title="Link to this definition">#</a></dt>
 <dd><p>Where the host keeps a project’s artifact store, relative to the project root:
 lacing’s layout, the host’s directory name.</p>
 </dd></dl>
@@ -449,7 +450,7 @@ lacing’s layout, the host’s directory name.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="nw.media_catalog.HostArtifactCatalog">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.media_catalog.</span></span><span class="sig-name descname"><span class="pre">HostArtifactCatalog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_root</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_cross_device_copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_backend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subpath</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('.reelee',</span> <span class="pre">'artifacts')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/media_catalog.html#HostArtifactCatalog"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.media_catalog.HostArtifactCatalog" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>The artifact catalog of the project at <code class="docutils literal notranslate"><span class="pre">project_root</span></code>, in the host’s layout.</p>
 <p><code class="docutils literal notranslate"><span class="pre">allow_cross_device_copy</span></code> pays for a copy where a hardlink is impossible
 (refused by default). <code class="docutils literal notranslate"><span class="pre">check_backend=False</span></code> is for a caller that already
@@ -475,7 +476,7 @@ store, not a promise (nw#95 designs a shared one).</p>
 <dd><p>Where <code class="docutils literal notranslate"><span class="pre">artifact_id</span></code>’s bytes are, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if they are not stored.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>]</span></p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></a>]</span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -486,7 +487,7 @@ store, not a promise (nw#95 designs a shared one).</p>
 <dd><p>Whether <code class="docutils literal notranslate"><span class="pre">artifact_id</span></code> resolves: its row AND its blob are both there.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span></p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -497,7 +498,7 @@ store, not a promise (nw#95 designs a shared one).</p>
 <dd><p>Every row, parsed, in id order. For tests and diagnostics.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterator</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>]</span></p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterator" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Iterator</span></code></a>[<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>]</span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -519,7 +520,7 @@ linking a file that lives elsewhere (directly, or through a symlink) would
 let a rewrite out there change the bytes under a digest that names them.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span></p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -530,7 +531,7 @@ let a rewrite out there change the bytes under a digest that names them.</p>
 <dd><p>Every artifact id this catalog currently has a row for.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">frozenset</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span></p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#frozenset" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">frozenset</span></code></a>[<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]</span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -550,7 +551,7 @@ explicitly; it does not get it by accident. <code class="docutils literal notran
 own way of doing that in the message (an importer’s opt-out flag, say).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></span></p>
 </dd>
 </dl>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="n">assert_local_backend</span><span class="p">({})</span>
@@ -570,7 +571,7 @@ own way of doing that in the message (an importer’s opt-out flag, say).</p>
 <dd><p>The function spelling of <a class="reference internal" href="#nw.media_catalog.CatalogRow.build" title="nw.media_catalog.CatalogRow.build"><code class="xref py py-meth docutils literal notranslate"><span class="pre">CatalogRow.build()</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></span></p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -583,7 +584,7 @@ own way of doing that in the message (an importer’s opt-out flag, say).</p>
 here so the writer can be reasoned about without the graph layer.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span></p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span></p>
 </dd>
 </dl>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">tempfile</span><span class="o">,</span><span class="w"> </span><span class="nn">pathlib</span>
@@ -637,7 +638,7 @@ here so the writer can be reasoned about without the graph layer.</p>
     </div>
   </div>
 </footer>
-      <script src="../_static/documentation_options.js?v=152b4b09"></script>
+      <script src="../_static/documentation_options.js?v=22d3c163"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>

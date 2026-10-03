@@ -89,7 +89,7 @@ which is how this reaches an MCP tool surface without a forty-item enum.
 
 ### *class* nw.validation.Check(name, summary, run, requires=(), parallel_safe=True, cost='cheap', example_requests=(), requires_binaries=())
 
-Bases: `object`
+Bases: [`object`](https://docs.python.org/3/builtins/functions.html#object)
 
 One validation, and everything a scheduler and a menu need to know.
 
@@ -139,7 +139,7 @@ makes the check *skip with a reason*, never silently pass.
 
 ### *class* nw.validation.CheckResult(name, findings=(), skipped='', error='', elapsed_s=0.0, produced=None)
 
-Bases: `object`
+Bases: [`object`](https://docs.python.org/3/builtins/functions.html#object)
 
 What one check produced, including the case where it could not run.
 
@@ -147,13 +147,13 @@ What one check produced, including the case where it could not run.
 conflating them is how a validation suite comes to report all-clear on a
 machine where half of it never ran. A missing binary is not a pass.
 
-#### *property* ok *: bool*
+#### *property* ok *: [bool](https://docs.python.org/3/builtins/functions.html#bool)*
 
 Ran, and found nothing at or above `FAILING_SEVERITY`.
 
 ### *class* nw.validation.Finding(check, severity, message, where='', remedy=None, evidence=<factory>)
 
-Bases: `object`
+Bases: [`object`](https://docs.python.org/3/builtins/functions.html#object)
 
 One thing a check noticed.
 
@@ -193,13 +193,13 @@ frame’s path, the numbers behind the verdict.
 
 ### *exception* nw.validation.ValidationError(report)
 
-Bases: `AssertionError`
+Bases: [`AssertionError`](https://docs.python.org/3/builtins/exceptions.html#AssertionError)
 
 Raised by [`ValidationReport.raise_if_failed()`](#nw.validation.ValidationReport.raise_if_failed).
 
 ### *class* nw.validation.ValidationReport(target, results=(), elapsed_s=0.0)
 
-Bases: `object`
+Bases: [`object`](https://docs.python.org/3/builtins/functions.html#object)
 
 Everything a [`validate()`](#nw.validation.validate) run produced.
 
@@ -215,7 +215,7 @@ one per check that was selected, in the order they were run.
 
 wall-clock for the whole run.
 
-#### *property* ok *: bool*
+#### *property* ok *: [bool](https://docs.python.org/3/builtins/functions.html#bool)*
 
 No failing findings **and** nothing that failed to run.
 
@@ -234,7 +234,7 @@ Return self, or raise [`ValidationError`](#nw.validation.ValidationError) — fo
 A few lines a human can read without unpacking the object.
 
 * **Return type:**
-  `str`
+  [`str`](https://docs.python.org/3/builtins/stdtypes.html#str)
 
 ### nw.validation.checks *: Registry* *= <Registry nw.validation.checks>*
 
@@ -246,7 +246,7 @@ loudly rather than quietly changing what “validated” means.
 Every registered check, name-ordered — what a user chooses from.
 
 * **Return type:**
-  `tuple`[[`Check`](#nw.validation.Check), `...`]
+  [`tuple`](https://docs.python.org/3/builtins/stdtypes.html#tuple)[[`Check`](#nw.validation.Check), [`...`](https://docs.python.org/3/builtins/constants.html#Ellipsis)]
 
 ### nw.validation.plan_checks(selection)
 
@@ -257,10 +257,10 @@ so the waves are the schedule: run each in turn, in parallel within it.
 A check that is not `parallel_safe` gets a wave to itself.
 
 * **Raises:**
-  **ValueError** – on a dependency cycle, or a requirement that is not
+  [**ValueError**](https://docs.python.org/3/builtins/exceptions.html#ValueError) – on a dependency cycle, or a requirement that is not
       registered — both at plan time, before anything has been spent.
 * **Return type:**
-  *tuple*[*tuple*[[*Check*](#nw.validation.Check), …], …]
+  [*tuple*](https://docs.python.org/3/builtins/stdtypes.html#tuple)[[*tuple*](https://docs.python.org/3/builtins/stdtypes.html#tuple)[[*Check*](#nw.validation.Check), …], …]
 
 ### Examples
 
@@ -270,7 +270,7 @@ A check that is not `parallel_safe` gets a wave to itself.
 ```
 
 * **Return type:**
-  `tuple`[`tuple`[[`Check`](#nw.validation.Check), `...`], `...`]
+  [`tuple`](https://docs.python.org/3/builtins/stdtypes.html#tuple)[[`tuple`](https://docs.python.org/3/builtins/stdtypes.html#tuple)[[`Check`](#nw.validation.Check), [`...`](https://docs.python.org/3/builtins/constants.html#Ellipsis)], [`...`](https://docs.python.org/3/builtins/constants.html#Ellipsis)]
 
 ### nw.validation.register_check(check=None, \*\*kwargs)
 
@@ -298,7 +298,7 @@ problem. Raises `KeyError` for an unknown name — a silently dropped check
 is the failure this whole module exists to prevent.
 
 * **Return type:**
-  `tuple`[[`Check`](#nw.validation.Check), `...`]
+  [`tuple`](https://docs.python.org/3/builtins/stdtypes.html#tuple)[[`Check`](#nw.validation.Check), [`...`](https://docs.python.org/3/builtins/constants.html#Ellipsis)]
 
 ### nw.validation.suggest(request, , include_paid=False)
 
@@ -310,7 +310,7 @@ that a human or a model then confirms. `"paid"` checks are never
 suggested: money is asked for by name.
 
 * **Return type:**
-  `tuple`[[`Check`](#nw.validation.Check), `...`]
+  [`tuple`](https://docs.python.org/3/builtins/stdtypes.html#tuple)[[`Check`](#nw.validation.Check), [`...`](https://docs.python.org/3/builtins/constants.html#Ellipsis)]
 
 ### Examples
 
@@ -324,14 +324,14 @@ suggested: money is asked for by name.
 Run `checks` against `target` and report.
 
 * **Parameters:**
-  * **target** (`Any`) – whatever the checks understand — a path to a rendered file, a
+  * **target** ([`Any`](https://docs.python.org/3/library/typing.html#typing.Any)) – whatever the checks understand — a path to a rendered file, a
     `Project`, a `(video, annotations)` pair. This module does not
     care; it is the checks that agree with their caller.
-  * **checks** (`Iterable`[`str` | [`Check`](#nw.validation.Check)]) – names or [`Check`](#nw.validation.Check) objects. Requirements are pulled in
+  * **checks** ([`Iterable`](https://docs.python.org/3/library/typing.html#typing.Iterable)[[`str`](https://docs.python.org/3/builtins/stdtypes.html#str) | [`Check`](#nw.validation.Check)]) – names or [`Check`](#nw.validation.Check) objects. Requirements are pulled in
     automatically. Empty means empty: validation is placed, never
     assumed.
-  * **max_workers** (`int`) – concurrency within a wave.
-  * **on_error** (`Literal`[`'report'`, `'raise'`]) – `"report"` records a raising check as an errored
+  * **max_workers** ([`int`](https://docs.python.org/3/builtins/functions.html#int)) – concurrency within a wave.
+  * **on_error** ([`Literal`](https://docs.python.org/3/library/typing.html#typing.Literal)[`'report'`, `'raise'`]) – `"report"` records a raising check as an errored
     [`CheckResult`](#nw.validation.CheckResult) and carries on, so one broken plugin cannot
     hide the findings of the other nine. `"raise"` is for developing
     a check.

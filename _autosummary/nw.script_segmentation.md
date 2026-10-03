@@ -43,7 +43,7 @@ The LLM seam — any function taking a string prompt and returning a
 string response. Tests pass a cassette-wrapped stub; production passes
 `oa.chat` (or whatever’s been wired).
 
-alias of `Callable`[[`str`], `str`]
+alias of `Callable`[[[`str`](https://docs.python.org/3/builtins/stdtypes.html#str)], [`str`](https://docs.python.org/3/builtins/stdtypes.html#str)]
 
 ### *class* nw.script_segmentation.PanelProposal(\*\*data)
 
@@ -55,7 +55,7 @@ The shape is intentionally close to `annot://schema/storyboard-panel/v1`
 (the lacing body schema) so the caller can promote a proposal into a
 real panel annotation with a minimal mapping step.
 
-#### model_config *: ClassVar[ConfigDict]* *= {}*
+#### model_config *: [ClassVar](https://docs.python.org/3/library/typing.html#typing.ClassVar)[ConfigDict]* *= {}*
 
 Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
 
@@ -67,7 +67,7 @@ The canonical prompt string sent to the LLM. Exposed so callers
   so any change here invalidates recorded fixtures.
 
 * **Return type:**
-  `str`
+  [`str`](https://docs.python.org/3/builtins/stdtypes.html#str)
 
 ### nw.script_segmentation.segment_script_into_panels(script, , target_panel_count, llm)
 
@@ -78,18 +78,18 @@ responsible for choosing / wrapping the LLM (e.g. with a cassette
 or with caching).
 
 * **Parameters:**
-  * **script** (`str`) – Free-form prose. Whitespace is preserved verbatim in
+  * **script** ([`str`](https://docs.python.org/3/builtins/stdtypes.html#str)) – Free-form prose. Whitespace is preserved verbatim in
     the prompt, so trimming + canonicalisation is the caller’s
     decision.
-  * **target_panel_count** (`int`) – Soft target — the LLM is asked for exactly
+  * **target_panel_count** ([`int`](https://docs.python.org/3/builtins/functions.html#int)) – Soft target — the LLM is asked for exactly
     this many. Real-world deviations of ±1 are tolerated.
-  * **llm** (`Callable`[[`str`], `str`]) – The text→text seam. Receives the formatted prompt, must
+  * **llm** ([`Callable`](https://docs.python.org/3/library/typing.html#typing.Callable)[[[`str`](https://docs.python.org/3/builtins/stdtypes.html#str)], [`str`](https://docs.python.org/3/builtins/stdtypes.html#str)]) – The text→text seam. Receives the formatted prompt, must
     return a string. The expected response is a JSON array of
     `{description, duration_s, notes}` objects.
 * **Return type:**
-  `list`[[`PanelProposal`](#nw.script_segmentation.PanelProposal)]
+  [`list`](https://docs.python.org/3/builtins/stdtypes.html#list)[[`PanelProposal`](#nw.script_segmentation.PanelProposal)]
 * **Returns:**
   A list of validated [`PanelProposal`](#nw.script_segmentation.PanelProposal) instances.
 * **Raises:**
-  **ValueError** – The LLM response could not be parsed as a JSON
+  [**ValueError**](https://docs.python.org/3/builtins/exceptions.html#ValueError) – The LLM response could not be parsed as a JSON
       array of panels, or no valid panels survived validation.

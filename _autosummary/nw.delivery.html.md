@@ -120,7 +120,7 @@ store of its own.
 
 ### *class* nw.delivery.Deliverable(path, content_type, filename, artifact_id='', project_id='', genre='', ref=None, title=None, duration_s=None, size_bytes=None, created_at=None, meta=<factory>)
 
-Bases: `object`
+Bases: [`object`](https://docs.python.org/3/builtins/functions.html#object)
 
 A finished thing a person can watch, hear, or download.
 
@@ -139,7 +139,7 @@ The optional descriptive fields are what a listing surface renders, and what
 lets a watch page say “10 seconds, 4.4 MB, made yesterday” without opening
 the file.
 
-#### *property* kind *: str*
+#### *property* kind *: [str](https://docs.python.org/3/builtins/stdtypes.html#str)*
 
 `'video'`, `'audio'`, `'image'` or `'file'` — how to present it.
 
@@ -154,7 +154,7 @@ Derived from `content_type` so a genre never has to declare it twice.
 'file'
 ```
 
-#### *property* label *: str*
+#### *property* label *: [str](https://docs.python.org/3/builtins/stdtypes.html#str)*
 
 The best short name for a human — the ref if it has one, else the id.
 
@@ -165,7 +165,7 @@ The best short name for a human — the ref if it has one, else the id.
 'b02f'
 ```
 
-#### meta *: dict*
+#### meta *: [dict](https://docs.python.org/3/builtins/stdtypes.html#dict)*
 
 Genre-specific extras a listing or watch page may show. Free-form on
 purpose — the host renders what it recognises and ignores the rest, so a
@@ -187,7 +187,7 @@ episode title, short enough to render in one listing row.
 
 ### *class* nw.delivery.Organiser(\*args, \*\*kwargs)
 
-Bases: `Protocol`
+Bases: [`Protocol`](https://docs.python.org/3/library/typing.html#typing.Protocol)
 
 `organise(email, project_id, artifact_id, *, title=…, tags=…, note=…) -> Deliverable`
 
@@ -265,11 +265,11 @@ rows shared with the caller if it marks them (`meta["access"]="shared"`).
 The keyword `after=` is RESERVED for a future pagination cursor — a genre
 must not define it to mean anything else.
 
-alias of `Callable`[[`str`], `list[ProjectSummary]`]
+alias of `Callable`[[[`str`](https://docs.python.org/3/builtins/stdtypes.html#str)], `list[ProjectSummary]`]
 
 ### *class* nw.delivery.ProjectSummary(project_id, title='', genre='', created_at=None, modified_at=None, deliverable_count=None, meta=<factory>)
 
-Bases: `object`
+Bases: [`object`](https://docs.python.org/3/builtins/functions.html#object)
 
 A project a caller has — whether or not it has ever rendered.
 
@@ -294,7 +294,7 @@ registration may span several workspaces and a `project_id` may appear
 in more than one — hosts must not key merged rows by
 `(genre, project_id)` alone.
 
-#### *property* label *: str*
+#### *property* label *: [str](https://docs.python.org/3/builtins/stdtypes.html#str)*
 
 The best short name for a human — the title if it has one, else the id.
 
@@ -312,7 +312,7 @@ One word, so the label stays short enough to say in the middle of a sentence.
 
 ### *class* nw.delivery.Resolver(\*args, \*\*kwargs)
 
-Bases: `Protocol`
+Bases: [`Protocol`](https://docs.python.org/3/library/typing.html#typing.Protocol)
 
 `resolve(email, project_id, artifact_id) -> Deliverable` — a genre’s half.
 
@@ -339,7 +339,7 @@ retroactively demanded: existing callers normalise where they already do,
 and converge here as they touch those sites.
 
 * **Return type:**
-  `str`
+  [`str`](https://docs.python.org/3/builtins/stdtypes.html#str)
 
 ```pycon
 >>> caller_key("  Noel@Example.COM ")
@@ -369,7 +369,7 @@ registers it, or an older nw on the box refuses a newer genre’s honest
 registration.
 
 * **Return type:**
-  `dict`
+  [`dict`](https://docs.python.org/3/builtins/stdtypes.html#dict)
 
 ```pycon
 >>> entry = {"resolve": lambda e, p, a: None}
@@ -425,14 +425,14 @@ ValueError: a title cannot contain path separators or control characters
 ```
 
 * **Return type:**
-  `str`
+  [`str`](https://docs.python.org/3/builtins/stdtypes.html#str)
 
 ### nw.delivery.format_ref(n)
 
 The one spelling we print. Input is permissive; output never varies.
 
 * **Return type:**
-  `str`
+  [`str`](https://docs.python.org/3/builtins/stdtypes.html#str)
 
 ```pycon
 >>> format_ref(1), format_ref(42)
@@ -448,7 +448,7 @@ artifact id — which is why this never raises: “not an ordinal” is an
 ordinary, expected answer, not an error.
 
 * **Return type:**
-  `int` | `None`
+  [`int`](https://docs.python.org/3/builtins/functions.html#int) | [`None`](https://docs.python.org/3/builtins/constants.html#None)
 
 ```pycon
 >>> parse_ref("cut 4"), parse_ref("CUT4"), parse_ref(" cut - 4 ")
@@ -480,7 +480,7 @@ function). Anything else — an `OSError` proudly carrying a server path
 tool response a non-developer reads.
 
 * **Return type:**
-  `str`
+  [`str`](https://docs.python.org/3/builtins/stdtypes.html#str)
 
 ```pycon
 >>> safe_message(KeyError("no render named 'x'"))

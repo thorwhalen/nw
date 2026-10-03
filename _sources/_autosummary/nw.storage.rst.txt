@@ -1,0 +1,30 @@
+nw.storage
+==========
+
+.. automodule:: nw.storage
+
+   
+   .. rubric:: Module Attributes
+
+   .. autosummary::
+   
+      DFLT_INIT_FOLDERS
+      project_storages
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      as_project_storage
+      asset_id_of
+      json_docs
+      register_project_storage
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      FolderStorage
+      MappingStorage
+      ProjectStorage
+   

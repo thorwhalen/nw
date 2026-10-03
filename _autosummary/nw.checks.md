@@ -41,11 +41,11 @@ file, so they accept a path, a string, or anything with a `path` or
 than reporting a clean bill of health on something they never opened.
 
 * **Return type:**
-  `Path`
+  [`Path`](https://docs.python.org/3/library/pathlib.html#pathlib.Path)
 
 ### nw.checks.register_builtin_checks()
 
 Put nw’s own checks on the menu. Idempotent.
 
 * **Return type:**
-  `None`
+  [`None`](https://docs.python.org/3/builtins/constants.html#None)

@@ -25,16 +25,16 @@ rather than a shell pipeline.
 Apply `fn` to each project at `roots` and collect the results.
 
 * **Parameters:**
-  * **roots** (`Iterable`[`str` | `Path`]) – Iterable of project roots. Each must point to an existing
+  * **roots** ([`Iterable`](https://docs.python.org/3/library/typing.html#typing.Iterable)[[`str`](https://docs.python.org/3/builtins/stdtypes.html#str) | [`Path`](https://docs.python.org/3/library/pathlib.html#pathlib.Path)]) – Iterable of project roots. Each must point to an existing
     nw project.
-  * **fn** (`Callable`[[[`Project`](nw.project.html.md#nw.project.Project)], `TypeVar`(`T`)]) – Callable taking a `Project` and returning anything. Use this
+  * **fn** ([`Callable`](https://docs.python.org/3/library/typing.html#typing.Callable)[[[`Project`](nw.project.html.md#nw.project.Project)], [`TypeVar`](https://docs.python.org/3/library/typing.html#typing.TypeVar)(`T`)]) – Callable taking a `Project` and returning anything. Use this
     for per-project operations: parsing a script, estimating cost,
     rendering, gathering reports.
-  * **parallel** (`bool`) – When True, run `fn` in a thread pool. Useful when `fn`
+  * **parallel** ([`bool`](https://docs.python.org/3/builtins/functions.html#bool)) – When True, run `fn` in a thread pool. Useful when `fn`
     is I/O- or API-bound (e.g. a render). When False (default), runs
     sequentially in submission order — the safest semantics.
 * **Return type:**
-  `list`[`TypeVar`(`T`)]
+  [`list`](https://docs.python.org/3/builtins/stdtypes.html#list)[[`TypeVar`](https://docs.python.org/3/library/typing.html#typing.TypeVar)(`T`)]
 * **Returns:**
   A list of `fn(project)` results in the same order as `roots`.
 
@@ -52,16 +52,16 @@ Apply `fn` to each project at `roots` and collect the results.
 Clone an nw project to a new root.
 
 * **Parameters:**
-  * **src_root** (`str` | `Path`) – Path to an existing nw project (must contain `project.json`).
-  * **dst_root** (`str` | `Path`) – Destination path. Must not exist (or pass `force=True` to
+  * **src_root** ([`str`](https://docs.python.org/3/builtins/stdtypes.html#str) | [`Path`](https://docs.python.org/3/library/pathlib.html#pathlib.Path)) – Path to an existing nw project (must contain `project.json`).
+  * **dst_root** ([`str`](https://docs.python.org/3/builtins/stdtypes.html#str) | [`Path`](https://docs.python.org/3/library/pathlib.html#pathlib.Path)) – Destination path. Must not exist (or pass `force=True` to
     overwrite).
-  * **preserve** (`Iterable`[`str`]) – Subtrees of `src_root` to copy verbatim into `dst_root`.
+  * **preserve** ([`Iterable`](https://docs.python.org/3/library/typing.html#typing.Iterable)[[`str`](https://docs.python.org/3/builtins/stdtypes.html#str)]) – Subtrees of `src_root` to copy verbatim into `dst_root`.
     Default: `("song", "lyrics", "characters")`.
-  * **reset** (`Iterable`[`str`]) – Subtrees of `dst_root` to (re)create as empty after copying.
+  * **reset** ([`Iterable`](https://docs.python.org/3/library/typing.html#typing.Iterable)[[`str`](https://docs.python.org/3/builtins/stdtypes.html#str)]) – Subtrees of `dst_root` to (re)create as empty after copying.
     Default: `("script", "shots", "output", ".nw")`.
-  * **title** (`Optional`[`str`]) – New title for the cloned project. Defaults to `dst_root`’s
+  * **title** ([`Optional`](https://docs.python.org/3/library/typing.html#typing.Optional)[[`str`](https://docs.python.org/3/builtins/stdtypes.html#str)]) – New title for the cloned project. Defaults to `dst_root`’s
     folder name.
-  * **force** (`bool`) – When True, overwrite an existing `dst_root` (refuses by default
+  * **force** ([`bool`](https://docs.python.org/3/builtins/functions.html#bool)) – When True, overwrite an existing `dst_root` (refuses by default
     to avoid clobbering work).
 * **Return type:**
   [`ProjectSummary`](nw.schema.html.md#nw.schema.ProjectSummary)
@@ -75,4 +75,4 @@ Convenience: return a `ProjectSummary` for each project.
 Equivalent to `apply_to_projects(roots, lambda p: p.read_summary())`.
 
 * **Return type:**
-  `list`[[`ProjectSummary`](nw.schema.html.md#nw.schema.ProjectSummary)]
+  [`list`](https://docs.python.org/3/builtins/stdtypes.html#list)[[`ProjectSummary`](nw.schema.html.md#nw.schema.ProjectSummary)]

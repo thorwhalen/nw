@@ -101,6 +101,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l3"><a class="reference internal" href="nw.schema.html">nw.schema</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nw.script_segmentation.html">nw.script_segmentation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nw.secrets.html">nw.secrets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nw.storage.html">nw.storage</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nw.transforms.html">nw.transforms</a></li>
 <li class="toctree-l3"><a class="reference internal" href="nw.validation.html">nw.validation</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">nw.workflow</a></li>
@@ -257,7 +258,7 @@ network goes near a credit card.</p></li>
 <dl class="py class">
 <dt class="sig sig-object py" id="nw.workflow.ShotPreparation">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">nw.workflow.</span></span><span class="sig-name descname"><span class="pre">ShotPreparation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_root</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shot_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">audio_slice_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">audio_slice_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">character_anchor_paths</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">character_anchor_urls</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">environment_anchor_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">environment_anchor_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lyric_lines</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">storyboard_prompt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">global_style</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/nw/workflow.html#ShotPreparation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#nw.workflow.ShotPreparation" title="Link to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/builtins/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Local-only inputs for rendering a single shot.</p>
 <p>Building a ShotPreparation is a pure-filesystem operation: no fal calls
 that bill, no network beyond fal-storage uploads (which are free). The
@@ -269,13 +270,13 @@ preview) can read this without re-doing the audio extraction.</p>
 </dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nw.workflow.ShotPreparation.audio_slice_path">
-<span class="sig-name descname"><span class="pre">audio_slice_path</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Path</span></span><a class="headerlink" href="#nw.workflow.ShotPreparation.audio_slice_path" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">audio_slice_path</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><span class="pre">Path</span></a></span><a class="headerlink" href="#nw.workflow.ShotPreparation.audio_slice_path" title="Link to this definition">#</a></dt>
 <dd><p>Local path to the song’s audio over [shot.start_s, shot.end_s].</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nw.workflow.ShotPreparation.audio_slice_url">
-<span class="sig-name descname"><span class="pre">audio_slice_url</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#nw.workflow.ShotPreparation.audio_slice_url" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">audio_slice_url</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#nw.workflow.ShotPreparation.audio_slice_url" title="Link to this definition">#</a></dt>
 <dd><p>fal-storage URL of the audio slice (set by <a class="reference internal" href="#nw.workflow.prepare_shot" title="nw.workflow.prepare_shot"><code class="xref py py-func docutils literal notranslate"><span class="pre">prepare_shot()</span></code></a> when
 a fal API key is available; empty otherwise — strategies that need URLs
 will raise descriptively).</p>
@@ -283,37 +284,37 @@ will raise descriptively).</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nw.workflow.ShotPreparation.character_anchor_paths">
-<span class="sig-name descname"><span class="pre">character_anchor_paths</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Path</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#nw.workflow.ShotPreparation.character_anchor_paths" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">character_anchor_paths</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><span class="pre">Path</span></a><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#nw.workflow.ShotPreparation.character_anchor_paths" title="Link to this definition">#</a></dt>
 <dd><p>Per-character path to the curated anchor image.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nw.workflow.ShotPreparation.character_anchor_urls">
-<span class="sig-name descname"><span class="pre">character_anchor_urls</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#nw.workflow.ShotPreparation.character_anchor_urls" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">character_anchor_urls</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#nw.workflow.ShotPreparation.character_anchor_urls" title="Link to this definition">#</a></dt>
 <dd><p>Per-character fal-storage URL of the anchor image.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nw.workflow.ShotPreparation.environment_anchor_path">
-<span class="sig-name descname"><span class="pre">environment_anchor_path</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#nw.workflow.ShotPreparation.environment_anchor_path" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">environment_anchor_path</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><span class="pre">Path</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><a class="headerlink" href="#nw.workflow.ShotPreparation.environment_anchor_path" title="Link to this definition">#</a></dt>
 <dd><p>Path to the environment establishing image, or None.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nw.workflow.ShotPreparation.environment_anchor_url">
-<span class="sig-name descname"><span class="pre">environment_anchor_url</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#nw.workflow.ShotPreparation.environment_anchor_url" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">environment_anchor_url</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#nw.workflow.ShotPreparation.environment_anchor_url" title="Link to this definition">#</a></dt>
 <dd><p>fal-storage URL of the environment image; empty if no env image.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nw.workflow.ShotPreparation.lyric_lines">
-<span class="sig-name descname"><span class="pre">lyric_lines</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#nw.workflow.ShotPreparation.lyric_lines" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">lyric_lines</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">]</span></span></span><a class="headerlink" href="#nw.workflow.ShotPreparation.lyric_lines" title="Link to this definition">#</a></dt>
 <dd><p>List of <code class="docutils literal notranslate"><span class="pre">{&quot;text&quot;,</span> <span class="pre">&quot;start_s&quot;,</span> <span class="pre">&quot;end_s&quot;,</span> <span class="pre">&quot;line_index&quot;,</span> <span class="pre">&quot;section&quot;}</span></code> dicts.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="nw.workflow.ShotPreparation.storyboard_prompt">
-<span class="sig-name descname"><span class="pre">storyboard_prompt</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></span><a class="headerlink" href="#nw.workflow.ShotPreparation.storyboard_prompt" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">storyboard_prompt</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><a class="headerlink" href="#nw.workflow.ShotPreparation.storyboard_prompt" title="Link to this definition">#</a></dt>
 <dd><p>shot description + framing + camera + characters +
 environment + style + lyric lines (when present).</p>
 <dl class="field-list simple">
@@ -339,9 +340,9 @@ cost without any uploads, and need to be replaced with real URLs (call
 <li><p><strong>prep</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#nw.workflow.ShotPreparation" title="nw.workflow.ShotPreparation"><code class="xref py py-class docutils literal notranslate"><span class="pre">ShotPreparation</span></code></a></span>) – The <a class="reference internal" href="#nw.workflow.ShotPreparation" title="nw.workflow.ShotPreparation"><code class="xref py py-class docutils literal notranslate"><span class="pre">ShotPreparation</span></code></a> the Plan was built for.</p></li>
 <li><p><strong>plan</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Plan</span></code></span>) – A <code class="xref py py-class docutils literal notranslate"><span class="pre">falaw.Plan</span></code> (typically from <a class="reference internal" href="#nw.workflow.plan_render_shot" title="nw.workflow.plan_render_shot"><code class="xref py py-func docutils literal notranslate"><span class="pre">plan_render_shot()</span></code></a>).</p></li>
 <li><p><strong>on_event</strong> – Optional event subscriber forwarded to the falaw call layer.</p></li>
-<li><p><strong>use_cache</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – When True (default), routes via <code class="docutils literal notranslate"><span class="pre">cached_call_fal</span></code> so
+<li><p><strong>use_cache</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – When True (default), routes via <code class="docutils literal notranslate"><span class="pre">cached_call_fal</span></code> so
 cache hits skip the network.</p></li>
-<li><p><strong>project</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="nw.project.html#nw.project.Project" title="nw.project.Project"><code class="xref py py-class docutils literal notranslate"><span class="pre">Project</span></code></a>]</span>) – Optional <code class="xref py py-class docutils literal notranslate"><span class="pre">Project</span></code>. When given, a render-decision
+<li><p><strong>project</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference internal" href="nw.project.html#nw.project.Project" title="nw.project.Project"><code class="xref py py-class docutils literal notranslate"><span class="pre">Project</span></code></a>]</span>) – Optional <code class="xref py py-class docutils literal notranslate"><span class="pre">Project</span></code>. When given, a render-decision
 annotation is appended to the project graph after execution
 with <code class="docutils literal notranslate"><span class="pre">was_derived_from</span> <span class="pre">=</span> <span class="pre">(shot_annotation_id,)</span></code>, so reelee’s
 freshness queries (<code class="docutils literal notranslate"><span class="pre">descendants_of</span></code> / <code class="docutils literal notranslate"><span class="pre">stale_after</span></code>) walk
@@ -349,7 +350,7 @@ from the shot to its render output.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></span></p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></a></span></p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Path to <code class="docutils literal notranslate"><span class="pre">shot_dir/output.mp4</span></code> (trimmed/padded to <code class="docutils literal notranslate"><span class="pre">prep.duration_s</span></code>).</p>
@@ -366,8 +367,8 @@ from the shot to its render output.</p></li>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>prep</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#nw.workflow.ShotPreparation" title="nw.workflow.ShotPreparation"><code class="xref py py-class docutils literal notranslate"><span class="pre">ShotPreparation</span></code></a></span>) – A <a class="reference internal" href="#nw.workflow.ShotPreparation" title="nw.workflow.ShotPreparation"><code class="xref py py-class docutils literal notranslate"><span class="pre">ShotPreparation</span></code></a> from <a class="reference internal" href="#nw.workflow.prepare_shot" title="nw.workflow.prepare_shot"><code class="xref py py-func docutils literal notranslate"><span class="pre">prepare_shot()</span></code></a>.</p></li>
-<li><p><strong>quality</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – Default quality tier passed to the strategy.</p></li>
-<li><p><strong>model_overrides</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]</span>) – Optional mapping of strategy-step → model_id, e.g.
+<li><p><strong>quality</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – Default quality tier passed to the strategy.</p></li>
+<li><p><strong>model_overrides</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#dict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>[<a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]]</span>) – Optional mapping of strategy-step → model_id, e.g.
 <code class="docutils literal notranslate"><span class="pre">{&quot;avatar&quot;:</span> <span class="pre">&quot;fal-ai/bytedance/omnihuman/v1.5&quot;}</span></code> to bypass the
 default avatar model. The keys understood by each strategy are
 documented on the strategy itself.</p></li>
@@ -399,8 +400,8 @@ produce different URLs. The local file paths are byte-stable.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>project</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="nw.project.html#nw.project.Project" title="nw.project.Project"><code class="xref py py-class docutils literal notranslate"><span class="pre">Project</span></code></a></span>) – An <a class="reference internal" href="nw.html#nw.Project" title="nw.Project"><code class="xref py py-class docutils literal notranslate"><span class="pre">nw.Project</span></code></a> instance.</p></li>
-<li><p><strong>shot_id</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – The shot’s id, as in <code class="docutils literal notranslate"><span class="pre">project.read_spec().shots[*].id</span></code>.</p></li>
-<li><p><strong>upload</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – When True (default), upload local files to fal-storage and
+<li><p><strong>shot_id</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span>) – The shot’s id, as in <code class="docutils literal notranslate"><span class="pre">project.read_spec().shots[*].id</span></code>.</p></li>
+<li><p><strong>upload</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/builtins/functions.html#bool" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a></span>) – When True (default), upload local files to fal-storage and
 populate the <code class="docutils literal notranslate"><span class="pre">*_url</span></code> fields. When False, only the local paths
 are populated.</p></li>
 </ul>
@@ -457,7 +458,7 @@ ready to plan.</p>
     </div>
   </div>
 </footer>
-      <script src="../_static/documentation_options.js?v=152b4b09"></script>
+      <script src="../_static/documentation_options.js?v=22d3c163"></script>
       <script src="../_static/doctools.js?v=fd6eb6e6"></script>
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>

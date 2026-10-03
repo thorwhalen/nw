@@ -26,6 +26,8 @@
       genre_ops
       genre_op
       genre_ops_catalogue
+      as_project_storage
+      register_project_storage
       annotations_at_tier
       apply_to_projects
       clone_project
@@ -97,6 +99,9 @@
       GenreOp
       Project
       ProjectGraph
+      ProjectStorage
+      FolderStorage
+      MappingStorage
       StoredUnproducedOutput
       UnproducedOutputBodyV1
       ProjectSpec
@@ -158,6 +163,7 @@
    schema
    script_segmentation
    secrets
+   storage
    storyboard
    transforms
    validation

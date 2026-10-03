@@ -38,7 +38,7 @@ decisions move into the graph.
 True iff this project has been migrated to the lacing graph.
 
 * **Return type:**
-  `bool`
+  [`bool`](https://docs.python.org/3/builtins/functions.html#bool)
 
 ### nw.migrate.migrate_to_graph(project_root, , backup=True, was_attributed_to='agent:nw.migrate')
 
@@ -50,10 +50,10 @@ annotations into `project.annot.sqlite`, drops the migrated arrays from
 `project.json`, and writes the sentinel.
 
 * **Parameters:**
-  * **project_root** (`Path`) – Path to a project root.
-  * **backup** (`bool`) – When True (default), copy the original `project.json` to
+  * **project_root** ([`Path`](https://docs.python.org/3/library/pathlib.html#pathlib.Path)) – Path to a project root.
+  * **backup** ([`bool`](https://docs.python.org/3/builtins/functions.html#bool)) – When True (default), copy the original `project.json` to
     `.nw/project.json.pre-graph.bak` before trimming.
-  * **was_attributed_to** (`str`) – Provenance for the migrator. Defaults to
+  * **was_attributed_to** ([`str`](https://docs.python.org/3/builtins/stdtypes.html#str)) – Provenance for the migrator. Defaults to
     `"agent:nw.migrate"`; pass `"user:<handle>"` from a CLI.
 * **Returns:**
   ```
@@ -63,7 +63,7 @@ annotations into `project.annot.sqlite`, drops the migrated arrays from
   {“sections”: N, “shots”: N, “characters”: N, “environments”: N,
   : ”decisions”: N}\`\`.
 * **Return type:**
-  `dict`[`str`, `int`]
+  [`dict`](https://docs.python.org/3/builtins/stdtypes.html#dict)[[`str`](https://docs.python.org/3/builtins/stdtypes.html#str), [`int`](https://docs.python.org/3/builtins/functions.html#int)]
 
 ### nw.migrate.open_project_graph(project_root)
 
@@ -120,7 +120,7 @@ block writers, so the problem being solved is SQLite-specific and inventing
 a second path there would add a seam with nothing behind it.
 
 * **Raises:**
-  **FileNotFoundError** – in SQLite mode, when the project has no graph
+  [**FileNotFoundError**](https://docs.python.org/3/builtins/exceptions.html#FileNotFoundError) – in SQLite mode, when the project has no graph
       database yet. Creating one is a write; a reader is told plainly
       that there is nothing to read rather than quietly making it.
 * **Return type:**
@@ -134,7 +134,8 @@ For projects with a song registered in project.json, this is the SHA-256
 of the song bytes. Otherwise a stable fallback derived from the title.
 
 Mirrors `nw.storyboard.project_asset_id()` so the project graph and
-the storyboard share an asset_id.
+the storyboard share an asset_id. The rule itself is
+[`nw.storage.asset_id_of()`](nw.storage.html.md#nw.storage.asset_id_of), shared with non-folder storages.
 
 * **Return type:**
-  `str`
+  [`str`](https://docs.python.org/3/builtins/stdtypes.html#str)

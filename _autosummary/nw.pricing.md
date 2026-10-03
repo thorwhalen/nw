@@ -72,7 +72,7 @@ Why a payload with an internally inconsistent total re-prices as unknown.
 
 ### *class* nw.pricing.PlanQuote(, total_usd, status, as_of_total_usd, repriced, reason='')
 
-Bases: `object`
+Bases: [`object`](https://docs.python.org/3/builtins/functions.html#object)
 
 Today’s price for a persisted plan, with the stale figure alongside.
 
@@ -81,14 +81,14 @@ The stale figure is kept — as [`as_of_total_usd`](#nw.pricing.PlanQuote.as_of_
 it must never do is *present* it as current; that is what
 [`total_usd`](#nw.pricing.PlanQuote.total_usd) and [`status`](#nw.pricing.PlanQuote.status) are for.
 
-#### as_of_total_usd *: float | None*
+#### as_of_total_usd *: [float](https://docs.python.org/3/builtins/functions.html#float) | [None](https://docs.python.org/3/builtins/constants.html#None)*
 
 What the persisted plan said, `None` if it already said unknown.
 
 A fact about the moment it was written. Render it labelled as such, or
 not at all.
 
-#### *property* basis_changed *: bool*
+#### *property* basis_changed *: [bool](https://docs.python.org/3/builtins/functions.html#bool)*
 
 True when a rate table moved underneath at least one call.
 
@@ -98,21 +98,21 @@ because the plan did”. Read it beside [`status`](#nw.pricing.PlanQuote.status)
 with this `False` is a caller quoting different quantities, not a
 repricing event.
 
-#### *property* delta_usd *: float | None*
+#### *property* delta_usd *: [float](https://docs.python.org/3/builtins/functions.html#float) | [None](https://docs.python.org/3/builtins/constants.html#None)*
 
 `total_usd - as_of_total_usd`, or `None` when either is unknown.
 
 `None` rather than `0.0`: a plan that lost its price did not move
 by zero.
 
-#### *property* has_unknown_costs *: bool*
+#### *property* has_unknown_costs *: [bool](https://docs.python.org/3/builtins/functions.html#bool)*
 
 True when the total cannot be known — the gate’s refusal condition.
 
 The same judgement as `falaw.Plan.has_unknown_costs`, made at
 re-quote time rather than at plan time.
 
-#### reason *: str*
+#### reason *: [str](https://docs.python.org/3/builtins/stdtypes.html#str)*
 
 Why the *whole* quote is unknown, when that is the situation.
 
@@ -126,7 +126,7 @@ an ordinary re-quote, where the per-call reasons live on
 falaw’s per-call diff — `status`, `basis_changed`, `reason` per
 call. Read it for the audit view; [`total_usd`](#nw.pricing.PlanQuote.total_usd) is the headline.
 
-#### status *: Literal['unchanged', 'changed', 'unknown']*
+#### status *: [Literal](https://docs.python.org/3/library/typing.html#typing.Literal)['unchanged', 'changed', 'unknown']*
 
 Which of the three cases this plan fell into — see [`QuoteStatus`](#nw.pricing.QuoteStatus).
 
@@ -139,9 +139,9 @@ number, whether it is knowable, and whether it moved. Reach into
 [`repriced`](#nw.pricing.PlanQuote.repriced) for the rest.
 
 * **Return type:**
-  `dict`[`str`, `Any`]
+  [`dict`](https://docs.python.org/3/builtins/stdtypes.html#dict)[[`str`](https://docs.python.org/3/builtins/stdtypes.html#str), [`Any`](https://docs.python.org/3/library/typing.html#typing.Any)]
 
-#### total_usd *: float | None*
+#### total_usd *: [float](https://docs.python.org/3/builtins/functions.html#float) | [None](https://docs.python.org/3/builtins/constants.html#None)*
 
 Today’s billable total, or `None` when any billable call is
 unpriceable today. `None` means unknown, never free (nw invariant #2).
@@ -158,7 +158,7 @@ What a re-quote was able to say about a whole plan.
   under it). [`PlanQuote.total_usd`](#nw.pricing.PlanQuote.total_usd) is `None`: unknown, never free, and
   never the frozen figure.
 
-alias of `Literal`[‘unchanged’, ‘changed’, ‘unknown’]
+alias of [`Literal`](https://docs.python.org/3/library/typing.html#typing.Literal)[‘unchanged’, ‘changed’, ‘unknown’]
 
 ### nw.pricing.TOTAL_AGREEMENT_ABS_TOL_USD *= 1e-09*
 
@@ -183,7 +183,7 @@ written by a caller that records no basis is byte-identical to what nw
 wrote before nw#74.
 
 * **Return type:**
-  `list`[`dict`[`str`, `Any`]]
+  [`list`](https://docs.python.org/3/builtins/stdtypes.html#list)[[`dict`](https://docs.python.org/3/builtins/stdtypes.html#dict)[[`str`](https://docs.python.org/3/builtins/stdtypes.html#str), [`Any`](https://docs.python.org/3/library/typing.html#typing.Any)]]
 
 ```pycon
 >>> from falaw import CallPlan, Plan
@@ -204,7 +204,7 @@ safe to call anywhere a `plan()` is (nw invariant #1).
 * **Parameters:**
   * **plan** (`Plan`) – The plan to re-quote — typically one just rebuilt from a stored
     payload with [`plan_from_cost_records()`](#nw.pricing.plan_from_cost_records).
-  * **pricers** (`Mapping`[`str`, `Pricer`]) – Pricing rules by `falaw.CostBasis.pricer`. The seam for
+  * **pricers** ([`Mapping`](https://docs.python.org/3/library/typing.html#typing.Mapping)[[`str`](https://docs.python.org/3/builtins/stdtypes.html#str), `Pricer`]) – Pricing rules by `falaw.CostBasis.pricer`. The seam for
     a caller with reconciled numbers of their own; see
     `falaw.reprice.Pricer`.
 * **Return type:**

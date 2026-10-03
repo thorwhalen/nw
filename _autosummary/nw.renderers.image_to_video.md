@@ -24,6 +24,6 @@ model_overrides keys understood:
 
 ### *class* nw.renderers.image_to_video.ImageToVideoStrategy
 
-Bases: `object`
+Bases: [`object`](https://docs.python.org/3/builtins/functions.html#object)
 
 `render_strategy="image_to_video"`.

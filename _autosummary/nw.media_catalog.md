@@ -99,7 +99,7 @@ host would in fact read.
 The route the host serves a registered artifact from. A row’s `url` is this,
 never a local path.
 
-### nw.media_catalog.CATALOG_KINDS *: frozenset[str]* *= frozenset({'audio', 'image', 'json', 'video'})*
+### nw.media_catalog.CATALOG_KINDS *: [frozenset](https://docs.python.org/3/builtins/stdtypes.html#frozenset)[[str](https://docs.python.org/3/builtins/stdtypes.html#str)]* *= frozenset({'audio', 'image', 'json', 'video'})*
 
 a row
 whose `kind` the host’s `Literal` does not name fails validation at read time,
@@ -111,17 +111,17 @@ which turns one unservable file into a broken catalog. A `text` artifact (an
 
 ### *exception* nw.media_catalog.CatalogBackendMismatch
 
-Bases: `RuntimeError`
+Bases: [`RuntimeError`](https://docs.python.org/3/builtins/exceptions.html#RuntimeError)
 
 The host reads its artifacts from somewhere other than the project’s blobs.
 
 ### *class* nw.media_catalog.CatalogReport(rows_written=0, rows_unchanged=0, blobs_linked=0, blobs_present=0, blobs_copied=0, bytes_copied=0, cross_device=False, unregistered=<factory>)
 
-Bases: `object`
+Bases: [`object`](https://docs.python.org/3/builtins/functions.html#object)
 
 What registering a batch of media did, and what the catalog could not hold.
 
-#### unregistered *: list[tuple[str, str]]*
+#### unregistered *: [list](https://docs.python.org/3/builtins/stdtypes.html#list)[[tuple](https://docs.python.org/3/builtins/stdtypes.html#tuple)[[str](https://docs.python.org/3/builtins/stdtypes.html#str), [str](https://docs.python.org/3/builtins/stdtypes.html#str)]]*
 
 `(path, reason)` for a file the catalog cannot hold — today only a kind
 outside [`CATALOG_KINDS`](#nw.media_catalog.CATALOG_KINDS). Reported, never silently dropped: an
@@ -129,7 +129,7 @@ unregistered artifact is one a caller will ask for and not get.
 
 ### *class* nw.media_catalog.CatalogRow
 
-Bases: `object`
+Bases: [`object`](https://docs.python.org/3/builtins/functions.html#object)
 
 The host’s artifact record, as JSON — a wire contract, not a model.
 
@@ -138,7 +138,7 @@ business owning a second authority for it. It is a dict-builder with every
 field spelled out, so a failure to load on the host’s side shows up as a diff
 against these lists rather than as an absence.
 
-#### FIELDS *: tuple[str, ...]* *= ('id', 'kind', 'url', 'width', 'height', 'duration_seconds', 'cost_usd', 'provenance', 'content_hash')*
+#### FIELDS *: [tuple](https://docs.python.org/3/builtins/stdtypes.html#tuple)[[str](https://docs.python.org/3/builtins/stdtypes.html#str), ...]* *= ('id', 'kind', 'url', 'width', 'height', 'duration_seconds', 'cost_usd', 'provenance', 'content_hash')*
 
 Every key a row EMITS, in the host’s own order.
 
@@ -151,7 +151,7 @@ key does not cost one artifact; it costs all of them. So: emit the minimum,
 and only fields that have been in the host’s model long enough to be
 everywhere.
 
-#### PROVENANCE_FIELDS *: tuple[str, ...]* *= ('source', 'model', 'request_id', 'prompt', 'generated_at', 'triggered_by')*
+#### PROVENANCE_FIELDS *: [tuple](https://docs.python.org/3/builtins/stdtypes.html#tuple)[[str](https://docs.python.org/3/builtins/stdtypes.html#str), ...]* *= ('source', 'model', 'request_id', 'prompt', 'generated_at', 'triggered_by')*
 
 it is
 the newest field in the host’s model (2026-09-19) and emitting it would make
@@ -167,7 +167,7 @@ host this writes for is reliably newer than that date.
 One record, ready to serialize.
 
 * **Return type:**
-  `dict`
+  [`dict`](https://docs.python.org/3/builtins/stdtypes.html#dict)
 
 ```pycon
 >>> row = CatalogRow.build("ab" * 32, kind="image",
@@ -182,24 +182,24 @@ True
 
 ### *exception* nw.media_catalog.CorruptBlob
 
-Bases: `RuntimeError`
+Bases: [`RuntimeError`](https://docs.python.org/3/builtins/exceptions.html#RuntimeError)
 
 A blob already stored under a digest does not hold the bytes it names.
 
 ### *exception* nw.media_catalog.CrossDeviceCatalog
 
-Bases: `OSError`
+Bases: [`OSError`](https://docs.python.org/3/builtins/exceptions.html#OSError)
 
 The project’s blob store cannot hardlink the media (another filesystem).
 
-### nw.media_catalog.DELIVERY_CATALOG_SUBPATH *: tuple[str, ...]* *= ('.reelee', 'artifacts')*
+### nw.media_catalog.DELIVERY_CATALOG_SUBPATH *: [tuple](https://docs.python.org/3/builtins/stdtypes.html#tuple)[[str](https://docs.python.org/3/builtins/stdtypes.html#str), ...]* *= ('.reelee', 'artifacts')*
 
 Where the host keeps a project’s artifact store, relative to the project root:
 lacing’s layout, the host’s directory name.
 
 ### *class* nw.media_catalog.HostArtifactCatalog(project_root, , allow_cross_device_copy=False, check_backend=True, subpath=('.reelee', 'artifacts'))
 
-Bases: `object`
+Bases: [`object`](https://docs.python.org/3/builtins/functions.html#object)
 
 The artifact catalog of the project at `project_root`, in the host’s layout.
 
@@ -227,21 +227,21 @@ store, not a promise (nw#95 designs a shared one).
 Where `artifact_id`’s bytes are, or `None` if they are not stored.
 
 * **Return type:**
-  `Optional`[`Path`]
+  [`Optional`](https://docs.python.org/3/library/typing.html#typing.Optional)[[`Path`](https://docs.python.org/3/library/pathlib.html#pathlib.Path)]
 
 #### has(artifact_id)
 
 Whether `artifact_id` resolves: its row AND its blob are both there.
 
 * **Return type:**
-  `bool`
+  [`bool`](https://docs.python.org/3/builtins/functions.html#bool)
 
 #### iter_rows()
 
 Every row, parsed, in id order. For tests and diagnostics.
 
 * **Return type:**
-  `Iterator`[`dict`]
+  [`Iterator`](https://docs.python.org/3/library/typing.html#typing.Iterator)[[`dict`](https://docs.python.org/3/builtins/stdtypes.html#dict)]
 
 #### register(path, , kind, artifact_id=None, generated_at=None, width=None, height=None, duration_s=None, note='', report=None)
 
@@ -261,14 +261,14 @@ linking a file that lives elsewhere (directly, or through a symlink) would
 let a rewrite out there change the bytes under a digest that names them.
 
 * **Return type:**
-  `Optional`[`str`]
+  [`Optional`](https://docs.python.org/3/library/typing.html#typing.Optional)[[`str`](https://docs.python.org/3/builtins/stdtypes.html#str)]
 
 #### registered_ids()
 
 Every artifact id this catalog currently has a row for.
 
 * **Return type:**
-  `frozenset`[`str`]
+  [`frozenset`](https://docs.python.org/3/builtins/stdtypes.html#frozenset)[[`str`](https://docs.python.org/3/builtins/stdtypes.html#str)]
 
 ### nw.media_catalog.assert_local_backend(env=None, , remedy='skip registration deliberately')
 
@@ -283,7 +283,7 @@ explicitly; it does not get it by accident. `remedy` lets a caller name its
 own way of doing that in the message (an importer’s opt-out flag, say).
 
 * **Return type:**
-  `None`
+  [`None`](https://docs.python.org/3/builtins/constants.html#None)
 
 ```pycon
 >>> assert_local_backend({})
@@ -300,7 +300,7 @@ nw.media_catalog.CatalogBackendMismatch: ...
 The function spelling of [`CatalogRow.build()`](#nw.media_catalog.CatalogRow.build).
 
 * **Return type:**
-  `dict`
+  [`dict`](https://docs.python.org/3/builtins/stdtypes.html#dict)
 
 ### nw.media_catalog.hash_file(path, , chunk_size=1048576)
 
@@ -310,7 +310,7 @@ The same digest lacing computes for an `asset_id` (pinned by a test), kept
 here so the writer can be reasoned about without the graph layer.
 
 * **Return type:**
-  `str`
+  [`str`](https://docs.python.org/3/builtins/stdtypes.html#str)
 
 ```pycon
 >>> import tempfile, pathlib

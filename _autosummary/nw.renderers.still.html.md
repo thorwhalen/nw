@@ -25,6 +25,6 @@ model_overrides keys understood:
 
 ### *class* nw.renderers.still.StillStrategy
 
-Bases: `object`
+Bases: [`object`](https://docs.python.org/3/builtins/functions.html#object)
 
 `render_strategy="still"`.

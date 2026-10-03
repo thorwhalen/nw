@@ -24,11 +24,11 @@ It does NOT do rendering — that’s [`nw.workflow`](nw.workflow.html.md#module
 
 | [`CharacterImage`](#nw.project.CharacterImage)(path, \*[, from_ref, ...])   | One image associated with a character.   |
 |----------------------------------------------------------------------------------------------|------------------------------------------|
-| [`Project`](#nw.project.Project)(root, \*[, auto_migrate])           | A folder-backed nw project.              |
+| [`Project`](#nw.project.Project)(root, \*[, storage, auto_migrate])  | A folder-backed nw project.              |
 
 ### *class* nw.project.CharacterImage(path, , from_ref=False, from_selected=False, is_anchor=False)
 
-Bases: `object`
+Bases: [`object`](https://docs.python.org/3/builtins/functions.html#object)
 
 One image associated with a character.
 
@@ -40,9 +40,9 @@ Returned by [`Project.list_character_images()`](#nw.project.Project.list_charact
 - `is_anchor`: this is the file the character card currently points at as
   the “use this image” anchor (lipsync seed, etc.).
 
-### *class* nw.project.Project(root, , auto_migrate=True)
+### *class* nw.project.Project(root, , storage=None, auto_migrate=True)
 
-Bases: `object`
+Bases: [`object`](https://docs.python.org/3/builtins/functions.html#object)
 
 A folder-backed nw project.
 
@@ -61,18 +61,22 @@ way to lose them.
 * **Return type:**
   [`CharacterRef`](nw.schema.html.md#nw.schema.CharacterRef)
 
-#### *classmethod* init(root, , title='', song=None, force=False)
+#### *classmethod* init(root, , title='', song=None, force=False, storage=None)
 
 Create a new project on disk and return the [`Project`](#nw.project.Project) facade.
 
 * **Parameters:**
-  * **root** (`str` | `Path`) – Folder to create. Must not exist (or pass `force=True` to
+  * **root** ([`str`](https://docs.python.org/3/builtins/stdtypes.html#str) | [`Path`](https://docs.python.org/3/library/pathlib.html#pathlib.Path)) – Folder to create. Must not exist (or pass `force=True` to
     overwrite an empty folder).
-  * **title** (`str`) – Optional human-readable title; defaults to the folder name.
-  * **song** (`Union`[`str`, `Path`, `None`]) – Optional path to a master audio file. When given, the file
+  * **title** ([`str`](https://docs.python.org/3/builtins/stdtypes.html#str)) – Optional human-readable title; defaults to the folder name.
+  * **song** (`Union`[[`str`](https://docs.python.org/3/builtins/stdtypes.html#str), [`Path`](https://docs.python.org/3/library/pathlib.html#pathlib.Path), [`None`](https://docs.python.org/3/builtins/constants.html#None)]) – Optional path to a master audio file. When given, the file
     is *copied* into `<root>/song/` and registered in the spec.
-  * **force** (`bool`) – When True, accept an existing folder if it’s empty (no
+  * **force** ([`bool`](https://docs.python.org/3/builtins/functions.html#bool)) – When True, accept an existing folder if it’s empty (no
     `project.json`); refuse if a project already exists there.
+  * **storage** ([`Optional`](https://docs.python.org/3/library/typing.html#typing.Optional)[[`ProjectStorage`](nw.storage.html.md#nw.storage.ProjectStorage)]) – Where the project’s documents and annotation stores
+    live ([`nw.storage`](nw.storage.html.md#module-nw.storage)). `None` is nw’s own folder layout.
+    A non-folder storage may share `root` with the app that owns
+    it, so its folder only has to be free of an nw project.
 * **Return type:**
   [`Project`](#nw.project.Project)
 
@@ -85,7 +89,7 @@ Marks the file the card’s `reference_image_path` points at as
 `is_anchor=True`.
 
 * **Return type:**
-  `list`[[`CharacterImage`](#nw.project.CharacterImage)]
+  [`list`](https://docs.python.org/3/builtins/stdtypes.html#list)[[`CharacterImage`](#nw.project.CharacterImage)]
 
 #### log_decision(kind, \*\*payload)
 
@@ -101,7 +105,7 @@ Both surfaces stay in sync:
 - `.nw/decisions.jsonl` continues as a tail-grep-able audit trail.
 
 * **Return type:**
-  `None`
+  [`None`](https://docs.python.org/3/builtins/constants.html#None)
 
 #### read_spec()
 
@@ -135,7 +139,7 @@ for a project with no recorded genre (created before nw#32, or not
 through the genre machinery).
 
 * **Return type:**
-  `Optional`[`dict`]
+  [`Optional`](https://docs.python.org/3/library/typing.html#typing.Optional)[[`dict`](https://docs.python.org/3/builtins/stdtypes.html#dict)]
 
 #### resumption_brief(, recent=10)
 
@@ -152,7 +156,7 @@ two of them are upper bounds, and the brief says so in
 docstring.
 
 * **Parameters:**
-  **recent** (`int`) – How many decision-log entries to include, most recent last.
+  **recent** ([`int`](https://docs.python.org/3/builtins/functions.html#int)) – How many decision-log entries to include, most recent last.
 * **Return type:**
   [`ResumptionBrief`](nw.schema.html.md#nw.schema.ResumptionBrief)
 
@@ -165,7 +169,7 @@ character’s folder, since cross-character anchoring is almost always
 a mistake.
 
 * **Return type:**
-  `dict`[`str`, `Any`]
+  [`dict`](https://docs.python.org/3/builtins/stdtypes.html#dict)[[`str`](https://docs.python.org/3/builtins/stdtypes.html#str), [`Any`](https://docs.python.org/3/library/typing.html#typing.Any)]
 
 #### set_global_style(style)
 
@@ -223,7 +227,7 @@ yet. When failure isolation lands, this should sum over the *produced*
 branches only — and this method is the one place that changes.
 
 * **Return type:**
-  `float`
+  [`float`](https://docs.python.org/3/builtins/functions.html#float)
 
 #### update_spec(\*\*changes)
 
@@ -242,4 +246,4 @@ shots, characters, environments) through the graph and persists the
 rest as project.json metadata.
 
 * **Return type:**
-  `None`
+  [`None`](https://docs.python.org/3/builtins/constants.html#None)

@@ -43,7 +43,7 @@ written (see [`ProjectGraph.add_annotation()`](#nw.graph.ProjectGraph.add_annota
 
 ### Classes
 
-| [`ProjectGraph`](#nw.graph.ProjectGraph)(project_root)                   | Typed read/write facade over the project's lacing graph store.   |
+| [`ProjectGraph`](#nw.graph.ProjectGraph)(project)                        | Typed read/write facade over the project's lacing graph store.   |
 |-----------------------------------------------------------------------------------------------|------------------------------------------------------------------|
 | [`StoredCharacterRef`](#nw.graph.StoredCharacterRef)(annotation_id, body)      |                                                                  |
 | [`StoredDecision`](#nw.graph.StoredDecision)(annotation_id, body)          |                                                                  |
@@ -52,9 +52,9 @@ written (see [`ProjectGraph.add_annotation()`](#nw.graph.ProjectGraph.add_annota
 | [`StoredShot`](#nw.graph.StoredShot)(annotation_id, interval, body)    |                                                                  |
 | [`StoredUnproducedOutput`](#nw.graph.StoredUnproducedOutput)(annotation_id, body)  |                                                                  |
 
-### *class* nw.graph.ProjectGraph(project_root)
+### *class* nw.graph.ProjectGraph(project)
 
-Bases: `object`
+Bases: [`object`](https://docs.python.org/3/builtins/functions.html#object)
 
 Typed read/write facade over the project’s lacing graph store.
 
@@ -99,7 +99,7 @@ unproduced-output record in place\*\* — it reads as a live blocker
 after reload even though this write produced the thing it described.
 
 * **Return type:**
-  `None`
+  [`None`](https://docs.python.org/3/builtins/constants.html#None)
 
 #### add_unproduced_output(skeleton, , transform_name, status, reason='', error=None, blocked_by=(), instance_id=None, call_index=None, was_attributed_to=None)
 
@@ -131,14 +131,14 @@ docstring’s “reason never carries raw exception text”. When
 `reason` becomes a fixed sentence naming `error`’s type.
 
 * **Return type:**
-  `UUID`
+  [`UUID`](https://docs.python.org/3/library/uuid.html#uuid.UUID)
 
 #### append_decision(body, , was_attributed_to='user:nw', was_derived_from=())
 
 Append a decision; never replaces an existing one (the log is append-only).
 
 * **Return type:**
-  `UUID`
+  [`UUID`](https://docs.python.org/3/library/uuid.html#uuid.UUID)
 
 #### genre_envelope()
 
@@ -149,7 +149,7 @@ it through [`nw.Project.resolved_genre()`](nw.md#nw.Project.resolved_genre), whi
 plain-dict envelope shape `nw.genres.resolve_genre()` produces.
 
 * **Return type:**
-  `Optional`[[`GenreEnvelopeBodyV1`](nw.bodies.genre_envelope.md#nw.bodies.genre_envelope.GenreEnvelopeBodyV1)]
+  [`Optional`](https://docs.python.org/3/library/typing.html#typing.Optional)[[`GenreEnvelopeBodyV1`](nw.bodies.genre_envelope.md#nw.bodies.genre_envelope.GenreEnvelopeBodyV1)]
 
 #### remove_annotation(annotation_id)
 
@@ -168,7 +168,7 @@ scopes (storyboard, alignment) are removed by their own facades;
 [`collect_orphan_traces()`](#nw.graph.collect_orphan_traces) is the project-wide backstop.
 
 * **Return type:**
-  `bool`
+  [`bool`](https://docs.python.org/3/builtins/functions.html#bool)
 * **Returns:**
   Whether `annotation_id` itself was present (its traces are
   removed either way).
@@ -183,7 +183,7 @@ annotation id is stable across replacements, like every entity
 upsert. A no-op write (same envelope) writes nothing.
 
 * **Return type:**
-  `UUID`
+  [`UUID`](https://docs.python.org/3/library/uuid.html#uuid.UUID)
 
 #### unproduced_outputs(, transform_name=None)
 
@@ -196,7 +196,7 @@ returns is exactly “still missing”, survives a reload, and is not a
 cache of any in-memory `TransformResult`.
 
 * **Return type:**
-  `list`[[`StoredUnproducedOutput`](#nw.graph.StoredUnproducedOutput)]
+  [`list`](https://docs.python.org/3/builtins/stdtypes.html#list)[[`StoredUnproducedOutput`](#nw.graph.StoredUnproducedOutput)]
 
 #### upsert_character_ref(body, , was_attributed_to='user:nw')
 
@@ -205,7 +205,23 @@ Insert-or-update the character ref with this `name`; return its id.
 The id is *stable* across edits — see `_upsert()`.
 
 * **Return type:**
-  `UUID`
+  [`UUID`](https://docs.python.org/3/library/uuid.html#uuid.UUID)
+
+#### upsert_entity(, tier, body_schema_uri, body, interval=TimeInterval(RationalTime(0, 24000), RationalTime(0, 24000)), identity_key=None, was_attributed_to='user:nw')
+
+Insert-or-update one *authored* entity of a genre’s own kind; return its id.
+
+The general form of [`upsert_section()`](#nw.graph.ProjectGraph.upsert_section) and its siblings, for a genre
+whose authored inputs are not nw’s built-in tiers (a cut-out scene
+document, a footage clip). `identity_key` names the body field that
+identifies the entity; `None` makes the tier itself the identity (one
+entity per project). The id survives every edit, so annotations derived
+from the entity go stale when its value changes ([`nw.freshness`](nw.freshness.md#module-nw.freshness))
+instead of being orphaned; an edit that changes nothing writes nothing.
+`body` is a dict or a pydantic model.
+
+* **Return type:**
+  [`UUID`](https://docs.python.org/3/library/uuid.html#uuid.UUID)
 
 #### upsert_environment_ref(body, , was_attributed_to='user:nw')
 
@@ -214,7 +230,7 @@ Insert-or-update the environment ref with this `name`; return its id.
 The id is *stable* across edits — see `_upsert()`.
 
 * **Return type:**
-  `UUID`
+  [`UUID`](https://docs.python.org/3/library/uuid.html#uuid.UUID)
 
 #### upsert_section(body, interval, , was_attributed_to='user:nw')
 
@@ -223,7 +239,7 @@ Insert-or-update the section with this `section_id`; return its id.
 The id is *stable* across edits — see `_upsert()`.
 
 * **Return type:**
-  `UUID`
+  [`UUID`](https://docs.python.org/3/library/uuid.html#uuid.UUID)
 
 #### upsert_shot(body, interval, , was_attributed_to='user:nw')
 
@@ -232,31 +248,31 @@ Insert-or-update the shot with this `shot_id`; return its id.
 The id is *stable* across edits — see `_upsert()`.
 
 * **Return type:**
-  `UUID`
+  [`UUID`](https://docs.python.org/3/library/uuid.html#uuid.UUID)
 
 ### *class* nw.graph.StoredCharacterRef(annotation_id, body)
 
-Bases: `object`
+Bases: [`object`](https://docs.python.org/3/builtins/functions.html#object)
 
 ### *class* nw.graph.StoredDecision(annotation_id, body)
 
-Bases: `object`
+Bases: [`object`](https://docs.python.org/3/builtins/functions.html#object)
 
 ### *class* nw.graph.StoredEnvironmentRef(annotation_id, body)
 
-Bases: `object`
+Bases: [`object`](https://docs.python.org/3/builtins/functions.html#object)
 
 ### *class* nw.graph.StoredSection(annotation_id, interval, body)
 
-Bases: `object`
+Bases: [`object`](https://docs.python.org/3/builtins/functions.html#object)
 
 ### *class* nw.graph.StoredShot(annotation_id, interval, body)
 
-Bases: `object`
+Bases: [`object`](https://docs.python.org/3/builtins/functions.html#object)
 
 ### *class* nw.graph.StoredUnproducedOutput(annotation_id, body)
 
-Bases: `object`
+Bases: [`object`](https://docs.python.org/3/builtins/functions.html#object)
 
 ### nw.graph.all_project_stores(project_root)
 
@@ -268,7 +284,7 @@ honours the backend seam) rather than opening these paths directly, so it
 keeps working when the backend is Postgres.
 
 * **Return type:**
-  `list`[`Path`]
+  [`list`](https://docs.python.org/3/builtins/stdtypes.html#list)[[`Path`](https://docs.python.org/3/library/pathlib.html#pathlib.Path)]
 
 ### nw.graph.annotations_at_tier(project_root, tier)
 
@@ -287,7 +303,7 @@ to answer a question about one tier. Measured on 2000 annotations with
 size because one is O(all rows) and the other O(matching).
 
 * **Return type:**
-  `list`[`Annotation`]
+  [`list`](https://docs.python.org/3/builtins/stdtypes.html#list)[`Annotation`]
 
 ### nw.graph.backfill_traces(project_root, , execute=False)
 
@@ -357,7 +373,7 @@ catch per root in a tree loop so one damaged project is recorded, not
 silently averaged away.
 
 * **Return type:**
-  `dict`
+  [`dict`](https://docs.python.org/3/builtins/stdtypes.html#dict)
 
 ### nw.graph.collect_orphan_traces(project_root)
 
@@ -376,7 +392,7 @@ left in place: it may be an orphan, but deleting what we cannot identify
 is worse than carrying it.
 
 * **Return type:**
-  `list`[`UUID`]
+  [`list`](https://docs.python.org/3/builtins/stdtypes.html#list)[[`UUID`](https://docs.python.org/3/library/uuid.html#uuid.UUID)]
 * **Returns:**
   The ids of the trace annotations removed, in store order.
 
@@ -388,7 +404,7 @@ Walks `provenance.was_derived_from` *one hop only* across all of the
 project’s stores.
 
 * **Return type:**
-  `list`[`Annotation`]
+  [`list`](https://docs.python.org/3/builtins/stdtypes.html#list)[`Annotation`]
 
 ### nw.graph.descendants_of(project_root, ancestor_id)
 
@@ -405,14 +421,14 @@ returned in set-iteration (hash-derived) order, which leaked into every
 consumer’s output (nw#39).
 
 * **Return type:**
-  `list`[`Annotation`]
+  [`list`](https://docs.python.org/3/builtins/stdtypes.html#list)[`Annotation`]
 
 ### nw.graph.iter_all_annotations(project_root)
 
 Walk every annotation in every store under a project (any backend).
 
 * **Return type:**
-  `Iterator`[`Annotation`]
+  [`Iterator`](https://docs.python.org/3/library/typing.html#typing.Iterator)[`Annotation`]
 
 ### nw.graph.open_project_stores(project_root)
 
@@ -426,8 +442,12 @@ both reads (walk `.all()`) and writes (`.remove` / `.add`).
 Each store is closed before the next opens, so consume each store’s
 annotations before advancing.
 
+`project_root` may also be a [`nw.storage.ProjectStorage`](nw.storage.md#nw.storage.ProjectStorage) (or a
+path one of its registered resolvers recognises), in which case its own
+scopes are walked.
+
 * **Return type:**
-  `Iterator`[`Iterator`[`IntervalAnnotationStore`]]
+  [`Iterator`](https://docs.python.org/3/library/typing.html#typing.Iterator)[[`Iterator`](https://docs.python.org/3/library/typing.html#typing.Iterator)[`IntervalAnnotationStore`]]
 
 ### nw.graph.remove_annotations_with_traces(store, annotation_ids, , annotations=None)
 
@@ -441,11 +461,11 @@ inert row per deletion, forever (nw#36).
 
 * **Parameters:**
   * **store** (`IntervalAnnotationStore`) – An **open** store — the caller owns its lifecycle.
-  * **annotation_ids** (`Iterable`[`UUID`]) – Ids to remove. Missing ids are ignored.
-  * **annotations** (`Optional`[`list`[`Annotation`]]) – The store’s annotations, if the caller already
+  * **annotation_ids** ([`Iterable`](https://docs.python.org/3/library/typing.html#typing.Iterable)[[`UUID`](https://docs.python.org/3/library/uuid.html#uuid.UUID)]) – Ids to remove. Missing ids are ignored.
+  * **annotations** ([`Optional`](https://docs.python.org/3/library/typing.html#typing.Optional)[[`list`](https://docs.python.org/3/builtins/stdtypes.html#list)[`Annotation`]]) – The store’s annotations, if the caller already
     materialized `list(store.all())` — avoids a second scan.
 * **Return type:**
-  `set`[`UUID`]
+  [`set`](https://docs.python.org/3/builtins/stdtypes.html#set)[[`UUID`](https://docs.python.org/3/library/uuid.html#uuid.UUID)]
 * **Returns:**
   The subset of `annotation_ids` that was actually present. Trace
   removals are not reported: they are bookkeeping, not content.

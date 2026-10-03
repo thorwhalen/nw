@@ -38,6 +38,7 @@
 - [nw.schema](nw.schema.html.md): Schema for an nw project — narrative-workflow SSOT data shapes.
 - [nw.script_segmentation](nw.script_segmentation.html.md): &#96;nw.script_segmentation&#96; — narrow LLM-backed helper that converts a
 - [nw.secrets](nw.secrets.html.md): Execution secrets — credentials that reach &#96;execute&#96; and nothing else.
+- [nw.storage](nw.storage.html.md): Where a project’s state lives: the project-storage seam (nw#101).
 - [nw.transforms](nw.transforms.html.md): A typed dict-backed plugin registry.
 - [nw.validation](nw.validation.html.md): Pluggable validation of finished work — the seam, not the checks.
 - [nw.workflow](nw.workflow.html.md): Workflow: prepare → plan → execute, for a &#42;&#42;video shot&#42;&#42;.

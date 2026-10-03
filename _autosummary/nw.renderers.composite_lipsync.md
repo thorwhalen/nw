@@ -34,7 +34,7 @@ model_overrides keys understood:
 
 ### *class* nw.renderers.composite_lipsync.CompositeLipsyncStrategy
 
-Bases: `object`
+Bases: [`object`](https://docs.python.org/3/builtins/functions.html#object)
 
 `render_strategy="composite_lipsync"`.
 
