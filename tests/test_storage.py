@@ -172,3 +172,21 @@ def test_upsert_entity_keeps_its_id_so_derivatives_go_stale(tmp_path):
     assert [a.id for a in nw.stale_after(storage, sid)] == [child.id]
     with pytest.raises(KeyError):
         proj.graph.upsert_entity(**kw, body={"sha256": "c"}, identity_key="name")
+
+
+def test_mapping_storage_persists_into_the_mapping_across_reopens(tmp_path):
+    """With lacing's own MappingStore (the default), a fresh storage over the same
+    mappings sees everything: nothing lives only in a process."""
+    graph, docs = {}, {}
+    proj = nw.Project.init(
+        tmp_path,
+        title="t",
+        storage=nw.MappingStorage(root=tmp_path, graph=graph, docs=docs),
+    )
+    proj.graph.upsert_section(SectionBodyV1(section_id="a"), interval=_iv(0, 1))
+    assert graph  # written through, not held in memory
+
+    again = nw.Project(
+        tmp_path, storage=nw.MappingStorage(root=tmp_path, graph=graph, docs=docs)
+    )
+    assert [s.body.section_id for s in again.graph.sections()] == ["a"]
