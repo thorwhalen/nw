@@ -423,6 +423,48 @@ class ProjectGraph:
                 was_attributed_to=was_attributed_to,
             )
 
+    def upsert_entity(
+        self,
+        *,
+        tier: str,
+        body_schema_uri: str,
+        body,
+        interval: TimeInterval = TimeInterval.from_seconds(0, 0),
+        identity_key: Optional[str] = None,
+        was_attributed_to: str = "user:nw",
+    ) -> UUID:
+        """Insert-or-update one *authored* entity of a genre's own kind; return its id.
+
+        The general form of :meth:`upsert_section` and its siblings, for a genre
+        whose authored inputs are not nw's built-in tiers (a cut-out scene
+        document, a footage clip). ``identity_key`` names the body field that
+        identifies the entity; ``None`` makes the tier itself the identity (one
+        entity per project). The id survives every edit, so annotations derived
+        from the entity go stale when its value changes (:mod:`nw.freshness`)
+        instead of being orphaned; an edit that changes nothing writes nothing.
+        ``body`` is a dict or a pydantic model.
+        """
+        from lacing import Tier, TierStereotype
+
+        body_dict = (
+            body.model_dump(mode="json") if hasattr(body, "model_dump") else dict(body)
+        )
+        if identity_key is not None and identity_key not in body_dict:
+            raise KeyError(f"identity_key {identity_key!r} is not a field of the body")
+        with self._open() as store:
+            store.add_tier(Tier(name=tier, stereotype=TierStereotype.NONE))
+            return _upsert(
+                store,
+                tier=tier,
+                schema_uri=body_schema_uri,
+                body=body_dict,
+                interval=interval,
+                asset_id=self.asset_id,
+                was_attributed_to=was_attributed_to,
+                identity_key=identity_key,
+                identity_value=body_dict.get(identity_key) if identity_key else None,
+            )
+
     def genre_envelope(self) -> Optional[GenreEnvelopeBodyV1]:
         """The recorded genre envelope, or ``None`` for a genre-less project.
 

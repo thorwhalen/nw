@@ -158,3 +158,17 @@ def test_folder_storage_is_the_historical_layout(tmp_path):
 def test_as_project_storage_refuses_what_is_not_a_project():
     with pytest.raises(TypeError):
         nw.as_project_storage(42)
+
+
+def test_upsert_entity_keeps_its_id_so_derivatives_go_stale(tmp_path):
+    storage = _mapping_storage(tmp_path)
+    proj = nw.Project.init(tmp_path, storage=storage)
+    kw = dict(tier="scene-doc", body_schema_uri="annot://schema/test-scene/v1")
+    sid = proj.graph.upsert_entity(**kw, body={"sha256": "a"})
+    child = _derived(proj, sid)
+    assert proj.graph.upsert_entity(**kw, body={"sha256": "a"}) == sid  # no-op
+    assert nw.stale_after(storage, sid) == []
+    assert proj.graph.upsert_entity(**kw, body={"sha256": "b"}) == sid
+    assert [a.id for a in nw.stale_after(storage, sid)] == [child.id]
+    with pytest.raises(KeyError):
+        proj.graph.upsert_entity(**kw, body={"sha256": "c"}, identity_key="name")
